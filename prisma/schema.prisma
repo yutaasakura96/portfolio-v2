@@ -1,0 +1,177 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+// ═══ HERO (singleton) ═══
+model Hero {
+  id           String   @id @default(cuid())
+  headline     String   @db.VarChar(200)
+  subheadline  String?  @db.VarChar(300)
+  bio          String   @db.Text
+  profileImage String
+  resumeUrl    String?
+  ctaButtons   Json?
+  updatedAt    DateTime @updatedAt
+}
+
+// ═══ PROJECT ═══
+model Project {
+  id               String        @id @default(cuid())
+  slug             String        @unique
+  title            String        @db.VarChar(200)
+  shortDescription String        @db.VarChar(500)
+  description      String?       @db.Text
+  problem          String?       @db.Text
+  solution         String?       @db.Text
+  role             String?
+  techTags         String[]
+  images           Json
+  thumbnailImage   String
+  liveUrl          String?
+  repoUrl          String?
+  featured         Boolean       @default(false)
+  displayOrder     Int           @default(0)
+  status           ProjectStatus @default(DRAFT)
+  startDate        DateTime?
+  endDate          DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@index([status, displayOrder])
+  @@index([slug])
+}
+
+enum ProjectStatus {
+  DRAFT
+  PUBLISHED
+}
+
+// ═══ BLOG POST ═══
+model BlogPost {
+  id            String     @id @default(cuid())
+  slug          String     @unique
+  title         String
+  content       String     @db.Text
+  excerpt       String
+  featuredImage String?
+  tags          String[]
+  readTime      Int?
+  status        PostStatus @default(DRAFT)
+  publishedAt   DateTime?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@index([status, publishedAt])
+  @@index([slug])
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+}
+
+// ═══ SKILL ═══
+model Skill {
+  id               String            @id @default(cuid())
+  name             String
+  category         String
+  icon             String?
+  proficiencyLevel ProficiencyLevel?
+  displayOrder     Int               @default(0)
+  visible          Boolean           @default(true)
+
+  @@index([category, displayOrder])
+}
+
+enum ProficiencyLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+// ═══ EXPERIENCE ═══
+model Experience {
+  id           String    @id @default(cuid())
+  company      String
+  role         String
+  location     String?
+  startDate    DateTime
+  endDate      DateTime?
+  description  String    @db.Text
+  highlights   String[]
+  logoUrl      String?
+  companyUrl   String?
+  displayOrder Int       @default(0)
+  visible      Boolean   @default(true)
+
+  @@index([displayOrder])
+}
+
+// ═══ EDUCATION ═══
+model Education {
+  id           String    @id @default(cuid())
+  institution  String
+  degree       String
+  field        String
+  startDate    DateTime?
+  endDate      DateTime?
+  achievements String?   @db.Text
+  logoUrl      String?
+  displayOrder Int       @default(0)
+  visible      Boolean   @default(true)
+
+  @@index([displayOrder])
+}
+
+// ═══ CERTIFICATION ═══
+model Certification {
+  id             String    @id @default(cuid())
+  name           String
+  issuer         String
+  dateEarned     DateTime
+  expirationDate DateTime?
+  credentialId   String?
+  credentialUrl  String?
+  badgeImage     String?
+  displayOrder   Int       @default(0)
+  visible        Boolean   @default(true)
+
+  @@index([displayOrder])
+}
+
+// ═══ CONTACT MESSAGE ═══
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String   @db.VarChar(200)
+  email     String   @db.VarChar(254)
+  subject   String   @db.VarChar(300)
+  message   String   @db.Text
+  read      Boolean  @default(false)
+  archived  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([read, archived, createdAt])
+}
+
+// ═══ SITE SETTINGS (singleton) ═══
+model SiteSettings {
+  id                String   @id @default("default")
+  siteName          String   @db.VarChar(200)
+  siteDescription   String?  @db.VarChar(500)
+  socialLinks       Json?
+  email             String   @db.VarChar(254)
+  googleAnalyticsId String?  @db.VarChar(50)
+  updatedAt         DateTime @updatedAt
+}
