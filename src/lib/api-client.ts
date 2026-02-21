@@ -48,8 +48,10 @@ class ApiClient {
         return retryResponse.json();
       }
 
-      // Refresh failed — redirect to login
-      window.location.href = "/admin/login";
+      // Refresh failed — redirect to login (skip if already there to avoid reload loop)
+      if (typeof window !== "undefined" && !window.location.pathname.startsWith("/admin/login")) {
+        window.location.href = "/admin/login";
+      }
       throw new Error("Session expired");
     }
 
