@@ -1,3 +1,5 @@
+import { NextRequest } from "next/server";
+
 export const ErrorCodes = {
   VALIDATION_ERROR: "VALIDATION_ERROR",
   UNAUTHORIZED: "UNAUTHORIZED",
@@ -24,9 +26,9 @@ export class ApiError extends Error {
  * Wraps an API route handler with consistent error handling.
  */
 export function withErrorHandler<TContext = unknown>(
-  handler: (request: Request, context?: TContext) => Promise<Response>
+  handler: (request: NextRequest, context?: TContext) => Promise<Response>
 ) {
-  return async (request: Request, context?: TContext): Promise<Response> => {
+  return async (request: NextRequest, context?: TContext): Promise<Response> => {
     try {
       return await handler(request, context);
     } catch (error) {
