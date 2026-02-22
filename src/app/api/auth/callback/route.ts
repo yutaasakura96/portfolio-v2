@@ -25,7 +25,10 @@ export async function GET(request: NextRequest) {
 
   try {
     // Determine the redirect URI (must match what was sent to Cognito)
-    const redirectUri = `${request.nextUrl.origin}/api/auth/callback`;
+    // Use forwarded headers to get the correct public-facing URL
+    const protocol = request.headers.get("x-forwarded-proto") || "https";
+    const host = request.headers.get("x-forwarded-host") || request.headers.get("host") || request.nextUrl.host;
+    const redirectUri = `${protocol}://${host}/api/auth/callback`;
 
     // Exchange authorization code for tokens
     const tokens = await exchangeCodeForTokens(code, redirectUri);
