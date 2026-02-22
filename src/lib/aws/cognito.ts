@@ -1,5 +1,12 @@
 import { createRemoteJWKSet, jwtVerify } from "jose";
 
+console.log("Environment check:", {
+  COGNITO_DOMAIN: process.env.COGNITO_DOMAIN,
+  COGNITO_REGION: process.env.COGNITO_REGION,
+  COGNITO_CLIENT_ID: process.env.COGNITO_CLIENT_ID,
+  allEnvKeys: Object.keys(process.env).filter(k => k.includes('COGNITO'))
+});
+
 export const COGNITO_CONFIG = {
   region: process.env.COGNITO_REGION!,
   userPoolId: process.env.COGNITO_USER_POOL_ID!,

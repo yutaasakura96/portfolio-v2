@@ -2,6 +2,14 @@ import { exchangeCodeForTokens, verifyJwt } from "@/lib/aws/cognito";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
+  console.log("Request debug:", {
+    url: request.url,
+    origin: request.nextUrl.origin,
+    host: request.headers.get("host"),
+    xForwardedHost: request.headers.get("x-forwarded-host"),
+    xForwardedProto: request.headers.get("x-forwarded-proto"),
+  });
+
   const searchParams = request.nextUrl.searchParams;
   const code = searchParams.get("code");
   const error = searchParams.get("error");
