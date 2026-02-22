@@ -2,12 +2,18 @@ import { exchangeCodeForTokens, verifyJwt } from "@/lib/aws/cognito";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
+  // Determine the correct public-facing URL using forwarded headers
+  const protocol = request.headers.get("x-forwarded-proto") || "https";
+  const host = request.headers.get("x-forwarded-host") || request.headers.get("host") || request.nextUrl.host;
+  const baseUrl = `${protocol}://${host}`;
+
   console.log("Request debug:", {
     url: request.url,
     origin: request.nextUrl.origin,
     host: request.headers.get("host"),
     xForwardedHost: request.headers.get("x-forwarded-host"),
     xForwardedProto: request.headers.get("x-forwarded-proto"),
+    computedBaseUrl: baseUrl,
   });
 
   const searchParams = request.nextUrl.searchParams;
@@ -16,19 +22,15 @@ export async function GET(request: NextRequest) {
 
   // Handle Cognito errors (e.g., user cancelled login)
   if (error) {
-    return NextResponse.redirect(new URL(`/admin/login?error=${error}`, request.url));
+    return NextResponse.redirect(new URL(`/admin/login?error=${error}`, baseUrl));
   }
 
   if (!code) {
-    return NextResponse.redirect(new URL("/admin/login?error=no_code", request.url));
+    return NextResponse.redirect(new URL("/admin/login?error=no_code", baseUrl));
   }
 
   try {
-    // Determine the redirect URI (must match what was sent to Cognito)
-    // Use forwarded headers to get the correct public-facing URL
-    const protocol = request.headers.get("x-forwarded-proto") || "https";
-    const host = request.headers.get("x-forwarded-host") || request.headers.get("host") || request.nextUrl.host;
-    const redirectUri = `${protocol}://${host}/api/auth/callback`;
+    const redirectUri = `${baseUrl}/api/auth/callback`;
 
     // Exchange authorization code for tokens
     const tokens = await exchangeCodeForTokens(code, redirectUri);
@@ -37,7 +39,7 @@ export async function GET(request: NextRequest) {
     await verifyJwt(tokens.id_token);
 
     // Create response with redirect to admin dashboard
-    const response = NextResponse.redirect(new URL("/admin", request.url));
+    const response = NextResponse.redirect(new URL("/admin", baseUrl));
 
     // Set HTTP-only cookies
     const isProduction = process.env.NODE_ENV === "production";
@@ -69,6 +71,6 @@ export async function GET(request: NextRequest) {
     return response;
   } catch (err) {
     console.error("Auth callback error:", err);
-    return NextResponse.redirect(new URL("/admin/login?error=auth_failed", request.url));
+    return NextResponse.redirect(new URL("/admin/login?error=auth_failed", baseUrl));
   }
 }
