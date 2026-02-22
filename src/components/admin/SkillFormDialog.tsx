@@ -161,13 +161,13 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="proficiencyLevel">Proficiency Level</Label>
+            <Label htmlFor="proficiencyLevel">Proficiency Level (optional)</Label>
             <Select
-              value={proficiencyLevel ?? ""}
+              value={proficiencyLevel ?? undefined}
               onValueChange={(value) => {
                 form.setValue(
                   "proficiencyLevel",
-                  value === "" ? undefined : (value as ProficiencyLevel),
+                  value as ProficiencyLevel,
                   { shouldValidate: true }
                 );
               }}
@@ -176,7 +176,6 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
                 <SelectValue placeholder="Select proficiency level" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">None</SelectItem>
                 {PROFICIENCY_LEVELS.map((level) => (
                   <SelectItem key={level} value={level}>
                     {level}
