@@ -7,9 +7,9 @@ export const projectCreateSchema = z.object({
   slug: z.string().regex(slugRegex, "Invalid slug format").max(200),
   shortDescription: z.string().min(1, "Short description is required").max(300),
   description: z.string().min(1, "Description is required"),
-  problem: z.string().max(5000).optional().or(z.literal("")),
-  solution: z.string().max(5000).optional().or(z.literal("")),
-  role: z.string().max(200).optional().or(z.literal("")),
+  problem: z.string().max(5000).optional(),
+  solution: z.string().max(5000).optional(),
+  role: z.string().max(200).optional(),
   techTags: z.array(z.string().max(50)).min(1, "At least one tech tag required"),
   images: z
     .array(
@@ -20,14 +20,14 @@ export const projectCreateSchema = z.object({
       })
     )
     .default([]),
-  thumbnailImage: z.url().or(z.literal("")).optional(),
-  liveUrl: z.url().or(z.literal("")).optional(),
-  repoUrl: z.url().or(z.literal("")).optional(),
+  thumbnailImage: z.string().url().or(z.literal("")).optional(),
+  liveUrl: z.string().url().or(z.literal("")).optional(),
+  repoUrl: z.string().url().or(z.literal("")).optional(),
   featured: z.boolean().default(false),
   displayOrder: z.number().int().default(0),
   status: z.enum(["DRAFT", "PUBLISHED"]).default("DRAFT"),
-  startDate: z.coerce.date().optional().nullable(),
-  endDate: z.coerce.date().optional().nullable(),
+  startDate: z.coerce.date().optional(),
+  endDate: z.coerce.date().optional(),
 });
 
 export const projectUpdateSchema = projectCreateSchema.partial();
