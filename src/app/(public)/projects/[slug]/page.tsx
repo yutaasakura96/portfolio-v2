@@ -1,3 +1,4 @@
+import { JsonLd } from "@/components/public/JsonLd";
 import {
   getAdjacentProjects,
   getProjectBySlug,
@@ -75,6 +76,22 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
   return (
     <article className="mx-auto max-w-3xl px-4 sm:px-6 py-12">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "CreativeWork",
+          name: project.title,
+          description: project.shortDescription,
+          image: project.thumbnailImage,
+          url: `${process.env.NEXT_PUBLIC_APP_URL}/projects/${project.slug}`,
+          dateCreated: project.startDate?.toISOString(),
+          author: {
+            "@type": "Person",
+            name: "Your Name",
+          },
+        }}
+      />
+
       {/* Back Link */}
       <Link
         href="/projects"

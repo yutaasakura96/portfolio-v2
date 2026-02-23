@@ -1,3 +1,4 @@
+import { JsonLd } from "@/components/public/JsonLd";
 import { getPostBySlug, getPublishedPostSlugs } from "@/lib/data/public-queries";
 import { markdownToHtml } from "@/lib/markdown";
 import { format } from "date-fns";
@@ -53,6 +54,21 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
   return (
     <article className="mx-auto max-w-3xl px-4 sm:px-6 py-12">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: post.title,
+          description: post.excerpt,
+          image: post.featuredImage,
+          datePublished: post.publishedAt?.toISOString(),
+          author: {
+            "@type": "Person",
+            name: "Your Name",
+          },
+        }}
+      />
+
       {/* Back Link */}
       <Link
         href="/blog"
