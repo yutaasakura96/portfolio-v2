@@ -7,7 +7,7 @@ export default async function Home() {
   const postCount = await prisma.blogPost.count();
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
+    <div className="flex flex-col items-center justify-center py-24 px-4">
       <h1 className="text-4xl font-bold mb-4">{settings?.siteName || "Portfolio V2"}</h1>
       <p className="text-lg text-gray-600 mb-8">{settings?.siteDescription || "Coming soon..."}</p>
       <div className="flex gap-4 text-sm text-gray-500">
@@ -15,8 +15,8 @@ export default async function Home() {
         <span>📝 {postCount} blog posts</span>
       </div>
       <p className="mt-8 text-sm text-green-600">
-        ✅ Database connected — Sprint 1 infrastructure working!
+        ✅ Database connected — Sprint 1 & 3 infrastructure working!
       </p>
-    </main>
+    </div>
   );
 }
