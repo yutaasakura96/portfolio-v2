@@ -64,7 +64,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           datePublished: post.publishedAt?.toISOString(),
           author: {
             "@type": "Person",
-            name: "Your Name",
+            name: "Yuta Asakura",
           },
         }}
       />

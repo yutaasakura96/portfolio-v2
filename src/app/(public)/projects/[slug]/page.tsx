@@ -87,7 +87,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
           dateCreated: project.startDate?.toISOString(),
           author: {
             "@type": "Person",
-            name: "Your Name",
+            name: "Yuta Asakura",
           },
         }}
       />

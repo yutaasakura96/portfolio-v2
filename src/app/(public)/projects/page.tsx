@@ -1,6 +1,7 @@
 import { ProjectBrowser } from "@/components/public/ProjectBrowser";
 import { getPublishedProjects } from "@/lib/data/public-queries";
 import { Metadata } from "next";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Projects",
@@ -21,8 +22,10 @@ export default async function ProjectsPage() {
           A collection of projects I&apos;ve built, from full-stack applications to developer tools.
         </p>
       </div>
-
-      <ProjectBrowser projects={projects} />
+      {/* Temporary fallback for suspense */}
+      <Suspense fallback={<div className="h-64 animate-pulse rounded-lg bg-gray-100" />}>
+        <ProjectBrowser projects={projects} />
+      </Suspense>
     </div>
   );
 }
