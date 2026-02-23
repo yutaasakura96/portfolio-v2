@@ -1,22 +1,24 @@
-import { prisma } from "@/lib/prismaClient";
+import { CTASection } from "@/components/public/CTASection";
+import { FeaturedProjects } from "@/components/public/FeaturedProjects";
+import { HeroSection } from "@/components/public/HeroSection";
+import { RecentPosts } from "@/components/public/RecentPosts";
+import { getFeaturedProjects, getHero, getRecentPosts } from "@/lib/data/public-queries";
 
-export default async function Home() {
-  // Test database connection
-  const settings = await prisma.siteSettings.findFirst();
-  const projectCount = await prisma.project.count();
-  const postCount = await prisma.blogPost.count();
+export const revalidate = 3600; // ISR: revalidate every hour
+
+export default async function HomePage() {
+  const [hero, featuredProjects, recentPosts] = await Promise.all([
+    getHero(),
+    getFeaturedProjects(4),
+    getRecentPosts(3),
+  ]);
 
   return (
-    <div className="flex flex-col items-center justify-center py-24 px-4">
-      <h1 className="text-4xl font-bold mb-4">{settings?.siteName || "Portfolio V2"}</h1>
-      <p className="text-lg text-gray-600 mb-8">{settings?.siteDescription || "Coming soon..."}</p>
-      <div className="flex gap-4 text-sm text-gray-500">
-        <span>📁 {projectCount} projects</span>
-        <span>📝 {postCount} blog posts</span>
-      </div>
-      <p className="mt-8 text-sm text-green-600">
-        ✅ Database connected — Sprint 1 & 3 infrastructure working!
-      </p>
-    </div>
+    <>
+      {hero && <HeroSection hero={hero} />}
+      {featuredProjects.length > 0 && <FeaturedProjects projects={featuredProjects} />}
+      {recentPosts.length > 0 && <RecentPosts posts={recentPosts} />}
+      <CTASection />
+    </>
   );
 }
