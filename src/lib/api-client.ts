@@ -332,6 +332,18 @@ class ApiClient {
       body: JSON.stringify(data),
     });
   }
+
+  // ── Settings ──────────────────────────────────────
+  getSettings<T = unknown>() {
+    return this.request<ApiResponse<T>>("/settings");
+  }
+
+  updateSettings<TInput extends Record<string, unknown>, TOutput = unknown>(data: TInput) {
+    return this.request<ApiResponse<TOutput>>("/settings", {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  }
 }
 
 export const apiClient = new ApiClient();

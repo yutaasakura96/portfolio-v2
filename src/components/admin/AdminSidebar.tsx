@@ -11,6 +11,7 @@ import {
   Home,
   LayoutDashboard,
   Mail,
+  Settings,
   Sparkles,
 } from "lucide-react";
 import Link from "next/link";
@@ -35,6 +36,7 @@ const navItems: NavItem[] = [
   { href: "/admin/experience", label: "Experience", icon: Briefcase },
   { href: "/admin/education", label: "Education", icon: GraduationCap },
   { href: "/admin/certifications", label: "Certifications", icon: Award },
+  { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
 export function AdminSidebar() {
