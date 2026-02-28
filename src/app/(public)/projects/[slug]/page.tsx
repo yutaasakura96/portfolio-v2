@@ -1,3 +1,4 @@
+import { ImageGallery } from "@/components/public/ImageGallery";
 import { JsonLd } from "@/components/public/JsonLd";
 import {
   getAdjacentProjects,
@@ -147,16 +148,18 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
       </header>
 
       {/* Thumbnail / Hero Image */}
-      <div className="relative aspect-video overflow-hidden rounded-xl bg-gray-100 mb-8">
-        <Image
-          src={project.thumbnailImage}
-          alt={project.title}
-          fill
-          className="object-cover"
-          priority
-          sizes="(max-width: 768px) 100vw, 768px"
-        />
-      </div>
+      {project.thumbnailImage && (
+        <div className="relative aspect-video overflow-hidden rounded-xl bg-gray-100 mb-8">
+          <Image
+            src={project.thumbnailImage}
+            alt={project.title}
+            fill
+            className="object-cover"
+            priority
+            sizes="(max-width: 768px) 100vw, 768px"
+          />
+        </div>
+      )}
 
       {/* Tech Stack */}
       <div className="mb-8">
@@ -213,24 +216,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
       {/* Image Gallery */}
       {sortedImages.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
-            Gallery
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {sortedImages.map((img, i) => (
-              <div key={i} className="relative aspect-video overflow-hidden rounded-lg bg-gray-100">
-                <Image
-                  src={img.url}
-                  alt={img.alt || `${project.title} screenshot ${i + 1}`}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 50vw, 33vw"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
+        <ImageGallery images={sortedImages} projectTitle={project.title} />
       )}
 
       {/* Next / Previous Navigation */}
