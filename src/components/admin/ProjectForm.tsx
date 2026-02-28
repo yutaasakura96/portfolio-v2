@@ -15,6 +15,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm, type Resolver } from "react-hook-form";
 import { toast } from "sonner";
+import { GalleryUpload, GalleryImage } from "@/components/admin/GalleryUpload";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 interface ProjectFormProps {
   initialData?: Project;
@@ -328,25 +330,45 @@ export function ProjectForm({ initialData, projectId }: ProjectFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="thumbnailImage">Thumbnail Image URL</Label>
-            <Input
-              id="thumbnailImage"
-              type="url"
-              {...form.register("thumbnailImage")}
-              placeholder="https://..."
-              aria-invalid={!!form.formState.errors.thumbnailImage}
-              aria-describedby={
-                form.formState.errors.thumbnailImage ? "thumbnailImage-error" : undefined
-              }
+            <Label>Thumbnail Image</Label>
+            <p className="text-xs text-gray-500">
+              Used on project cards. Recommended: 800×600 or larger.
+            </p>
+            <ImageUpload
+              value={form.watch("thumbnailImage")}
+              folder="projects"
+              entityId={projectId}
+              aspectRatio="aspect-video"
+              onUpload={(result) => {
+                form.setValue(
+                  "thumbnailImage",
+                  result.urls.thumbnail || result.urls.medium,
+                  { shouldDirty: true }
+                );
+              }}
+              onRemove={() => {
+                form.setValue("thumbnailImage", "", { shouldDirty: true });
+              }}
             />
             {form.formState.errors.thumbnailImage && (
               <p id="thumbnailImage-error" className="text-sm text-red-500">
                 {form.formState.errors.thumbnailImage.message}
               </p>
             )}
-            <p className="text-xs text-muted-foreground">
-              Image upload will be available in Sprint 4. Use a placeholder URL for now.
+          </div>
+
+          <div className="space-y-2">
+            <Label>Gallery Images</Label>
+            <p className="text-xs text-gray-500">
+              Screenshots and visuals for the project detail page. Drag to reorder.
             </p>
+            <GalleryUpload
+              value={(form.watch("images") as GalleryImage[]) || []}
+              onChange={(images) => {
+                form.setValue("images", images, { shouldDirty: true });
+              }}
+              entityId={projectId}
+            />
           </div>
 
           <div className="space-y-2">

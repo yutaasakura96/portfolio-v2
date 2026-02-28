@@ -11,8 +11,8 @@ import { HeroUpdateInput, heroUpdateSchema } from "@/lib/validations/hero";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Trash2 } from "lucide-react";
-import Image from "next/image";
 import { useEffect } from "react";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -92,7 +92,6 @@ export default function HeroEditorPage() {
 
   const headlineValue = form.watch("headline");
   const subheadlineValue = form.watch("subheadline");
-  const profileImageValue = form.watch("profileImage");
 
   return (
     <div className="max-w-3xl space-y-6">
@@ -179,53 +178,61 @@ export default function HeroEditorPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="profileImage">Profile Image URL</Label>
-              <Input
-                id="profileImage"
-                {...form.register("profileImage")}
-                placeholder="https://example.com/image.jpg"
-                aria-invalid={!!form.formState.errors.profileImage}
-                aria-describedby={
-                  form.formState.errors.profileImage ? "profileImage-error" : undefined
-                }
+              <Label>Profile Image</Label>
+              <ImageUpload
+                value={form.watch("profileImage")}
+                folder="profile"
+                aspectRatio="aspect-square"
+                placeholder="Upload your headshot"
+                onUpload={(result) => {
+                  form.setValue(
+                    "profileImage",
+                    result.urls.display || result.urls.original,
+                    { shouldDirty: true }
+                  );
+                }}
+                onRemove={() => {
+                  form.setValue("profileImage", "", { shouldDirty: true });
+                }}
               />
               {form.formState.errors.profileImage && (
                 <p id="profileImage-error" className="text-sm text-red-500">
                   {form.formState.errors.profileImage.message}
                 </p>
               )}
-              <p className="text-xs text-muted-foreground">
-                Image upload will be available in Sprint 4. For now, use a URL.
-              </p>
-              {profileImageValue && profileImageValue !== "" && (
-                <div className="mt-3 p-4 border rounded-lg bg-muted/20">
-                  <p className="text-sm font-medium mb-2">Preview:</p>
-                  <div className="relative w-24 h-24">
-                    <Image
-                      src={profileImageValue}
-                      alt="Profile preview"
-                      width={96}
-                      height={96}
-                      className="rounded-full object-cover border-2 border-gray-200"
-                      unoptimized
-                    />
-                  </div>
-                </div>
-              )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="resumeUrl">Resume URL</Label>
-              <Input
-                id="resumeUrl"
-                {...form.register("resumeUrl")}
-                placeholder="https://example.com/resume.pdf"
-                aria-invalid={!!form.formState.errors.resumeUrl}
-                aria-describedby={form.formState.errors.resumeUrl ? "resumeUrl-error" : undefined}
+              <Label>Resume (PDF)</Label>
+              <ImageUpload
+                value={form.watch("resumeUrl") ? "existing" : undefined}
+                folder="resume"
+                aspectRatio="aspect-[3/4]"
+                placeholder="Upload your resume (PDF)"
+                accept={{ "application/pdf": [".pdf"] }}
+                onUpload={(result) => {
+                  form.setValue("resumeUrl", result.urls.original, { shouldDirty: true });
+                }}
+                onRemove={() => {
+                  form.setValue("resumeUrl", "", { shouldDirty: true });
+                }}
               />
               {form.formState.errors.resumeUrl && (
                 <p id="resumeUrl-error" className="text-sm text-red-500">
                   {form.formState.errors.resumeUrl.message}
+                </p>
+              )}
+              {form.watch("resumeUrl") && (
+                <p className="text-xs text-gray-500">
+                  Current:{" "}
+                  <a
+                    href={form.watch("resumeUrl") ?? ""}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    View resume ↗
+                  </a>
                 </p>
               )}
             </div>
