@@ -301,6 +301,37 @@ class ApiClient {
   deleteBlogPost(id: string) {
     return this.request<void>(`/blog/${id}`, { method: "DELETE" });
   }
+
+  // ── Messages ───────────────────────────────────────
+  getMessages<T = unknown, M = unknown>(params?: QueryParams) {
+    const query = params ? "?" + new URLSearchParams(params).toString() : "";
+    return this.request<ApiListResponse<T, M>>(`/messages${query}`);
+  }
+
+  getMessage<T = unknown>(id: string) {
+    return this.request<ApiResponse<T>>(`/messages/${id}`);
+  }
+
+  updateMessage<TInput extends Record<string, unknown>, TOutput = unknown>(
+    id: string,
+    data: TInput
+  ) {
+    return this.request<ApiResponse<TOutput>>(`/messages/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  }
+
+  deleteMessage(id: string) {
+    return this.request<void>(`/messages/${id}`, { method: "DELETE" });
+  }
+
+  bulkUpdateMessages<TInput extends Record<string, unknown>, TOutput = unknown>(data: TInput) {
+    return this.request<ApiResponse<TOutput>>("/messages/bulk", {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  }
 }
 
 export const apiClient = new ApiClient();

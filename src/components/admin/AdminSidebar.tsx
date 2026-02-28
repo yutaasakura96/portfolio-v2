@@ -1,5 +1,6 @@
 "use client";
 
+import { UnreadBadge } from "@/components/admin/UnreadBadge";
 import { cn } from "@/lib/utils";
 import {
   Award,
@@ -9,16 +10,27 @@ import {
   GraduationCap,
   Home,
   LayoutDashboard,
+  Mail,
   Sparkles,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import React from "react";
 
-const navItems = [
+type NavItem = {
+  href: string;
+  label: string;
+  icon: React.ElementType;
+  exact?: boolean;
+  badge?: React.ReactNode;
+};
+
+const navItems: NavItem[] = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/admin/hero", label: "Hero", icon: Home },
   { href: "/admin/projects", label: "Projects", icon: FolderKanban },
   { href: "/admin/blog", label: "Blog", icon: FileText },
+  { href: "/admin/messages", label: "Messages", icon: Mail, badge: <UnreadBadge /> },
   { href: "/admin/skills", label: "Skills", icon: Sparkles },
   { href: "/admin/experience", label: "Experience", icon: Briefcase },
   { href: "/admin/education", label: "Education", icon: GraduationCap },
@@ -53,6 +65,7 @@ export function AdminSidebar() {
             >
               <Icon className="h-4 w-4" />
               {item.label}
+              {item.badge}
             </Link>
           );
         })}
