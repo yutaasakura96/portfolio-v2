@@ -270,6 +270,37 @@ class ApiClient {
       body: JSON.stringify({ orderedIds }),
     });
   }
+
+  // ── Blog ──────────────────────────────────────────
+  getBlogPosts<T = unknown, M = unknown>(params?: QueryParams) {
+    const query = params ? "?" + new URLSearchParams(params).toString() : "";
+    return this.request<ApiListResponse<T, M>>(`/blog${query}`);
+  }
+
+  getBlogPost<T = unknown>(id: string) {
+    return this.request<ApiResponse<T>>(`/blog/${id}`);
+  }
+
+  createBlogPost<TInput extends Record<string, unknown>, TOutput = unknown>(data: TInput) {
+    return this.request<ApiResponse<TOutput>>("/blog", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  updateBlogPost<TInput extends Record<string, unknown>, TOutput = unknown>(
+    id: string,
+    data: TInput
+  ) {
+    return this.request<ApiResponse<TOutput>>(`/blog/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  }
+
+  deleteBlogPost(id: string) {
+    return this.request<void>(`/blog/${id}`, { method: "DELETE" });
+  }
 }
 
 export const apiClient = new ApiClient();
