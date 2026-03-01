@@ -20,7 +20,7 @@ import {
 import { Certification } from "@/types/certification";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useForm, type Resolver } from "react-hook-form";
+import { useForm, useWatch, type Resolver } from "react-hook-form";
 import { toast } from "sonner";
 
 interface CertificationFormDialogProps {
@@ -92,7 +92,7 @@ export function CertificationFormDialog({
     onOpenChange(newOpen);
   };
 
-  const visible = form.watch("visible");
+  const visible = useWatch({ control: form.control, name: "visible" });
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>

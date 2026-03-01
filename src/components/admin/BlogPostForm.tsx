@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm, type Resolver } from "react-hook-form";
+import { useForm, useWatch, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -92,7 +92,10 @@ export function BlogPostForm({ initialData }: BlogPostFormProps) {
   });
 
   // Auto-generate slug from title (only if slug hasn't been manually edited)
-  const titleValue = form.watch("title");
+  const titleValue = useWatch({ control: form.control, name: "title" });
+  const contentValue = useWatch({ control: form.control, name: "content" });
+  const statusValue = useWatch({ control: form.control, name: "status" });
+  const featuredImage = useWatch({ control: form.control, name: "featuredImage" });
   useEffect(() => {
     if (!slugManuallyEdited && !isEditing && titleValue) {
       form.setValue("slug", generateSlug(titleValue));
@@ -100,7 +103,7 @@ export function BlogPostForm({ initialData }: BlogPostFormProps) {
   }, [titleValue, slugManuallyEdited, isEditing, form]);
 
   // Tag management
-  const tags = form.watch("tags") || [];
+  const tags = useWatch({ control: form.control, name: "tags" }) || [];
   const addTag = () => {
     const tag = tagInput.trim();
     if (tag && !tags.includes(tag)) {
@@ -210,7 +213,7 @@ export function BlogPostForm({ initialData }: BlogPostFormProps) {
             <Label className="mb-2 block">Content (Markdown)</Label>
             <div data-color-mode="light">
               <MDEditor
-                value={form.watch("content")}
+                value={contentValue}
                 onChange={(val) =>
                   form.setValue("content", val || "", { shouldDirty: true })
                 }
@@ -240,8 +243,8 @@ export function BlogPostForm({ initialData }: BlogPostFormProps) {
 
             <div className="flex items-center justify-between text-sm">
               <span className="text-gray-500">Status</span>
-              <Badge variant={form.watch("status") === "PUBLISHED" ? "default" : "secondary"}>
-                {form.watch("status")}
+              <Badge variant={statusValue === "PUBLISHED" ? "default" : "secondary"}>
+                {statusValue}
               </Badge>
             </div>
 
@@ -270,7 +273,7 @@ export function BlogPostForm({ initialData }: BlogPostFormProps) {
               >
                 {isEditing ? "Save as Draft" : "Save Draft"}
               </Button>
-              {isEditing && form.watch("status") === "PUBLISHED" && (
+              {isEditing && statusValue === "PUBLISHED" && (
                 <Button
                   type="button"
                   variant="ghost"
@@ -292,7 +295,7 @@ export function BlogPostForm({ initialData }: BlogPostFormProps) {
           <CardContent className="pt-6 space-y-3">
             <h3 className="font-semibold">Featured Image</h3>
             <ImageUpload
-              value={form.watch("featuredImage") || undefined}
+              value={featuredImage || undefined}
               folder="blog"
               entityId={initialData?.id || "new"}
               aspectRatio="aspect-video"

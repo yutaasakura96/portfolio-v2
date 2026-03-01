@@ -24,7 +24,7 @@ import { SkillCreateInput, skillCreateSchema } from "@/lib/validations/skill";
 import { Skill, ProficiencyLevel } from "@/types/skill";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useForm, type Resolver } from "react-hook-form";
+import { useForm, useWatch, type Resolver } from "react-hook-form";
 import { toast } from "sonner";
 
 interface SkillFormDialogProps {
@@ -65,8 +65,8 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
         },
   });
 
-  const proficiencyLevel = form.watch("proficiencyLevel");
-  const visible = form.watch("visible");
+  const proficiencyLevel = useWatch({ control: form.control, name: "proficiencyLevel" });
+  const visible = useWatch({ control: form.control, name: "visible" });
 
   const mutation = useMutation({
     mutationFn: (values: SkillCreateInput) =>

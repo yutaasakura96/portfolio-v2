@@ -15,7 +15,7 @@ import { Education } from "@/types/education";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useForm, type Resolver } from "react-hook-form";
+import { useForm, useWatch, type Resolver } from "react-hook-form";
 import { toast } from "sonner";
 
 interface EducationFormProps {
@@ -69,8 +69,8 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
     },
   });
 
-  const visible = form.watch("visible");
-  const achievementsLength = form.watch("achievements")?.length ?? 0;
+  const visible = useWatch({ control: form.control, name: "visible" });
+  const achievementsLength = useWatch({ control: form.control, name: "achievements" })?.length ?? 0;
 
   return (
     <Card>

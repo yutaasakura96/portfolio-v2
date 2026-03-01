@@ -13,7 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useForm, type Resolver } from "react-hook-form";
+import { useForm, useWatch, type Resolver } from "react-hook-form";
 import { toast } from "sonner";
 import { GalleryUpload, GalleryImage } from "@/components/admin/GalleryUpload";
 import { ImageUpload } from "@/components/admin/ImageUpload";
@@ -111,7 +111,11 @@ export function ProjectForm({ initialData, projectId }: ProjectFormProps) {
     form.setValue("techTags", tags, { shouldValidate: true });
   };
 
-  const shortDescLength = form.watch("shortDescription")?.length ?? 0;
+  const shortDescLength = useWatch({ control: form.control, name: "shortDescription" })?.length ?? 0;
+  const thumbnailImage = useWatch({ control: form.control, name: "thumbnailImage" });
+  const images = useWatch({ control: form.control, name: "images" });
+  const featured = useWatch({ control: form.control, name: "featured" });
+  const status = useWatch({ control: form.control, name: "status" });
 
   return (
     <Card>
@@ -335,7 +339,7 @@ export function ProjectForm({ initialData, projectId }: ProjectFormProps) {
               Used on project cards. Recommended: 800×600 or larger.
             </p>
             <ImageUpload
-              value={form.watch("thumbnailImage")}
+              value={thumbnailImage}
               folder="projects"
               entityId={projectId}
               aspectRatio="aspect-video"
@@ -363,7 +367,7 @@ export function ProjectForm({ initialData, projectId }: ProjectFormProps) {
               Screenshots and visuals for the project detail page. Drag to reorder.
             </p>
             <GalleryUpload
-              value={(form.watch("images") as GalleryImage[]) || []}
+              value={(images as GalleryImage[]) || []}
               onChange={(images) => {
                 form.setValue("images", images, { shouldDirty: true });
               }}
@@ -397,7 +401,7 @@ export function ProjectForm({ initialData, projectId }: ProjectFormProps) {
             <div className="flex items-center gap-2">
               <Switch
                 id="featured"
-                checked={form.watch("featured")}
+                checked={featured}
                 onCheckedChange={(val) => form.setValue("featured", val)}
               />
               <Label htmlFor="featured">Featured</Label>
@@ -405,11 +409,11 @@ export function ProjectForm({ initialData, projectId }: ProjectFormProps) {
             <div className="flex items-center gap-2">
               <Switch
                 id="status"
-                checked={form.watch("status") === "PUBLISHED"}
+                checked={status === "PUBLISHED"}
                 onCheckedChange={(val) => form.setValue("status", val ? "PUBLISHED" : "DRAFT")}
               />
               <Label htmlFor="status">
-                {form.watch("status") === "PUBLISHED" ? "Published" : "Draft"}
+                {status === "PUBLISHED" ? "Published" : "Draft"}
               </Label>
             </div>
           </div>

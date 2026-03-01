@@ -14,7 +14,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useForm, type Resolver } from "react-hook-form";
+import { useForm, useWatch, type Resolver } from "react-hook-form";
 import { toast } from "sonner";
 
 interface ExperienceFormProps {
@@ -90,7 +90,7 @@ export function ExperienceForm({ initialData, experienceId }: ExperienceFormProp
     form.setValue("highlights", updatedHighlights, { shouldValidate: true });
   };
 
-  const visible = form.watch("visible");
+  const visible = useWatch({ control: form.control, name: "visible" });
 
   return (
     <Card>

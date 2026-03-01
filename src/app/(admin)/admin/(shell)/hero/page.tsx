@@ -13,7 +13,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Trash2 } from "lucide-react";
 import { useEffect } from "react";
 import { ImageUpload } from "@/components/admin/ImageUpload";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 
 type Hero = {
@@ -81,6 +81,11 @@ export default function HeroEditorPage() {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [form.formState.isDirty]);
 
+  const headlineValue = useWatch({ control: form.control, name: "headline" });
+  const subheadlineValue = useWatch({ control: form.control, name: "subheadline" });
+  const profileImage = useWatch({ control: form.control, name: "profileImage" });
+  const resumeUrl = useWatch({ control: form.control, name: "resumeUrl" });
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -89,9 +94,6 @@ export default function HeroEditorPage() {
       </div>
     );
   }
-
-  const headlineValue = form.watch("headline");
-  const subheadlineValue = form.watch("subheadline");
 
   return (
     <div className="max-w-3xl space-y-6">
@@ -180,7 +182,7 @@ export default function HeroEditorPage() {
             <div className="space-y-2">
               <Label>Profile Image</Label>
               <ImageUpload
-                value={form.watch("profileImage")}
+                value={profileImage}
                 folder="profile"
                 aspectRatio="aspect-square"
                 placeholder="Upload your headshot"
@@ -205,7 +207,7 @@ export default function HeroEditorPage() {
             <div className="space-y-2">
               <Label>Resume (PDF)</Label>
               <ImageUpload
-                value={form.watch("resumeUrl") ? "existing" : undefined}
+                value={resumeUrl ? "existing" : undefined}
                 folder="resume"
                 aspectRatio="aspect-[3/4]"
                 placeholder="Upload your resume (PDF)"
@@ -222,11 +224,11 @@ export default function HeroEditorPage() {
                   {form.formState.errors.resumeUrl.message}
                 </p>
               )}
-              {form.watch("resumeUrl") && (
+              {resumeUrl && (
                 <p className="text-xs text-gray-500">
                   Current:{" "}
                   <a
-                    href={form.watch("resumeUrl") ?? ""}
+                    href={resumeUrl ?? ""}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-600 hover:underline"
