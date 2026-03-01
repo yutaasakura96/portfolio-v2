@@ -4,17 +4,9 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
   // Determine the correct public-facing URL using forwarded headers
   const protocol = request.headers.get("x-forwarded-proto") || "https";
-  const host = request.headers.get("x-forwarded-host") || request.headers.get("host") || request.nextUrl.host;
+  const host =
+    request.headers.get("x-forwarded-host") || request.headers.get("host") || request.nextUrl.host;
   const baseUrl = `${protocol}://${host}`;
-
-  console.log("Request debug:", {
-    url: request.url,
-    origin: request.nextUrl.origin,
-    host: request.headers.get("host"),
-    xForwardedHost: request.headers.get("x-forwarded-host"),
-    xForwardedProto: request.headers.get("x-forwarded-proto"),
-    computedBaseUrl: baseUrl,
-  });
 
   const searchParams = request.nextUrl.searchParams;
   const code = searchParams.get("code");
@@ -64,7 +56,7 @@ export async function GET(request: NextRequest) {
       httpOnly: true,
       secure: isProduction,
       sameSite: "lax",
-      path: "/",
+      path: "/api/auth",
       maxAge: 30 * 24 * 60 * 60, // 30 days
     });
 

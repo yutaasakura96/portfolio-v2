@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prismaClient";
-import { withErrorHandler } from "@/lib/errors";
 import { requireAuth } from "@/app/api/auth";
+import { withErrorHandler } from "@/lib/errors";
+import { prisma } from "@/lib/prismaClient";
 import { siteSettingsUpdateSchema } from "@/lib/validations/settings";
 import { revalidatePath } from "next/cache";
+import { NextRequest, NextResponse } from "next/server";
+import { Prisma } from "../../../../generated/prisma/client";
 
 // GET /api/settings — Public (used for site metadata)
 export const GET = withErrorHandler(async () => {
@@ -51,11 +52,9 @@ export const PUT = withErrorHandler(async (request: NextRequest) => {
   // Filter empty strings from socialLinks
   const socialLinks = parsed.data.socialLinks
     ? Object.fromEntries(
-        Object.entries(parsed.data.socialLinks).filter(
-          ([, v]) => v && v.length > 0
-        )
+        Object.entries(parsed.data.socialLinks).filter(([, v]) => v && v.length > 0)
       )
-    : null;
+    : Prisma.JsonNull;
 
   const settings = await prisma.siteSettings.upsert({
     where: { id: "default" },
