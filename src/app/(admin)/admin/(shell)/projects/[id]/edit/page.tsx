@@ -2,6 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
+import { Breadcrumbs } from '@/components/admin/Breadcrumbs';
 import { ProjectForm } from '@/components/admin/ProjectForm';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle } from 'lucide-react';
@@ -18,9 +19,16 @@ export default function EditProjectPage({ params }: { params: Promise<{ id: stri
     queryFn: () => apiClient.getProject<Project>(id),
   });
 
+  const breadcrumbs = [
+    { label: "Admin", href: "/admin" },
+    { label: "Projects", href: "/admin/projects" },
+    { label: "Edit Project" },
+  ];
+
   if (isLoading) {
     return (
       <div className="max-w-3xl space-y-6">
+        <Breadcrumbs items={breadcrumbs} />
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-96 w-full" />
       </div>
@@ -30,6 +38,7 @@ export default function EditProjectPage({ params }: { params: Promise<{ id: stri
   if (error) {
     return (
       <div className="max-w-3xl space-y-6">
+        <Breadcrumbs items={breadcrumbs} />
         <h1 className="text-2xl font-bold">Edit Project</h1>
         <div className="flex flex-col items-center gap-4 p-12 text-center bg-white rounded-lg border">
           <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
@@ -51,6 +60,7 @@ export default function EditProjectPage({ params }: { params: Promise<{ id: stri
 
   return (
     <div className="max-w-3xl space-y-6">
+      <Breadcrumbs items={breadcrumbs} />
       <h1 className="text-2xl font-bold">Edit Project</h1>
       <ProjectForm initialData={data?.data} projectId={id} />
     </div>

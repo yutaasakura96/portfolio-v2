@@ -1,5 +1,6 @@
 "use client";
 
+import { Breadcrumbs } from "@/components/admin/Breadcrumbs";
 import { ExperienceForm } from "@/components/admin/ExperienceForm";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -27,9 +28,16 @@ export default function EditExperiencePage({ params }: { params: Promise<{ id: s
     },
   });
 
+  const breadcrumbs = [
+    { label: "Admin", href: "/admin" },
+    { label: "Experience", href: "/admin/experience" },
+    { label: "Edit Experience" },
+  ];
+
   if (isLoading) {
     return (
       <div className="max-w-3xl space-y-6">
+        <Breadcrumbs items={breadcrumbs} />
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-96 w-full" />
       </div>
@@ -39,6 +47,7 @@ export default function EditExperiencePage({ params }: { params: Promise<{ id: s
   if (error) {
     return (
       <div className="max-w-3xl space-y-6">
+        <Breadcrumbs items={breadcrumbs} />
         <h1 className="text-2xl font-bold">Edit Experience</h1>
         <div className="flex flex-col items-center gap-4 p-12 text-center bg-white rounded-lg border">
           <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
@@ -62,6 +71,7 @@ export default function EditExperiencePage({ params }: { params: Promise<{ id: s
 
   return (
     <div className="max-w-3xl space-y-6">
+      <Breadcrumbs items={breadcrumbs} />
       <h1 className="text-2xl font-bold">Edit Experience</h1>
       <ExperienceForm initialData={data?.data} experienceId={id} />
     </div>

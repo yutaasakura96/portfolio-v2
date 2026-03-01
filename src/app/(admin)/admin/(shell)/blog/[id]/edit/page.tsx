@@ -3,6 +3,7 @@
 import { use } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
+import { Breadcrumbs } from "@/components/admin/Breadcrumbs";
 import { BlogPostForm } from "@/components/admin/BlogPostForm";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle } from "lucide-react";
@@ -21,9 +22,16 @@ export default function EditBlogPostPage({
     queryFn: () => apiClient.getBlogPost(id),
   });
 
+  const breadcrumbs = [
+    { label: "Admin", href: "/admin" },
+    { label: "Blog", href: "/admin/blog" },
+    { label: "Edit Post" },
+  ];
+
   if (isLoading) {
     return (
       <div className="space-y-6">
+        <Breadcrumbs items={breadcrumbs} />
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-96 w-full" />
       </div>
@@ -33,6 +41,7 @@ export default function EditBlogPostPage({
   if (error || !(data as { data?: unknown } | undefined)?.data) {
     return (
       <div className="space-y-6">
+        <Breadcrumbs items={breadcrumbs} />
         <h1 className="text-2xl font-bold">Edit Post</h1>
         <div className="flex flex-col items-center gap-4 p-12 text-center bg-white rounded-lg border">
           <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
@@ -49,6 +58,7 @@ export default function EditBlogPostPage({
 
   return (
     <div className="space-y-6">
+      <Breadcrumbs items={breadcrumbs} />
       <h1 className="text-2xl font-bold">Edit Post</h1>
       <BlogPostForm initialData={(data as { data: Parameters<typeof BlogPostForm>[0]["initialData"] }).data} />
     </div>

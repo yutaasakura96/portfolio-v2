@@ -4,7 +4,7 @@ import { AdminHeader } from "@/components/admin/AdminHeader";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Toaster } from "sonner";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -19,6 +19,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 function AdminLayoutInner({ children }: { children: React.ReactNode }) {
   const { isLoading, isAuthenticated } = useAuth();
   const router = useRouter();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -38,9 +39,16 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen flex bg-gray-50">
-      <AdminSidebar />
+      {/* Mobile overlay backdrop */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="flex-1 flex flex-col min-w-0">
-        <AdminHeader />
+        <AdminHeader onMenuClick={() => setSidebarOpen(true)} />
         <main className="flex-1 p-6 overflow-auto">{children}</main>
       </div>
     </div>

@@ -21,6 +21,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 type Tab = "inbox" | "archived";
 
@@ -85,14 +86,26 @@ export default function MessagesPage() {
   function bulkMarkRead(read: boolean) {
     bulkUpdate.mutate(
       { ids: Array.from(selected), update: { read } },
-      { onSuccess: () => setSelected(new Set()) }
+      {
+        onSuccess: () => {
+          setSelected(new Set());
+          toast.success(read ? "Marked as read" : "Marked as unread");
+        },
+        onError: () => toast.error("Failed to update messages"),
+      }
     );
   }
 
   function bulkArchive(archived: boolean) {
     bulkUpdate.mutate(
       { ids: Array.from(selected), update: { archived } },
-      { onSuccess: () => setSelected(new Set()) }
+      {
+        onSuccess: () => {
+          setSelected(new Set());
+          toast.success(archived ? "Messages archived" : "Messages restored");
+        },
+        onError: () => toast.error("Failed to update messages"),
+      }
     );
   }
 
@@ -103,7 +116,9 @@ export default function MessagesPage() {
       onSuccess: () => {
         setDeleteTarget(null);
         if (expandedId === deleteTarget) setExpandedId(null);
+        toast.success("Message deleted");
       },
+      onError: () => toast.error("Failed to delete message"),
     });
   }
 

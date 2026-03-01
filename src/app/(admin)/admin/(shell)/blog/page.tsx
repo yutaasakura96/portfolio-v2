@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { TableSkeleton } from "@/components/admin/TableSkeleton";
 import { Plus, Pencil, Trash2, Eye, EyeOff, Clock } from "lucide-react";
 import { useState } from "react";
 import { format } from "date-fns";
@@ -76,12 +77,8 @@ export default function BlogListPage() {
 
       {/* Posts List */}
       {isLoading ? (
-        <div className="space-y-3">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-20 bg-gray-100 rounded-lg animate-pulse" />
-          ))}
-        </div>
-      ) : posts.length === 0 ? (
+        <TableSkeleton rows={3} />
+      ) :posts.length === 0 ? (
         <div className="text-center py-12 bg-white rounded-lg border">
           <p className="text-gray-500">No blog posts yet.</p>
           <Link href="/admin/blog/new">
