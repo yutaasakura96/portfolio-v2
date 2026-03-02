@@ -61,8 +61,12 @@ export function ProjectForm({ initialData, projectId }: ProjectFormProps) {
           featured: initialData.featured ?? false,
           displayOrder: initialData.displayOrder ?? 0,
           status: initialData.status ?? "DRAFT",
-          startDate: initialData.startDate ? new Date(initialData.startDate) : undefined,
-          endDate: initialData.endDate ? new Date(initialData.endDate) : undefined,
+          startDate: initialData.startDate
+            ? (new Date(initialData.startDate).toISOString().split("T")[0] as unknown as Date)
+            : undefined,
+          endDate: initialData.endDate
+            ? (new Date(initialData.endDate).toISOString().split("T")[0] as unknown as Date)
+            : undefined,
         }
       : {
           title: "",
@@ -83,6 +87,9 @@ export function ProjectForm({ initialData, projectId }: ProjectFormProps) {
       isEditing ? apiClient.updateProject(projectId, values) : apiClient.createProject(values),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "projects"] });
+      if (isEditing) {
+        queryClient.invalidateQueries({ queryKey: ["admin", "project", projectId] });
+      }
       toast.success(isEditing ? "Project updated" : "Project created");
       router.push("/admin/projects");
     },
