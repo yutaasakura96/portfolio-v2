@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -64,6 +65,30 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
           visible: true,
         },
   });
+
+  useEffect(() => {
+    if (open) {
+      form.reset(
+        initialData
+          ? {
+              name: initialData.name,
+              category: initialData.category,
+              icon: initialData.icon ?? "",
+              proficiencyLevel: initialData.proficiencyLevel ?? undefined,
+              displayOrder: initialData.displayOrder,
+              visible: initialData.visible,
+            }
+          : {
+              name: "",
+              category: "",
+              icon: "",
+              proficiencyLevel: undefined,
+              displayOrder: 0,
+              visible: true,
+            }
+      );
+    }
+  }, [open, initialData]);
 
   const proficiencyLevel = useWatch({ control: form.control, name: "proficiencyLevel" });
   const visible = useWatch({ control: form.control, name: "visible" });
