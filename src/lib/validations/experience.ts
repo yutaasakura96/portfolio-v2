@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const experienceCreateSchema = z.object({
+const experienceBaseSchema = z.object({
   company: z.string().min(1).max(200),
   role: z.string().min(1).max(200),
   location: z.string().max(200).optional().or(z.literal("")),
@@ -14,7 +14,15 @@ export const experienceCreateSchema = z.object({
   visible: z.boolean().default(true),
 });
 
-export const experienceUpdateSchema = experienceCreateSchema.partial();
+export const experienceCreateSchema = experienceBaseSchema.refine(
+  (data) => !data.endDate || data.startDate < data.endDate,
+  { message: "End date must be after start date", path: ["endDate"] }
+);
+
+export const experienceUpdateSchema = experienceBaseSchema.partial().refine(
+  (data) => !data.startDate || !data.endDate || data.startDate < data.endDate,
+  { message: "End date must be after start date", path: ["endDate"] }
+);
 
 export type ExperienceCreateInput = z.infer<typeof experienceCreateSchema>;
 export type ExperienceUpdateInput = z.infer<typeof experienceUpdateSchema>;

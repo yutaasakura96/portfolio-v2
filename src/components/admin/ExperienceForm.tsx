@@ -37,8 +37,12 @@ export function ExperienceForm({ initialData, experienceId }: ExperienceFormProp
           company: initialData.company,
           role: initialData.role,
           location: initialData.location ?? "",
-          startDate: initialData.startDate ? new Date(initialData.startDate) : undefined,
-          endDate: initialData.endDate ? new Date(initialData.endDate) : undefined,
+          startDate: initialData.startDate
+            ? (new Date(initialData.startDate).toISOString().split("T")[0] as unknown as Date)
+            : undefined,
+          endDate: initialData.endDate
+            ? (new Date(initialData.endDate).toISOString().split("T")[0] as unknown as Date)
+            : undefined,
           description: initialData.description,
           highlights: initialData.highlights ?? [],
           logoUrl: initialData.logoUrl ?? "",
@@ -91,6 +95,24 @@ export function ExperienceForm({ initialData, experienceId }: ExperienceFormProp
   };
 
   const visible = useWatch({ control: form.control, name: "visible" });
+  const watchedStartDate = useWatch({ control: form.control, name: "startDate" }) as unknown as string;
+  const watchedEndDate = useWatch({ control: form.control, name: "endDate" }) as unknown as string;
+
+  const startDateMax = watchedEndDate
+    ? (() => {
+        const d = new Date(watchedEndDate + "T00:00:00");
+        d.setDate(d.getDate() - 1);
+        return d.toISOString().split("T")[0];
+      })()
+    : undefined;
+
+  const endDateMin = watchedStartDate
+    ? (() => {
+        const d = new Date(watchedStartDate + "T00:00:00");
+        d.setDate(d.getDate() + 1);
+        return d.toISOString().split("T")[0];
+      })()
+    : undefined;
 
   return (
     <Card>
@@ -153,6 +175,7 @@ export function ExperienceForm({ initialData, experienceId }: ExperienceFormProp
               <Input
                 id="startDate"
                 type="date"
+                max={startDateMax}
                 {...form.register("startDate")}
                 aria-invalid={!!form.formState.errors.startDate}
                 aria-describedby={form.formState.errors.startDate ? "startDate-error" : undefined}
@@ -169,6 +192,7 @@ export function ExperienceForm({ initialData, experienceId }: ExperienceFormProp
               <Input
                 id="endDate"
                 type="date"
+                min={endDateMin}
                 {...form.register("endDate")}
                 aria-invalid={!!form.formState.errors.endDate}
                 aria-describedby={form.formState.errors.endDate ? "endDate-error" : undefined}

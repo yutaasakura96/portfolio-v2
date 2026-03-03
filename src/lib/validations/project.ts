@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-export const projectCreateSchema = z.object({
+const projectBaseSchema = z.object({
   title: z.string().min(1, "Title is required").max(200),
   slug: z.string().regex(slugRegex, "Invalid slug format").max(200),
   shortDescription: z.string().min(1, "Short description is required").max(300),
@@ -30,7 +30,15 @@ export const projectCreateSchema = z.object({
   endDate: z.coerce.date().optional(),
 });
 
-export const projectUpdateSchema = projectCreateSchema.partial();
+export const projectCreateSchema = projectBaseSchema.refine(
+  (data) => !data.startDate || !data.endDate || data.startDate < data.endDate,
+  { message: "End date must be after start date", path: ["endDate"] }
+);
+
+export const projectUpdateSchema = projectBaseSchema.partial().refine(
+  (data) => !data.startDate || !data.endDate || data.startDate < data.endDate,
+  { message: "End date must be after start date", path: ["endDate"] }
+);
 
 export type ProjectCreateInput = z.infer<typeof projectCreateSchema>;
 export type ProjectUpdateInput = z.infer<typeof projectUpdateSchema>;
