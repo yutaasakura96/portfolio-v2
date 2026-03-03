@@ -57,11 +57,18 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
                       skill.proficiencyLevel ? formatProficiency(skill.proficiencyLevel) : undefined
                     }
                   >
-                    {skill.icon && (
+                    {skill.iconUrl ? (
+                      <img
+                        src={skill.iconUrl}
+                        alt=""
+                        aria-hidden="true"
+                        className="h-4 w-4 object-contain mr-1.5 shrink-0"
+                      />
+                    ) : skill.icon ? (
                       <span className="mr-1.5" aria-hidden="true">
                         {skill.icon}
                       </span>
-                    )}
+                    ) : null}
                     {skill.name}
                   </span>
                 );
