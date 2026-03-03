@@ -20,6 +20,7 @@ import {
 import { Certification } from "@/types/certification";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { useForm, useWatch, type Resolver } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -43,9 +44,11 @@ export function CertificationFormDialog({
       ? {
           name: initialData.name,
           issuer: initialData.issuer,
-          dateEarned: initialData.dateEarned ? new Date(initialData.dateEarned) : undefined,
+          dateEarned: initialData.dateEarned
+            ? (new Date(initialData.dateEarned).toISOString().split("T")[0] as unknown as Date)
+            : undefined,
           expirationDate: initialData.expirationDate
-            ? new Date(initialData.expirationDate)
+            ? (new Date(initialData.expirationDate).toISOString().split("T")[0] as unknown as Date)
             : undefined,
           credentialId: initialData.credentialId ?? "",
           credentialUrl: initialData.credentialUrl ?? "",
@@ -63,6 +66,34 @@ export function CertificationFormDialog({
           visible: true,
         },
   });
+
+  useEffect(() => {
+    if (open && initialData) {
+      form.reset({
+        name: initialData.name,
+        issuer: initialData.issuer,
+        dateEarned: new Date(initialData.dateEarned).toISOString().split("T")[0] as unknown as Date,
+        expirationDate: initialData.expirationDate
+          ? (new Date(initialData.expirationDate).toISOString().split("T")[0] as unknown as Date)
+          : undefined,
+        credentialId: initialData.credentialId ?? "",
+        credentialUrl: initialData.credentialUrl ?? "",
+        badgeImage: initialData.badgeImage ?? "",
+        displayOrder: initialData.displayOrder,
+        visible: initialData.visible,
+      });
+    } else if (open && !initialData) {
+      form.reset({
+        name: "",
+        issuer: "",
+        credentialId: "",
+        credentialUrl: "",
+        badgeImage: "",
+        displayOrder: 0,
+        visible: true,
+      });
+    }
+  }, [open, initialData]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const mutation = useMutation({
     mutationFn: (values: CertificationCreateInput) =>
