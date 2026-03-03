@@ -87,6 +87,7 @@ model Skill {
   name             String
   category         String
   icon             String?
+  iconUrl          String?
   proficiencyLevel ProficiencyLevel?
   displayOrder     Int               @default(0)
   visible          Boolean           @default(true)

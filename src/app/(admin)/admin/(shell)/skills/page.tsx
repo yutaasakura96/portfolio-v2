@@ -98,11 +98,17 @@ export default function SkillsManagerPage() {
                 {skills.map((skill) => (
                   <div key={skill.id} className="flex items-center justify-between px-4 py-3">
                     <div className="flex items-center gap-3">
-                      {skill.icon && (
+                      {skill.iconUrl ? (
+                        <img
+                          src={skill.iconUrl}
+                          alt={`${skill.name} icon`}
+                          className="h-6 w-6 object-contain shrink-0"
+                        />
+                      ) : skill.icon ? (
                         <span className="text-xl" aria-hidden="true">
                           {skill.icon}
                         </span>
-                      )}
+                      ) : null}
                       <span className="font-medium">{skill.name}</span>
                       {skill.proficiencyLevel && (
                         <Badge variant="outline">{skill.proficiencyLevel}</Badge>

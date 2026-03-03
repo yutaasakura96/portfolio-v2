@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 import {
   Dialog,
   DialogContent,
@@ -44,6 +45,7 @@ const PROFICIENCY_LEVELS: ProficiencyLevel[] = [
 export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDialogProps) {
   const queryClient = useQueryClient();
   const isEditing = !!initialData;
+  const uploadEntityId = useRef(crypto.randomUUID());
 
   const form = useForm<SkillCreateInput>({
     resolver: zodResolver(skillCreateSchema) as Resolver<SkillCreateInput>,
@@ -52,6 +54,7 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
           name: initialData.name,
           category: initialData.category,
           icon: initialData.icon ?? "",
+          iconUrl: initialData.iconUrl ?? "",
           proficiencyLevel: initialData.proficiencyLevel ?? undefined,
           displayOrder: initialData.displayOrder,
           visible: initialData.visible,
@@ -60,6 +63,7 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
           name: "",
           category: "",
           icon: "",
+          iconUrl: "",
           proficiencyLevel: undefined,
           displayOrder: 0,
           visible: true,
@@ -74,6 +78,7 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
               name: initialData.name,
               category: initialData.category,
               icon: initialData.icon ?? "",
+              iconUrl: initialData.iconUrl ?? "",
               proficiencyLevel: initialData.proficiencyLevel ?? undefined,
               displayOrder: initialData.displayOrder,
               visible: initialData.visible,
@@ -82,6 +87,7 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
               name: "",
               category: "",
               icon: "",
+              iconUrl: "",
               proficiencyLevel: undefined,
               displayOrder: 0,
               visible: true,
@@ -92,6 +98,7 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
 
   const proficiencyLevel = useWatch({ control: form.control, name: "proficiencyLevel" });
   const visible = useWatch({ control: form.control, name: "visible" });
+  const iconUrl = useWatch({ control: form.control, name: "iconUrl" });
 
   const mutation = useMutation({
     mutationFn: (values: SkillCreateInput) =>
@@ -167,7 +174,7 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="icon">Icon (optional)</Label>
+            <Label htmlFor="icon">Emoji Icon (optional)</Label>
             <Input
               id="icon"
               {...form.register("icon")}
@@ -181,7 +188,46 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
               </p>
             )}
             <p className="text-xs text-muted-foreground">
-              Add an emoji or icon to represent this skill.
+              Add an emoji to represent this skill.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Image Icon (optional)</Label>
+            <div className="flex gap-3 items-start">
+              <div className="w-24 shrink-0">
+                <ImageUpload
+                  folder="logos"
+                  entityId={uploadEntityId.current}
+                  value={iconUrl || undefined}
+                  onUpload={(result) => {
+                    const url = result.urls.display ?? result.urls.original ?? "";
+                    form.setValue("iconUrl", url, { shouldValidate: true });
+                  }}
+                  onRemove={() => {
+                    form.setValue("iconUrl", "", { shouldValidate: true });
+                  }}
+                  aspectRatio="aspect-square"
+                  placeholder="Drop image"
+                />
+              </div>
+              <div className="flex-1 space-y-1">
+                <p className="text-xs text-muted-foreground">Upload an image, or paste a URL:</p>
+                <Input
+                  type="url"
+                  {...form.register("iconUrl")}
+                  placeholder="https://cdn.example.com/icon.svg"
+                  aria-invalid={!!form.formState.errors.iconUrl}
+                />
+                {form.formState.errors.iconUrl && (
+                  <p className="text-sm text-red-500">
+                    {form.formState.errors.iconUrl.message}
+                  </p>
+                )}
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Image takes priority over emoji when both are set.
             </p>
           </div>
 

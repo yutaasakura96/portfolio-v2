@@ -4,6 +4,7 @@ export const skillCreateSchema = z.object({
   name: z.string().min(1).max(100),
   category: z.string().min(1).max(100),
   icon: z.string().max(100).optional().or(z.literal("")),
+  iconUrl: z.string().max(500).optional().nullable().or(z.literal("")),
   proficiencyLevel: z
     .enum(["BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"])
     .optional()
