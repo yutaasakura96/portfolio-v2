@@ -35,8 +35,12 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
           institution: initialData.institution,
           degree: initialData.degree,
           field: initialData.field,
-          startDate: initialData.startDate ? new Date(initialData.startDate) : undefined,
-          endDate: initialData.endDate ? new Date(initialData.endDate) : undefined,
+          startDate: initialData.startDate
+            ? (new Date(initialData.startDate).toISOString().split("T")[0] as unknown as Date)
+            : undefined,
+          endDate: initialData.endDate
+            ? (new Date(initialData.endDate).toISOString().split("T")[0] as unknown as Date)
+            : undefined,
           achievements: initialData.achievements ?? "",
           logoUrl: initialData.logoUrl ?? "",
           displayOrder: initialData.displayOrder,
