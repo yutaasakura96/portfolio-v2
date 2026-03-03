@@ -75,6 +75,24 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
 
   const visible = useWatch({ control: form.control, name: "visible" });
   const achievementsLength = useWatch({ control: form.control, name: "achievements" })?.length ?? 0;
+  const watchedStartDate = useWatch({ control: form.control, name: "startDate" }) as unknown as string;
+  const watchedEndDate = useWatch({ control: form.control, name: "endDate" }) as unknown as string;
+
+  const startDateMax = watchedEndDate
+    ? (() => {
+        const d = new Date(watchedEndDate + "T00:00:00");
+        d.setDate(d.getDate() - 1);
+        return d.toISOString().split("T")[0];
+      })()
+    : undefined;
+
+  const endDateMin = watchedStartDate
+    ? (() => {
+        const d = new Date(watchedStartDate + "T00:00:00");
+        d.setDate(d.getDate() + 1);
+        return d.toISOString().split("T")[0];
+      })()
+    : undefined;
 
   return (
     <Card>
@@ -143,6 +161,7 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
               <Input
                 id="startDate"
                 type="date"
+                max={startDateMax}
                 {...form.register("startDate")}
                 aria-invalid={!!form.formState.errors.startDate}
                 aria-describedby={form.formState.errors.startDate ? "startDate-error" : undefined}
@@ -159,6 +178,7 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
               <Input
                 id="endDate"
                 type="date"
+                min={endDateMin}
                 {...form.register("endDate")}
                 aria-invalid={!!form.formState.errors.endDate}
                 aria-describedby={form.formState.errors.endDate ? "endDate-error" : undefined}
