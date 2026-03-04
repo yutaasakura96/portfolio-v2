@@ -7,10 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { apiClient } from "@/lib/api-client";
-import {
-  EducationCreateInput,
-  educationCreateSchema,
-} from "@/lib/validations/education";
+import { EducationCreateInput, educationCreateSchema } from "@/lib/validations/education";
 import { Education } from "@/types/education";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -75,7 +72,10 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
 
   const visible = useWatch({ control: form.control, name: "visible" });
   const achievementsLength = useWatch({ control: form.control, name: "achievements" })?.length ?? 0;
-  const watchedStartDate = useWatch({ control: form.control, name: "startDate" }) as unknown as string;
+  const watchedStartDate = useWatch({
+    control: form.control,
+    name: "startDate",
+  }) as unknown as string;
   const watchedEndDate = useWatch({ control: form.control, name: "endDate" }) as unknown as string;
 
   const startDateMax = watchedEndDate
@@ -98,9 +98,7 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
     <Card>
       <CardContent className="pt-6">
         <form
-          onSubmit={form.handleSubmit((values) =>
-            mutation.mutate(values as EducationCreateInput)
-          )}
+          onSubmit={form.handleSubmit((values) => mutation.mutate(values as EducationCreateInput))}
           className="space-y-4"
         >
           <div className="space-y-2">
@@ -110,9 +108,7 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
               {...form.register("institution")}
               placeholder="e.g., Stanford University"
               aria-invalid={!!form.formState.errors.institution}
-              aria-describedby={
-                form.formState.errors.institution ? "institution-error" : undefined
-              }
+              aria-describedby={form.formState.errors.institution ? "institution-error" : undefined}
             />
             {form.formState.errors.institution && (
               <p id="institution-error" className="text-sm text-red-500">
@@ -188,9 +184,7 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
                   {form.formState.errors.endDate.message}
                 </p>
               )}
-              <p className="text-xs text-muted-foreground">
-                Leave empty for expected graduation
-              </p>
+              <p className="text-xs text-muted-foreground">Leave empty for expected graduation</p>
             </div>
           </div>
 
@@ -239,9 +233,7 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
                 {form.formState.errors.logoUrl.message}
               </p>
             )}
-            <p className="text-xs text-muted-foreground">
-              Institution logo or seal image URL
-            </p>
+            <p className="text-xs text-muted-foreground">Institution logo or seal image URL</p>
           </div>
 
           <div className="space-y-2">
@@ -285,11 +277,7 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
                   ? "Update Education"
                   : "Create Education"}
             </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => router.push("/admin/education")}
-            >
+            <Button type="button" variant="outline" onClick={() => router.push("/admin/education")}>
               Cancel
             </Button>
           </div>

@@ -11,7 +11,7 @@ import type {
   Certification,
   Hero,
   SiteSettings,
-} from '../../../generated/prisma/client';
+} from "../../../generated/prisma/client";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // PROJECT TYPES
@@ -19,26 +19,36 @@ import type {
 
 export type PublicProject = Pick<
   Project,
-  | 'id'
-  | 'slug'
-  | 'title'
-  | 'shortDescription'
-  | 'techTags'
-  | 'thumbnailImage'
-  | 'featured'
-  | 'displayOrder'
-  | 'startDate'
-  | 'endDate'
-  | 'liveUrl'
-  | 'repoUrl'
+  | "id"
+  | "slug"
+  | "title"
+  | "shortDescription"
+  | "techTags"
+  | "thumbnailImage"
+  | "featured"
+  | "displayOrder"
+  | "startDate"
+  | "endDate"
+  | "liveUrl"
+  | "repoUrl"
 >;
 
 export type FeaturedProject = Pick<
   Project,
-  'id' | 'slug' | 'title' | 'shortDescription' | 'techTags' | 'thumbnailImage' | 'liveUrl' | 'repoUrl'
+  | "id"
+  | "slug"
+  | "title"
+  | "shortDescription"
+  | "techTags"
+  | "thumbnailImage"
+  | "liveUrl"
+  | "repoUrl"
 >;
 
-export type ProjectSummary = Pick<Project, 'id' | 'slug' | 'title' | 'status' | 'featured' | 'updatedAt'>;
+export type ProjectSummary = Pick<
+  Project,
+  "id" | "slug" | "title" | "status" | "featured" | "updatedAt"
+>;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // BLOG POST TYPES
@@ -46,12 +56,12 @@ export type ProjectSummary = Pick<Project, 'id' | 'slug' | 'title' | 'status' | 
 
 export type PublicBlogPost = Pick<
   BlogPost,
-  'id' | 'slug' | 'title' | 'excerpt' | 'featuredImage' | 'tags' | 'readTime' | 'publishedAt'
+  "id" | "slug" | "title" | "excerpt" | "featuredImage" | "tags" | "readTime" | "publishedAt"
 >;
 
 export type BlogPostSummary = Pick<
   BlogPost,
-  'id' | 'slug' | 'title' | 'status' | 'publishedAt' | 'updatedAt'
+  "id" | "slug" | "title" | "status" | "publishedAt" | "updatedAt"
 >;
 
 // ═══════════════════════════════════════════════════════════════════════════

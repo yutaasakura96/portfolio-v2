@@ -3,10 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  contactMessageSchema,
-  type ContactMessageInput,
-} from "@/lib/validations/contact";
+import { contactMessageSchema, type ContactMessageInput } from "@/lib/validations/contact";
 import { Send, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
@@ -44,9 +41,7 @@ export function ContactForm() {
 
       if (response.status === 429) {
         setStatus("error");
-        setErrorMessage(
-          "Too many messages sent. Please try again in a few minutes."
-        );
+        setErrorMessage("Too many messages sent. Please try again in a few minutes.");
         return;
       }
 
@@ -61,9 +56,7 @@ export function ContactForm() {
       reset();
     } catch {
       setStatus("error");
-      setErrorMessage(
-        "Network error. Please check your connection and try again."
-      );
+      setErrorMessage("Network error. Please check your connection and try again.");
     }
   };
 
@@ -72,12 +65,9 @@ export function ContactForm() {
     return (
       <div className="rounded-lg border border-green-200 bg-green-50 p-8 text-center">
         <CheckCircle className="mx-auto h-12 w-12 text-green-500" />
-        <h3 className="mt-4 text-lg font-semibold text-green-900">
-          Message sent!
-        </h3>
+        <h3 className="mt-4 text-lg font-semibold text-green-900">Message sent!</h3>
         <p className="mt-2 text-sm text-green-700">
-          Thank you for reaching out. I&apos;ll get back to you as soon as
-          possible.
+          Thank you for reaching out. I&apos;ll get back to you as soon as possible.
         </p>
         <button
           onClick={() => setStatus("idle")}
@@ -93,10 +83,7 @@ export function ContactForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
       {/* Honeypot — hidden from users, visible to bots */}
-      <div
-        className="absolute -left-[9999px] -top-[9999px]"
-        aria-hidden="true"
-      >
+      <div className="absolute -left-[9999px] -top-[9999px]" aria-hidden="true">
         <label htmlFor="honeypot">
           Do not fill this out
           <input
@@ -119,10 +106,7 @@ export function ContactForm() {
 
       {/* Name */}
       <div>
-        <label
-          htmlFor="name"
-          className="block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
           Name <span className="text-red-500">*</span>
         </label>
         <input
@@ -137,17 +121,12 @@ export function ContactForm() {
           placeholder="Your name"
           disabled={status === "submitting"}
         />
-        {errors.name && (
-          <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
-        )}
+        {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
       </div>
 
       {/* Email */}
       <div>
-        <label
-          htmlFor="email"
-          className="block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
           Email <span className="text-red-500">*</span>
         </label>
         <input
@@ -162,17 +141,12 @@ export function ContactForm() {
           placeholder="your@email.com"
           disabled={status === "submitting"}
         />
-        {errors.email && (
-          <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-        )}
+        {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
       </div>
 
       {/* Subject */}
       <div>
-        <label
-          htmlFor="subject"
-          className="block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="subject" className="block text-sm font-medium text-gray-700">
           Subject
         </label>
         <input
@@ -187,17 +161,12 @@ export function ContactForm() {
           placeholder="What is this about?"
           disabled={status === "submitting"}
         />
-        {errors.subject && (
-          <p className="mt-1 text-sm text-red-600">{errors.subject.message}</p>
-        )}
+        {errors.subject && <p className="mt-1 text-sm text-red-600">{errors.subject.message}</p>}
       </div>
 
       {/* Message */}
       <div>
-        <label
-          htmlFor="message"
-          className="block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="message" className="block text-sm font-medium text-gray-700">
           Message <span className="text-red-500">*</span>
         </label>
         <textarea
@@ -212,9 +181,7 @@ export function ContactForm() {
           placeholder="Your message (at least 10 characters)"
           disabled={status === "submitting"}
         />
-        {errors.message && (
-          <p className="mt-1 text-sm text-red-600">{errors.message.message}</p>
-        )}
+        {errors.message && <p className="mt-1 text-sm text-red-600">{errors.message.message}</p>}
       </div>
 
       {/* Submit */}

@@ -5,10 +5,7 @@ const experienceBaseSchema = z.object({
   role: z.string().min(1).max(200),
   location: z.string().max(200).optional().or(z.literal("")),
   startDate: z.coerce.date(),
-  endDate: z.preprocess(
-    (val) => (val === "" ? null : val),
-    z.coerce.date().optional().nullable()
-  ),
+  endDate: z.preprocess((val) => (val === "" ? null : val), z.coerce.date().optional().nullable()),
   description: z.string().min(1),
   highlights: z.array(z.string().max(500)).default([]),
   logoUrl: z.url().or(z.literal("")).optional(),
@@ -22,10 +19,12 @@ export const experienceCreateSchema = experienceBaseSchema.refine(
   { message: "End date must be after start date", path: ["endDate"] }
 );
 
-export const experienceUpdateSchema = experienceBaseSchema.partial().refine(
-  (data) => !data.startDate || !data.endDate || data.startDate < data.endDate,
-  { message: "End date must be after start date", path: ["endDate"] }
-);
+export const experienceUpdateSchema = experienceBaseSchema
+  .partial()
+  .refine((data) => !data.startDate || !data.endDate || data.startDate < data.endDate, {
+    message: "End date must be after start date",
+    path: ["endDate"],
+  });
 
 export type ExperienceCreateInput = z.infer<typeof experienceCreateSchema>;
 export type ExperienceUpdateInput = z.infer<typeof experienceUpdateSchema>;

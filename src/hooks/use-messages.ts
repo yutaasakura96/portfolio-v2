@@ -50,8 +50,7 @@ function filtersToParams(filters?: MessageFilters): Record<string, string> {
 export function useMessages(filters?: MessageFilters) {
   return useQuery({
     queryKey: [...MESSAGES_KEY, filters],
-    queryFn: () =>
-      apiClient.getMessages<Message, MessagesMeta>(filtersToParams(filters)),
+    queryFn: () => apiClient.getMessages<Message, MessagesMeta>(filtersToParams(filters)),
     staleTime: 30_000,
   });
 }
@@ -59,8 +58,7 @@ export function useMessages(filters?: MessageFilters) {
 export function useMessage(id: string | null) {
   return useQuery({
     queryKey: [...MESSAGES_KEY, id],
-    queryFn: () =>
-      apiClient.getMessage<Message>(id!).then((res) => res.data),
+    queryFn: () => apiClient.getMessage<Message>(id!).then((res) => res.data),
     enabled: !!id,
   });
 }

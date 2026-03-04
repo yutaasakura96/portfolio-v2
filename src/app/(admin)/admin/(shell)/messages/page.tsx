@@ -179,9 +179,7 @@ export default function MessagesPage() {
       {/* Bulk action bar */}
       {someSelected && (
         <div className="flex items-center gap-3 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2.5">
-          <span className="text-sm font-medium text-blue-700">
-            {selected.size} selected
-          </span>
+          <span className="text-sm font-medium text-blue-700">{selected.size} selected</span>
           <div className="ml-auto flex gap-2">
             <button
               onClick={() => bulkMarkRead(true)}
@@ -275,15 +273,15 @@ export default function MessagesPage() {
 
                     {/* Unread dot */}
                     <div className="flex w-2 shrink-0 items-center justify-center">
-                      {!msg.read && (
-                        <span className="h-2 w-2 rounded-full bg-blue-500" />
-                      )}
+                      {!msg.read && <span className="h-2 w-2 rounded-full bg-blue-500" />}
                     </div>
 
                     {/* Content */}
                     <div className="min-w-0 flex-1">
                       <div className="flex items-baseline justify-between gap-2">
-                        <span className={`text-sm ${!msg.read ? "font-semibold text-gray-900" : "font-medium text-gray-700"}`}>
+                        <span
+                          className={`text-sm ${!msg.read ? "font-semibold text-gray-900" : "font-medium text-gray-700"}`}
+                        >
                           {msg.name}
                         </span>
                         <span className="shrink-0 text-xs text-gray-400">
@@ -305,7 +303,10 @@ export default function MessagesPage() {
                           <dt className="font-medium text-gray-500">From</dt>
                           <dd className="mt-0.5 text-gray-900">
                             {msg.name}{" "}
-                            <a href={`mailto:${msg.email}`} className="text-blue-600 hover:underline">
+                            <a
+                              href={`mailto:${msg.email}`}
+                              className="text-blue-600 hover:underline"
+                            >
                               &lt;{msg.email}&gt;
                             </a>
                           </dd>
@@ -316,7 +317,9 @@ export default function MessagesPage() {
                         </div>
                         <div>
                           <dt className="font-medium text-gray-500">Message</dt>
-                          <dd className="mt-0.5 whitespace-pre-wrap text-gray-900">{msg.message}</dd>
+                          <dd className="mt-0.5 whitespace-pre-wrap text-gray-900">
+                            {msg.message}
+                          </dd>
                         </div>
                       </dl>
 

@@ -4,8 +4,7 @@ import { Mail, MapPin } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description:
-    "Get in touch with me for collaborations, projects, or just to say hello.",
+  description: "Get in touch with me for collaborations, projects, or just to say hello.",
 };
 
 export default function ContactPage() {
@@ -14,8 +13,8 @@ export default function ContactPage() {
       <div className="mb-10">
         <h1 className="text-3xl font-bold text-gray-900">Get in Touch</h1>
         <p className="mt-3 text-gray-600">
-          Have a question, project idea, or just want to say hello? Fill out the
-          form below and I&apos;ll get back to you as soon as possible.
+          Have a question, project idea, or just want to say hello? Fill out the form below and
+          I&apos;ll get back to you as soon as possible.
         </p>
       </div>
 

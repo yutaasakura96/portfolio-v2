@@ -7,10 +7,7 @@ import { deleteImageVariants } from "@/lib/aws/s3";
 import { revalidatePath } from "next/cache";
 
 export const PUT = withErrorHandler(
-  async (
-    request: NextRequest,
-    context?: { params: Promise<{ id: string }> }
-  ) => {
+  async (request: NextRequest, context?: { params: Promise<{ id: string }> }) => {
     await requireAuth();
     const { id } = await context!.params;
 
@@ -40,10 +37,7 @@ export const PUT = withErrorHandler(
 );
 
 export const DELETE = withErrorHandler(
-  async (
-    request: NextRequest,
-    context?: { params: Promise<{ id: string }> }
-  ) => {
+  async (request: NextRequest, context?: { params: Promise<{ id: string }> }) => {
     await requireAuth();
     const { id } = await context!.params;
 

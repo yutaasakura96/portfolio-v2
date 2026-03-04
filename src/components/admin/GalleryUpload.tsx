@@ -22,12 +22,7 @@ interface GalleryUploadProps {
   disabled?: boolean;
 }
 
-export function GalleryUpload({
-  value,
-  onChange,
-  entityId,
-  disabled = false,
-}: GalleryUploadProps) {
+export function GalleryUpload({ value, onChange, entityId, disabled = false }: GalleryUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
 
   const handleUpload = useCallback(
@@ -103,10 +98,12 @@ export function GalleryUpload({
   });
 
   const removeImage = (index: number) => {
-    const updated = value.filter((_, i) => i !== index).map((img, i) => ({
-      ...img,
-      order: i,
-    }));
+    const updated = value
+      .filter((_, i) => i !== index)
+      .map((img, i) => ({
+        ...img,
+        order: i,
+      }));
     onChange(updated);
   };
 

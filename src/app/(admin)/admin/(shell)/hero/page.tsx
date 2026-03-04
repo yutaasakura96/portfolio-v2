@@ -187,11 +187,9 @@ export default function HeroEditorPage() {
                 aspectRatio="aspect-square"
                 placeholder="Upload your headshot"
                 onUpload={(result) => {
-                  form.setValue(
-                    "profileImage",
-                    result.urls.display || result.urls.original,
-                    { shouldDirty: true }
-                  );
+                  form.setValue("profileImage", result.urls.display || result.urls.original, {
+                    shouldDirty: true,
+                  });
                 }}
                 onRemove={() => {
                   form.setValue("profileImage", "", { shouldDirty: true });

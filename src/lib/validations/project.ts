@@ -35,10 +35,12 @@ export const projectCreateSchema = projectBaseSchema.refine(
   { message: "End date must be after start date", path: ["endDate"] }
 );
 
-export const projectUpdateSchema = projectBaseSchema.partial().refine(
-  (data) => !data.startDate || !data.endDate || data.startDate < data.endDate,
-  { message: "End date must be after start date", path: ["endDate"] }
-);
+export const projectUpdateSchema = projectBaseSchema
+  .partial()
+  .refine((data) => !data.startDate || !data.endDate || data.startDate < data.endDate, {
+    message: "End date must be after start date",
+    path: ["endDate"],
+  });
 
 export type ProjectCreateInput = z.infer<typeof projectCreateSchema>;
 export type ProjectUpdateInput = z.infer<typeof projectUpdateSchema>;

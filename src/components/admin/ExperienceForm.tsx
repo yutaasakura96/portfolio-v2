@@ -95,7 +95,10 @@ export function ExperienceForm({ initialData, experienceId }: ExperienceFormProp
   };
 
   const visible = useWatch({ control: form.control, name: "visible" });
-  const watchedStartDate = useWatch({ control: form.control, name: "startDate" }) as unknown as string;
+  const watchedStartDate = useWatch({
+    control: form.control,
+    name: "startDate",
+  }) as unknown as string;
   const watchedEndDate = useWatch({ control: form.control, name: "endDate" }) as unknown as string;
 
   const startDateMax = watchedEndDate

@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import { apiClient } from '@/lib/api-client';
-import { Breadcrumbs } from '@/components/admin/Breadcrumbs';
-import { ProjectForm } from '@/components/admin/ProjectForm';
-import { Skeleton } from '@/components/ui/skeleton';
-import { AlertCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import { use } from 'react';
-import { Project } from '@/types/project';
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "@/lib/api-client";
+import { Breadcrumbs } from "@/components/admin/Breadcrumbs";
+import { ProjectForm } from "@/components/admin/ProjectForm";
+import { Skeleton } from "@/components/ui/skeleton";
+import { AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { use } from "react";
+import { Project } from "@/types/project";
 
 export default function EditProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ['admin', 'project', id],
+    queryKey: ["admin", "project", id],
     queryFn: () => apiClient.getProject<Project>(id),
   });
 
@@ -47,7 +47,9 @@ export default function EditProjectPage({ params }: { params: Promise<{ id: stri
           <div>
             <h3 className="text-lg font-medium text-gray-900 mb-1">Failed to load project</h3>
             <p className="text-sm text-gray-600">
-              {error instanceof Error ? error.message : 'The project may not exist or there was an error loading it.'}
+              {error instanceof Error
+                ? error.message
+                : "The project may not exist or there was an error loading it."}
             </p>
           </div>
           <Link href="/admin/projects">

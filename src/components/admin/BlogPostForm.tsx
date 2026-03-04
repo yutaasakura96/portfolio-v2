@@ -161,11 +161,7 @@ export function BlogPostForm({ initialData }: BlogPostFormProps) {
             {/* Title */}
             <div className="space-y-2">
               <Label htmlFor="title">Title</Label>
-              <Input
-                id="title"
-                placeholder="My Awesome Blog Post"
-                {...form.register("title")}
-              />
+              <Input id="title" placeholder="My Awesome Blog Post" {...form.register("title")} />
               {form.formState.errors.title && (
                 <p className="text-sm text-red-500">{form.formState.errors.title.message}</p>
               )}
@@ -214,9 +210,7 @@ export function BlogPostForm({ initialData }: BlogPostFormProps) {
             <div data-color-mode="light">
               <MDEditor
                 value={contentValue}
-                onChange={(val) =>
-                  form.setValue("content", val || "", { shouldDirty: true })
-                }
+                onChange={(val) => form.setValue("content", val || "", { shouldDirty: true })}
                 height={500}
                 preview="live"
                 textareaProps={{
@@ -226,9 +220,7 @@ export function BlogPostForm({ initialData }: BlogPostFormProps) {
               />
             </div>
             {form.formState.errors.content && (
-              <p className="text-sm text-red-500 mt-2">
-                {form.formState.errors.content.message}
-              </p>
+              <p className="text-sm text-red-500 mt-2">{form.formState.errors.content.message}</p>
             )}
           </CardContent>
         </Card>
@@ -259,11 +251,7 @@ export function BlogPostForm({ initialData }: BlogPostFormProps) {
 
             <div className="flex flex-col gap-2">
               <Button type="button" onClick={publish} disabled={mutation.isPending}>
-                {mutation.isPending
-                  ? "Saving..."
-                  : isEditing
-                    ? "Update & Publish"
-                    : "Publish"}
+                {mutation.isPending ? "Saving..." : isEditing ? "Update & Publish" : "Publish"}
               </Button>
               <Button
                 type="button"
@@ -301,11 +289,9 @@ export function BlogPostForm({ initialData }: BlogPostFormProps) {
               aspectRatio="aspect-video"
               placeholder="Upload featured image"
               onUpload={(result) => {
-                form.setValue(
-                  "featuredImage",
-                  result.urls.featured || result.urls.original,
-                  { shouldDirty: true }
-                );
+                form.setValue("featuredImage", result.urls.featured || result.urls.original, {
+                  shouldDirty: true,
+                });
               }}
               onRemove={() => {
                 form.setValue("featuredImage", "", { shouldDirty: true });

@@ -32,8 +32,7 @@ export default function BlogListPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin", "blog", statusFilter],
-    queryFn: () =>
-      apiClient.getBlogPosts({ status: statusFilter, pageSize: "50" }),
+    queryFn: () => apiClient.getBlogPosts({ status: statusFilter, pageSize: "50" }),
   });
 
   const deleteMutation = useMutation({
@@ -78,7 +77,7 @@ export default function BlogListPage() {
       {/* Posts List */}
       {isLoading ? (
         <TableSkeleton rows={3} />
-      ) :posts.length === 0 ? (
+      ) : posts.length === 0 ? (
         <div className="text-center py-12 bg-white rounded-lg border">
           <p className="text-gray-500">No blog posts yet.</p>
           <Link href="/admin/blog/new">

@@ -12,19 +12,16 @@ import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
 
-function formatDateRange(
-  startDate: Date | string | null,
-  endDate: Date | string | null
-): string {
+function formatDateRange(startDate: Date | string | null, endDate: Date | string | null): string {
   if (!startDate && !endDate) return "No dates specified";
-  
+
   const startStr = startDate
     ? new Date(startDate).toLocaleDateString("en-US", { month: "short", year: "numeric" })
     : "—";
   const endStr = endDate
     ? new Date(endDate).toLocaleDateString("en-US", { month: "short", year: "numeric" })
     : "Expected";
-  
+
   return `${startStr} - ${endStr}`;
 }
 
@@ -93,9 +90,7 @@ export default function EducationListPage() {
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
                       Degree
                     </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                      Field
-                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Field</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
                       Date Range
                     </th>

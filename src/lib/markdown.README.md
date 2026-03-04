@@ -13,6 +13,7 @@ This utility provides server-side markdown to HTML conversion with enhanced feat
 ## Installation
 
 All required dependencies are already installed:
+
 ```bash
 npm install unified remark-parse remark-gfm remark-rehype
 npm install rehype-slug rehype-autolink-headings rehype-highlight rehype-stringify
@@ -29,7 +30,7 @@ import { markdownToHtml } from '@/lib/markdown';
 async function MyComponent() {
   const markdown = '# Hello World\n\nThis is **bold** text.';
   const html = await markdownToHtml(markdown);
-  
+
   return <div dangerouslySetInnerHTML={{ __html: html }} />;
 }
 ```
@@ -38,18 +39,18 @@ async function MyComponent() {
 
 ```typescript
 // src/app/api/projects/[id]/route.ts
-import { markdownToHtml } from '@/lib/markdown';
+import { markdownToHtml } from "@/lib/markdown";
 
 export const GET = async (req, { params }) => {
   const project = await prisma.project.findUnique({
-    where: { id: params.id }
+    where: { id: params.id },
   });
-  
+
   const descriptionHtml = await markdownToHtml(project.description);
-  
+
   return Response.json({
     ...project,
-    descriptionHtml
+    descriptionHtml,
   });
 };
 ```
@@ -63,11 +64,11 @@ import { markdownToHtml } from '@/lib/markdown';
 export default async function BlogPost({ params }) {
   const post = await getBlogPost(params.slug);
   const contentHtml = await markdownToHtml(post.content);
-  
+
   return (
     <article>
       <h1>{post.title}</h1>
-      <div 
+      <div
         className="prose prose-lg dark:prose-invert max-w-none"
         dangerouslySetInnerHTML={{ __html: contentHtml }}
       />
@@ -88,10 +89,10 @@ console.log(greeting);
 ### Tables
 
 | Feature | Supported |
-|---------|-----------|
-| Tables | ✅ |
-| Links | ✅ |
-| Images | ✅ |
+| ------- | --------- |
+| Tables  | ✅        |
+| Links   | ✅        |
+| Images  | ✅        |
 
 ### Task Lists
 
@@ -113,6 +114,7 @@ https://example.com becomes a clickable link
 The app uses `github-dark` theme from highlight.js (imported in `src/app/layout.tsx`).
 
 To change the theme, replace the import:
+
 ```typescript
 // Available themes: github-dark, monokai, atom-one-dark, vs2015, etc.
 import "highlight.js/styles/monokai.css";
@@ -123,9 +125,7 @@ import "highlight.js/styles/monokai.css";
 Use Tailwind's `prose` classes for beautiful typography:
 
 ```tsx
-<div className="prose prose-lg dark:prose-invert max-w-none">
-  {/* Your rendered HTML here */}
-</div>
+<div className="prose prose-lg dark:prose-invert max-w-none">{/* Your rendered HTML here */}</div>
 ```
 
 ## Error Handling
@@ -137,8 +137,8 @@ try {
   const html = await markdownToHtml(markdownContent);
   return html;
 } catch (error) {
-  console.error('Markdown processing failed:', error);
-  return '<p>Unable to display content</p>';
+  console.error("Markdown processing failed:", error);
+  return "<p>Unable to display content</p>";
 }
 ```
 
@@ -165,14 +165,17 @@ try {
 ## Troubleshooting
 
 ### Syntax highlighting not working?
+
 - Ensure `highlight.js` CSS is imported in root layout
 - Check that code blocks have language specified: \`\`\`typescript
 
 ### Headings not getting IDs?
+
 - `rehype-slug` automatically adds IDs based on heading text
 - Links are automatically wrapped around headings by `rehype-autolink-headings`
 
 ### Performance issues?
+
 - Process markdown once and cache the HTML
 - Don't call `markdownToHtml` on every render
 - Use server components or API routes for processing

@@ -118,12 +118,16 @@ export function ProjectForm({ initialData, projectId }: ProjectFormProps) {
     form.setValue("techTags", tags, { shouldValidate: true });
   };
 
-  const shortDescLength = useWatch({ control: form.control, name: "shortDescription" })?.length ?? 0;
+  const shortDescLength =
+    useWatch({ control: form.control, name: "shortDescription" })?.length ?? 0;
   const thumbnailImage = useWatch({ control: form.control, name: "thumbnailImage" });
   const images = useWatch({ control: form.control, name: "images" });
   const featured = useWatch({ control: form.control, name: "featured" });
   const status = useWatch({ control: form.control, name: "status" });
-  const watchedStartDate = useWatch({ control: form.control, name: "startDate" }) as unknown as string;
+  const watchedStartDate = useWatch({
+    control: form.control,
+    name: "startDate",
+  }) as unknown as string;
   const watchedEndDate = useWatch({ control: form.control, name: "endDate" }) as unknown as string;
 
   const startDateMax = watchedEndDate
@@ -371,11 +375,9 @@ export function ProjectForm({ initialData, projectId }: ProjectFormProps) {
               entityId={projectId}
               aspectRatio="aspect-video"
               onUpload={(result) => {
-                form.setValue(
-                  "thumbnailImage",
-                  result.urls.thumbnail || result.urls.medium,
-                  { shouldDirty: true }
-                );
+                form.setValue("thumbnailImage", result.urls.thumbnail || result.urls.medium, {
+                  shouldDirty: true,
+                });
               }}
               onRemove={() => {
                 form.setValue("thumbnailImage", "", { shouldDirty: true });
@@ -439,9 +441,7 @@ export function ProjectForm({ initialData, projectId }: ProjectFormProps) {
                 checked={status === "PUBLISHED"}
                 onCheckedChange={(val) => form.setValue("status", val ? "PUBLISHED" : "DRAFT")}
               />
-              <Label htmlFor="status">
-                {status === "PUBLISHED" ? "Published" : "Draft"}
-              </Label>
+              <Label htmlFor="status">{status === "PUBLISHED" ? "Published" : "Draft"}</Label>
             </div>
           </div>
 

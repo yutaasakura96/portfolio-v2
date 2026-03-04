@@ -35,12 +35,7 @@ interface SkillFormDialogProps {
   initialData?: Skill | null;
 }
 
-const PROFICIENCY_LEVELS: ProficiencyLevel[] = [
-  "BEGINNER",
-  "INTERMEDIATE",
-  "ADVANCED",
-  "EXPERT",
-];
+const PROFICIENCY_LEVELS: ProficiencyLevel[] = ["BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"];
 
 export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDialogProps) {
   const queryClient = useQueryClient();
@@ -102,9 +97,7 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
 
   const mutation = useMutation({
     mutationFn: (values: SkillCreateInput) =>
-      isEditing
-        ? apiClient.updateSkill(initialData.id, values)
-        : apiClient.createSkill(values),
+      isEditing ? apiClient.updateSkill(initialData.id, values) : apiClient.createSkill(values),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "skills"] });
       toast.success(isEditing ? "Skill updated" : "Skill created");
@@ -187,9 +180,7 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
                 {form.formState.errors.icon.message}
               </p>
             )}
-            <p className="text-xs text-muted-foreground">
-              Add an emoji to represent this skill.
-            </p>
+            <p className="text-xs text-muted-foreground">Add an emoji to represent this skill.</p>
           </div>
 
           <div className="space-y-2">
@@ -220,9 +211,7 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
                   aria-invalid={!!form.formState.errors.iconUrl}
                 />
                 {form.formState.errors.iconUrl && (
-                  <p className="text-sm text-red-500">
-                    {form.formState.errors.iconUrl.message}
-                  </p>
+                  <p className="text-sm text-red-500">{form.formState.errors.iconUrl.message}</p>
                 )}
               </div>
             </div>
@@ -236,11 +225,9 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
             <Select
               value={proficiencyLevel ?? undefined}
               onValueChange={(value) => {
-                form.setValue(
-                  "proficiencyLevel",
-                  value as ProficiencyLevel,
-                  { shouldValidate: true }
-                );
+                form.setValue("proficiencyLevel", value as ProficiencyLevel, {
+                  shouldValidate: true,
+                });
               }}
             >
               <SelectTrigger id="proficiencyLevel">

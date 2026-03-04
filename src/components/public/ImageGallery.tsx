@@ -24,9 +24,7 @@ export function ImageGallery({ images, projectTitle }: ImageGalleryProps) {
   if (sortedImages.length === 0) return null;
 
   const slides = sortedImages.map((img) => {
-    const largeUrl = img.url
-      .replace(/\/med_/, "/lg_")
-      .replace(/\/thumb_/, "/lg_");
+    const largeUrl = img.url.replace(/\/med_/, "/lg_").replace(/\/thumb_/, "/lg_");
     return {
       src: largeUrl,
       alt: img.alt || `${projectTitle} screenshot`,
@@ -35,9 +33,7 @@ export function ImageGallery({ images, projectTitle }: ImageGalleryProps) {
 
   return (
     <div className="mb-8">
-      <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
-        Gallery
-      </h2>
+      <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Gallery</h2>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         {sortedImages.map((img, i) => (

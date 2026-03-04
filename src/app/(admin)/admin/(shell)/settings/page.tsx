@@ -4,19 +4,8 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSettings, useUpdateSettings } from "@/hooks/use-settings";
-import {
-  siteSettingsUpdateSchema,
-  type SiteSettingsUpdateInput,
-} from "@/lib/validations/settings";
-import {
-  Globe,
-  Github,
-  Linkedin,
-  Loader2,
-  Save,
-  Twitter,
-  Youtube,
-} from "lucide-react";
+import { siteSettingsUpdateSchema, type SiteSettingsUpdateInput } from "@/lib/validations/settings";
+import { Globe, Github, Linkedin, Loader2, Save, Twitter, Youtube } from "lucide-react";
 import { toast } from "sonner";
 
 export default function AdminSettingsPage() {
@@ -114,16 +103,12 @@ export default function AdminSettingsPage() {
               placeholder="Your Name | Portfolio"
             />
             {errors.siteName && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.siteName.message}
-              </p>
+              <p className="mt-1 text-sm text-red-600">{errors.siteName.message}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Site Description
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Site Description</label>
             <textarea
               rows={3}
               {...register("siteDescription")}
@@ -131,9 +116,7 @@ export default function AdminSettingsPage() {
               placeholder="A short description of your portfolio"
             />
             {errors.siteDescription && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.siteDescription.message}
-              </p>
+              <p className="mt-1 text-sm text-red-600">{errors.siteDescription.message}</p>
             )}
           </div>
 
@@ -151,11 +134,7 @@ export default function AdminSettingsPage() {
               }`}
               placeholder="hello@example.com"
             />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.email.message}
-              </p>
-            )}
+            {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
           </div>
         </section>
 
@@ -215,9 +194,7 @@ export default function AdminSettingsPage() {
                 placeholder={placeholder}
               />
               {errors.socialLinks?.[key] && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.socialLinks[key]?.message}
-                </p>
+                <p className="mt-1 text-sm text-red-600">{errors.socialLinks[key]?.message}</p>
               )}
             </div>
           ))}
@@ -230,9 +207,7 @@ export default function AdminSettingsPage() {
           </h2>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Google Analytics ID
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Google Analytics ID</label>
             <input
               type="text"
               {...register("googleAnalyticsId")}

@@ -10,11 +10,7 @@ import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-export default function EditBlogPostPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default function EditBlogPostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
 
   const { data, isLoading, error } = useQuery({
@@ -60,7 +56,9 @@ export default function EditBlogPostPage({
     <div className="space-y-6">
       <Breadcrumbs items={breadcrumbs} />
       <h1 className="text-2xl font-bold">Edit Post</h1>
-      <BlogPostForm initialData={(data as { data: Parameters<typeof BlogPostForm>[0]["initialData"] }).data} />
+      <BlogPostForm
+        initialData={(data as { data: Parameters<typeof BlogPostForm>[0]["initialData"] }).data}
+      />
     </div>
   );
 }

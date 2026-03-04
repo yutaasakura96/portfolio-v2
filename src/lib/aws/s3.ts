@@ -89,7 +89,16 @@ export async function deleteImageVariants(key: string): Promise<void> {
   }
 
   const baseId = match[1];
-  const prefixes = ["thumb_", "med_", "lg_", "orig_", "featured_", "headshot_", "company_", "badge_"];
+  const prefixes = [
+    "thumb_",
+    "med_",
+    "lg_",
+    "orig_",
+    "featured_",
+    "headshot_",
+    "company_",
+    "badge_",
+  ];
 
   await Promise.all(
     prefixes.map((prefix) =>

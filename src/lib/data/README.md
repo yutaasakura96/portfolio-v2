@@ -30,20 +30,17 @@ src/lib/data/
 ### Basic Import
 
 ```typescript
-import { getHero, getFeaturedProjects, getPublishedPosts } from '@/lib/data';
+import { getHero, getFeaturedProjects, getPublishedPosts } from "@/lib/data";
 ```
 
 ### In Server Components
 
 ```tsx
 // app/page.tsx
-import { getHero, getFeaturedProjects } from '@/lib/data';
+import { getHero, getFeaturedProjects } from "@/lib/data";
 
 export default async function HomePage() {
-  const [hero, projects] = await Promise.all([
-    getHero(),
-    getFeaturedProjects(4),
-  ]);
+  const [hero, projects] = await Promise.all([getHero(), getFeaturedProjects(4)]);
 
   if (!hero) {
     return <div>Loading...</div>;
@@ -62,8 +59,8 @@ export default async function HomePage() {
 
 ```tsx
 // app/projects/[slug]/page.tsx
-import { getProjectBySlug, getPublishedProjectSlugs } from '@/lib/data';
-import { notFound } from 'next/navigation';
+import { getProjectBySlug, getPublishedProjectSlugs } from "@/lib/data";
+import { notFound } from "next/navigation";
 
 export async function generateStaticParams() {
   const projects = await getPublishedProjectSlugs();
@@ -72,7 +69,7 @@ export async function generateStaticParams() {
 
 export default async function ProjectPage({ params }: { params: { slug: string } }) {
   const project = await getProjectBySlug(params.slug);
-  
+
   if (!project) {
     notFound();
   }
@@ -85,11 +82,11 @@ export default async function ProjectPage({ params }: { params: { slug: string }
 
 ```tsx
 // app/projects/[slug]/page.tsx
-import { getProjectWithAdjacent } from '@/lib/data';
+import { getProjectWithAdjacent } from "@/lib/data";
 
 export default async function ProjectPage({ params }: { params: { slug: string } }) {
   const { project, prev, next } = await getProjectWithAdjacent(params.slug);
-  
+
   if (!project) {
     notFound();
   }
@@ -108,11 +105,13 @@ export default async function ProjectPage({ params }: { params: { slug: string }
 ### Hero
 
 #### `getHero()`
+
 Fetches the hero section content (singleton).
 
 **Returns:** `Promise<Hero | null>`
 
 **Example:**
+
 ```typescript
 const hero = await getHero();
 ```
@@ -122,47 +121,57 @@ const hero = await getHero();
 ### Projects
 
 #### `getPublishedProjects()`
+
 Fetches all published projects, ordered by display order.
 
 **Returns:** `Promise<PublicProject[]>`
 
 **Example:**
+
 ```typescript
 const projects = await getPublishedProjects();
 ```
 
 #### `getFeaturedProjects(limit?: number)`
+
 Fetches featured projects for the homepage.
 
 **Parameters:**
+
 - `limit` (optional): Maximum number of projects (default: 4)
 
 **Returns:** `Promise<FeaturedProject[]>`
 
 **Example:**
+
 ```typescript
 const featured = await getFeaturedProjects(6);
 ```
 
 #### `getProjectBySlug(slug: string)`
+
 Fetches a single published project by slug (full object).
 
 **Parameters:**
+
 - `slug`: The project slug
 
 **Returns:** `Promise<Project | null>`
 
 **Example:**
+
 ```typescript
-const project = await getProjectBySlug('portfolio-v2');
+const project = await getProjectBySlug("portfolio-v2");
 ```
 
 #### `getPublishedProjectSlugs()`
+
 Fetches all published project slugs for SSG.
 
 **Returns:** `Promise<Array<{ slug: string }>>`
 
 **Example:**
+
 ```typescript
 export async function generateStaticParams() {
   return await getPublishedProjectSlugs();
@@ -170,29 +179,35 @@ export async function generateStaticParams() {
 ```
 
 #### `getAdjacentProjects(currentOrder: number)`
+
 Gets previous and next projects for navigation.
 
 **Parameters:**
+
 - `currentOrder`: The display order of the current project
 
 **Returns:** `Promise<AdjacentProjects>`
 
 **Example:**
+
 ```typescript
 const { prev, next } = await getAdjacentProjects(5);
 ```
 
 #### `getProjectWithAdjacent(slug: string)`
+
 Fetches a project with its adjacent projects in one call.
 
 **Parameters:**
+
 - `slug`: The project slug
 
 **Returns:** `Promise<ProjectWithAdjacent>`
 
 **Example:**
+
 ```typescript
-const { project, prev, next } = await getProjectWithAdjacent('my-project');
+const { project, prev, next } = await getProjectWithAdjacent("my-project");
 ```
 
 ---
@@ -200,51 +215,62 @@ const { project, prev, next } = await getProjectWithAdjacent('my-project');
 ### Blog Posts
 
 #### `getPublishedPosts(limit?: number)`
+
 Fetches published blog posts, ordered by publish date (newest first).
 
 **Parameters:**
+
 - `limit` (optional): Maximum number of posts
 
 **Returns:** `Promise<PublicBlogPost[]>`
 
 **Example:**
+
 ```typescript
 const allPosts = await getPublishedPosts();
 const recentPosts = await getPublishedPosts(5);
 ```
 
 #### `getRecentPosts(limit?: number)`
+
 Alias for `getPublishedPosts` with default limit of 3.
 
 **Parameters:**
+
 - `limit` (optional): Maximum number of posts (default: 3)
 
 **Returns:** `Promise<PublicBlogPost[]>`
 
 **Example:**
+
 ```typescript
 const recent = await getRecentPosts();
 ```
 
 #### `getPostBySlug(slug: string)`
+
 Fetches a single published blog post by slug (full object).
 
 **Parameters:**
+
 - `slug`: The blog post slug
 
 **Returns:** `Promise<BlogPost | null>`
 
 **Example:**
+
 ```typescript
-const post = await getPostBySlug('my-first-post');
+const post = await getPostBySlug("my-first-post");
 ```
 
 #### `getPublishedPostSlugs()`
+
 Fetches all published blog post slugs for SSG.
 
 **Returns:** `Promise<Array<{ slug: string }>>`
 
 **Example:**
+
 ```typescript
 export async function generateStaticParams() {
   return await getPublishedPostSlugs();
@@ -252,27 +278,32 @@ export async function generateStaticParams() {
 ```
 
 #### `getAllTags()`
+
 Fetches all unique tags from published posts.
 
 **Returns:** `Promise<string[]>`
 
 **Example:**
+
 ```typescript
 const tags = await getAllTags();
 // ['react', 'typescript', 'nextjs']
 ```
 
 #### `getPostsByTag(tag: string)`
+
 Fetches published blog posts filtered by tag.
 
 **Parameters:**
+
 - `tag`: The tag to filter by
 
 **Returns:** `Promise<PublicBlogPost[]>`
 
 **Example:**
+
 ```typescript
-const reactPosts = await getPostsByTag('react');
+const reactPosts = await getPostsByTag("react");
 ```
 
 ---
@@ -280,62 +311,74 @@ const reactPosts = await getPostsByTag('react');
 ### About Page Content
 
 #### `getSkills()`
+
 Fetches all visible skills, ordered by display order.
 
 **Returns:** `Promise<Skill[]>`
 
 **Example:**
+
 ```typescript
 const skills = await getSkills();
 ```
 
 #### `getSkillsByCategory()`
+
 Fetches skills grouped by category.
 
 **Returns:** `Promise<SkillsByCategory>`
 
 **Example:**
+
 ```typescript
 const skillGroups = await getSkillsByCategory();
 // { 'Frontend': [...], 'Backend': [...], 'DevOps': [...] }
 ```
 
 #### `getExperiences()`
+
 Fetches all visible work experiences, ordered by display order.
 
 **Returns:** `Promise<Experience[]>`
 
 **Example:**
+
 ```typescript
 const experiences = await getExperiences();
 ```
 
 #### `getEducation()`
+
 Fetches all visible education entries, ordered by display order.
 
 **Returns:** `Promise<Education[]>`
 
 **Example:**
+
 ```typescript
 const education = await getEducation();
 ```
 
 #### `getCertifications()`
+
 Fetches all visible certifications, ordered by display order.
 
 **Returns:** `Promise<Certification[]>`
 
 **Example:**
+
 ```typescript
 const certs = await getCertifications();
 ```
 
 #### `getAboutPageData()`
+
 Fetches all about page content in parallel for better performance.
 
 **Returns:** `Promise<AboutPageData>`
 
 **Example:**
+
 ```typescript
 const { skills, experiences, education, certifications } = await getAboutPageData();
 ```
@@ -345,11 +388,13 @@ const { skills, experiences, education, certifications } = await getAboutPageDat
 ### Site Settings
 
 #### `getSiteSettings()`
+
 Fetches site settings (singleton).
 
 **Returns:** `Promise<SiteSettings | null>`
 
 **Example:**
+
 ```typescript
 const settings = await getSiteSettings();
 ```
@@ -363,6 +408,7 @@ All functions include error handling and return safe defaults:
 - All errors are logged to console for debugging
 
 **Example with null handling:**
+
 ```typescript
 const project = await getProjectBySlug(slug);
 
@@ -390,7 +436,7 @@ await prisma.project.findMany({
     slug: true,
     title: true,
     // ... only what's needed
-  }
+  },
 });
 ```
 
@@ -411,11 +457,11 @@ const [hero, projects, posts] = await Promise.all([
 Leverage Next.js cache and revalidation:
 
 ```typescript
-import { unstable_cache } from 'next/cache';
+import { unstable_cache } from "next/cache";
 
 export const getCachedHero = unstable_cache(
   async () => getHero(),
-  ['hero'],
+  ["hero"],
   { revalidate: 3600 } // 1 hour
 );
 ```
@@ -433,7 +479,7 @@ import type {
   ProjectWithAdjacent,
   AboutPageData,
   SkillsByCategory,
-} from '@/lib/data';
+} from "@/lib/data";
 ```
 
 ## Best Practices
@@ -459,23 +505,23 @@ import type {
 Example test for a data function:
 
 ```typescript
-import { getPublishedProjects } from '@/lib/data';
+import { getPublishedProjects } from "@/lib/data";
 
-describe('getPublishedProjects', () => {
-  it('should return only published projects', async () => {
+describe("getPublishedProjects", () => {
+  it("should return only published projects", async () => {
     const projects = await getPublishedProjects();
-    
+
     expect(projects).toBeInstanceOf(Array);
-    projects.forEach(project => {
-      expect(project).toHaveProperty('slug');
-      expect(project).toHaveProperty('title');
+    projects.forEach((project) => {
+      expect(project).toHaveProperty("slug");
+      expect(project).toHaveProperty("title");
     });
   });
 
-  it('should handle errors gracefully', async () => {
+  it("should handle errors gracefully", async () => {
     // Mock Prisma error
-    jest.spyOn(prisma.project, 'findMany').mockRejectedValueOnce(new Error('DB Error'));
-    
+    jest.spyOn(prisma.project, "findMany").mockRejectedValueOnce(new Error("DB Error"));
+
     const projects = await getPublishedProjects();
     expect(projects).toEqual([]);
   });
@@ -497,6 +543,7 @@ describe('getPublishedProjects', () => {
 ### Issue: "TypeError: Cannot read property of null"
 
 **Solution:** Add null checks for all data fetching results:
+
 ```typescript
 const project = await getProjectBySlug(slug);
 if (!project) return notFound();
@@ -504,7 +551,8 @@ if (!project) return notFound();
 
 ### Issue: Slow page loads
 
-**Solution:** 
+**Solution:**
+
 1. Check if you're fetching unnecessary fields
 2. Use parallel queries with `Promise.all`
 3. Add Next.js caching/revalidation

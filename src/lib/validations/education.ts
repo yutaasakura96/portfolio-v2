@@ -4,7 +4,10 @@ export const educationCreateSchema = z.object({
   institution: z.string().min(1).max(200),
   degree: z.string().min(1).max(200),
   field: z.string().min(1).max(200),
-  startDate: z.preprocess((val) => (val === "" ? null : val), z.coerce.date().optional().nullable()),
+  startDate: z.preprocess(
+    (val) => (val === "" ? null : val),
+    z.coerce.date().optional().nullable()
+  ),
   endDate: z.preprocess((val) => (val === "" ? null : val), z.coerce.date().optional().nullable()),
   achievements: z.string().max(5000).optional().or(z.literal("")),
   logoUrl: z.url().or(z.literal("")).optional(),
