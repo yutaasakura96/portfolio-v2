@@ -4,7 +4,8 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Blog",
-  description: "Thoughts on web development, software engineering, and technology.",
+  description:
+    "Technical blog posts by Yuta Asakura on web development, AWS, TypeScript, and software engineering.",
 };
 
 export const revalidate = 1800;

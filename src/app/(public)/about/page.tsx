@@ -12,7 +12,8 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "About",
-  description: "Learn about my skills, experience, education, and certifications.",
+  description:
+    "Learn about Yuta Asakura's background, skills, experience, and education in full-stack web development.",
 };
 
 // Revalidate daily (86400 seconds = 24 hours)

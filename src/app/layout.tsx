@@ -17,13 +17,51 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://asakurayuta.dev"),
   title: {
     default: "Yuta Asakura | Full-Stack Developer",
     template: "%s | Yuta Asakura",
   },
   description:
-    "Full-stack developer specializing in React, Next.js, and AWS. View my projects, blog posts, and experience.",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
+    "Full-stack developer portfolio showcasing projects built with Next.js, TypeScript, AWS, and modern web technologies.",
+  keywords: [
+    "full-stack developer",
+    "software engineer",
+    "web developer",
+    "Next.js",
+    "TypeScript",
+    "AWS",
+    "React",
+    "portfolio",
+  ],
+  authors: [{ name: "Yuta Asakura" }],
+  creator: "Yuta Asakura",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: process.env.NEXT_PUBLIC_APP_URL || "https://asakurayuta.dev",
+    siteName: "Yuta Asakura | Portfolio",
+    title: "Yuta Asakura | Full-Stack Developer",
+    description:
+      "Full-stack developer portfolio showcasing projects built with Next.js, TypeScript, AWS, and modern web technologies.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Yuta Asakura | Full-Stack Developer",
+    description:
+      "Full-stack developer portfolio showcasing projects built with Next.js, TypeScript, AWS, and modern web technologies.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({

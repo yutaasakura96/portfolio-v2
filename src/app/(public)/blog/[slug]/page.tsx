@@ -1,3 +1,4 @@
+import { BreadcrumbJsonLd } from "@/components/public/BreadcrumbJsonLd";
 import { JsonLd } from "@/components/public/JsonLd";
 import { getPostBySlug, getPublishedPostSlugs } from "@/lib/data/public-queries";
 import { markdownToHtml } from "@/lib/markdown";
@@ -32,12 +33,14 @@ export async function generateMetadata({
       description: post.excerpt,
       type: "article",
       publishedTime: post.publishedAt?.toISOString(),
-      ...(post.featuredImage
-        ? { images: [{ url: post.featuredImage, width: 1200, height: 630 }] }
-        : {}),
+      tags: post.tags,
+      // images — handled automatically by co-located opengraph-image.tsx
     },
     twitter: {
       card: "summary_large_image",
+      title: post.title,
+      description: post.excerpt,
+      // images — handled automatically by co-located opengraph-image.tsx
     },
   };
 }
@@ -54,6 +57,13 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
   return (
     <article className="mx-auto max-w-3xl px-4 sm:px-6 py-12">
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: "https://asakurayuta.dev" },
+          { name: "Blog", url: "https://asakurayuta.dev/blog" },
+          { name: post.title, url: `https://asakurayuta.dev/blog/${post.slug}` },
+        ]}
+      />
       <JsonLd
         data={{
           "@context": "https://schema.org",

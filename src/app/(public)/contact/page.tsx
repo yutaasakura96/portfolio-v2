@@ -4,7 +4,8 @@ import { Mail, MapPin } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: "Get in touch with me for collaborations, projects, or just to say hello.",
+  description:
+    "Get in touch with Yuta Asakura. Send a message through the contact form for project inquiries or collaboration.",
 };
 
 export default function ContactPage() {

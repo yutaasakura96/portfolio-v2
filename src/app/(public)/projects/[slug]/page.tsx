@@ -1,3 +1,4 @@
+import { BreadcrumbJsonLd } from "@/components/public/BreadcrumbJsonLd";
 import { ImageGallery } from "@/components/public/ImageGallery";
 import { JsonLd } from "@/components/public/JsonLd";
 import {
@@ -35,11 +36,14 @@ export async function generateMetadata({
     openGraph: {
       title: project.title,
       description: project.shortDescription,
-      images: [{ url: project.thumbnailImage, width: 1200, height: 630 }],
       type: "article",
+      // images — handled automatically by co-located opengraph-image.tsx
     },
     twitter: {
       card: "summary_large_image",
+      title: project.title,
+      description: project.shortDescription,
+      // images — handled automatically by co-located opengraph-image.tsx
     },
   };
 }
@@ -77,6 +81,13 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
   return (
     <article className="mx-auto max-w-3xl px-4 sm:px-6 py-12">
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: "https://asakurayuta.dev" },
+          { name: "Projects", url: "https://asakurayuta.dev/projects" },
+          { name: project.title, url: `https://asakurayuta.dev/projects/${project.slug}` },
+        ]}
+      />
       <JsonLd
         data={{
           "@context": "https://schema.org",
