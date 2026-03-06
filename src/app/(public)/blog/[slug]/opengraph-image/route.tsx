@@ -3,23 +3,20 @@ import { prisma } from "@/lib/prismaClient";
 
 export const runtime = "nodejs";
 
-export const alt = "Project";
-export const size = { width: 1200, height: 630 };
-export const contentType = "image/png";
+const size = { width: 1200, height: 630 };
 
-export default async function ProjectOgImage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export async function GET(
+  _request: Request,
+  { params }: { params: Promise<{ slug: string }> }
+) {
   const { slug } = await params;
 
-  const project = await prisma.project.findUnique({
+  const post = await prisma.blogPost.findUnique({
     where: { slug, status: "PUBLISHED" },
-    select: { title: true, shortDescription: true, techTags: true },
+    select: { title: true, excerpt: true, tags: true, readTime: true },
   });
 
-  if (!project) {
+  if (!post) {
     return new ImageResponse(
       (
         <div
@@ -35,14 +32,14 @@ export default async function ProjectOgImage({
             fontFamily: "sans-serif",
           }}
         >
-          Project Not Found
+          Post Not Found
         </div>
       ),
       { ...size }
     );
   }
 
-  const tags = (project.techTags ?? []).slice(0, 4);
+  const tags = (post.tags ?? []).slice(0, 4);
 
   return new ImageResponse(
     (
@@ -58,22 +55,44 @@ export default async function ProjectOgImage({
           fontFamily: "sans-serif",
         }}
       >
-        {/* Label */}
+        {/* Label + read time */}
         <div
           style={{
-            fontSize: 16,
-            fontWeight: 600,
-            color: "#3b82f6",
-            textTransform: "uppercase",
-            letterSpacing: "0.1em",
-            marginBottom: 20,
             display: "flex",
+            alignItems: "center",
+            gap: 12,
+            marginBottom: 20,
           }}
         >
-          Project
+          <div
+            style={{
+              fontSize: 16,
+              fontWeight: 600,
+              color: "#3b82f6",
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
+              display: "flex",
+            }}
+          >
+            Blog
+          </div>
+          {post.readTime && (
+            <>
+              <div style={{ color: "#475569", display: "flex" }}>·</div>
+              <div
+                style={{
+                  fontSize: 16,
+                  color: "#64748b",
+                  display: "flex",
+                }}
+              >
+                {post.readTime} min read
+              </div>
+            </>
+          )}
         </div>
 
-        {/* Project title */}
+        {/* Post title */}
         <div
           style={{
             fontSize: 52,
@@ -85,13 +104,11 @@ export default async function ProjectOgImage({
             maxWidth: "90%",
           }}
         >
-          {project.title.length > 60
-            ? project.title.slice(0, 57) + "..."
-            : project.title}
+          {post.title.length > 70 ? post.title.slice(0, 67) + "..." : post.title}
         </div>
 
-        {/* Description */}
-        {project.shortDescription && (
+        {/* Excerpt */}
+        {post.excerpt && (
           <div
             style={{
               fontSize: 22,
@@ -102,9 +119,9 @@ export default async function ProjectOgImage({
               maxWidth: "85%",
             }}
           >
-            {project.shortDescription.length > 120
-              ? project.shortDescription.slice(0, 117) + "..."
-              : project.shortDescription}
+            {post.excerpt.length > 130
+              ? post.excerpt.slice(0, 127) + "..."
+              : post.excerpt}
           </div>
         )}
 

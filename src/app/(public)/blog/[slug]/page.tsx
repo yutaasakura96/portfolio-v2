@@ -34,13 +34,13 @@ export async function generateMetadata({
       type: "article",
       publishedTime: post.publishedAt?.toISOString(),
       tags: post.tags,
-      // images — handled automatically by co-located opengraph-image.tsx
+      images: [{ url: `/blog/${slug}/opengraph-image`, width: 1200, height: 630 }],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.excerpt,
-      // images — handled automatically by co-located opengraph-image.tsx
+      images: [`/blog/${slug}/opengraph-image`],
     },
   };
 }
