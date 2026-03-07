@@ -3,7 +3,6 @@ import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
 import remarkRehype from "remark-rehype";
 import rehypeSlug from "rehype-slug";
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeHighlight from "rehype-highlight";
 import rehypeStringify from "rehype-stringify";
 
@@ -33,7 +32,6 @@ export async function markdownToHtml(markdown: string): Promise<string> {
       .use(remarkGfm)
       .use(remarkRehype, { allowDangerousHtml: false })
       .use(rehypeSlug)
-      .use(rehypeAutolinkHeadings, { behavior: "wrap" })
       .use(rehypeHighlight, { detect: true })
       .use(rehypeStringify)
       .process(markdown);
