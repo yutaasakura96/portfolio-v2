@@ -13,7 +13,15 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Trash2 } from "lucide-react";
 import { useEffect } from "react";
 import { ImageUpload } from "@/components/admin/ImageUpload";
-import { useFieldArray, useForm, useWatch } from "react-hook-form";
+import {
+  Control,
+  UseFormRegister,
+  UseFormSetValue,
+  FieldErrors,
+  useFieldArray,
+  useForm,
+  useWatch,
+} from "react-hook-form";
 import { toast } from "sonner";
 
 type Hero = {
@@ -30,6 +38,131 @@ type Hero = {
 type HeroResponse = {
   data: Hero;
 };
+
+const selectClass =
+  "flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50";
+
+interface CtaButtonRowProps {
+  index: number;
+  control: Control<HeroUpdateInput>;
+  register: UseFormRegister<HeroUpdateInput>;
+  setValue: UseFormSetValue<HeroUpdateInput>;
+  errors: FieldErrors<HeroUpdateInput>;
+  resumeUrl: string | undefined;
+  onRemove: () => void;
+}
+
+function CtaButtonRow({
+  index,
+  control,
+  register,
+  setValue,
+  errors,
+  resumeUrl,
+  onRemove,
+}: CtaButtonRowProps) {
+  const buttonType = useWatch({ control, name: `ctaButtons.${index}.type` });
+  const isResume = buttonType === "resume";
+
+  return (
+    <div className="p-4 border rounded-lg space-y-3 bg-muted/10">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium">Button {index + 1}</span>
+        <Button type="button" variant="ghost" size="sm" onClick={onRemove}>
+          <Trash2 className="w-4 h-4 text-red-500" />
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="space-y-2">
+          <Label htmlFor={`ctaButtons.${index}.label`}>
+            Label <span className="text-red-500">*</span>
+          </Label>
+          <Input
+            id={`ctaButtons.${index}.label`}
+            {...register(`ctaButtons.${index}.label` as const)}
+            placeholder="View Projects"
+            aria-invalid={!!errors.ctaButtons?.[index]?.label}
+          />
+          {errors.ctaButtons?.[index]?.label && (
+            <p className="text-sm text-red-500">
+              {errors.ctaButtons[index]?.label?.message}
+            </p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor={`ctaButtons.${index}.type`}>Type</Label>
+          <select
+            id={`ctaButtons.${index}.type`}
+            {...register(`ctaButtons.${index}.type` as const, {
+              onChange: (e) => {
+                if (e.target.value === "resume") {
+                  setValue(`ctaButtons.${index}.url` as const, resumeUrl ?? "", {
+                    shouldDirty: true,
+                  });
+                }
+              },
+            })}
+            className={selectClass}
+          >
+            <option value="link">Link</option>
+            <option value="resume">Resume</option>
+          </select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor={`ctaButtons.${index}.variant`}>
+            Style <span className="text-red-500">*</span>
+          </Label>
+          <select
+            id={`ctaButtons.${index}.variant`}
+            {...register(`ctaButtons.${index}.variant` as const)}
+            className={selectClass}
+          >
+            <option value="primary">Primary</option>
+            <option value="secondary">Secondary</option>
+          </select>
+          {errors.ctaButtons?.[index]?.variant && (
+            <p className="text-sm text-red-500">
+              {errors.ctaButtons[index]?.variant?.message}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {!isResume && (
+        <div className="space-y-2">
+          <Label htmlFor={`ctaButtons.${index}.url`}>
+            URL <span className="text-red-500">*</span>
+          </Label>
+          <Input
+            id={`ctaButtons.${index}.url`}
+            {...register(`ctaButtons.${index}.url` as const)}
+            placeholder="/projects or https://..."
+            aria-invalid={!!errors.ctaButtons?.[index]?.url}
+          />
+          {errors.ctaButtons?.[index]?.url && (
+            <p className="text-sm text-red-500">
+              {errors.ctaButtons[index]?.url?.message}
+            </p>
+          )}
+        </div>
+      )}
+
+      {isResume && (
+        <p className="text-xs text-muted-foreground">
+          This button will open a resume preview modal with a download option.
+          {!resumeUrl && (
+            <span className="text-amber-600 font-medium ml-1">
+              No resume uploaded yet — upload one in the Resume field above.
+            </span>
+          )}
+        </p>
+      )}
+    </div>
+  );
+}
 
 export default function HeroEditorPage() {
   const queryClient = useQueryClient();
@@ -187,7 +320,7 @@ export default function HeroEditorPage() {
                 aspectRatio="aspect-square"
                 placeholder="Upload your headshot"
                 onUpload={(result) => {
-                  form.setValue("profileImage", result.urls.display || result.urls.original, {
+                  form.setValue("profileImage", result.urls.original || result.urls.display, {
                     shouldDirty: true,
                   });
                 }}
@@ -243,14 +376,14 @@ export default function HeroEditorPage() {
                   <Label>Call-to-Action Buttons</Label>
                   <p className="text-xs text-muted-foreground mt-1">
                     Add up to 4 buttons for the hero section (e.g., &quot;View Projects&quot;,
-                    &quot;Contact Me&quot;)
+                    &quot;Contact Me&quot;, &quot;Resume&quot;)
                   </p>
                 </div>
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => append({ label: "", url: "", variant: "primary" })}
+                  onClick={() => append({ label: "", url: "", variant: "primary", type: "link" })}
                   disabled={fields.length >= 4}
                 >
                   <Plus className="w-4 h-4 mr-1" /> Add Button
@@ -260,74 +393,16 @@ export default function HeroEditorPage() {
               {fields.length > 0 && (
                 <div className="space-y-4">
                   {fields.map((field, index) => (
-                    <div key={field.id} className="p-4 border rounded-lg space-y-3 bg-muted/10">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">Button {index + 1}</span>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => remove(index)}
-                        >
-                          <Trash2 className="w-4 h-4 text-red-500" />
-                        </Button>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div className="space-y-2">
-                          <Label htmlFor={`ctaButtons.${index}.label`}>
-                            Label <span className="text-red-500">*</span>
-                          </Label>
-                          <Input
-                            id={`ctaButtons.${index}.label`}
-                            {...form.register(`ctaButtons.${index}.label` as const)}
-                            placeholder="View Projects"
-                            aria-invalid={!!form.formState.errors.ctaButtons?.[index]?.label}
-                          />
-                          {form.formState.errors.ctaButtons?.[index]?.label && (
-                            <p className="text-sm text-red-500">
-                              {form.formState.errors.ctaButtons[index]?.label?.message}
-                            </p>
-                          )}
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor={`ctaButtons.${index}.variant`}>
-                            Style <span className="text-red-500">*</span>
-                          </Label>
-                          <select
-                            id={`ctaButtons.${index}.variant`}
-                            {...form.register(`ctaButtons.${index}.variant` as const)}
-                            className="flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                          >
-                            <option value="primary">Primary</option>
-                            <option value="secondary">Secondary</option>
-                          </select>
-                          {form.formState.errors.ctaButtons?.[index]?.variant && (
-                            <p className="text-sm text-red-500">
-                              {form.formState.errors.ctaButtons[index]?.variant?.message}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor={`ctaButtons.${index}.url`}>
-                          URL <span className="text-red-500">*</span>
-                        </Label>
-                        <Input
-                          id={`ctaButtons.${index}.url`}
-                          {...form.register(`ctaButtons.${index}.url` as const)}
-                          placeholder="/projects or https://..."
-                          aria-invalid={!!form.formState.errors.ctaButtons?.[index]?.url}
-                        />
-                        {form.formState.errors.ctaButtons?.[index]?.url && (
-                          <p className="text-sm text-red-500">
-                            {form.formState.errors.ctaButtons[index]?.url?.message}
-                          </p>
-                        )}
-                      </div>
-                    </div>
+                    <CtaButtonRow
+                      key={field.id}
+                      index={index}
+                      control={form.control}
+                      register={form.register}
+                      setValue={form.setValue}
+                      errors={form.formState.errors}
+                      resumeUrl={resumeUrl}
+                      onRemove={() => remove(index)}
+                    />
                   ))}
                 </div>
               )}

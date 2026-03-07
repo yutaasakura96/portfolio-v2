@@ -1,11 +1,16 @@
+"use client";
+
 import type { Hero } from "@/lib/data/types";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
+import { ResumeModal } from "./ResumeModal";
 
 interface CtaButton {
   label: string;
   url: string;
   variant: "primary" | "secondary";
+  type?: "link" | "resume";
 }
 
 interface HeroSectionProps {
@@ -14,6 +19,12 @@ interface HeroSectionProps {
 
 export function HeroSection({ hero }: HeroSectionProps) {
   const ctaButtons = (hero.ctaButtons as unknown as CtaButton[]) ?? [];
+  const [resumeOpen, setResumeOpen] = useState(false);
+
+  const primaryClass =
+    "inline-flex items-center px-6 py-3 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 transition-colors";
+  const secondaryClass =
+    "inline-flex items-center px-6 py-3 rounded-lg border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors";
 
   return (
     <section className="relative py-20 sm:py-28">
@@ -30,19 +41,25 @@ export function HeroSection({ hero }: HeroSectionProps) {
             {/* CTA Buttons */}
             {ctaButtons.length > 0 && (
               <div className="mt-8 flex flex-wrap gap-3 justify-center md:justify-start">
-                {ctaButtons.map((btn) => (
-                  <Link
-                    key={btn.url}
-                    href={btn.url}
-                    className={
-                      btn.variant === "primary"
-                        ? "inline-flex items-center px-6 py-3 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 transition-colors"
-                        : "inline-flex items-center px-6 py-3 rounded-lg border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors"
-                    }
-                  >
-                    {btn.label}
-                  </Link>
-                ))}
+                {ctaButtons.map((btn, i) =>
+                  btn.type === "resume" ? (
+                    <button
+                      key={i}
+                      onClick={() => setResumeOpen(true)}
+                      className={btn.variant === "primary" ? primaryClass : secondaryClass}
+                    >
+                      {btn.label}
+                    </button>
+                  ) : (
+                    <Link
+                      key={btn.url}
+                      href={btn.url}
+                      className={btn.variant === "primary" ? primaryClass : secondaryClass}
+                    >
+                      {btn.label}
+                    </Link>
+                  )
+                )}
               </div>
             )}
           </div>
@@ -50,7 +67,7 @@ export function HeroSection({ hero }: HeroSectionProps) {
           {/* Profile Image */}
           {hero.profileImage && (
             <div className="shrink-0">
-              <div className="relative h-48 w-48 sm:h-56 sm:w-56 overflow-hidden rounded-full border-4 border-gray-100 shadow-lg">
+              <div className="relative h-48 w-48 sm:h-56 sm:w-56 overflow-hidden rounded-xl">
                 <Image
                   src={hero.profileImage}
                   alt="Profile photo"
@@ -64,6 +81,14 @@ export function HeroSection({ hero }: HeroSectionProps) {
           )}
         </div>
       </div>
+
+      {hero.resumeUrl && (
+        <ResumeModal
+          open={resumeOpen}
+          onClose={() => setResumeOpen(false)}
+          resumeUrl={hero.resumeUrl}
+        />
+      )}
     </section>
   );
 }

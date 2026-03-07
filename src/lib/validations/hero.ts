@@ -10,8 +10,9 @@ export const heroUpdateSchema = z.object({
     .array(
       z.object({
         label: z.string().min(1).max(50),
-        url: z.string().min(1),
+        url: z.string(),
         variant: z.enum(["primary", "secondary"]),
+        type: z.enum(["link", "resume"]).optional(),
       })
     )
     .max(4)
