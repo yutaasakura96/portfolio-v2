@@ -13,6 +13,7 @@ import {
   Mail,
   Settings,
   Sparkles,
+  User,
   X,
 } from "lucide-react";
 import Link from "next/link";
@@ -33,6 +34,7 @@ const navItems: NavItem[] = [
   { href: "/admin/projects", label: "Projects", icon: FolderKanban },
   { href: "/admin/blog", label: "Blog", icon: FileText },
   { href: "/admin/messages", label: "Messages", icon: Mail, badge: <UnreadBadge /> },
+  { href: "/admin/about", label: "About", icon: User },
   { href: "/admin/skills", label: "Skills", icon: Sparkles },
   { href: "/admin/experience", label: "Experience", icon: Briefcase },
   { href: "/admin/education", label: "Education", icon: GraduationCap },

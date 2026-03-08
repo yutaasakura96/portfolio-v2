@@ -166,6 +166,20 @@ model ContactMessage {
   @@index([read, archived, createdAt])
 }
 
+// ═══ ABOUT PAGE (singleton) ═══
+model AboutPage {
+  id              String   @id @default("default")
+  heading         String   @db.VarChar(200)
+  subheading      String   @db.VarChar(500)
+  profileName     String?  @db.VarChar(100)
+  profileTitle    String?  @db.VarChar(150)
+  profileCompany  String?  @db.VarChar(150)
+  profileImageUrl String?  @db.Text
+  introHeadline   String?  @db.VarChar(200)
+  introBio        String?  @db.Text
+  updatedAt       DateTime @updatedAt
+}
+
 // ═══ SITE SETTINGS (singleton) ═══
 model SiteSettings {
   id                String   @id @default("default")

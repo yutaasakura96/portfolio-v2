@@ -42,7 +42,9 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
     );
   }
 
-  const education = await prisma.education.create({ data: parsed.data });
+  const education = await prisma.education.create({
+    data: { ...parsed.data, field: parsed.data.field ?? "" },
+  });
 
   revalidatePath("/about");
 

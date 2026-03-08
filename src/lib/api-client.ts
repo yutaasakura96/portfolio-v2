@@ -100,6 +100,17 @@ class ApiClient {
     });
   }
 
+  getAboutPage<T = unknown>() {
+    return this.request<ApiResponse<T>>("/about");
+  }
+
+  updateAboutPage<TInput extends Record<string, unknown>, TOutput = unknown>(data: TInput) {
+    return this.request<ApiResponse<TOutput>>("/about", {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  }
+
   // ── Projects ──────────────────────────────────────
   getProjects<T = unknown, M = unknown>(params?: QueryParams) {
     const query = params ? "?" + new URLSearchParams(params).toString() : "";

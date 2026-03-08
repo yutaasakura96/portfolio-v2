@@ -86,8 +86,8 @@ export async function processProfileImage(
 ): Promise<{ display: ProcessedImage; original: ProcessedImage }> {
   const [display, original] = await Promise.all([
     sharp(inputBuffer)
-      .resize(400, 400, { fit: "cover", position: "center" })
-      .webp({ quality: 85 })
+      .resize(800, 800, { fit: "cover", position: "center" })
+      .webp({ quality: 95 })
       .toBuffer(),
 
     sharp(inputBuffer).rotate().webp({ quality: 90 }).toBuffer(),

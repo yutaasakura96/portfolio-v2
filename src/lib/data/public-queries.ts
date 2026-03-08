@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prismaClient";
 import type {
+  AboutPage,
   AboutPageData,
   AdjacentProjects,
   BlogPost,
@@ -16,6 +17,23 @@ import type {
   Skill,
   SkillsByCategory,
 } from "./types";
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ABOUT PAGE INTRO
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Fetch the About page intro content (singleton).
+ * Returns null if no record exists (page uses hardcoded fallbacks).
+ */
+export async function getAboutPageIntro(): Promise<AboutPage | null> {
+  try {
+    return await prisma.aboutPage.findUnique({ where: { id: "default" } });
+  } catch (error) {
+    console.error("Failed to fetch about page intro:", error);
+    return null;
+  }
+}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // HERO

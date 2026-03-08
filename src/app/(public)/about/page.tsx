@@ -1,12 +1,16 @@
+import { AboutProfileSection } from "@/components/public/about/AboutProfileSection";
 import { CertificationsSection } from "@/components/public/about/CertificationsSection";
 import { EducationSection } from "@/components/public/about/EducationSection";
 import { ExperienceSection } from "@/components/public/about/ExperienceSection";
 import { SkillsSection } from "@/components/public/about/SkillsSection";
 import {
+  getAboutPageIntro,
   getCertifications,
   getEducation,
   getExperiences,
+  getHero,
   getSkills,
+  getSiteSettings,
 } from "@/lib/data/public-queries";
 import { Metadata } from "next";
 
@@ -19,14 +23,27 @@ export const metadata: Metadata = {
 // Revalidate daily (86400 seconds = 24 hours)
 export const revalidate = 86400;
 
+const DEFAULT_HEADING = "About Me";
+const DEFAULT_SUBHEADING =
+  "My skills, professional experience, education, and certifications.";
+
+type SocialLinks = {
+  github?: string;
+  linkedin?: string;
+};
+
 export default async function AboutPage() {
   // Fetch all about page data in parallel for optimal performance
-  const [skills, experiences, education, certifications] = await Promise.all([
-    getSkills(),
-    getExperiences(),
-    getEducation(),
-    getCertifications(),
-  ]);
+  const [intro, skills, experiences, education, certifications, hero, siteSettings] =
+    await Promise.all([
+      getAboutPageIntro(),
+      getSkills(),
+      getExperiences(),
+      getEducation(),
+      getCertifications(),
+      getHero(),
+      getSiteSettings(),
+    ]);
 
   // Check if there's any content to display
   const hasContent =
@@ -35,14 +52,31 @@ export default async function AboutPage() {
     education.length > 0 ||
     certifications.length > 0;
 
+  const hasProfileSection =
+    intro &&
+    (intro.profileName || intro.introHeadline || intro.introBio);
+
+  const socialLinks = (siteSettings?.socialLinks as SocialLinks) ?? {};
+
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 py-12">
       <div className="mb-12">
-        <h1 className="text-3xl font-bold text-gray-900">About Me</h1>
+        <h1 className="text-3xl font-bold text-gray-900">
+          {intro?.heading ?? DEFAULT_HEADING}
+        </h1>
         <p className="mt-2 text-gray-600">
-          My skills, professional experience, education, and certifications.
+          {intro?.subheading ?? DEFAULT_SUBHEADING}
         </p>
       </div>
+
+      {hasProfileSection && (
+        <AboutProfileSection
+          intro={intro}
+          profileImage={intro?.profileImageUrl ?? hero?.profileImage}
+          email={siteSettings?.email}
+          socialLinks={socialLinks}
+        />
+      )}
 
       {!hasContent ? (
         <div className="text-center py-12">
