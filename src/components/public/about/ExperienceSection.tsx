@@ -104,6 +104,25 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
                         ))}
                       </ul>
                     )}
+
+                    {/* Tech Tags */}
+                    {exp.techTags && exp.techTags.length > 0 && (
+                      <div className="mt-3">
+                        <span className="text-xs text-gray-400 font-medium">
+                          Technologies used:
+                        </span>
+                        <div className="mt-1.5 flex flex-wrap gap-1.5">
+                          {exp.techTags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="inline-flex items-center px-2 py-0.5 rounded-md bg-gray-100 text-xs font-medium text-gray-600"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

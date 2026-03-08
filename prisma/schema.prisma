@@ -112,6 +112,7 @@ model Experience {
   endDate      DateTime?
   description  String    @db.Text
   highlights   String[]
+  techTags     String[]
   logoUrl      String?
   companyUrl   String?
   displayOrder Int       @default(0)

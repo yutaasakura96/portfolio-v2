@@ -29,6 +29,8 @@ export function ExperienceForm({ initialData, experienceId }: ExperienceFormProp
 
   const [highlights, setHighlights] = useState<string[]>(initialData?.highlights ?? []);
   const [newHighlight, setNewHighlight] = useState("");
+  const [techTags, setTechTags] = useState<string[]>(initialData?.techTags ?? []);
+  const [newTechTag, setNewTechTag] = useState("");
 
   const form = useForm<ExperienceCreateInput>({
     resolver: zodResolver(experienceCreateSchema) as Resolver<ExperienceCreateInput>,
@@ -45,6 +47,7 @@ export function ExperienceForm({ initialData, experienceId }: ExperienceFormProp
             : undefined,
           description: initialData.description,
           highlights: initialData.highlights ?? [],
+          techTags: initialData.techTags ?? [],
           logoUrl: initialData.logoUrl ?? "",
           companyUrl: initialData.companyUrl ?? "",
           displayOrder: initialData.displayOrder,
@@ -56,6 +59,7 @@ export function ExperienceForm({ initialData, experienceId }: ExperienceFormProp
           location: "",
           description: "",
           highlights: [],
+          techTags: [],
           logoUrl: "",
           companyUrl: "",
           displayOrder: 0,
@@ -92,6 +96,21 @@ export function ExperienceForm({ initialData, experienceId }: ExperienceFormProp
     const updatedHighlights = highlights.filter((_, i) => i !== index);
     setHighlights(updatedHighlights);
     form.setValue("highlights", updatedHighlights, { shouldValidate: true });
+  };
+
+  const handleAddTechTag = () => {
+    if (newTechTag.trim()) {
+      const updated = [...techTags, newTechTag.trim()];
+      setTechTags(updated);
+      form.setValue("techTags", updated, { shouldValidate: true });
+      setNewTechTag("");
+    }
+  };
+
+  const handleRemoveTechTag = (index: number) => {
+    const updated = techTags.filter((_, i) => i !== index);
+    setTechTags(updated);
+    form.setValue("techTags", updated, { shouldValidate: true });
   };
 
   const visible = useWatch({ control: form.control, name: "visible" });
@@ -265,6 +284,50 @@ export function ExperienceForm({ initialData, experienceId }: ExperienceFormProp
             )}
             <p className="text-xs text-muted-foreground">
               Add key achievements, responsibilities, or notable accomplishments
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="techTags">Technologies Used</Label>
+            <div className="flex gap-2">
+              <Input
+                id="techTags"
+                value={newTechTag}
+                onChange={(e) => setNewTechTag(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleAddTechTag();
+                  }
+                }}
+                placeholder="Add a technology (e.g. React, TypeScript)..."
+              />
+              <Button type="button" onClick={handleAddTechTag} variant="outline">
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+            {techTags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {techTags.map((tag, index) => (
+                  <span
+                    key={index}
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gray-100 text-xs font-medium text-gray-600"
+                  >
+                    {tag}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveTechTag(index)}
+                      aria-label={`Remove ${tag}`}
+                      className="ml-0.5 hover:text-red-500 transition-colors"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+            <p className="text-xs text-muted-foreground">
+              Add technologies, frameworks, and tools used in this role
             </p>
           </div>
 
