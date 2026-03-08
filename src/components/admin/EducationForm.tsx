@@ -135,7 +135,7 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="field">Field of Study *</Label>
+              <Label htmlFor="field">Field of Study</Label>
               <Input
                 id="field"
                 {...form.register("field")}
