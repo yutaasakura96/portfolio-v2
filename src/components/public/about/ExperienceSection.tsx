@@ -109,7 +109,7 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
                     {exp.techTags && exp.techTags.length > 0 && (
                       <div className="mt-3">
                         <span className="text-xs text-gray-400 font-medium">
-                          Technologies used:
+                          Technologies Used:
                         </span>
                         <div className="mt-1.5 flex flex-wrap gap-1.5">
                           {exp.techTags.map((tag) => (
