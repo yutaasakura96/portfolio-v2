@@ -1,3 +1,4 @@
+import "highlight.js/styles/github-dark.css";
 import { BreadcrumbJsonLd } from "@/components/public/BreadcrumbJsonLd";
 import { JsonLd } from "@/components/public/JsonLd";
 import { getPostBySlug, getPublishedPostSlugs } from "@/lib/data/public-queries";
