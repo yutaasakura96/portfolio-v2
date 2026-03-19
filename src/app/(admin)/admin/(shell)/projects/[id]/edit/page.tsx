@@ -3,7 +3,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
 import { Breadcrumbs } from "@/components/admin/Breadcrumbs";
-import { ProjectForm } from "@/components/admin/ProjectForm";
+import dynamic from "next/dynamic";
+
+const ProjectForm = dynamic(
+  () => import("@/components/admin/ProjectForm").then((m) => m.ProjectForm),
+  {
+    ssr: false,
+    loading: () => <div className="h-96 animate-pulse rounded-md bg-gray-100" />,
+  }
+);
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";

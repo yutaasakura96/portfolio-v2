@@ -1,7 +1,15 @@
 "use client";
 
 import { Breadcrumbs } from "@/components/admin/Breadcrumbs";
-import { EducationForm } from "@/components/admin/EducationForm";
+import dynamic from "next/dynamic";
+
+const EducationForm = dynamic(
+  () => import("@/components/admin/EducationForm").then((m) => m.EducationForm),
+  {
+    ssr: false,
+    loading: () => <div className="h-96 animate-pulse rounded-md bg-gray-100" />,
+  }
+);
 
 export default function NewEducationPage() {
   return (

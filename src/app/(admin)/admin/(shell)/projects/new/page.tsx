@@ -1,7 +1,15 @@
 "use client";
 
 import { Breadcrumbs } from "@/components/admin/Breadcrumbs";
-import { ProjectForm } from "@/components/admin/ProjectForm";
+import dynamic from "next/dynamic";
+
+const ProjectForm = dynamic(
+  () => import("@/components/admin/ProjectForm").then((m) => m.ProjectForm),
+  {
+    ssr: false,
+    loading: () => <div className="h-96 animate-pulse rounded-md bg-gray-100" />,
+  }
+);
 
 export default function NewProjectPage() {
   return (

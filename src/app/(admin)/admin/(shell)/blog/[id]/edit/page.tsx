@@ -4,7 +4,15 @@ import { use } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
 import { Breadcrumbs } from "@/components/admin/Breadcrumbs";
-import { BlogPostForm } from "@/components/admin/BlogPostForm";
+import dynamic from "next/dynamic";
+
+const BlogPostForm = dynamic(
+  () => import("@/components/admin/BlogPostForm").then((m) => m.BlogPostForm),
+  {
+    ssr: false,
+    loading: () => <div className="h-96 animate-pulse rounded-md bg-gray-100" />,
+  }
+);
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -57,7 +65,7 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ id: str
       <Breadcrumbs items={breadcrumbs} />
       <h1 className="text-2xl font-bold">Edit Post</h1>
       <BlogPostForm
-        initialData={(data as { data: Parameters<typeof BlogPostForm>[0]["initialData"] }).data}
+        initialData={(data as { data: { id: string; slug: string; title: string; content: string; excerpt: string; featuredImage: string | null; tags: string[]; status: "DRAFT" | "PUBLISHED"; publishedAt: string | null } }).data}
       />
     </div>
   );

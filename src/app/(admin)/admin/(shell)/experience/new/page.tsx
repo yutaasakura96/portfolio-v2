@@ -1,7 +1,15 @@
 "use client";
 
 import { Breadcrumbs } from "@/components/admin/Breadcrumbs";
-import { ExperienceForm } from "@/components/admin/ExperienceForm";
+import dynamic from "next/dynamic";
+
+const ExperienceForm = dynamic(
+  () => import("@/components/admin/ExperienceForm").then((m) => m.ExperienceForm),
+  {
+    ssr: false,
+    loading: () => <div className="h-96 animate-pulse rounded-md bg-gray-100" />,
+  }
+);
 
 export default function NewExperiencePage() {
   return (

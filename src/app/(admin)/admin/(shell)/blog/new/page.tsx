@@ -1,7 +1,15 @@
 "use client";
 
 import { Breadcrumbs } from "@/components/admin/Breadcrumbs";
-import { BlogPostForm } from "@/components/admin/BlogPostForm";
+import dynamic from "next/dynamic";
+
+const BlogPostForm = dynamic(
+  () => import("@/components/admin/BlogPostForm").then((m) => m.BlogPostForm),
+  {
+    ssr: false,
+    loading: () => <div className="h-96 animate-pulse rounded-md bg-gray-100" />,
+  }
+);
 
 export default function NewBlogPostPage() {
   return (

@@ -1,6 +1,14 @@
 "use client";
 
-import { ImageUpload } from "@/components/admin/ImageUpload";
+import dynamic from "next/dynamic";
+
+const ImageUpload = dynamic(
+  () => import("@/components/admin/ImageUpload").then((m) => m.ImageUpload),
+  {
+    ssr: false,
+    loading: () => <div className="h-40 animate-pulse rounded-md bg-gray-100" />,
+  }
+);
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
