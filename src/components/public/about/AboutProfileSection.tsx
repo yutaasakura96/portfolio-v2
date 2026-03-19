@@ -41,6 +41,7 @@ export function AboutProfileSection({
                 alt={intro.profileName ?? "Profile photo"}
                 fill
                 className="object-cover"
+                priority
                 sizes="176px"
               />
             </div>
