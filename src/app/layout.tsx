@@ -61,7 +61,10 @@ export default function RootLayout({
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
       <head>
         {process.env.NEXT_PUBLIC_CLOUDFRONT_URL && (
-          <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_CLOUDFRONT_URL} />
+          <>
+            <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_CLOUDFRONT_URL} />
+            <link rel="preconnect" href={process.env.NEXT_PUBLIC_CLOUDFRONT_URL} />
+          </>
         )}
       </head>
       <body className="font-sans antialiased">
