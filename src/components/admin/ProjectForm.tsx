@@ -375,7 +375,7 @@ export function ProjectForm({ initialData, projectId }: ProjectFormProps) {
               entityId={projectId}
               aspectRatio="aspect-video"
               onUpload={(result) => {
-                form.setValue("thumbnailImage", result.urls.thumbnail || result.urls.medium, {
+                form.setValue("thumbnailImage", result.urls.large || result.urls.medium, {
                   shouldDirty: true,
                 });
               }}

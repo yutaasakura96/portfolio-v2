@@ -37,10 +37,10 @@ export async function processImage(
       .webp({ quality: 80 })
       .toBuffer(),
 
-    // Medium: 800×600, quality 80
+    // Medium: 800×600, quality 85
     sharp(inputBuffer)
       .resize(800, 600, { fit: "inside", withoutEnlargement: true })
-      .webp({ quality: 80 })
+      .webp({ quality: 85 })
       .toBuffer(),
 
     // Large: 1600×1200, quality 85

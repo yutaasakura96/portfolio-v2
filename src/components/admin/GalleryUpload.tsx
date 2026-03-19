@@ -4,7 +4,8 @@ import { useState, useCallback } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { GripVertical, Plus, Trash2, Loader2 } from "lucide-react";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { GripVertical, Plus, Trash2, Loader2, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { useDropzone } from "react-dropzone";
 import { cn } from "@/lib/utils";
@@ -159,15 +160,38 @@ export function GalleryUpload({ value, onChange, entityId, disabled = false }: G
               </div>
 
               {/* Image preview */}
-              <div className="relative h-16 w-24 flex-shrink-0 overflow-hidden rounded bg-gray-100">
-                <Image
-                  src={img.url}
-                  alt={img.alt || "Gallery image"}
-                  fill
-                  className="object-cover"
-                  sizes="96px"
-                />
-              </div>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <button
+                    type="button"
+                    title="Click to preview"
+                    className="relative h-16 w-24 shrink-0 overflow-hidden rounded bg-gray-100 group/preview block cursor-pointer"
+                  >
+                    <Image
+                      src={img.url}
+                      alt={img.alt || "Gallery image"}
+                      fill
+                      className="object-cover"
+                      sizes="96px"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover/preview:opacity-100 transition-opacity">
+                      <Eye className="h-4 w-4 text-white" />
+                    </div>
+                  </button>
+                </DialogTrigger>
+                <DialogContent className="max-w-5xl p-2">
+                  <DialogTitle className="sr-only">Image preview</DialogTitle>
+                  <div className="relative w-full h-[80vh]">
+                    <Image
+                      src={img.url}
+                      alt={img.alt || "Gallery image"}
+                      fill
+                      className="object-contain"
+                      sizes="(max-width: 768px) 100vw, 75vw"
+                    />
+                  </div>
+                </DialogContent>
+              </Dialog>
 
               {/* Alt text input */}
               <Input

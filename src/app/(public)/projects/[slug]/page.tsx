@@ -160,12 +160,13 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
       {/* Thumbnail / Hero Image */}
       {project.thumbnailImage && (
-        <div className="relative aspect-video overflow-hidden rounded-xl bg-gray-100 mb-8">
+        <div className="rounded-xl overflow-hidden mb-8">
           <Image
             src={project.thumbnailImage}
             alt={project.title}
-            fill
-            className="object-cover"
+            width={1600}
+            height={1200}
+            className="w-full h-auto"
             priority
             sizes="(max-width: 768px) 100vw, 768px"
           />
