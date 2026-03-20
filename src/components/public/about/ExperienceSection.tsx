@@ -44,43 +44,41 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
                 <div className="flex items-start gap-4">
                   {/* Company Logo */}
                   {shouldShowImage && (
-                    <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-gray-100">
+                    <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg">
                       <Image
                         src={exp.logoUrl ?? ""}
                         alt={`${exp.company} logo`}
                         fill
-                        className="object-contain p-1"
-                        sizes="40px"
+                        className="object-contain"
+                        sizes="56px"
                         onError={() => handleImageError(exp.id)}
                       />
                     </div>
                   )}
 
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-semibold text-gray-900">{exp.role}</h3>
-
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
-                      <span className="text-sm text-gray-600">
-                        {exp.companyUrl ? (
-                          <a
-                            href={exp.companyUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded"
-                          >
-                            {exp.company}
-                          </a>
-                        ) : (
-                          exp.company
-                        )}
-                      </span>
-
-                      {exp.location && (
-                        <span className="text-sm text-gray-400">{exp.location}</span>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {exp.companyUrl ? (
+                        <a
+                          href={exp.companyUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded"
+                        >
+                          {exp.company}
+                        </a>
+                      ) : (
+                        exp.company
                       )}
-                    </div>
+                    </h3>
 
-                    <p className="text-sm text-gray-400 mt-1">
+                    <p className="text-sm font-medium text-gray-700 mt-0.5">{exp.role}</p>
+
+                    {exp.location && (
+                      <p className="text-sm text-gray-400 mt-0.5">{exp.location}</p>
+                    )}
+
+                    <p className="text-sm text-gray-400 mt-0.5">
                       {formatDateRange(exp.startDate, exp.endDate)}
                     </p>
 

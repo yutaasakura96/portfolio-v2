@@ -1,5 +1,6 @@
 "use client";
 
+import { ImageUpload } from "@/components/admin/ImageUpload";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -114,6 +115,7 @@ export function ExperienceForm({ initialData, experienceId }: ExperienceFormProp
   };
 
   const visible = useWatch({ control: form.control, name: "visible" });
+  const logoUrl = form.watch("logoUrl");
   const watchedStartDate = useWatch({
     control: form.control,
     name: "startDate",
@@ -350,17 +352,24 @@ export function ExperienceForm({ initialData, experienceId }: ExperienceFormProp
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="logoUrl">Logo URL</Label>
-              <Input
-                id="logoUrl"
-                type="url"
-                {...form.register("logoUrl")}
-                placeholder="https://..."
-                aria-invalid={!!form.formState.errors.logoUrl}
-                aria-describedby={form.formState.errors.logoUrl ? "logoUrl-error" : undefined}
+              <Label>Company Logo</Label>
+              <ImageUpload
+                value={logoUrl || undefined}
+                folder="logos"
+                entityId={experienceId || "new"}
+                aspectRatio="aspect-square"
+                placeholder="Upload company logo"
+                onUpload={(result) => {
+                  form.setValue("logoUrl", result.urls.display || result.urls.original, {
+                    shouldDirty: true,
+                  });
+                }}
+                onRemove={() => {
+                  form.setValue("logoUrl", "", { shouldDirty: true });
+                }}
               />
               {form.formState.errors.logoUrl && (
-                <p id="logoUrl-error" className="text-sm text-red-500">
+                <p className="text-sm text-red-500">
                   {form.formState.errors.logoUrl.message}
                 </p>
               )}
