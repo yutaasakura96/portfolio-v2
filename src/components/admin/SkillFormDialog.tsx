@@ -185,35 +185,33 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
 
           <div className="space-y-2">
             <Label>Image Icon (optional)</Label>
-            <div className="flex gap-3 items-start">
-              <div className="w-24 shrink-0">
-                <ImageUpload
-                  folder="logos"
-                  entityId={uploadEntityId.current}
-                  value={iconUrl || undefined}
-                  onUpload={(result) => {
-                    const url = result.urls.display ?? result.urls.original ?? "";
-                    form.setValue("iconUrl", url, { shouldValidate: true });
-                  }}
-                  onRemove={() => {
-                    form.setValue("iconUrl", "", { shouldValidate: true });
-                  }}
-                  aspectRatio="aspect-square"
-                  placeholder="Drop image"
-                />
-              </div>
-              <div className="flex-1 space-y-1">
-                <p className="text-xs text-muted-foreground">Upload an image, or paste a URL:</p>
-                <Input
-                  type="url"
-                  {...form.register("iconUrl")}
-                  placeholder="https://cdn.example.com/icon.svg"
-                  aria-invalid={!!form.formState.errors.iconUrl}
-                />
-                {form.formState.errors.iconUrl && (
-                  <p className="text-sm text-red-500">{form.formState.errors.iconUrl.message}</p>
-                )}
-              </div>
+            <div className="w-24">
+              <ImageUpload
+                folder="logos"
+                entityId={uploadEntityId.current}
+                value={iconUrl || undefined}
+                onUpload={(result) => {
+                  const url = result.urls.display ?? result.urls.original ?? "";
+                  form.setValue("iconUrl", url, { shouldValidate: true });
+                }}
+                onRemove={() => {
+                  form.setValue("iconUrl", "", { shouldValidate: true });
+                }}
+                aspectRatio="aspect-square"
+                placeholder="Drop image"
+              />
+            </div>
+            <div className="space-y-1">
+              <p className="text-xs text-muted-foreground">Upload an image, or paste a URL:</p>
+              <Input
+                type="url"
+                {...form.register("iconUrl")}
+                placeholder="https://cdn.example.com/icon.svg"
+                aria-invalid={!!form.formState.errors.iconUrl}
+              />
+              {form.formState.errors.iconUrl && (
+                <p className="text-sm text-red-500">{form.formState.errors.iconUrl.message}</p>
+              )}
             </div>
             <p className="text-xs text-muted-foreground">
               Image takes priority over emoji when both are set.

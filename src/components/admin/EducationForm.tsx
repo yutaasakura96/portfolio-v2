@@ -261,21 +261,23 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
               </p>
             )}
             <p className="text-xs text-muted-foreground">Or upload an image directly</p>
-            <ImageUpload
-              value={logoUrl || undefined}
-              folder="logos"
-              entityId={educationId || "new"}
-              aspectRatio="aspect-square"
-              placeholder="Upload institution logo"
-              onUpload={(result) => {
-                form.setValue("logoUrl", result.urls.display || result.urls.original, {
-                  shouldDirty: true,
-                });
-              }}
-              onRemove={() => {
-                form.setValue("logoUrl", "", { shouldDirty: true });
-              }}
-            />
+            <div className="max-w-xs">
+              <ImageUpload
+                value={logoUrl || undefined}
+                folder="logos"
+                entityId={educationId || "new"}
+                aspectRatio="aspect-square"
+                placeholder="Upload institution logo"
+                onUpload={(result) => {
+                  form.setValue("logoUrl", result.urls.display || result.urls.original, {
+                    shouldDirty: true,
+                  });
+                }}
+                onRemove={() => {
+                  form.setValue("logoUrl", "", { shouldDirty: true });
+                }}
+              />
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -283,25 +285,27 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
             <p className="text-xs text-muted-foreground">
               Upload diploma, transcript, or grade document (PDF or image)
             </p>
-            <ImageUpload
-              value={documentUrl || undefined}
-              folder="education"
-              entityId={educationId || "new"}
-              aspectRatio="aspect-video"
-              placeholder="Upload diploma, transcript, or grades"
-              accept={{
-                "application/pdf": [".pdf"],
-                "image/jpeg": [".jpg", ".jpeg"],
-                "image/png": [".png"],
-                "image/webp": [".webp"],
-              }}
-              onUpload={(result) => {
-                form.setValue("documentUrl", result.urls.original, { shouldDirty: true });
-              }}
-              onRemove={() => {
-                form.setValue("documentUrl", "", { shouldDirty: true });
-              }}
-            />
+            <div className="max-w-xs">
+              <ImageUpload
+                value={documentUrl || undefined}
+                folder="education"
+                entityId={educationId || "new"}
+                aspectRatio="aspect-video"
+                placeholder="Upload diploma, transcript, or grades"
+                accept={{
+                  "application/pdf": [".pdf"],
+                  "image/jpeg": [".jpg", ".jpeg"],
+                  "image/png": [".png"],
+                  "image/webp": [".webp"],
+                }}
+                onUpload={(result) => {
+                  form.setValue("documentUrl", result.urls.original, { shouldDirty: true });
+                }}
+                onRemove={() => {
+                  form.setValue("documentUrl", "", { shouldDirty: true });
+                }}
+              />
+            </div>
             {form.formState.errors.documentUrl && (
               <p className="text-sm text-red-500">{form.formState.errors.documentUrl.message}</p>
             )}

@@ -333,26 +333,26 @@ export function ExperienceForm({ initialData, experienceId }: ExperienceFormProp
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="companyUrl">Company URL</Label>
-              <Input
-                id="companyUrl"
-                type="url"
-                {...form.register("companyUrl")}
-                placeholder="https://..."
-                aria-invalid={!!form.formState.errors.companyUrl}
-                aria-describedby={form.formState.errors.companyUrl ? "companyUrl-error" : undefined}
-              />
-              {form.formState.errors.companyUrl && (
-                <p id="companyUrl-error" className="text-sm text-red-500">
-                  {form.formState.errors.companyUrl.message}
-                </p>
-              )}
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="companyUrl">Company URL</Label>
+            <Input
+              id="companyUrl"
+              type="url"
+              {...form.register("companyUrl")}
+              placeholder="https://..."
+              aria-invalid={!!form.formState.errors.companyUrl}
+              aria-describedby={form.formState.errors.companyUrl ? "companyUrl-error" : undefined}
+            />
+            {form.formState.errors.companyUrl && (
+              <p id="companyUrl-error" className="text-sm text-red-500">
+                {form.formState.errors.companyUrl.message}
+              </p>
+            )}
+          </div>
 
-            <div className="space-y-2">
-              <Label>Company Logo</Label>
+          <div className="space-y-2">
+            <Label>Company Logo</Label>
+            <div className="max-w-xs">
               <ImageUpload
                 value={logoUrl || undefined}
                 folder="logos"
@@ -368,12 +368,12 @@ export function ExperienceForm({ initialData, experienceId }: ExperienceFormProp
                   form.setValue("logoUrl", "", { shouldDirty: true });
                 }}
               />
-              {form.formState.errors.logoUrl && (
-                <p className="text-sm text-red-500">
-                  {form.formState.errors.logoUrl.message}
-                </p>
-              )}
             </div>
+            {form.formState.errors.logoUrl && (
+              <p className="text-sm text-red-500">
+                {form.formState.errors.logoUrl.message}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">

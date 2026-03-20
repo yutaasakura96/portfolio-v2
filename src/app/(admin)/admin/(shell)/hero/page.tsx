@@ -322,20 +322,22 @@ export default function HeroEditorPage() {
 
             <div className="space-y-2">
               <Label>Profile Image</Label>
-              <ImageUpload
-                value={profileImage}
-                folder="profile"
-                aspectRatio="aspect-square"
-                placeholder="Upload your headshot"
-                onUpload={(result) => {
-                  form.setValue("profileImage", result.urls.original || result.urls.display, {
-                    shouldDirty: true,
-                  });
-                }}
-                onRemove={() => {
-                  form.setValue("profileImage", "", { shouldDirty: true });
-                }}
-              />
+              <div className="max-w-xs">
+                <ImageUpload
+                  value={profileImage}
+                  folder="profile"
+                  aspectRatio="aspect-square"
+                  placeholder="Upload your headshot"
+                  onUpload={(result) => {
+                    form.setValue("profileImage", result.urls.original || result.urls.display, {
+                      shouldDirty: true,
+                    });
+                  }}
+                  onRemove={() => {
+                    form.setValue("profileImage", "", { shouldDirty: true });
+                  }}
+                />
+              </div>
               {form.formState.errors.profileImage && (
                 <p id="profileImage-error" className="text-sm text-red-500">
                   {form.formState.errors.profileImage.message}
@@ -345,19 +347,21 @@ export default function HeroEditorPage() {
 
             <div className="space-y-2">
               <Label>Resume (PDF)</Label>
-              <ImageUpload
-                value={resumeUrl ? "existing" : undefined}
-                folder="resume"
-                aspectRatio="aspect-[3/4]"
-                placeholder="Upload your resume (PDF)"
-                accept={{ "application/pdf": [".pdf"] }}
-                onUpload={(result) => {
-                  form.setValue("resumeUrl", result.urls.original, { shouldDirty: true });
-                }}
-                onRemove={() => {
-                  form.setValue("resumeUrl", "", { shouldDirty: true });
-                }}
-              />
+              <div className="max-w-xs">
+                <ImageUpload
+                  value={resumeUrl ? "existing" : undefined}
+                  folder="resume"
+                  aspectRatio="aspect-[3/4]"
+                  placeholder="Upload your resume (PDF)"
+                  accept={{ "application/pdf": [".pdf"] }}
+                  onUpload={(result) => {
+                    form.setValue("resumeUrl", result.urls.original, { shouldDirty: true });
+                  }}
+                  onRemove={() => {
+                    form.setValue("resumeUrl", "", { shouldDirty: true });
+                  }}
+                />
+              </div>
               {form.formState.errors.resumeUrl && (
                 <p id="resumeUrl-error" className="text-sm text-red-500">
                   {form.formState.errors.resumeUrl.message}
