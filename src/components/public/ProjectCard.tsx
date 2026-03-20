@@ -20,7 +20,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
       {/* Thumbnail */}
       {project.thumbnailImage && (
         <Link href={`/projects/${project.slug}`}>
-          <div className="relative aspect-video overflow-hidden bg-gray-100">
+          <div className="relative aspect-4/3 overflow-hidden bg-gray-100">
             <Image
               src={project.thumbnailImage}
               alt={project.title}
