@@ -142,6 +142,35 @@ export async function processLogoImage(
 }
 
 /**
+ * Certificate image processing — wide format for full-screen viewing.
+ */
+export async function processCertificateImage(
+  inputBuffer: Buffer,
+  entityId: string,
+  fileId: string
+): Promise<{ display: ProcessedImage; original: ProcessedImage }> {
+  const [display, original] = await Promise.all([
+    sharp(inputBuffer)
+      .resize(1400, null, { fit: "inside", withoutEnlargement: true })
+      .webp({ quality: 90 })
+      .toBuffer(),
+    sharp(inputBuffer).rotate().webp({ quality: 90 }).toBuffer(),
+  ]);
+  return {
+    display: {
+      buffer: display,
+      key: `certifications/cert_${entityId}_${fileId}.webp`,
+      contentType: "image/webp",
+    },
+    original: {
+      buffer: original,
+      key: `certifications/cert_orig_${entityId}_${fileId}.webp`,
+      contentType: "image/webp",
+    },
+  };
+}
+
+/**
  * Blog featured image processing — wide format for cards and headers.
  */
 export async function processFeaturedImage(

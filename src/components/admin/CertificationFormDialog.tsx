@@ -1,5 +1,6 @@
 "use client";
 
+import { ImageUpload } from "@/components/admin/ImageUpload";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -53,6 +54,7 @@ export function CertificationFormDialog({
           credentialId: initialData.credentialId ?? "",
           credentialUrl: initialData.credentialUrl ?? "",
           badgeImage: initialData.badgeImage ?? "",
+          certificateImage: initialData.certificateImage ?? "",
           displayOrder: initialData.displayOrder,
           visible: initialData.visible,
         }
@@ -62,6 +64,7 @@ export function CertificationFormDialog({
           credentialId: "",
           credentialUrl: "",
           badgeImage: "",
+          certificateImage: "",
           displayOrder: 0,
           visible: true,
         },
@@ -79,6 +82,7 @@ export function CertificationFormDialog({
         credentialId: initialData.credentialId ?? "",
         credentialUrl: initialData.credentialUrl ?? "",
         badgeImage: initialData.badgeImage ?? "",
+        certificateImage: initialData.certificateImage ?? "",
         displayOrder: initialData.displayOrder,
         visible: initialData.visible,
       });
@@ -89,6 +93,7 @@ export function CertificationFormDialog({
         credentialId: "",
         credentialUrl: "",
         badgeImage: "",
+        certificateImage: "",
         displayOrder: 0,
         visible: true,
       });
@@ -127,8 +132,8 @@ export function CertificationFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] flex flex-col">
+        <DialogHeader className="shrink-0">
           <DialogTitle>{isEditing ? "Edit Certification" : "Add Certification"}</DialogTitle>
           <DialogDescription>
             {isEditing
@@ -137,7 +142,7 @@ export function CertificationFormDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        <form id="certification-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 overflow-y-auto flex-1 pr-1">
           <div className="space-y-2">
             <Label htmlFor="name">Certification Name *</Label>
             <Input
@@ -267,7 +272,24 @@ export function CertificationFormDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="badgeImage">Badge Image URL</Label>
+            <Label>Badge Image</Label>
+            <p className="text-xs text-muted-foreground">Issuer badge or logo — upload a file or paste a URL</p>
+            <div className="max-w-[200px]">
+              <ImageUpload
+                value={form.watch("badgeImage") || undefined}
+                folder="certifications"
+                entityId={initialData?.id || "new"}
+                aspectRatio="aspect-square"
+                placeholder="Upload badge or logo"
+                onUpload={(r) =>
+                  form.setValue("badgeImage", r.urls.display || r.urls.original, {
+                    shouldDirty: true,
+                  })
+                }
+                onRemove={() => form.setValue("badgeImage", "", { shouldDirty: true })}
+              />
+            </div>
+            <Label htmlFor="badgeImage" className="text-xs text-muted-foreground">Or paste a URL</Label>
             <Input
               id="badgeImage"
               type="url"
@@ -281,7 +303,27 @@ export function CertificationFormDialog({
                 {form.formState.errors.badgeImage.message}
               </p>
             )}
-            <p className="text-xs text-muted-foreground">Certification badge or logo image URL</p>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Certificate Image</Label>
+            <p className="text-xs text-muted-foreground">Upload a scan or photo of the certificate</p>
+            <div className="max-w-sm">
+              <ImageUpload
+                value={form.watch("certificateImage") || undefined}
+                folder="certifications"
+                entityId={initialData?.id || "new"}
+                aspectRatio="aspect-video"
+                placeholder="Upload certificate image"
+                extraFields={{ variant: "certificate" }}
+                onUpload={(r) =>
+                  form.setValue("certificateImage", r.urls.display || r.urls.original, {
+                    shouldDirty: true,
+                  })
+                }
+                onRemove={() => form.setValue("certificateImage", "", { shouldDirty: true })}
+              />
+            </div>
           </div>
 
           <div className="flex items-center gap-2 pt-2">
@@ -295,20 +337,25 @@ export function CertificationFormDialog({
             </Label>
           </div>
 
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => handleOpenChange(false)}
-              disabled={mutation.isPending}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={mutation.isPending}>
-              {mutation.isPending ? "Saving..." : isEditing ? "Update" : "Create"}
-            </Button>
-          </DialogFooter>
         </form>
+
+        <DialogFooter className="shrink-0 pt-2 border-t">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => handleOpenChange(false)}
+            disabled={mutation.isPending}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            form="certification-form"
+            disabled={mutation.isPending}
+          >
+            {mutation.isPending ? "Saving..." : isEditing ? "Update" : "Create"}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

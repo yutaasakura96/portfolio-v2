@@ -32,6 +32,8 @@ interface ImageUploadProps {
   disabled?: boolean;
   /** Accepted file types */
   accept?: Record<string, string[]>;
+  /** Extra form fields to append to the upload request */
+  extraFields?: Record<string, string>;
 }
 
 const DEFAULT_ACCEPT = {
@@ -51,6 +53,7 @@ export function ImageUpload({
   aspectRatio = "aspect-video",
   disabled = false,
   accept = DEFAULT_ACCEPT,
+  extraFields,
 }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -71,6 +74,11 @@ export function ImageUpload({
         formData.append("folder", folder);
         if (entityId) {
           formData.append("entityId", entityId);
+        }
+        if (extraFields) {
+          for (const [key, value] of Object.entries(extraFields)) {
+            formData.append(key, value);
+          }
         }
 
         // Use XMLHttpRequest for progress tracking
@@ -109,7 +117,7 @@ export function ImageUpload({
         setUploadProgress(0);
       }
     },
-    [folder, entityId, onUpload]
+    [folder, entityId, onUpload, extraFields]
   );
 
   const onDrop = useCallback(

@@ -8,6 +8,7 @@ export const certificationCreateSchema = z.object({
   credentialId: z.string().max(200).optional().or(z.literal("")),
   credentialUrl: z.url().or(z.literal("")).optional(),
   badgeImage: z.url().or(z.literal("")).optional(),
+  certificateImage: z.url().or(z.literal("")).optional(),
   displayOrder: z.number().int().default(0),
   visible: z.boolean().default(true),
 });

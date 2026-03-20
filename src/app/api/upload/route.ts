@@ -2,6 +2,7 @@ import { requireAuth } from "@/app/api/auth";
 import { deleteImageVariants, uploadToS3 } from "@/lib/aws/s3";
 import { ApiError, ErrorCodes, withErrorHandler } from "@/lib/errors";
 import {
+  processCertificateImage,
   processFeaturedImage,
   processImage,
   processLogoImage,
@@ -146,11 +147,10 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
       break;
     }
 
-    case "logos":
-    case "certifications": {
+    case "logos": {
       if (!entityId) {
         throw new ApiError(
-          "entityId is required for logo/certification uploads",
+          "entityId is required for logo uploads",
           400,
           "MISSING_ENTITY_ID"
         );
@@ -162,6 +162,35 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
       ]);
       urls = { display: displayUrl, original: origUrl };
       primaryKey = result.display.key;
+      break;
+    }
+
+    case "certifications": {
+      if (!entityId) {
+        throw new ApiError(
+          "entityId is required for certification uploads",
+          400,
+          "MISSING_ENTITY_ID"
+        );
+      }
+      const variant = formData.get("variant") as string | null;
+      if (variant === "certificate") {
+        const result = await processCertificateImage(buffer, entityId, fileId);
+        const [displayUrl, origUrl] = await Promise.all([
+          uploadToS3(result.display.buffer, result.display.key, result.display.contentType),
+          uploadToS3(result.original.buffer, result.original.key, result.original.contentType),
+        ]);
+        urls = { display: displayUrl, original: origUrl };
+        primaryKey = result.display.key;
+      } else {
+        const result = await processLogoImage(buffer, "certifications", entityId, fileId);
+        const [displayUrl, origUrl] = await Promise.all([
+          uploadToS3(result.display.buffer, result.display.key, result.display.contentType),
+          uploadToS3(result.original.buffer, result.original.key, result.original.contentType),
+        ]);
+        urls = { display: displayUrl, original: origUrl };
+        primaryKey = result.display.key;
+      }
       break;
     }
 

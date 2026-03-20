@@ -148,8 +148,9 @@ model Certification {
   expirationDate DateTime?
   credentialId   String?
   credentialUrl  String?
-  badgeImage     String?
-  displayOrder   Int       @default(0)
+  badgeImage       String?
+  certificateImage String?
+  displayOrder     Int       @default(0)
   visible        Boolean   @default(true)
 
   @@index([displayOrder])
