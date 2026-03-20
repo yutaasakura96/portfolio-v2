@@ -7,6 +7,7 @@ import {
   getPublishedProjectSlugs,
 } from "@/lib/data/public-queries";
 import { markdownToHtml } from "@/lib/markdown";
+import { normalizeImagesToGroups } from "@/lib/validations/project";
 import { format } from "date-fns";
 import { ArrowLeft, ArrowRight, ExternalLink, Github } from "lucide-react";
 import { Metadata } from "next";
@@ -76,8 +77,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
   const { prev, next } = await getAdjacentProjects(project.displayOrder);
 
-  const images = (project.images as { url: string; alt: string; order: number }[]) ?? [];
-  const sortedImages = [...images].sort((a, b) => a.order - b.order);
+  const imageGroups = normalizeImagesToGroups(project.images);
 
   return (
     <article className="mx-auto max-w-3xl px-4 sm:px-6 py-12">
@@ -227,8 +227,8 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
       )}
 
       {/* Image Gallery */}
-      {sortedImages.length > 0 && (
-        <ImageGallery images={sortedImages} projectTitle={project.title} />
+      {imageGroups.length > 0 && imageGroups.some((g) => g.images.length > 0) && (
+        <ImageGallery groups={imageGroups} projectTitle={project.title} />
       )}
 
       {/* Next / Previous Navigation */}

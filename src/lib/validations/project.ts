@@ -2,6 +2,49 @@ import { z } from "zod";
 
 const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
+export const galleryImageSchema = z.object({
+  url: z.url(),
+  alt: z.string().max(200),
+  order: z.number().int().min(0),
+});
+
+export const galleryImageGroupSchema = z.object({
+  name: z.string().max(100),
+  images: z.array(galleryImageSchema).default([]),
+});
+
+export type GalleryImage = z.infer<typeof galleryImageSchema>;
+export type GalleryImageGroup = z.infer<typeof galleryImageGroupSchema>;
+
+/**
+ * Detects whether the stored images JSON is the legacy flat GalleryImage[]
+ * or the new GalleryImageGroup[] format. Wraps legacy data in a single
+ * unnamed group so existing projects continue to work.
+ */
+export function normalizeImagesToGroups(raw: unknown): GalleryImageGroup[] {
+  if (!Array.isArray(raw) || raw.length === 0) return [];
+
+  const first = raw[0];
+  if (
+    first &&
+    typeof first === "object" &&
+    "url" in first &&
+    !("images" in first)
+  ) {
+    // Legacy flat array — wrap in a single unnamed group
+    return [
+      {
+        name: "",
+        images: (raw as Array<{ url: string; alt: string; order: number }>).map(
+          (img, i) => ({ url: img.url, alt: img.alt ?? "", order: i })
+        ),
+      },
+    ];
+  }
+
+  return raw as GalleryImageGroup[];
+}
+
 const projectBaseSchema = z.object({
   title: z.string().min(1, "Title is required").max(200),
   slug: z.string().regex(slugRegex, "Invalid slug format").max(200),
@@ -11,15 +54,7 @@ const projectBaseSchema = z.object({
   solution: z.string().max(5000).optional(),
   role: z.string().max(200).optional(),
   techTags: z.array(z.string().max(50)).min(1, "At least one tech tag required"),
-  images: z
-    .array(
-      z.object({
-        url: z.url(),
-        alt: z.string().max(200),
-        order: z.number().int().min(0),
-      })
-    )
-    .default([]),
+  images: z.array(galleryImageGroupSchema).default([]),
   thumbnailImage: z.string().url().or(z.literal("")).optional(),
   liveUrl: z.string().url().or(z.literal("")).optional(),
   repoUrl: z.string().url().or(z.literal("")).optional(),

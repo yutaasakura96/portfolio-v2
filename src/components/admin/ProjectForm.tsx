@@ -15,7 +15,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm, useWatch, type Resolver } from "react-hook-form";
 import { toast } from "sonner";
-import { GalleryUpload, GalleryImage } from "@/components/admin/GalleryUpload";
+import { GalleryUpload } from "@/components/admin/GalleryUpload";
+import { normalizeImagesToGroups, type GalleryImageGroup } from "@/lib/validations/project";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 
 interface ProjectFormProps {
@@ -54,7 +55,7 @@ export function ProjectForm({ initialData, projectId }: ProjectFormProps) {
           solution: initialData.solution ?? "",
           role: initialData.role ?? "",
           techTags: (initialData.techTags ?? []) as string[],
-          images: (initialData.images ?? []) as Array<{ url: string; alt: string; order: number }>,
+          images: normalizeImagesToGroups(initialData.images ?? []),
           thumbnailImage: initialData.thumbnailImage ?? "",
           liveUrl: initialData.liveUrl ?? "",
           repoUrl: initialData.repoUrl ?? "",
@@ -396,9 +397,9 @@ export function ProjectForm({ initialData, projectId }: ProjectFormProps) {
               Screenshots and visuals for the project detail page. Drag to reorder.
             </p>
             <GalleryUpload
-              value={(images as GalleryImage[]) || []}
-              onChange={(images) => {
-                form.setValue("images", images, { shouldDirty: true });
+              value={(images as GalleryImageGroup[]) || []}
+              onChange={(groups) => {
+                form.setValue("images", groups, { shouldDirty: true });
               }}
               entityId={projectId}
             />
