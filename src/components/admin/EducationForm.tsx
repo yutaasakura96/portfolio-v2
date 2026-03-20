@@ -1,5 +1,6 @@
 "use client";
 
+import { ImageUpload } from "@/components/admin/ImageUpload";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -71,6 +72,7 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
   });
 
   const visible = useWatch({ control: form.control, name: "visible" });
+  const logoUrl = form.watch("logoUrl");
   const achievementsLength = useWatch({ control: form.control, name: "achievements" })?.length ?? 0;
   const watchedStartDate = useWatch({
     control: form.control,
@@ -233,7 +235,22 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
                 {form.formState.errors.logoUrl.message}
               </p>
             )}
-            <p className="text-xs text-muted-foreground">Institution logo or seal image URL</p>
+            <p className="text-xs text-muted-foreground">Or upload an image directly</p>
+            <ImageUpload
+              value={logoUrl || undefined}
+              folder="logos"
+              entityId={educationId || "new"}
+              aspectRatio="aspect-square"
+              placeholder="Upload institution logo"
+              onUpload={(result) => {
+                form.setValue("logoUrl", result.urls.display || result.urls.original, {
+                  shouldDirty: true,
+                });
+              }}
+              onRemove={() => {
+                form.setValue("logoUrl", "", { shouldDirty: true });
+              }}
+            />
           </div>
 
           <div className="space-y-2">
