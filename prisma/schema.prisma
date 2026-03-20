@@ -129,9 +129,11 @@ model Education {
   field        String
   startDate    DateTime?
   endDate      DateTime?
-  achievements String?   @db.Text
-  logoUrl      String?
-  displayOrder Int       @default(0)
+  achievements   String?   @db.Text
+  logoUrl        String?
+  institutionUrl String?
+  documentUrl    String?
+  displayOrder   Int       @default(0)
   visible      Boolean   @default(true)
 
   @@index([displayOrder])

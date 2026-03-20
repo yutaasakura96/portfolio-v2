@@ -21,7 +21,7 @@ interface ImageUploadProps {
   /** Callback when image is removed */
   onRemove?: () => void;
   /** S3 folder for the upload */
-  folder: "projects" | "blog" | "profile" | "logos" | "certifications" | "resume";
+  folder: "projects" | "blog" | "profile" | "logos" | "certifications" | "resume" | "education";
   /** Entity ID for subfolder organization */
   entityId?: string;
   /** Custom placeholder text */

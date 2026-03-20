@@ -22,6 +22,7 @@ const ALLOWED_FOLDERS = [
   "logos",
   "certifications",
   "resume",
+  "education",
 ] as const;
 
 type AllowedFolder = (typeof ALLOWED_FOLDERS)[number];
@@ -77,6 +78,43 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
       data: {
         urls: { original: url },
         key: "resume/resume_latest.pdf",
+      },
+    });
+  }
+
+  // Handle education documents (PDFs and images)
+  if (folder === "education") {
+    const allowedEducationTypes = [...ALLOWED_MIME_TYPES, ALLOWED_PDF_MIME];
+    if (!allowedEducationTypes.includes(file.type)) {
+      throw new ApiError(
+        "Invalid file type. Allowed: PDF, JPEG, PNG, WebP, GIF",
+        400,
+        "INVALID_FILE_TYPE"
+      );
+    }
+    if (!entityId) {
+      throw new ApiError("entityId is required for education uploads", 400, "MISSING_ENTITY_ID");
+    }
+
+    const fileId = nanoid(12);
+    const rawBuffer = Buffer.from(await file.arrayBuffer());
+
+    let url: string;
+    let key: string;
+
+    if (file.type === ALLOWED_PDF_MIME) {
+      key = `education/${entityId}/doc_${fileId}.pdf`;
+      url = await uploadToS3(rawBuffer, key, "application/pdf");
+    } else {
+      const result = await processLogoImage(rawBuffer, "logos", entityId, fileId);
+      key = `education/${entityId}/doc_${fileId}.webp`;
+      url = await uploadToS3(result.display.buffer, key, result.display.contentType);
+    }
+
+    return NextResponse.json({
+      data: {
+        urls: { original: url },
+        key,
       },
     });
   }
@@ -186,7 +224,7 @@ export const DELETE = withErrorHandler(async (req: NextRequest) => {
 
   const { key } = parsed.data;
 
-  const validPrefixes = ["projects/", "blog/", "profile/", "logos/", "certifications/", "resume/"];
+  const validPrefixes = ["projects/", "blog/", "profile/", "logos/", "certifications/", "resume/", "education/"];
   if (!validPrefixes.some((prefix) => key.startsWith(prefix))) {
     throw new ApiError("Invalid key prefix", 400, "INVALID_KEY");
   }

@@ -41,6 +41,8 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
             : undefined,
           achievements: initialData.achievements ?? "",
           logoUrl: initialData.logoUrl ?? "",
+          institutionUrl: initialData.institutionUrl ?? "",
+          documentUrl: initialData.documentUrl ?? "",
           displayOrder: initialData.displayOrder,
           visible: initialData.visible,
         }
@@ -50,6 +52,8 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
           field: "",
           achievements: "",
           logoUrl: "",
+          institutionUrl: "",
+          documentUrl: "",
           displayOrder: 0,
           visible: true,
         },
@@ -73,6 +77,7 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
 
   const visible = useWatch({ control: form.control, name: "visible" });
   const logoUrl = form.watch("logoUrl");
+  const documentUrl = form.watch("documentUrl");
   const achievementsLength = useWatch({ control: form.control, name: "achievements" })?.length ?? 0;
   const watchedStartDate = useWatch({
     control: form.control,
@@ -117,6 +122,26 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
                 {form.formState.errors.institution.message}
               </p>
             )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="institutionUrl">Institution URL</Label>
+            <Input
+              id="institutionUrl"
+              type="url"
+              {...form.register("institutionUrl")}
+              placeholder="https://..."
+              aria-invalid={!!form.formState.errors.institutionUrl}
+              aria-describedby={
+                form.formState.errors.institutionUrl ? "institutionUrl-error" : undefined
+              }
+            />
+            {form.formState.errors.institutionUrl && (
+              <p id="institutionUrl-error" className="text-sm text-red-500">
+                {form.formState.errors.institutionUrl.message}
+              </p>
+            )}
+            <p className="text-xs text-muted-foreground">Link to the institution&apos;s website</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -251,6 +276,35 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
                 form.setValue("logoUrl", "", { shouldDirty: true });
               }}
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Documents</Label>
+            <p className="text-xs text-muted-foreground">
+              Upload diploma, transcript, or grade document (PDF or image)
+            </p>
+            <ImageUpload
+              value={documentUrl || undefined}
+              folder="education"
+              entityId={educationId || "new"}
+              aspectRatio="aspect-video"
+              placeholder="Upload diploma, transcript, or grades"
+              accept={{
+                "application/pdf": [".pdf"],
+                "image/jpeg": [".jpg", ".jpeg"],
+                "image/png": [".png"],
+                "image/webp": [".webp"],
+              }}
+              onUpload={(result) => {
+                form.setValue("documentUrl", result.urls.original, { shouldDirty: true });
+              }}
+              onRemove={() => {
+                form.setValue("documentUrl", "", { shouldDirty: true });
+              }}
+            />
+            {form.formState.errors.documentUrl && (
+              <p className="text-sm text-red-500">{form.formState.errors.documentUrl.message}</p>
+            )}
           </div>
 
           <div className="space-y-2">
