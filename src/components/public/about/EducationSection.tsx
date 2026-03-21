@@ -31,26 +31,8 @@ export function EducationSection({ education }: EducationSectionProps) {
           return (
             <div
               key={edu.id}
-              className="flex items-start gap-4 p-5 rounded-xl border border-gray-200 bg-white"
+              className="flex items-start justify-between gap-4 p-5 rounded-xl border border-gray-200 bg-white"
             >
-              <div
-                className="shrink-0 h-10 w-10 rounded-lg bg-transparent flex items-center justify-center overflow-hidden"
-                aria-hidden="true"
-              >
-                {shouldShowImage ? (
-                  <Image
-                    src={edu.logoUrl ?? ""}
-                    alt={`${edu.institution} logo`}
-                    width={40}
-                    height={40}
-                    className="object-contain"
-                    onError={() => handleImageError(edu.id)}
-                  />
-                ) : (
-                  <GraduationCap className="h-5 w-5 text-gray-500" />
-                )}
-              </div>
-
               <div className="flex-1 min-w-0">
                 <h3 className="text-lg font-semibold text-gray-900">
                   {edu.institutionUrl ? (
@@ -88,6 +70,24 @@ export function EducationSection({ education }: EducationSectionProps) {
                     <FileText className="h-3.5 w-3.5" />
                     View Credentials
                   </button>
+                )}
+              </div>
+
+              <div
+                className="shrink-0 h-10 w-10 rounded-lg bg-transparent flex items-center justify-center overflow-hidden"
+                aria-hidden="true"
+              >
+                {shouldShowImage ? (
+                  <Image
+                    src={edu.logoUrl ?? ""}
+                    alt={`${edu.institution} logo`}
+                    width={40}
+                    height={40}
+                    className="object-contain"
+                    onError={() => handleImageError(edu.id)}
+                  />
+                ) : (
+                  <GraduationCap className="h-5 w-5 text-gray-500" />
                 )}
               </div>
             </div>

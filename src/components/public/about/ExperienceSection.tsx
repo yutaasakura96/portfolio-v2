@@ -41,21 +41,7 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
               />
 
               <div className="rounded-xl border border-gray-200 bg-white p-5">
-                <div className="flex items-start gap-4">
-                  {/* Company Logo */}
-                  {shouldShowImage && (
-                    <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-transparent">
-                      <Image
-                        src={exp.logoUrl ?? ""}
-                        alt={`${exp.company} logo`}
-                        fill
-                        className="object-contain"
-                        sizes="56px"
-                        onError={() => handleImageError(exp.id)}
-                      />
-                    </div>
-                  )}
-
+                <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <h3 className="text-lg font-semibold text-gray-900">
                       {exp.companyUrl ? (
@@ -122,6 +108,20 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
                       </div>
                     )}
                   </div>
+
+                  {/* Company Logo */}
+                  {shouldShowImage && (
+                    <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-transparent">
+                      <Image
+                        src={exp.logoUrl ?? ""}
+                        alt={`${exp.company} logo`}
+                        fill
+                        className="object-contain"
+                        sizes="56px"
+                        onError={() => handleImageError(exp.id)}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

@@ -4,7 +4,15 @@ export const certificationCreateSchema = z.object({
   name: z.string().min(1).max(200),
   issuer: z.string().min(1).max(200),
   dateEarned: z.coerce.date(),
-  expirationDate: z.coerce.date().optional().nullable(),
+  expirationDate: z.preprocess(
+    (val) => {
+      if (val === "" || val === null || val === undefined) return null;
+      if (val instanceof Date) return val;
+      const d = new Date(val as string);
+      return isNaN(d.getTime()) ? null : d;
+    },
+    z.date().nullable()
+  ),
   credentialId: z.string().max(200).optional().or(z.literal("")),
   credentialUrl: z.url().or(z.literal("")).optional(),
   badgeImage: z.url().or(z.literal("")).optional(),
