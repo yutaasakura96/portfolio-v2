@@ -6,7 +6,7 @@ import Image from "next/image";
 interface CertificateImageModalProps {
   open: boolean;
   onClose: () => void;
-  imageUrl: string;
+  imageUrl: string | null | undefined;
   certName: string;
 }
 
@@ -23,14 +23,18 @@ export function CertificateImageModal({
           <DialogTitle>{certName}</DialogTitle>
         </DialogHeader>
         <div className="flex items-center justify-center bg-gray-100 p-6 min-h-[500px]">
-          <Image
-            src={imageUrl}
-            alt={`${certName} certificate`}
-            width={1400}
-            height={1000}
-            className="object-contain max-h-[80vh] w-full"
-            sizes="95vw"
-          />
+          {imageUrl ? (
+            <Image
+              src={imageUrl}
+              alt={`${certName} certificate`}
+              width={1400}
+              height={1000}
+              className="object-contain max-h-[80vh] w-full"
+              sizes="95vw"
+            />
+          ) : (
+            <p className="text-gray-500 text-sm">No image available</p>
+          )}
         </div>
       </DialogContent>
     </Dialog>

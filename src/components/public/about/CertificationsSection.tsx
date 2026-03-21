@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CertificateImageModal } from "@/components/public/CertificateImageModal";
 import { formatDate } from "@/lib/utils/date-format";
 import { Award, ExternalLink, ImageIcon } from "lucide-react";
+import Image from "next/image";
 import type { Certification } from "../../../../generated/prisma/client";
 
 interface CertificationsSectionProps {
@@ -23,10 +24,20 @@ export function CertificationsSection({ certifications }: CertificationsSectionP
             className="flex items-start gap-4 p-5 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition-colors"
           >
             <div
-              className="shrink-0 h-10 w-10 rounded-lg bg-amber-50 flex items-center justify-center"
+              className="shrink-0 h-10 w-10 rounded-lg bg-transparent flex items-center justify-center overflow-hidden"
               aria-hidden="true"
             >
-              <Award className="h-5 w-5 text-amber-600" />
+              {cert.badgeImage ? (
+                <Image
+                  src={cert.badgeImage}
+                  alt={`${cert.name} badge`}
+                  width={40}
+                  height={40}
+                  className="object-contain w-full h-full"
+                />
+              ) : (
+                <Award className="h-5 w-5 text-amber-600" />
+              )}
             </div>
 
             <div className="min-w-0 flex-1">
@@ -44,7 +55,7 @@ export function CertificationsSection({ certifications }: CertificationsSectionP
               </p>
 
               {(cert.credentialUrl || cert.certificateImage) && (
-                <div className="flex flex-col items-start gap-1 mt-2">
+                <div className="flex flex-row items-center justify-between gap-2 mt-2 w-full">
                   {cert.credentialUrl && (
                     <a
                       href={cert.credentialUrl}
@@ -63,7 +74,7 @@ export function CertificationsSection({ certifications }: CertificationsSectionP
                       onClick={() =>
                         setCertModal({ open: true, url: cert.certificateImage!, name: cert.name })
                       }
-                      className="inline-flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-gray-800 hover:underline focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-1 rounded"
+                      className="inline-flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-gray-800 hover:underline focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-1 rounded cursor-pointer"
                     >
                       View Certificate
                       <ImageIcon className="h-3 w-3" />

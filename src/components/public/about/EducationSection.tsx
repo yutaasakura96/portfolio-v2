@@ -34,7 +34,7 @@ export function EducationSection({ education }: EducationSectionProps) {
               className="flex items-start gap-4 p-5 rounded-xl border border-gray-200 bg-white"
             >
               <div
-                className="shrink-0 h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden"
+                className="shrink-0 h-10 w-10 rounded-lg bg-transparent flex items-center justify-center overflow-hidden"
                 aria-hidden="true"
               >
                 {shouldShowImage ? (

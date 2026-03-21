@@ -44,7 +44,7 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
                 <div className="flex items-start gap-4">
                   {/* Company Logo */}
                   {shouldShowImage && (
-                    <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg">
+                    <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-transparent">
                       <Image
                         src={exp.logoUrl ?? ""}
                         alt={`${exp.company} logo`}
