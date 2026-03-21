@@ -28,6 +28,40 @@ import { toast } from "sonner";
 
 type SkillCategory = { id: string; name: string; displayOrder: number };
 
+function SortableSkillRow({ skill }: { skill: Skill }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: skill.id,
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className={`flex items-center gap-3 px-4 py-3 bg-white ${isDragging ? "shadow-md rounded-lg z-10 opacity-90" : ""}`}
+    >
+      <button
+        {...attributes}
+        {...listeners}
+        className="cursor-grab touch-none text-gray-300 hover:text-gray-500 active:cursor-grabbing"
+        aria-label={`Drag to reorder ${skill.name}`}
+      >
+        <GripVertical className="h-4 w-4" />
+      </button>
+      {skill.iconUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={skill.iconUrl} alt={`${skill.name} icon`} className="h-5 w-5 object-contain shrink-0" />
+      ) : skill.icon ? (
+        <span className="text-lg" aria-hidden="true">{skill.icon}</span>
+      ) : null}
+      <span className="text-sm font-medium text-gray-700 flex-1">{skill.name}</span>
+      {skill.proficiencyLevel && (
+        <Badge variant="outline" className="text-xs">{skill.proficiencyLevel}</Badge>
+      )}
+      {!skill.visible && <Badge variant="secondary" className="text-xs">Hidden</Badge>}
+    </div>
+  );
+}
+
 function SortableCategoryRow({ category }: { category: SkillCategory }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: category.id,
@@ -59,6 +93,8 @@ export function SkillsManagerSection() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditingOrder, setIsEditingOrder] = useState(false);
   const [draftOrder, setDraftOrder] = useState<SkillCategory[]>([]);
+  const [editingOrderCategory, setEditingOrderCategory] = useState<string | null>(null);
+  const [draftSkillOrder, setDraftSkillOrder] = useState<Skill[]>([]);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
@@ -110,6 +146,24 @@ export function SkillsManagerSection() {
     const oldIndex = draftOrder.findIndex((c) => c.id === active.id);
     const newIndex = draftOrder.findIndex((c) => c.id === over.id);
     setDraftOrder(arrayMove(draftOrder, oldIndex, newIndex));
+  }
+
+  const reorderSkillsMutation = useMutation({
+    mutationFn: (orderedIds: string[]) => apiClient.reorderSkills(orderedIds),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "skills"] });
+      setEditingOrderCategory(null);
+      toast.success("Skill order saved");
+    },
+    onError: () => toast.error("Failed to save skill order"),
+  });
+
+  function handleSkillDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = draftSkillOrder.findIndex((s) => s.id === active.id);
+    const newIndex = draftSkillOrder.findIndex((s) => s.id === over.id);
+    setDraftSkillOrder(arrayMove(draftSkillOrder, oldIndex, newIndex));
   }
 
   const deleteMutation = useMutation({
@@ -233,54 +287,107 @@ export function SkillsManagerSection() {
             </div>
           )}
 
-          {Object.entries(groupedSkills).map(([category, skills]) => (
-            <div key={category} className="space-y-2">
-              <h3 className="text-lg font-semibold">{category}</h3>
-              <div className="bg-white rounded-lg border divide-y">
-                {skills.map((skill) => (
-                  <div key={skill.id} className="flex items-center justify-between px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      {skill.iconUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={skill.iconUrl}
-                          alt={`${skill.name} icon`}
-                          className="h-6 w-6 object-contain shrink-0"
-                        />
-                      ) : skill.icon ? (
-                        <span className="text-xl" aria-hidden="true">
-                          {skill.icon}
-                        </span>
-                      ) : null}
-                      <span className="font-medium">{skill.name}</span>
-                      {skill.proficiencyLevel && (
-                        <Badge variant="outline">{skill.proficiencyLevel}</Badge>
-                      )}
-                      {!skill.visible && <Badge variant="secondary">Hidden</Badge>}
-                    </div>
+          {Object.entries(groupedSkills).map(([category, skills]) => {
+            const isEditingThisCategory = editingOrderCategory === category;
+            return (
+              <div key={category} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold">{category}</h3>
+                  {isEditingThisCategory ? (
                     <div className="flex gap-2">
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => setEditingSkill(skill)}
-                        aria-label={`Edit ${skill.name}`}
+                        onClick={() => setEditingOrderCategory(null)}
+                        disabled={reorderSkillsMutation.isPending}
                       >
-                        <Pencil className="h-4 w-4" />
+                        Cancel
                       </Button>
                       <Button
-                        variant="ghost"
                         size="sm"
-                        onClick={() => setDeleteId(skill.id)}
-                        aria-label={`Delete ${skill.name}`}
+                        onClick={() => reorderSkillsMutation.mutate(draftSkillOrder.map((s) => s.id))}
+                        disabled={reorderSkillsMutation.isPending}
                       >
-                        <Trash2 className="h-4 w-4 text-red-500" />
+                        {reorderSkillsMutation.isPending ? "Saving…" : "Save Order"}
                       </Button>
                     </div>
-                  </div>
-                ))}
+                  ) : (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setDraftSkillOrder([...skills]);
+                        setEditingOrderCategory(category);
+                      }}
+                      disabled={editingOrderCategory !== null}
+                    >
+                      Edit Order
+                    </Button>
+                  )}
+                </div>
+                <div className="bg-white rounded-lg border divide-y overflow-hidden">
+                  {isEditingThisCategory ? (
+                    <DndContext
+                      sensors={sensors}
+                      collisionDetection={closestCenter}
+                      onDragEnd={handleSkillDragEnd}
+                    >
+                      <SortableContext
+                        items={draftSkillOrder.map((s) => s.id)}
+                        strategy={verticalListSortingStrategy}
+                      >
+                        {draftSkillOrder.map((skill) => (
+                          <SortableSkillRow key={skill.id} skill={skill} />
+                        ))}
+                      </SortableContext>
+                    </DndContext>
+                  ) : (
+                    skills.map((skill) => (
+                      <div key={skill.id} className="flex items-center justify-between px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          {skill.iconUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={skill.iconUrl}
+                              alt={`${skill.name} icon`}
+                              className="h-6 w-6 object-contain shrink-0"
+                            />
+                          ) : skill.icon ? (
+                            <span className="text-xl" aria-hidden="true">
+                              {skill.icon}
+                            </span>
+                          ) : null}
+                          <span className="font-medium">{skill.name}</span>
+                          {skill.proficiencyLevel && (
+                            <Badge variant="outline">{skill.proficiencyLevel}</Badge>
+                          )}
+                          {!skill.visible && <Badge variant="secondary">Hidden</Badge>}
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setEditingSkill(skill)}
+                            aria-label={`Edit ${skill.name}`}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setDeleteId(skill.id)}
+                            aria-label={`Delete ${skill.name}`}
+                          >
+                            <Trash2 className="h-4 w-4 text-red-500" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </>
       ) : (
         <div className="bg-white rounded-lg border p-12 text-center">
