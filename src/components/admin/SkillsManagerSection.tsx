@@ -60,9 +60,7 @@ export function SkillsManagerSection() {
   const [isEditingOrder, setIsEditingOrder] = useState(false);
   const [draftOrder, setDraftOrder] = useState<SkillCategory[]>([]);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
-  );
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["admin", "skills"],
@@ -226,10 +224,7 @@ export function SkillsManagerSection() {
                   </DndContext>
                 ) : (
                   categories.map((cat) => (
-                    <div
-                      key={cat.id}
-                      className="px-4 py-2.5 text-sm font-medium text-gray-700"
-                    >
+                    <div key={cat.id} className="px-4 py-2.5 text-sm font-medium text-gray-700">
                       {cat.name}
                     </div>
                   ))

@@ -10,10 +10,117 @@ import { toast } from "sonner";
 import { useDropzone } from "react-dropzone";
 import { cn } from "@/lib/utils";
 import type { GalleryImage, GalleryImageGroup } from "@/lib/validations/project";
+import {
+  closestCenter,
+  DndContext,
+  type DragEndEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 export type { GalleryImage, GalleryImageGroup };
 
-// Inner component so useDropzone is called at component top-level, not in a loop
+// ─── SortableImageRow ────────────────────────────────────────────────────────
+
+interface SortableImageRowProps {
+  img: GalleryImage;
+  gi: number;
+  ii: number;
+  disabled: boolean;
+  onUpdateAlt: (gi: number, ii: number, alt: string) => void;
+  onRemove: (gi: number, ii: number) => void;
+}
+
+function SortableImageRow({ img, gi, ii, disabled, onUpdateAlt, onRemove }: SortableImageRowProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: img.url,
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className={cn(
+        "flex items-center gap-3 p-3 bg-gray-50 rounded-lg border",
+        isDragging && "shadow-md z-10 opacity-90"
+      )}
+    >
+      <button
+        type="button"
+        {...attributes}
+        {...listeners}
+        disabled={disabled}
+        className="cursor-grab touch-none text-gray-300 hover:text-gray-500 active:cursor-grabbing disabled:cursor-not-allowed disabled:opacity-40 shrink-0"
+        aria-label="Drag to reorder image"
+      >
+        <GripVertical className="h-4 w-4" />
+      </button>
+
+      <Dialog>
+        <DialogTrigger asChild>
+          <button
+            type="button"
+            title="Click to preview"
+            className="relative h-16 w-24 shrink-0 overflow-hidden rounded bg-gray-100 group/preview block cursor-pointer"
+          >
+            <Image
+              src={img.url}
+              alt={img.alt || "Gallery image"}
+              fill
+              className="object-cover"
+              sizes="96px"
+            />
+            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover/preview:opacity-100 transition-opacity">
+              <Eye className="h-4 w-4 text-white" />
+            </div>
+          </button>
+        </DialogTrigger>
+        <DialogContent className="max-w-5xl p-2">
+          <DialogTitle className="sr-only">Image preview</DialogTitle>
+          <div className="relative w-full h-[80vh]">
+            <Image
+              src={img.url}
+              alt={img.alt || "Gallery image"}
+              fill
+              className="object-contain"
+              sizes="(max-width: 768px) 100vw, 75vw"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Input
+        placeholder="Alt text for accessibility"
+        value={img.alt}
+        onChange={(e) => onUpdateAlt(gi, ii, e.target.value)}
+        className="flex-1"
+        disabled={disabled}
+      />
+
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
+        onClick={() => onRemove(gi, ii)}
+        disabled={disabled}
+      >
+        <Trash2 className="h-4 w-4" />
+      </Button>
+    </div>
+  );
+}
+
+// ─── GroupDropzone ────────────────────────────────────────────────────────────
+
 interface GroupDropzoneProps {
   isUploading: boolean;
   disabled: boolean;
@@ -64,6 +171,8 @@ function GroupDropzone({ isUploading, disabled, onDrop }: GroupDropzoneProps) {
   );
 }
 
+// ─── GalleryUpload ────────────────────────────────────────────────────────────
+
 interface GalleryUploadProps {
   value: GalleryImageGroup[];
   onChange: (groups: GalleryImageGroup[]) => void;
@@ -73,6 +182,8 @@ interface GalleryUploadProps {
 
 export function GalleryUpload({ value, onChange, entityId, disabled = false }: GalleryUploadProps) {
   const [uploadingGroup, setUploadingGroup] = useState<number | null>(null);
+
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
   const handleUpload = useCallback(
     async (files: File[], groupIndex: number) => {
@@ -129,7 +240,6 @@ export function GalleryUpload({ value, onChange, entityId, disabled = false }: G
     [entityId, value, onChange]
   );
 
-  // Group-level operations
   const addGroup = () => {
     onChange([...value, { name: "", images: [] }]);
   };
@@ -150,7 +260,6 @@ export function GalleryUpload({ value, onChange, entityId, disabled = false }: G
     onChange(updated);
   };
 
-  // Image-level operations scoped to a group
   const removeImage = (gi: number, ii: number) => {
     onChange(
       value.map((g, groupIdx) =>
@@ -179,27 +288,30 @@ export function GalleryUpload({ value, onChange, entityId, disabled = false }: G
     );
   };
 
-  const moveImage = (gi: number, ii: number, direction: "up" | "down") => {
-    const toIndex = direction === "up" ? ii - 1 : ii + 1;
-    const group = value[gi];
-    if (toIndex < 0 || toIndex >= group.images.length) return;
-    const imgs = [...group.images];
-    [imgs[ii], imgs[toIndex]] = [imgs[toIndex], imgs[ii]];
-    onChange(
-      value.map((g, groupIdx) =>
-        groupIdx === gi ? { ...g, images: imgs.map((img, idx) => ({ ...img, order: idx })) } : g
-      )
-    );
-  };
+  const handleImageDragEnd = useCallback(
+    (gi: number, event: DragEndEvent) => {
+      const { active, over } = event;
+      if (!over || active.id === over.id) return;
+      const group = value[gi];
+      const oldIndex = group.images.findIndex((img) => img.url === active.id);
+      const newIndex = group.images.findIndex((img) => img.url === over.id);
+      if (oldIndex === -1 || newIndex === -1) return;
+      const reordered = arrayMove(group.images, oldIndex, newIndex).map((img, idx) => ({
+        ...img,
+        order: idx,
+      }));
+      onChange(value.map((g, i) => (i === gi ? { ...g, images: reordered } : g)));
+    },
+    [value, onChange]
+  );
 
   return (
     <div className="space-y-4">
-      {/* Group cards */}
       {value.map((group, gi) => (
         <div key={gi} className="border rounded-lg p-4 space-y-3 bg-white">
           {/* Group header */}
           <div className="flex items-center gap-2">
-            {/* Group reorder */}
+            {/* Group reorder buttons (up/down) */}
             <div className="flex flex-col gap-1 shrink-0">
               <Button
                 type="button"
@@ -225,7 +337,6 @@ export function GalleryUpload({ value, onChange, entityId, disabled = false }: G
               </Button>
             </div>
 
-            {/* Group name input */}
             <Input
               placeholder="Group name (e.g. Desktop, Mobile Views)"
               value={group.name}
@@ -234,7 +345,6 @@ export function GalleryUpload({ value, onChange, entityId, disabled = false }: G
               disabled={disabled}
             />
 
-            {/* Delete group */}
             <Button
               type="button"
               variant="ghost"
@@ -248,96 +358,31 @@ export function GalleryUpload({ value, onChange, entityId, disabled = false }: G
             </Button>
           </div>
 
-          {/* Images in this group */}
+          {/* Images in this group — draggable */}
           {group.images.length > 0 && (
             <div className="space-y-2 pl-10">
-              {group.images.map((img, ii) => (
-                <div
-                  key={`${img.url}-${ii}`}
-                  className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border"
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={(event) => handleImageDragEnd(gi, event)}
+              >
+                <SortableContext
+                  items={group.images.map((img) => img.url)}
+                  strategy={verticalListSortingStrategy}
                 >
-                  {/* Image reorder controls */}
-                  <div className="flex flex-col gap-1">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6"
-                      onClick={() => moveImage(gi, ii, "up")}
-                      disabled={ii === 0 || disabled}
-                    >
-                      <GripVertical className="h-3 w-3 rotate-90" />
-                      <span className="sr-only">Move up</span>
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6"
-                      onClick={() => moveImage(gi, ii, "down")}
-                      disabled={ii === group.images.length - 1 || disabled}
-                    >
-                      <GripVertical className="h-3 w-3 -rotate-90" />
-                      <span className="sr-only">Move down</span>
-                    </Button>
-                  </div>
-
-                  {/* Image preview */}
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <button
-                        type="button"
-                        title="Click to preview"
-                        className="relative h-16 w-24 shrink-0 overflow-hidden rounded bg-gray-100 group/preview block cursor-pointer"
-                      >
-                        <Image
-                          src={img.url}
-                          alt={img.alt || "Gallery image"}
-                          fill
-                          className="object-cover"
-                          sizes="96px"
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover/preview:opacity-100 transition-opacity">
-                          <Eye className="h-4 w-4 text-white" />
-                        </div>
-                      </button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-5xl p-2">
-                      <DialogTitle className="sr-only">Image preview</DialogTitle>
-                      <div className="relative w-full h-[80vh]">
-                        <Image
-                          src={img.url}
-                          alt={img.alt || "Gallery image"}
-                          fill
-                          className="object-contain"
-                          sizes="(max-width: 768px) 100vw, 75vw"
-                        />
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-
-                  {/* Alt text */}
-                  <Input
-                    placeholder="Alt text for accessibility"
-                    value={img.alt}
-                    onChange={(e) => updateAlt(gi, ii, e.target.value)}
-                    className="flex-1"
-                    disabled={disabled}
-                  />
-
-                  {/* Delete image */}
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
-                    onClick={() => removeImage(gi, ii)}
-                    disabled={disabled}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
+                  {group.images.map((img, ii) => (
+                    <SortableImageRow
+                      key={img.url}
+                      img={img}
+                      gi={gi}
+                      ii={ii}
+                      disabled={disabled}
+                      onUpdateAlt={updateAlt}
+                      onRemove={removeImage}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
             </div>
           )}
 
@@ -352,7 +397,6 @@ export function GalleryUpload({ value, onChange, entityId, disabled = false }: G
         </div>
       ))}
 
-      {/* Add Group button */}
       <Button
         type="button"
         variant="outline"
