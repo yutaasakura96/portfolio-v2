@@ -6,6 +6,7 @@ import { Wrench } from "lucide-react";
 
 interface SkillsSectionProps {
   skills: Skill[];
+  categoryOrder?: string[];
 }
 
 function SkillCard({ skill }: { skill: Skill }) {
@@ -34,7 +35,7 @@ function SkillCard({ skill }: { skill: Skill }) {
   );
 }
 
-export function SkillsSection({ skills }: SkillsSectionProps) {
+export function SkillsSection({ skills, categoryOrder }: SkillsSectionProps) {
   const grouped = skills.reduce<Record<string, Skill[]>>((acc, skill) => {
     const category = skill.category;
     if (!acc[category]) acc[category] = [];
@@ -42,7 +43,12 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
     return acc;
   }, {});
 
-  const sortedCategories = Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b));
+  const sortedCategories = Object.entries(grouped).sort(([a], [b]) => {
+    if (!categoryOrder?.length) return a.localeCompare(b);
+    const ia = categoryOrder.indexOf(a);
+    const ib = categoryOrder.indexOf(b);
+    return (ia === -1 ? Infinity : ia) - (ib === -1 ? Infinity : ib);
+  });
 
   if (sortedCategories.length === 0) return null;
 

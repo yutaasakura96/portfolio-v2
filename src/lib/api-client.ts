@@ -180,6 +180,18 @@ class ApiClient {
     });
   }
 
+  // ── Skill Categories ──────────────────────────────
+  getSkillCategories<T = unknown, M = unknown>() {
+    return this.request<ApiListResponse<T, M>>("/skill-categories");
+  }
+
+  reorderSkillCategories<TOutput = unknown>(orderedIds: string[]) {
+    return this.request<ApiResponse<TOutput>>("/skill-categories/reorder", {
+      method: "PUT",
+      body: JSON.stringify({ orderedIds }),
+    });
+  }
+
   // ── Experience ────────────────────────────────────
   getExperience<T = unknown, M = unknown>(params?: QueryParams) {
     const query = params ? "?" + new URLSearchParams(params).toString() : "";

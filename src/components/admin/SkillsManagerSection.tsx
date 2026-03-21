@@ -6,16 +6,63 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { apiClient } from "@/lib/api-client";
 import { Skill, SkillsGroupedResponse } from "@/types/skill";
+import {
+  closestCenter,
+  DndContext,
+  DragEndEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AlertCircle, Pencil, Plus, Trash2 } from "lucide-react";
+import { AlertCircle, GripVertical, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+
+type SkillCategory = { id: string; name: string; displayOrder: number };
+
+function SortableCategoryRow({ category }: { category: SkillCategory }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: category.id,
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className={`flex items-center gap-3 px-4 py-2.5 bg-white ${isDragging ? "shadow-md rounded-lg z-10 opacity-90" : ""}`}
+    >
+      <button
+        {...attributes}
+        {...listeners}
+        className="cursor-grab touch-none text-gray-300 hover:text-gray-500 active:cursor-grabbing"
+        aria-label={`Drag to reorder ${category.name}`}
+      >
+        <GripVertical className="h-4 w-4" />
+      </button>
+      <span className="text-sm font-medium text-gray-700">{category.name}</span>
+    </div>
+  );
+}
 
 export function SkillsManagerSection() {
   const queryClient = useQueryClient();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [editingSkill, setEditingSkill] = useState<Skill | null>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isEditingOrder, setIsEditingOrder] = useState(false);
+  const [draftOrder, setDraftOrder] = useState<SkillCategory[]>([]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+  );
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["admin", "skills"],
@@ -27,6 +74,45 @@ export function SkillsManagerSection() {
       return response as unknown as SkillsGroupedResponse;
     },
   });
+
+  const { data: categoriesData } = useQuery({
+    queryKey: ["admin", "skill-categories"],
+    queryFn: () => apiClient.getSkillCategories<SkillCategory, { total: number }>(),
+  });
+
+  const categories: SkillCategory[] = (categoriesData?.data as SkillCategory[]) ?? [];
+
+  const reorderCategoriesMutation = useMutation({
+    mutationFn: (orderedIds: string[]) => apiClient.reorderSkillCategories(orderedIds),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "skill-categories"] });
+      setIsEditingOrder(false);
+      toast.success("Category order saved");
+    },
+    onError: () => toast.error("Failed to save category order"),
+  });
+
+  function handleEditOrder() {
+    setDraftOrder([...categories]);
+    setIsEditingOrder(true);
+  }
+
+  function handleCancelOrder() {
+    setDraftOrder([]);
+    setIsEditingOrder(false);
+  }
+
+  function handleSaveOrder() {
+    reorderCategoriesMutation.mutate(draftOrder.map((c) => c.id));
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = draftOrder.findIndex((c) => c.id === active.id);
+    const newIndex = draftOrder.findIndex((c) => c.id === over.id);
+    setDraftOrder(arrayMove(draftOrder, oldIndex, newIndex));
+  }
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => apiClient.deleteSkill(id),
@@ -91,6 +177,67 @@ export function SkillsManagerSection() {
         </div>
       ) : hasSkills ? (
         <>
+          {categories.length > 1 && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
+                  Category Order
+                </h3>
+                {isEditingOrder ? (
+                  <div className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleCancelOrder}
+                      disabled={reorderCategoriesMutation.isPending}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={handleSaveOrder}
+                      disabled={reorderCategoriesMutation.isPending}
+                    >
+                      {reorderCategoriesMutation.isPending ? "Saving…" : "Save Order"}
+                    </Button>
+                  </div>
+                ) : (
+                  <Button variant="outline" size="sm" onClick={handleEditOrder}>
+                    Edit Order
+                  </Button>
+                )}
+              </div>
+
+              <div className="rounded-lg border bg-white divide-y overflow-hidden">
+                {isEditingOrder ? (
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <SortableContext
+                      items={draftOrder.map((c) => c.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      {draftOrder.map((cat) => (
+                        <SortableCategoryRow key={cat.id} category={cat} />
+                      ))}
+                    </SortableContext>
+                  </DndContext>
+                ) : (
+                  categories.map((cat) => (
+                    <div
+                      key={cat.id}
+                      className="px-4 py-2.5 text-sm font-medium text-gray-700"
+                    >
+                      {cat.name}
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+
           {Object.entries(groupedSkills).map(([category, skills]) => (
             <div key={category} className="space-y-2">
               <h3 className="text-lg font-semibold">{category}</h3>

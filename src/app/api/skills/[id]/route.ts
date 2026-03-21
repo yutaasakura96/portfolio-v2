@@ -30,6 +30,14 @@ export const PUT = withErrorHandler(
 
     const skill = await prisma.skill.update({ where: { id }, data: parsed.data });
 
+    if (parsed.data.category) {
+      await prisma.skillCategory.upsert({
+        where: { name: parsed.data.category },
+        update: {},
+        create: { name: parsed.data.category, displayOrder: 0 },
+      });
+    }
+
     revalidatePath("/about");
 
     return Response.json({ data: skill });

@@ -9,6 +9,7 @@ import {
   getEducation,
   getExperiences,
   getHero,
+  getSkillCategories,
   getSkills,
   getSiteSettings,
 } from "@/lib/data/public-queries";
@@ -33,10 +34,11 @@ type SocialLinks = {
 
 export default async function AboutPage() {
   // Fetch all about page data in parallel for optimal performance
-  const [intro, skills, experiences, education, certifications, hero, siteSettings] =
+  const [intro, skills, categoryOrder, experiences, education, certifications, hero, siteSettings] =
     await Promise.all([
       getAboutPageIntro(),
       getSkills(),
+      getSkillCategories(),
       getExperiences(),
       getEducation(),
       getCertifications(),
@@ -77,7 +79,7 @@ export default async function AboutPage() {
         </div>
       ) : (
         <>
-          {skills.length > 0 && <SkillsSection skills={skills} />}
+          {skills.length > 0 && <SkillsSection skills={skills} categoryOrder={categoryOrder} />}
           {experiences.length > 0 && <ExperienceSection experiences={experiences} />}
           {education.length > 0 && <EducationSection education={education} />}
           {certifications.length > 0 && <CertificationsSection certifications={certifications} />}

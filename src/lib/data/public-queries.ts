@@ -330,6 +330,21 @@ export async function getSkills(): Promise<Skill[]> {
 }
 
 /**
+ * Fetch skill category names ordered by their displayOrder.
+ */
+export async function getSkillCategories(): Promise<string[]> {
+  try {
+    const categories = await prisma.skillCategory.findMany({
+      orderBy: { displayOrder: "asc" },
+    });
+    return categories.map((c) => c.name);
+  } catch (error) {
+    console.error("Failed to fetch skill categories:", error);
+    return [];
+  }
+}
+
+/**
  * Fetch skills grouped by category.
  * Returns an object with category names as keys.
  */

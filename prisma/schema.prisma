@@ -81,6 +81,13 @@ enum PostStatus {
   PUBLISHED
 }
 
+// ═══ SKILL CATEGORY ═══
+model SkillCategory {
+  id           String @id @default(cuid())
+  name         String @unique
+  displayOrder Int    @default(0)
+}
+
 // ═══ SKILL ═══
 model Skill {
   id               String            @id @default(cuid())

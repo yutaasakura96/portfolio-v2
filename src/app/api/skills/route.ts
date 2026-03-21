@@ -56,6 +56,12 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
 
   const skill = await prisma.skill.create({ data: parsed.data });
 
+  await prisma.skillCategory.upsert({
+    where: { name: parsed.data.category },
+    update: {},
+    create: { name: parsed.data.category, displayOrder: 0 },
+  });
+
   revalidatePath("/about");
 
   return Response.json({ data: skill }, { status: 201 });
