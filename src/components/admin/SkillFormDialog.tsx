@@ -123,7 +123,7 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] flex flex-col max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>{isEditing ? "Edit Skill" : "Add Skill"}</DialogTitle>
           <DialogDescription>
@@ -133,7 +133,8 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="flex flex-col flex-1 min-h-0">
+          <div className="space-y-4 overflow-y-auto flex-1 pr-1">
           <div className="space-y-2">
             <Label htmlFor="name">Name *</Label>
             <Input
@@ -279,7 +280,9 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
             </Label>
           </div>
 
-          <DialogFooter>
+          </div>
+
+          <DialogFooter className="pt-4">
             <Button
               type="button"
               variant="outline"
