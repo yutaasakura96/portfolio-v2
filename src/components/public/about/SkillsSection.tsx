@@ -1,29 +1,40 @@
-import type { ProficiencyLevel, Skill } from "../../../../generated/prisma/client";
+"use client";
+
+import type { Skill } from "../../../../generated/prisma/client";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Wrench } from "lucide-react";
 
 interface SkillsSectionProps {
   skills: Skill[];
 }
 
-// Type-safe proficiency color mapping using the actual Prisma enum
-const proficiencyColors: Record<ProficiencyLevel, string> = {
-  EXPERT: "bg-green-100 text-green-800 border-green-200",
-  ADVANCED: "bg-blue-100 text-blue-800 border-blue-200",
-  INTERMEDIATE: "bg-yellow-100 text-yellow-800 border-yellow-200",
-  BEGINNER: "bg-gray-100 text-gray-700 border-gray-200",
-};
-
-// Default style for skills without proficiency level
-const defaultStyle = "bg-gray-100 text-gray-700 border-gray-200";
-
-/**
- * Format proficiency level for display (e.g., "EXPERT" -> "Expert")
- */
-function formatProficiency(level: ProficiencyLevel): string {
-  return level.charAt(0) + level.slice(1).toLowerCase();
+function SkillCard({ skill }: { skill: Skill }) {
+  return (
+    <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white p-3 text-center transition-all hover:border-gray-300 hover:shadow-sm">
+      <div className="flex h-8 w-8 items-center justify-center">
+        {skill.iconUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={skill.iconUrl}
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            className="h-7 w-7 object-contain"
+          />
+        ) : skill.icon ? (
+          <span className="text-2xl leading-none" aria-hidden="true">
+            {skill.icon}
+          </span>
+        ) : (
+          <Wrench className="h-5 w-5 text-gray-400" aria-hidden="true" />
+        )}
+      </div>
+      <span className="w-full truncate text-xs font-medium text-gray-700">{skill.name}</span>
+    </div>
+  );
 }
 
 export function SkillsSection({ skills }: SkillsSectionProps) {
-  // Group skills by category
   const grouped = skills.reduce<Record<string, Skill[]>>((acc, skill) => {
     const category = skill.category;
     if (!acc[category]) acc[category] = [];
@@ -31,54 +42,36 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
     return acc;
   }, {});
 
-  // Sort categories alphabetically for consistent display
   const sortedCategories = Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b));
+
+  if (sortedCategories.length === 0) return null;
+
+  const defaultTab = sortedCategories[0][0];
 
   return (
     <section className="mb-16">
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Skills</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {sortedCategories.map(([category, categorySkills]) => (
-          <div key={category}>
-            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
+      <Tabs defaultValue={defaultTab}>
+        <TabsList
+          variant="line"
+          className="mb-6 w-full justify-start border-b border-gray-200 pb-0"
+        >
+          {sortedCategories.map(([category]) => (
+            <TabsTrigger key={category} value={category} className="px-3 py-2 text-sm">
               {category}
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {categorySkills.map((skill) => {
-                const colorClass = skill.proficiencyLevel
-                  ? proficiencyColors[skill.proficiencyLevel]
-                  : defaultStyle;
-
-                return (
-                  <span
-                    key={skill.id}
-                    className={`inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium border ${colorClass}`}
-                    title={
-                      skill.proficiencyLevel ? formatProficiency(skill.proficiencyLevel) : undefined
-                    }
-                  >
-                    {skill.iconUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={skill.iconUrl}
-                        alt=""
-                        aria-hidden="true"
-                        loading="lazy"
-                        className="h-4 w-4 object-contain mr-1.5 shrink-0"
-                      />
-                    ) : skill.icon ? (
-                      <span className="mr-1.5" aria-hidden="true">
-                        {skill.icon}
-                      </span>
-                    ) : null}
-                    {skill.name}
-                  </span>
-                );
-              })}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        {sortedCategories.map(([category, categorySkills]) => (
+          <TabsContent key={category} value={category}>
+            <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
+              {categorySkills.map((skill) => (
+                <SkillCard key={skill.id} skill={skill} />
+              ))}
             </div>
-          </div>
+          </TabsContent>
         ))}
-      </div>
+      </Tabs>
     </section>
   );
 }
