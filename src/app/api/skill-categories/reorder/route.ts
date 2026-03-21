@@ -20,11 +20,11 @@ export const PUT = withErrorHandler(async (request: NextRequest) => {
     );
   }
 
-  const updates = parsed.data.orderedIds.map((id, index) =>
-    prisma.skillCategory.update({ where: { id }, data: { displayOrder: index } })
+  await Promise.all(
+    parsed.data.orderedIds.map((id, index) =>
+      prisma.skillCategory.update({ where: { id }, data: { displayOrder: index } })
+    )
   );
-
-  await prisma.$transaction(updates);
 
   revalidatePath("/about");
 
