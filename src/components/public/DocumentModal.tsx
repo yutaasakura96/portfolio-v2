@@ -9,9 +9,7 @@ interface DocumentModalProps {
 }
 
 export function DocumentModal({ open, onClose, documentUrl }: DocumentModalProps) {
-  const src = documentUrl.toLowerCase().endsWith(".pdf")
-    ? `${documentUrl}#toolbar=0`
-    : documentUrl;
+  const src = documentUrl.toLowerCase().endsWith(".pdf") ? `${documentUrl}#toolbar=0` : documentUrl;
 
   return (
     <Dialog open={open} onOpenChange={onClose}>

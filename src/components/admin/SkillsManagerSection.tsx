@@ -99,6 +99,7 @@ export function SkillsManagerSection() {
                   <div key={skill.id} className="flex items-center justify-between px-4 py-3">
                     <div className="flex items-center gap-3">
                       {skill.iconUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={skill.iconUrl}
                           alt={`${skill.name} icon`}

@@ -76,8 +76,8 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
   });
 
   const visible = useWatch({ control: form.control, name: "visible" });
-  const logoUrl = form.watch("logoUrl");
-  const documentUrl = form.watch("documentUrl");
+  const logoUrl = useWatch({ control: form.control, name: "logoUrl" });
+  const documentUrl = useWatch({ control: form.control, name: "documentUrl" });
   const achievementsLength = useWatch({ control: form.control, name: "achievements" })?.length ?? 0;
   const watchedStartDate = useWatch({
     control: form.control,

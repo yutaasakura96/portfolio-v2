@@ -30,10 +30,7 @@ export default async function HomePage() {
           name: "Yuta Asakura",
           url: "https://asakurayuta.dev",
           jobTitle: "Full-Stack Developer",
-          sameAs: [
-            "https://github.com/yutaasakura96",
-            "https://linkedin.com/in/yuta-asakura",
-          ],
+          sameAs: ["https://github.com/yutaasakura96", "https://linkedin.com/in/yuta-asakura"],
         }}
       />
       <JsonLd

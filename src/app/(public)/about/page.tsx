@@ -24,8 +24,7 @@ export const metadata: Metadata = {
 export const revalidate = 86400;
 
 const DEFAULT_HEADING = "About Me";
-const DEFAULT_SUBHEADING =
-  "My skills, professional experience, education, and certifications.";
+const DEFAULT_SUBHEADING = "My skills, professional experience, education, and certifications.";
 
 type SocialLinks = {
   github?: string;
@@ -52,21 +51,15 @@ export default async function AboutPage() {
     education.length > 0 ||
     certifications.length > 0;
 
-  const hasProfileSection =
-    intro &&
-    (intro.profileName || intro.introHeadline || intro.introBio);
+  const hasProfileSection = intro && (intro.profileName || intro.introHeadline || intro.introBio);
 
   const socialLinks = (siteSettings?.socialLinks as SocialLinks) ?? {};
 
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 py-12">
       <div className="mb-12">
-        <h1 className="text-3xl font-bold text-gray-900">
-          {intro?.heading ?? DEFAULT_HEADING}
-        </h1>
-        <p className="mt-2 text-gray-600">
-          {intro?.subheading ?? DEFAULT_SUBHEADING}
-        </p>
+        <h1 className="text-3xl font-bold text-gray-900">{intro?.heading ?? DEFAULT_HEADING}</h1>
+        <p className="mt-2 text-gray-600">{intro?.subheading ?? DEFAULT_SUBHEADING}</p>
       </div>
 
       {hasProfileSection && (

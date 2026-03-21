@@ -20,12 +20,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ExternalLink, Loader2, Save } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 
 const DEFAULT_HEADING = "About Me";
-const DEFAULT_SUBHEADING =
-  "My skills, professional experience, education, and certifications.";
+const DEFAULT_SUBHEADING = "My skills, professional experience, education, and certifications.";
 
 type AboutPageData = {
   id: string;
@@ -51,7 +50,7 @@ export default function AboutManagerPage() {
     register,
     handleSubmit,
     reset,
-    watch,
+    control,
     setValue,
     formState: { errors, isDirty },
   } = useForm<AboutPageUpdateInput>({
@@ -97,9 +96,10 @@ export default function AboutManagerPage() {
 
   const onSubmit = (values: AboutPageUpdateInput) => mutation.mutate(values);
 
-  const heading = watch("heading");
-  const subheading = watch("subheading");
-  const introHeadline = watch("introHeadline");
+  const heading = useWatch({ control, name: "heading" });
+  const subheading = useWatch({ control, name: "subheading" });
+  const introHeadline = useWatch({ control, name: "introHeadline" });
+  const profileImageUrl = useWatch({ control, name: "profileImageUrl" });
 
   if (isLoading) {
     return (
@@ -151,9 +151,7 @@ export default function AboutManagerPage() {
               placeholder={DEFAULT_HEADING}
               maxLength={200}
             />
-            {errors.heading && (
-              <p className="text-sm text-red-500">{errors.heading.message}</p>
-            )}
+            {errors.heading && <p className="text-sm text-red-500">{errors.heading.message}</p>}
           </div>
 
           <div className="space-y-2">
@@ -190,7 +188,7 @@ export default function AboutManagerPage() {
             <ImageUpload
               folder="profile"
               entityId="about"
-              value={watch("profileImageUrl") ?? undefined}
+              value={profileImageUrl ?? undefined}
               onUpload={(result) =>
                 setValue("profileImageUrl", result.urls.display, { shouldDirty: true })
               }
@@ -277,9 +275,7 @@ export default function AboutManagerPage() {
               rows={8}
             />
             <p className="text-xs text-gray-400">Separate paragraphs with a blank line.</p>
-            {errors.introBio && (
-              <p className="text-sm text-red-500">{errors.introBio.message}</p>
-            )}
+            {errors.introBio && <p className="text-sm text-red-500">{errors.introBio.message}</p>}
           </div>
         </div>
 

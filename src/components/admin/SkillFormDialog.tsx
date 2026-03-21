@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import {
@@ -40,7 +40,7 @@ const PROFICIENCY_LEVELS: ProficiencyLevel[] = ["BEGINNER", "INTERMEDIATE", "ADV
 export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDialogProps) {
   const queryClient = useQueryClient();
   const isEditing = !!initialData;
-  const uploadEntityId = useRef(crypto.randomUUID());
+  const [uploadEntityId] = useState(() => crypto.randomUUID());
 
   const form = useForm<SkillCreateInput>({
     resolver: zodResolver(skillCreateSchema) as Resolver<SkillCreateInput>,
@@ -89,7 +89,7 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
             }
       );
     }
-  }, [open, initialData]);
+  }, [open, initialData, form]);
 
   const proficiencyLevel = useWatch({ control: form.control, name: "proficiencyLevel" });
   const visible = useWatch({ control: form.control, name: "visible" });
@@ -188,7 +188,7 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
             <div className="w-24">
               <ImageUpload
                 folder="logos"
-                entityId={uploadEntityId.current}
+                entityId={uploadEntityId}
                 value={iconUrl || undefined}
                 onUpload={(result) => {
                   const url = result.urls.display ?? result.urls.original ?? "";

@@ -15,9 +15,7 @@ export function ImageGallery({ groups, projectTitle }: ImageGalleryProps) {
   const [lightboxIndex, setLightboxIndex] = useState(-1);
 
   // Flatten all groups' sorted images for the lightbox slides array
-  const allImages = groups.flatMap((g) =>
-    [...g.images].sort((a, b) => a.order - b.order)
-  );
+  const allImages = groups.flatMap((g) => [...g.images].sort((a, b) => a.order - b.order));
 
   if (allImages.length === 0) return null;
 
@@ -47,9 +45,7 @@ export function ImageGallery({ groups, projectTitle }: ImageGalleryProps) {
 
         return (
           <div key={groupIdx} className="space-y-3">
-            {group.name && (
-              <h3 className="text-sm font-medium text-gray-700">{group.name}</h3>
-            )}
+            {group.name && <h3 className="text-sm font-medium text-gray-700">{group.name}</h3>}
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {sortedImages.map((img, i) => {
                 const globalIndex = offset + i;

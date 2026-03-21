@@ -149,11 +149,7 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
 
     case "logos": {
       if (!entityId) {
-        throw new ApiError(
-          "entityId is required for logo uploads",
-          400,
-          "MISSING_ENTITY_ID"
-        );
+        throw new ApiError("entityId is required for logo uploads", 400, "MISSING_ENTITY_ID");
       }
       const result = await processLogoImage(buffer, folder, entityId, fileId);
       const [displayUrl, origUrl] = await Promise.all([
@@ -253,7 +249,15 @@ export const DELETE = withErrorHandler(async (req: NextRequest) => {
 
   const { key } = parsed.data;
 
-  const validPrefixes = ["projects/", "blog/", "profile/", "logos/", "certifications/", "resume/", "education/"];
+  const validPrefixes = [
+    "projects/",
+    "blog/",
+    "profile/",
+    "logos/",
+    "certifications/",
+    "resume/",
+    "education/",
+  ];
   if (!validPrefixes.some((prefix) => key.startsWith(prefix))) {
     throw new ApiError("Invalid key prefix", 400, "INVALID_KEY");
   }

@@ -115,7 +115,7 @@ export function ExperienceForm({ initialData, experienceId }: ExperienceFormProp
   };
 
   const visible = useWatch({ control: form.control, name: "visible" });
-  const logoUrl = form.watch("logoUrl");
+  const logoUrl = useWatch({ control: form.control, name: "logoUrl" });
   const watchedStartDate = useWatch({
     control: form.control,
     name: "startDate",
@@ -370,9 +370,7 @@ export function ExperienceForm({ initialData, experienceId }: ExperienceFormProp
               />
             </div>
             {form.formState.errors.logoUrl && (
-              <p className="text-sm text-red-500">
-                {form.formState.errors.logoUrl.message}
-              </p>
+              <p className="text-sm text-red-500">{form.formState.errors.logoUrl.message}</p>
             )}
           </div>
 

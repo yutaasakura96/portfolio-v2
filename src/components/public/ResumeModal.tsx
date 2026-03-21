@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Download } from "lucide-react";
 
 interface ResumeModalProps {
@@ -29,11 +24,7 @@ export function ResumeModal({ open, onClose, resumeUrl }: ResumeModalProps) {
             Download
           </a>
         </DialogHeader>
-        <iframe
-          src={resumeUrl}
-          className="flex-1 w-full"
-          title="Resume preview"
-        />
+        <iframe src={resumeUrl} className="flex-1 w-full" title="Resume preview" />
       </DialogContent>
     </Dialog>
   );

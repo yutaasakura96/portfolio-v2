@@ -65,7 +65,23 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ id: str
       <Breadcrumbs items={breadcrumbs} />
       <h1 className="text-2xl font-bold">Edit Post</h1>
       <BlogPostForm
-        initialData={(data as { data: { id: string; slug: string; title: string; content: string; excerpt: string; featuredImage: string | null; tags: string[]; status: "DRAFT" | "PUBLISHED"; publishedAt: string | null } }).data}
+        initialData={
+          (
+            data as {
+              data: {
+                id: string;
+                slug: string;
+                title: string;
+                content: string;
+                excerpt: string;
+                featuredImage: string | null;
+                tags: string[];
+                status: "DRAFT" | "PUBLISHED";
+                publishedAt: string | null;
+              };
+            }
+          ).data
+        }
       />
     </div>
   );

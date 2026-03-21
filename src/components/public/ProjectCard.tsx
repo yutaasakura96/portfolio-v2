@@ -12,9 +12,10 @@ interface ProjectCardProps {
     liveUrl?: string | null;
     repoUrl?: string | null;
   };
+  priority?: boolean;
 }
 
-export function ProjectCard({ project }: ProjectCardProps) {
+export function ProjectCard({ project, priority = false }: ProjectCardProps) {
   return (
     <article className="group rounded-xl border border-gray-200 bg-white overflow-hidden hover:shadow-md transition-shadow">
       {/* Thumbnail */}
@@ -27,6 +28,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-300"
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              priority={priority}
             />
           </div>
         </Link>

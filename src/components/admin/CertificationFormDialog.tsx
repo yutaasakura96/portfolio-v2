@@ -129,6 +129,8 @@ export function CertificationFormDialog({
   };
 
   const visible = useWatch({ control: form.control, name: "visible" });
+  const badgeImage = useWatch({ control: form.control, name: "badgeImage" });
+  const certificateImage = useWatch({ control: form.control, name: "certificateImage" });
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -142,7 +144,11 @@ export function CertificationFormDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <form id="certification-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 overflow-y-auto flex-1 pr-1">
+        <form
+          id="certification-form"
+          onSubmit={form.handleSubmit(handleSubmit)}
+          className="space-y-4 overflow-y-auto flex-1 pr-1"
+        >
           <div className="space-y-2">
             <Label htmlFor="name">Certification Name *</Label>
             <Input
@@ -273,10 +279,12 @@ export function CertificationFormDialog({
 
           <div className="space-y-2">
             <Label>Badge Image</Label>
-            <p className="text-xs text-muted-foreground">Issuer badge or logo — upload a file or paste a URL</p>
+            <p className="text-xs text-muted-foreground">
+              Issuer badge or logo — upload a file or paste a URL
+            </p>
             <div className="max-w-[200px]">
               <ImageUpload
-                value={form.watch("badgeImage") || undefined}
+                value={badgeImage || undefined}
                 folder="certifications"
                 entityId={initialData?.id || "new"}
                 aspectRatio="aspect-square"
@@ -289,7 +297,9 @@ export function CertificationFormDialog({
                 onRemove={() => form.setValue("badgeImage", "", { shouldDirty: true })}
               />
             </div>
-            <Label htmlFor="badgeImage" className="text-xs text-muted-foreground">Or paste a URL</Label>
+            <Label htmlFor="badgeImage" className="text-xs text-muted-foreground">
+              Or paste a URL
+            </Label>
             <Input
               id="badgeImage"
               type="url"
@@ -307,10 +317,12 @@ export function CertificationFormDialog({
 
           <div className="space-y-2">
             <Label>Certificate Image</Label>
-            <p className="text-xs text-muted-foreground">Upload a scan or photo of the certificate</p>
+            <p className="text-xs text-muted-foreground">
+              Upload a scan or photo of the certificate
+            </p>
             <div className="max-w-sm">
               <ImageUpload
-                value={form.watch("certificateImage") || undefined}
+                value={certificateImage || undefined}
                 folder="certifications"
                 entityId={initialData?.id || "new"}
                 aspectRatio="aspect-video"
@@ -336,7 +348,6 @@ export function CertificationFormDialog({
               Visible on public site
             </Label>
           </div>
-
         </form>
 
         <DialogFooter className="shrink-0 pt-2 border-t">
@@ -348,11 +359,7 @@ export function CertificationFormDialog({
           >
             Cancel
           </Button>
-          <Button
-            type="submit"
-            form="certification-form"
-            disabled={mutation.isPending}
-          >
+          <Button type="submit" form="certification-form" disabled={mutation.isPending}>
             {mutation.isPending ? "Saving..." : isEditing ? "Update" : "Create"}
           </Button>
         </DialogFooter>

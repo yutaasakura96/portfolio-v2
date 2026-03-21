@@ -172,9 +172,7 @@ export function GalleryUpload({ value, onChange, entityId, disabled = false }: G
         groupIdx === gi
           ? {
               ...g,
-              images: g.images.map((img, imgIdx) =>
-                imgIdx === ii ? { ...img, alt } : img
-              ),
+              images: g.images.map((img, imgIdx) => (imgIdx === ii ? { ...img, alt } : img)),
             }
           : g
       )
@@ -189,9 +187,7 @@ export function GalleryUpload({ value, onChange, entityId, disabled = false }: G
     [imgs[ii], imgs[toIndex]] = [imgs[toIndex], imgs[ii]];
     onChange(
       value.map((g, groupIdx) =>
-        groupIdx === gi
-          ? { ...g, images: imgs.map((img, idx) => ({ ...img, order: idx })) }
-          : g
+        groupIdx === gi ? { ...g, images: imgs.map((img, idx) => ({ ...img, order: idx })) } : g
       )
     );
   };

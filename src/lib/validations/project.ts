@@ -25,19 +25,16 @@ export function normalizeImagesToGroups(raw: unknown): GalleryImageGroup[] {
   if (!Array.isArray(raw) || raw.length === 0) return [];
 
   const first = raw[0];
-  if (
-    first &&
-    typeof first === "object" &&
-    "url" in first &&
-    !("images" in first)
-  ) {
+  if (first && typeof first === "object" && "url" in first && !("images" in first)) {
     // Legacy flat array — wrap in a single unnamed group
     return [
       {
         name: "",
-        images: (raw as Array<{ url: string; alt: string; order: number }>).map(
-          (img, i) => ({ url: img.url, alt: img.alt ?? "", order: i })
-        ),
+        images: (raw as Array<{ url: string; alt: string; order: number }>).map((img, i) => ({
+          url: img.url,
+          alt: img.alt ?? "",
+          order: i,
+        })),
       },
     ];
   }

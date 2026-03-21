@@ -74,16 +74,16 @@ export function EducationSection({ education }: EducationSectionProps) {
               </div>
 
               <div
-                className="shrink-0 h-10 w-10 rounded-lg bg-transparent flex items-center justify-center overflow-hidden"
+                className="relative shrink-0 h-10 w-10 rounded-lg bg-transparent overflow-hidden"
                 aria-hidden="true"
               >
                 {shouldShowImage ? (
                   <Image
                     src={edu.logoUrl ?? ""}
                     alt={`${edu.institution} logo`}
-                    width={40}
-                    height={40}
+                    fill
                     className="object-contain"
+                    sizes="40px"
                     onError={() => handleImageError(edu.id)}
                   />
                 ) : (

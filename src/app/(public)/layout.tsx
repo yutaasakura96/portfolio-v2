@@ -11,9 +11,7 @@ export default async function PublicLayout({ children }: { children: React.React
 
   return (
     <>
-      {settings?.googleAnalyticsId && (
-        <GoogleAnalytics gaId={settings.googleAnalyticsId} />
-      )}
+      {settings?.googleAnalyticsId && <GoogleAnalytics gaId={settings.googleAnalyticsId} />}
       <div className="flex min-h-screen flex-col">
         <Header />
         <main className="flex-1">{children}</main>

@@ -93,9 +93,7 @@ function CtaButtonRow({
             aria-invalid={!!errors.ctaButtons?.[index]?.label}
           />
           {errors.ctaButtons?.[index]?.label && (
-            <p className="text-sm text-red-500">
-              {errors.ctaButtons[index]?.label?.message}
-            </p>
+            <p className="text-sm text-red-500">{errors.ctaButtons[index]?.label?.message}</p>
           )}
         </div>
 
@@ -132,9 +130,7 @@ function CtaButtonRow({
             <option value="secondary">Secondary</option>
           </select>
           {errors.ctaButtons?.[index]?.variant && (
-            <p className="text-sm text-red-500">
-              {errors.ctaButtons[index]?.variant?.message}
-            </p>
+            <p className="text-sm text-red-500">{errors.ctaButtons[index]?.variant?.message}</p>
           )}
         </div>
       </div>
@@ -151,9 +147,7 @@ function CtaButtonRow({
             aria-invalid={!!errors.ctaButtons?.[index]?.url}
           />
           {errors.ctaButtons?.[index]?.url && (
-            <p className="text-sm text-red-500">
-              {errors.ctaButtons[index]?.url?.message}
-            </p>
+            <p className="text-sm text-red-500">{errors.ctaButtons[index]?.url?.message}</p>
           )}
         </div>
       )}

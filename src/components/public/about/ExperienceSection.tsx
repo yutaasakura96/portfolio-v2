@@ -60,9 +60,7 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
 
                     <p className="text-sm font-medium text-gray-700 mt-0.5">{exp.role}</p>
 
-                    {exp.location && (
-                      <p className="text-sm text-gray-400 mt-0.5">{exp.location}</p>
-                    )}
+                    {exp.location && <p className="text-sm text-gray-400 mt-0.5">{exp.location}</p>}
 
                     <p className="text-sm text-gray-400 mt-0.5">
                       {formatDateRange(exp.startDate, exp.endDate)}

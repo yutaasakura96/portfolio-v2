@@ -58,10 +58,12 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
                     }
                   >
                     {skill.iconUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={skill.iconUrl}
                         alt=""
                         aria-hidden="true"
+                        loading="lazy"
                         className="h-4 w-4 object-contain mr-1.5 shrink-0"
                       />
                     ) : skill.icon ? (

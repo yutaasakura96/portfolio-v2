@@ -116,4 +116,14 @@ export type PaginationParams = {
 // CONTENT TYPES
 // ═══════════════════════════════════════════════════════════════════════════
 
-export type { AboutPage, Hero, SiteSettings, Project, BlogPost, Skill, Experience, Education, Certification };
+export type {
+  AboutPage,
+  Hero,
+  SiteSettings,
+  Project,
+  BlogPost,
+  Skill,
+  Experience,
+  Education,
+  Certification,
+};
