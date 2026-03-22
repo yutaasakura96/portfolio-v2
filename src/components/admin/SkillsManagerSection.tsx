@@ -49,15 +49,27 @@ function SortableSkillRow({ skill }: { skill: Skill }) {
       </button>
       {skill.iconUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={skill.iconUrl} alt={`${skill.name} icon`} className="h-5 w-5 object-contain shrink-0" />
+        <img
+          src={skill.iconUrl}
+          alt={`${skill.name} icon`}
+          className="h-5 w-5 object-contain shrink-0"
+        />
       ) : skill.icon ? (
-        <span className="text-lg" aria-hidden="true">{skill.icon}</span>
+        <span className="text-lg" aria-hidden="true">
+          {skill.icon}
+        </span>
       ) : null}
       <span className="text-sm font-medium text-gray-700 flex-1">{skill.name}</span>
       {skill.proficiencyLevel && (
-        <Badge variant="outline" className="text-xs">{skill.proficiencyLevel}</Badge>
+        <Badge variant="outline" className="text-xs">
+          {skill.proficiencyLevel}
+        </Badge>
       )}
-      {!skill.visible && <Badge variant="secondary" className="text-xs">Hidden</Badge>}
+      {!skill.visible && (
+        <Badge variant="secondary" className="text-xs">
+          Hidden
+        </Badge>
+      )}
     </div>
   );
 }
@@ -305,7 +317,9 @@ export function SkillsManagerSection() {
                       </Button>
                       <Button
                         size="sm"
-                        onClick={() => reorderSkillsMutation.mutate(draftSkillOrder.map((s) => s.id))}
+                        onClick={() =>
+                          reorderSkillsMutation.mutate(draftSkillOrder.map((s) => s.id))
+                        }
                         disabled={reorderSkillsMutation.isPending}
                       >
                         {reorderSkillsMutation.isPending ? "Saving…" : "Save Order"}

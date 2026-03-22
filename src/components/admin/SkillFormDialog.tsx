@@ -135,151 +135,150 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
 
         <form onSubmit={form.handleSubmit(handleSubmit)} className="flex flex-col flex-1 min-h-0">
           <div className="space-y-4 overflow-y-auto flex-1 pr-1">
-          <div className="space-y-2">
-            <Label htmlFor="name">Name *</Label>
-            <Input
-              id="name"
-              {...form.register("name")}
-              placeholder="e.g., React, TypeScript"
-              aria-invalid={!!form.formState.errors.name}
-              aria-describedby={form.formState.errors.name ? "name-error" : undefined}
-            />
-            {form.formState.errors.name && (
-              <p id="name-error" className="text-sm text-red-500">
-                {form.formState.errors.name.message}
-              </p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="category">Category *</Label>
-            <Input
-              id="category"
-              {...form.register("category")}
-              placeholder="e.g., Frontend, Backend, DevOps"
-              aria-invalid={!!form.formState.errors.category}
-              aria-describedby={form.formState.errors.category ? "category-error" : undefined}
-            />
-            {form.formState.errors.category && (
-              <p id="category-error" className="text-sm text-red-500">
-                {form.formState.errors.category.message}
-              </p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="icon">Emoji Icon (optional)</Label>
-            <Input
-              id="icon"
-              {...form.register("icon")}
-              placeholder="e.g., ⚛️ or emoji"
-              aria-invalid={!!form.formState.errors.icon}
-              aria-describedby={form.formState.errors.icon ? "icon-error" : undefined}
-            />
-            {form.formState.errors.icon && (
-              <p id="icon-error" className="text-sm text-red-500">
-                {form.formState.errors.icon.message}
-              </p>
-            )}
-            <p className="text-xs text-muted-foreground">Add an emoji to represent this skill.</p>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Image Icon (optional)</Label>
-            <div className="w-24">
-              <ImageUpload
-                folder="logos"
-                entityId={uploadEntityId}
-                value={iconUrl || undefined}
-                onUpload={(result) => {
-                  const url = result.urls.display ?? result.urls.original ?? "";
-                  form.setValue("iconUrl", url, { shouldValidate: true });
-                }}
-                onRemove={() => {
-                  form.setValue("iconUrl", "", { shouldValidate: true });
-                }}
-                aspectRatio="aspect-square"
-                placeholder="Drop image"
-              />
-            </div>
-            <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">Upload an image, or paste a URL:</p>
+            <div className="space-y-2">
+              <Label htmlFor="name">Name *</Label>
               <Input
-                type="url"
-                {...form.register("iconUrl")}
-                placeholder="https://cdn.example.com/icon.svg"
-                aria-invalid={!!form.formState.errors.iconUrl}
+                id="name"
+                {...form.register("name")}
+                placeholder="e.g., React, TypeScript"
+                aria-invalid={!!form.formState.errors.name}
+                aria-describedby={form.formState.errors.name ? "name-error" : undefined}
               />
-              {form.formState.errors.iconUrl && (
-                <p className="text-sm text-red-500">{form.formState.errors.iconUrl.message}</p>
+              {form.formState.errors.name && (
+                <p id="name-error" className="text-sm text-red-500">
+                  {form.formState.errors.name.message}
+                </p>
               )}
             </div>
-            <p className="text-xs text-muted-foreground">
-              Image takes priority over emoji when both are set.
-            </p>
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="proficiencyLevel">Proficiency Level (optional)</Label>
-            <Select
-              value={proficiencyLevel ?? undefined}
-              onValueChange={(value) => {
-                form.setValue("proficiencyLevel", value as ProficiencyLevel, {
-                  shouldValidate: true,
-                });
-              }}
-            >
-              <SelectTrigger id="proficiencyLevel">
-                <SelectValue placeholder="Select proficiency level" />
-              </SelectTrigger>
-              <SelectContent>
-                {PROFICIENCY_LEVELS.map((level) => (
-                  <SelectItem key={level} value={level}>
-                    {level}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {form.formState.errors.proficiencyLevel && (
-              <p className="text-sm text-red-500">
-                {form.formState.errors.proficiencyLevel.message}
+            <div className="space-y-2">
+              <Label htmlFor="category">Category *</Label>
+              <Input
+                id="category"
+                {...form.register("category")}
+                placeholder="e.g., Frontend, Backend, DevOps"
+                aria-invalid={!!form.formState.errors.category}
+                aria-describedby={form.formState.errors.category ? "category-error" : undefined}
+              />
+              {form.formState.errors.category && (
+                <p id="category-error" className="text-sm text-red-500">
+                  {form.formState.errors.category.message}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="icon">Emoji Icon (optional)</Label>
+              <Input
+                id="icon"
+                {...form.register("icon")}
+                placeholder="e.g., ⚛️ or emoji"
+                aria-invalid={!!form.formState.errors.icon}
+                aria-describedby={form.formState.errors.icon ? "icon-error" : undefined}
+              />
+              {form.formState.errors.icon && (
+                <p id="icon-error" className="text-sm text-red-500">
+                  {form.formState.errors.icon.message}
+                </p>
+              )}
+              <p className="text-xs text-muted-foreground">Add an emoji to represent this skill.</p>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Image Icon (optional)</Label>
+              <div className="w-24">
+                <ImageUpload
+                  folder="logos"
+                  entityId={uploadEntityId}
+                  value={iconUrl || undefined}
+                  onUpload={(result) => {
+                    const url = result.urls.display ?? result.urls.original ?? "";
+                    form.setValue("iconUrl", url, { shouldValidate: true });
+                  }}
+                  onRemove={() => {
+                    form.setValue("iconUrl", "", { shouldValidate: true });
+                  }}
+                  aspectRatio="aspect-square"
+                  placeholder="Drop image"
+                />
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Upload an image, or paste a URL:</p>
+                <Input
+                  type="url"
+                  {...form.register("iconUrl")}
+                  placeholder="https://cdn.example.com/icon.svg"
+                  aria-invalid={!!form.formState.errors.iconUrl}
+                />
+                {form.formState.errors.iconUrl && (
+                  <p className="text-sm text-red-500">{form.formState.errors.iconUrl.message}</p>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Image takes priority over emoji when both are set.
               </p>
-            )}
-          </div>
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="displayOrder">Display Order</Label>
-            <Input
-              id="displayOrder"
-              type="number"
-              {...form.register("displayOrder", { valueAsNumber: true })}
-              placeholder="0"
-              aria-invalid={!!form.formState.errors.displayOrder}
-              aria-describedby={
-                form.formState.errors.displayOrder ? "displayOrder-error" : undefined
-              }
-            />
-            {form.formState.errors.displayOrder && (
-              <p id="displayOrder-error" className="text-sm text-red-500">
-                {form.formState.errors.displayOrder.message}
+            <div className="space-y-2">
+              <Label htmlFor="proficiencyLevel">Proficiency Level (optional)</Label>
+              <Select
+                value={proficiencyLevel ?? undefined}
+                onValueChange={(value) => {
+                  form.setValue("proficiencyLevel", value as ProficiencyLevel, {
+                    shouldValidate: true,
+                  });
+                }}
+              >
+                <SelectTrigger id="proficiencyLevel">
+                  <SelectValue placeholder="Select proficiency level" />
+                </SelectTrigger>
+                <SelectContent>
+                  {PROFICIENCY_LEVELS.map((level) => (
+                    <SelectItem key={level} value={level}>
+                      {level}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {form.formState.errors.proficiencyLevel && (
+                <p className="text-sm text-red-500">
+                  {form.formState.errors.proficiencyLevel.message}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="displayOrder">Display Order</Label>
+              <Input
+                id="displayOrder"
+                type="number"
+                {...form.register("displayOrder", { valueAsNumber: true })}
+                placeholder="0"
+                aria-invalid={!!form.formState.errors.displayOrder}
+                aria-describedby={
+                  form.formState.errors.displayOrder ? "displayOrder-error" : undefined
+                }
+              />
+              {form.formState.errors.displayOrder && (
+                <p id="displayOrder-error" className="text-sm text-red-500">
+                  {form.formState.errors.displayOrder.message}
+                </p>
+              )}
+              <p className="text-xs text-muted-foreground">
+                Lower numbers appear first within the category.
               </p>
-            )}
-            <p className="text-xs text-muted-foreground">
-              Lower numbers appear first within the category.
-            </p>
-          </div>
+            </div>
 
-          <div className="flex items-center gap-2 pt-2">
-            <Switch
-              id="visible"
-              checked={visible}
-              onCheckedChange={(val) => form.setValue("visible", val)}
-            />
-            <Label htmlFor="visible" className="cursor-pointer">
-              Visible on public site
-            </Label>
-          </div>
-
+            <div className="flex items-center gap-2 pt-2">
+              <Switch
+                id="visible"
+                checked={visible}
+                onCheckedChange={(val) => form.setValue("visible", val)}
+              />
+              <Label htmlFor="visible" className="cursor-pointer">
+                Visible on public site
+              </Label>
+            </div>
           </div>
 
           <DialogFooter className="pt-4">
