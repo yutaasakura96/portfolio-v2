@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 };
 
 // Revalidate daily (86400 seconds = 24 hours)
-export const revalidate = 86400;
+export const revalidate = 60;
 
 const DEFAULT_HEADING = "About Me";
 const DEFAULT_SUBHEADING = "My skills, professional experience, education, and certifications.";
