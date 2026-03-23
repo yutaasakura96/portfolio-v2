@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import {
@@ -25,7 +25,7 @@ import { apiClient } from "@/lib/api-client";
 import { SkillCreateInput, skillCreateSchema } from "@/lib/validations/skill";
 import { Skill, ProficiencyLevel } from "@/types/skill";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm, useWatch, type Resolver } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -41,6 +41,14 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
   const queryClient = useQueryClient();
   const isEditing = !!initialData;
   const [uploadEntityId] = useState(() => crypto.randomUUID());
+  const [catOpen, setCatOpen] = useState(false);
+  const catRef = useRef<HTMLDivElement>(null);
+
+  const { data: categoriesData } = useQuery({
+    queryKey: ["admin", "skill-categories"],
+    queryFn: () => apiClient.getSkillCategories<{ id: string; name: string }, unknown>(),
+  });
+  const categories = categoriesData?.data ?? [];
 
   const form = useForm<SkillCreateInput>({
     resolver: zodResolver(skillCreateSchema) as Resolver<SkillCreateInput>,
@@ -91,6 +99,17 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
     }
   }, [open, initialData, form]);
 
+  useEffect(() => {
+    const handleMouseDown = (e: MouseEvent) => {
+      if (catRef.current && !catRef.current.contains(e.target as Node)) {
+        setCatOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleMouseDown);
+    return () => document.removeEventListener("mousedown", handleMouseDown);
+  }, []);
+
+  const catInput = useWatch({ control: form.control, name: "category" });
   const proficiencyLevel = useWatch({ control: form.control, name: "proficiencyLevel" });
   const visible = useWatch({ control: form.control, name: "visible" });
   const iconUrl = useWatch({ control: form.control, name: "iconUrl" });
@@ -153,13 +172,58 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
 
             <div className="space-y-2">
               <Label htmlFor="category">Category *</Label>
-              <Input
-                id="category"
-                {...form.register("category")}
-                placeholder="e.g., Frontend, Backend, DevOps"
-                aria-invalid={!!form.formState.errors.category}
-                aria-describedby={form.formState.errors.category ? "category-error" : undefined}
-              />
+              <div ref={catRef} className="relative">
+                <Input
+                  id="category"
+                  value={catInput}
+                  placeholder="e.g., Frontend, Backend, DevOps"
+                  aria-invalid={!!form.formState.errors.category}
+                  aria-describedby={form.formState.errors.category ? "category-error" : undefined}
+                  autoComplete="off"
+                  onFocus={() => setCatOpen(true)}
+                  onChange={(e) => {
+                    form.setValue("category", e.target.value, { shouldValidate: true });
+                    setCatOpen(true);
+                  }}
+                />
+                {catOpen && (
+                  <div className="absolute z-50 w-full mt-1 border rounded-md bg-popover shadow-md max-h-48 overflow-y-auto">
+                    {categories
+                      .filter((c) => c.name.toLowerCase().includes(catInput.toLowerCase()))
+                      .map((c) => (
+                        <button
+                          key={c.id}
+                          type="button"
+                          className="w-full text-left px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground cursor-pointer"
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            form.setValue("category", c.name, { shouldValidate: true });
+                            setCatOpen(false);
+                          }}
+                        >
+                          {c.name}
+                        </button>
+                      ))}
+                    {catInput.length > 0 &&
+                      !categories.some((c) => c.name.toLowerCase() === catInput.toLowerCase()) && (
+                        <div className="px-3 py-2 text-sm text-muted-foreground border-t">
+                          Create new:{" "}
+                          <span className="font-medium text-foreground">{catInput}</span>
+                        </div>
+                      )}
+                    {categories.filter((c) => c.name.toLowerCase().includes(catInput.toLowerCase()))
+                      .length === 0 &&
+                      catInput.length === 0 && (
+                        <div className="px-3 py-2 text-sm text-muted-foreground">
+                          No categories yet
+                        </div>
+                      )}
+                  </div>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Type a new category name or choose from existing ones.
+              </p>
               {form.formState.errors.category && (
                 <p id="category-error" className="text-sm text-red-500">
                   {form.formState.errors.category.message}
@@ -186,22 +250,20 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
 
             <div className="space-y-2">
               <Label>Image Icon (optional)</Label>
-              <div className="w-24">
-                <ImageUpload
-                  folder="logos"
-                  entityId={uploadEntityId}
-                  value={iconUrl || undefined}
-                  onUpload={(result) => {
-                    const url = result.urls.display ?? result.urls.original ?? "";
-                    form.setValue("iconUrl", url, { shouldValidate: true });
-                  }}
-                  onRemove={() => {
-                    form.setValue("iconUrl", "", { shouldValidate: true });
-                  }}
-                  aspectRatio="aspect-square"
-                  placeholder="Drop image"
-                />
-              </div>
+              <ImageUpload
+                folder="logos"
+                entityId={uploadEntityId}
+                value={iconUrl || undefined}
+                onUpload={(result) => {
+                  const url = result.urls.display ?? result.urls.original ?? "";
+                  form.setValue("iconUrl", url, { shouldValidate: true });
+                }}
+                onRemove={() => {
+                  form.setValue("iconUrl", "", { shouldValidate: true });
+                }}
+                className="w-40 h-24 overflow-hidden"
+                placeholder="Drop image"
+              />
               <div className="space-y-1">
                 <p className="text-xs text-muted-foreground">Upload an image, or paste a URL:</p>
                 <Input

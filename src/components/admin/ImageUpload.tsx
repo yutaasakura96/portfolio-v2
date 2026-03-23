@@ -28,6 +28,8 @@ interface ImageUploadProps {
   placeholder?: string;
   /** Aspect ratio class for preview (e.g., "aspect-video", "aspect-square") */
   aspectRatio?: string;
+  /** Additional class names applied to the root container */
+  className?: string;
   /** Whether the component is disabled */
   disabled?: boolean;
   /** Accepted file types */
@@ -51,6 +53,7 @@ export function ImageUpload({
   entityId,
   placeholder = "Drag & drop an image here, or click to browse",
   aspectRatio = "aspect-video",
+  className,
   disabled = false,
   accept = DEFAULT_ACCEPT,
   extraFields,
@@ -155,6 +158,7 @@ export function ImageUpload({
           className={cn(
             "relative overflow-hidden rounded-lg bg-gray-100 border",
             aspectRatio,
+            className,
             !isImageUrl && "flex flex-col items-center justify-center gap-2"
           )}
         >
@@ -195,6 +199,7 @@ export function ImageUpload({
       className={cn(
         "relative border-2 border-dashed rounded-lg transition-colors cursor-pointer",
         aspectRatio,
+        className,
         "flex flex-col items-center justify-center gap-2 p-6",
         isDragActive
           ? "border-blue-500 bg-blue-50"
