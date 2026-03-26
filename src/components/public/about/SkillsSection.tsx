@@ -30,7 +30,9 @@ function SkillCard({ skill }: { skill: Skill }) {
           <Wrench className="h-5 w-5 text-gray-400" aria-hidden="true" />
         )}
       </div>
-      <span className="w-full text-wrap text-center text-xs font-medium text-gray-700">{skill.name}</span>
+      <span className="w-full text-wrap text-center text-xs font-medium text-gray-700">
+        {skill.name}
+      </span>
     </div>
   );
 }
@@ -60,17 +62,21 @@ export function SkillsSection({ skills, categoryOrder }: SkillsSectionProps) {
       <Tabs defaultValue={defaultTab}>
         <TabsList
           variant="line"
-          className="mb-6 w-full justify-start border-b border-gray-200 pb-0"
+          className="mb-6 w-full justify-start overflow-x-auto border-b border-gray-200 pb-0"
         >
           {sortedCategories.map(([category]) => (
-            <TabsTrigger key={category} value={category} className="px-3 py-2 text-sm">
+            <TabsTrigger
+              key={category}
+              value={category}
+              className="shrink-0 whitespace-nowrap px-3 py-2 text-sm"
+            >
               {category}
             </TabsTrigger>
           ))}
         </TabsList>
         {sortedCategories.map(([category, categorySkills]) => (
           <TabsContent key={category} value={category}>
-            <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
               {categorySkills.map((skill) => (
                 <SkillCard key={skill.id} skill={skill} />
               ))}
