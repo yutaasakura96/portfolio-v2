@@ -30,7 +30,7 @@ function SkillCard({ skill }: { skill: Skill }) {
           <Wrench className="h-5 w-5 text-gray-400" aria-hidden="true" />
         )}
       </div>
-      <span className="w-full truncate text-xs font-medium text-gray-700">{skill.name}</span>
+      <span className="w-full text-wrap text-center text-xs font-medium text-gray-700">{skill.name}</span>
     </div>
   );
 }
