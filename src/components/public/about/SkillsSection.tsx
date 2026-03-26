@@ -60,9 +60,10 @@ export function SkillsSection({ skills, categoryOrder }: SkillsSectionProps) {
     <section className="mb-16">
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Skills</h2>
       <Tabs defaultValue={defaultTab}>
+        <div className="overflow-x-auto">
         <TabsList
           variant="line"
-          className="mb-6 w-full justify-start overflow-x-auto border-b border-gray-200 pb-0"
+          className="mb-6 w-full justify-start border-b border-gray-200 pb-0"
         >
           {sortedCategories.map(([category]) => (
             <TabsTrigger
@@ -74,6 +75,7 @@ export function SkillsSection({ skills, categoryOrder }: SkillsSectionProps) {
             </TabsTrigger>
           ))}
         </TabsList>
+        </div>
         {sortedCategories.map(([category, categorySkills]) => (
           <TabsContent key={category} value={category}>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
