@@ -23,15 +23,15 @@ export async function register() {
     );
     parameters = result.Parameters ?? [];
   } catch (err) {
-    // Fail loudly — app cannot function without these secrets
-    console.error('[instrumentation] Failed to fetch secrets from SSM:', err);
-    throw err;
+    // Non-fatal — Amplify Hosting managed SSR may not provide execution role credentials.
+    // Fall back to env vars already present in the Lambda environment.
+    console.warn('[instrumentation] SSM unavailable, relying on env vars:', (err as Error).message);
+    return;
   }
 
   if (parameters.length < 2) {
-    throw new Error(
-      `[instrumentation] Expected 2 SSM parameters, got ${parameters.length}. ` +
-        'Check IAM permissions and parameter names.',
+    console.warn(
+      `[instrumentation] Got ${parameters.length}/2 SSM params — relying on env vars for missing secrets`,
     );
   }
 
