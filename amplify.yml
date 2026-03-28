@@ -18,6 +18,7 @@ frontend:
           COGNITO_USER_POOL_ID=${COGNITO_USER_POOL_ID}
 
           # Database — DIRECT_URL only needed for prisma migrate deploy in build
+          DATABASE_URL=${DATABASE_URL}
           DIRECT_URL=${DIRECT_URL}
 
           # AWS Core — APP_AWS_* keys removed, runtime uses Amplify execution role
