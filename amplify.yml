@@ -22,8 +22,10 @@ frontend:
           DATABASE_URL=${DATABASE_URL}
           DIRECT_URL=${DIRECT_URL}
 
-          # AWS Core — APP_AWS_* keys removed, runtime uses Amplify execution role
+          # AWS Core
           APP_AWS_REGION=${APP_AWS_REGION}
+          APP_AWS_ACCESS_KEY_ID=${APP_AWS_ACCESS_KEY_ID}
+          APP_AWS_SECRET_ACCESS_KEY=${APP_AWS_SECRET_ACCESS_KEY}
 
           # S3 & CloudFront
           S3_REGION=${S3_REGION}
