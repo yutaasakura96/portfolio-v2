@@ -2,9 +2,21 @@ import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
 import remarkRehype from "remark-rehype";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import rehypeSlug from "rehype-slug";
 import rehypeHighlight from "rehype-highlight";
 import rehypeStringify from "rehype-stringify";
+
+// Extend the default sanitize schema to allow className on code/span
+// so rehype-highlight's syntax-highlighting CSS classes survive sanitization
+const sanitizeSchema = {
+  ...defaultSchema,
+  attributes: {
+    ...defaultSchema.attributes,
+    code: [...(defaultSchema.attributes?.code ?? []), "className"],
+    span: [...(defaultSchema.attributes?.span ?? []), "className"],
+  },
+};
 
 /**
  * Convert Markdown string to sanitized HTML.
@@ -31,6 +43,7 @@ export async function markdownToHtml(markdown: string): Promise<string> {
       .use(remarkParse)
       .use(remarkGfm)
       .use(remarkRehype, { allowDangerousHtml: false })
+      .use(rehypeSanitize, sanitizeSchema)
       .use(rehypeSlug)
       .use(rehypeHighlight, { detect: true })
       .use(rehypeStringify)
