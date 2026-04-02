@@ -1,6 +1,19 @@
+import { revokeToken } from "@/lib/aws/cognito";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function POST() {
+  // Revoke the refresh token server-side so it cannot be reused after sign-out
+  try {
+    const cookieStore = await cookies();
+    const refreshToken = cookieStore.get("refresh_token")?.value;
+    if (refreshToken) {
+      await revokeToken(refreshToken);
+    }
+  } catch {
+    // Non-fatal: proceed with cookie clearing even if revocation fails
+  }
+
   const response = NextResponse.json({ data: { success: true } });
 
   // Clear all auth cookies

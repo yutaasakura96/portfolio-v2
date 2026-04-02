@@ -65,6 +65,35 @@ export async function exchangeCodeForTokens(code: string, redirectUri: string) {
 }
 
 /**
+ * Revoke a refresh token via Cognito's revocation endpoint.
+ * Should be called on sign-out to invalidate the token server-side.
+ */
+export async function revokeToken(refreshToken: string): Promise<void> {
+  const revokeEndpoint = `https://${COGNITO_CONFIG.domain}/oauth2/revoke`;
+
+  const credentials = Buffer.from(
+    `${COGNITO_CONFIG.clientId}:${COGNITO_CONFIG.clientSecret}`
+  ).toString("base64");
+
+  const response = await fetch(revokeEndpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Authorization: `Basic ${credentials}`,
+    },
+    body: new URLSearchParams({
+      token: refreshToken,
+      client_id: COGNITO_CONFIG.clientId,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Token revocation failed: ${error}`);
+  }
+}
+
+/**
  * Refresh an access token using a refresh token.
  */
 export async function refreshAccessToken(refreshToken: string) {
