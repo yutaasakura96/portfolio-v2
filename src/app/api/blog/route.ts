@@ -1,6 +1,6 @@
 import { requireAuth } from "@/app/api/auth";
 import { ApiError, ErrorCodes, withErrorHandler } from "@/lib/errors";
-import { prisma } from "@/lib/prismaClient";
+import { Prisma, prisma } from "@/lib/prismaClient";
 import { blogPostCreateSchema } from "@/lib/validations/blog";
 import { revalidatePath } from "next/cache";
 import { NextRequest } from "next/server";
@@ -20,9 +20,9 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     await requireAuth();
   }
 
-  const where: Record<string, unknown> = {};
+  const where: Prisma.BlogPostWhereInput = {};
   if (status !== "all") {
-    where.status = status;
+    where.status = status as Prisma.BlogPostWhereInput["status"];
   }
   if (tag) {
     where.tags = { has: tag };

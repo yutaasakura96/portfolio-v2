@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prismaClient";
+import { Prisma, prisma } from "@/lib/prismaClient";
 import { withErrorHandler } from "@/lib/errors";
 import { requireAuth } from "@/app/api/auth";
 
@@ -15,7 +15,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   const pageSize = Math.min(50, Math.max(1, parseInt(searchParams.get("pageSize") ?? "20", 10)));
 
   // Build where clause
-  const where: Record<string, unknown> = {};
+  const where: Prisma.ContactMessageWhereInput = {};
 
   if (archivedParam === "true") {
     where.archived = true;
