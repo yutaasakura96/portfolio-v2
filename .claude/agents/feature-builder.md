@@ -80,6 +80,7 @@ Before reporting "done":
 ## Reporting
 
 When you finish, summarize:
+
 - Files created (with `[file](path)` links).
 - Files modified.
 - Migrations created.

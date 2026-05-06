@@ -1,4 +1,4 @@
-Pattern: src/lib/data/**/*.ts
+Pattern: src/lib/data/\*_/_.ts
 
 # Data Layer Rules
 

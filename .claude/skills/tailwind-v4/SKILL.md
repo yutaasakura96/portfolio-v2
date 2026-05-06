@@ -16,14 +16,14 @@ This project runs Tailwind v4 with `@tailwindcss/postcss`. There is **no `tailwi
 
 ## v3 → v4 differences relevant here
 
-| v3 | v4 (this project) |
-|---|---|
-| `tailwind.config.ts` with `theme.extend` | `@theme` directive in [src/app/globals.css](../../../src/app/globals.css) |
-| `@tailwind base; @tailwind components; @tailwind utilities;` | Single `@import "tailwindcss";` |
-| PostCSS config with `tailwindcss` plugin | PostCSS config with `@tailwindcss/postcss` plugin |
-| Custom plugins via `plugins: [...]` in JS | Cannot use JS plugins — use CSS variables + `@layer utilities` |
-| `theme()` in CSS | Use the CSS variable directly: `var(--color-primary)` |
-| Default `content: [...]` array | Auto-detected; no need to configure |
+| v3                                                           | v4 (this project)                                                         |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------- |
+| `tailwind.config.ts` with `theme.extend`                     | `@theme` directive in [src/app/globals.css](../../../src/app/globals.css) |
+| `@tailwind base; @tailwind components; @tailwind utilities;` | Single `@import "tailwindcss";`                                           |
+| PostCSS config with `tailwindcss` plugin                     | PostCSS config with `@tailwindcss/postcss` plugin                         |
+| Custom plugins via `plugins: [...]` in JS                    | Cannot use JS plugins — use CSS variables + `@layer utilities`            |
+| `theme()` in CSS                                             | Use the CSS variable directly: `var(--color-primary)`                     |
+| Default `content: [...]` array                               | Auto-detected; no need to configure                                       |
 
 ## Theme tokens
 
@@ -54,11 +54,13 @@ Always use `cn()` from [src/lib/utils.ts](../../../src/lib/utils.ts) for conditi
 ```tsx
 import { cn } from "@/lib/utils";
 
-<div className={cn(
-  "rounded-md p-4 transition",
-  isActive && "bg-primary text-primary-foreground",
-  className,
-)} />
+<div
+  className={cn(
+    "rounded-md p-4 transition",
+    isActive && "bg-primary text-primary-foreground",
+    className
+  )}
+/>;
 ```
 
 Never:
@@ -91,12 +93,11 @@ const cardVariants = cva(
       },
     },
     defaultVariants: { variant: "default", padding: "md" },
-  },
+  }
 );
 
 export interface CardProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof cardVariants> {}
+  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof cardVariants> {}
 
 export function Card({ className, variant, padding, ...props }: CardProps) {
   return <div className={cn(cardVariants({ variant, padding }), className)} {...props} />;

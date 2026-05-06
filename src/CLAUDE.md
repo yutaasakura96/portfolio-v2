@@ -21,13 +21,13 @@ Applies to everything under `src/` (components, hooks, app routes, libs).
 
 **Where each goes:**
 
-| Area | Default | Notes |
-|---|---|---|
-| `src/app/(public)/**/page.tsx` | Server (with ISR) | `export const revalidate = 3600`. Fetch via `src/lib/data/public-queries.ts`. Never call Prisma directly. |
-| `src/app/(admin)/**/page.tsx` | Client (`"use client"`) | Fetches via `api-client.ts` + TanStack Query. Exception: the dashboard page is currently a server component — do not add new server-rendered admin pages without converting that one too. |
-| `src/components/public/**` | Server unless interactive | Lightboxes, carousels, forms → client. Static cards → server. |
-| `src/components/admin/**` | Client | Admin UI is form-heavy and stateful. |
-| `src/components/ui/**` | Mixed (shadcn-decided) | Don't change the directive shadcn ships with. |
+| Area                           | Default                   | Notes                                                                                                                                                                                     |
+| ------------------------------ | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/app/(public)/**/page.tsx` | Server (with ISR)         | `export const revalidate = 3600`. Fetch via `src/lib/data/public-queries.ts`. Never call Prisma directly.                                                                                 |
+| `src/app/(admin)/**/page.tsx`  | Client (`"use client"`)   | Fetches via `api-client.ts` + TanStack Query. Exception: the dashboard page is currently a server component — do not add new server-rendered admin pages without converting that one too. |
+| `src/components/public/**`     | Server unless interactive | Lightboxes, carousels, forms → client. Static cards → server.                                                                                                                             |
+| `src/components/admin/**`      | Client                    | Admin UI is form-heavy and stateful.                                                                                                                                                      |
+| `src/components/ui/**`         | Mixed (shadcn-decided)    | Don't change the directive shadcn ships with.                                                                                                                                             |
 
 ## Import Ordering
 
@@ -68,12 +68,12 @@ This project uses **Tailwind v4 with `@tailwindcss/postcss`** — there is no `t
 
 ## Data Fetching
 
-| From | Use |
-|---|---|
-| Server Component (public) | `src/lib/data/public-queries.ts` |
-| Server Component (admin) | Generally avoid — admin is client-side. If needed, use Prisma directly via `@/lib/prismaClient`. |
-| Client Component | `apiClient` from [src/lib/api-client.ts](src/lib/api-client.ts) wrapped in TanStack Query (`useQuery` / `useMutation`). Never `fetch` directly. |
-| Server Action | Not used in this project. Use API routes. |
+| From                      | Use                                                                                                                                             |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Server Component (public) | `src/lib/data/public-queries.ts`                                                                                                                |
+| Server Component (admin)  | Generally avoid — admin is client-side. If needed, use Prisma directly via `@/lib/prismaClient`.                                                |
+| Client Component          | `apiClient` from [src/lib/api-client.ts](src/lib/api-client.ts) wrapped in TanStack Query (`useQuery` / `useMutation`). Never `fetch` directly. |
+| Server Action             | Not used in this project. Use API routes.                                                                                                       |
 
 ## Markdown
 

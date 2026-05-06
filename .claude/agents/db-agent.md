@@ -51,6 +51,7 @@ npm run lint
 ## Safe migration testing on a Neon branch
 
 For migrations that:
+
 - Drop or rename columns
 - Touch a table with > 1k rows
 - Change indexes on hot paths

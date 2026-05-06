@@ -25,8 +25,8 @@ type ApiCollection<T> = {
 type ApiErrorResponse = {
   error: {
     message: string;
-    code: string;        // from ErrorCodes in src/lib/errors.ts
-    details?: unknown;   // typically Zod flattened errors
+    code: string; // from ErrorCodes in src/lib/errors.ts
+    details?: unknown; // typically Zod flattened errors
   };
 };
 ```
@@ -57,7 +57,12 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   const body = await request.json();
   const parsed = someSchema.safeParse(body);
   if (!parsed.success) {
-    throw new ApiError("Validation error", 400, ErrorCodes.VALIDATION_ERROR, parsed.error.flatten());
+    throw new ApiError(
+      "Validation error",
+      400,
+      ErrorCodes.VALIDATION_ERROR,
+      parsed.error.flatten()
+    );
   }
 
   const created = await prisma.thing.create({ data: parsed.data });
@@ -69,9 +74,9 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
 
 ## Authentication
 
-| Helper | When |
-|---|---|
-| `requireAuth()` | Mutations and admin reads. Throws 401 if unauthenticated. |
+| Helper           | When                                                                                                                               |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `requireAuth()`  | Mutations and admin reads. Throws 401 if unauthenticated.                                                                          |
 | `optionalAuth()` | Endpoints that behave differently for logged-in vs anonymous (e.g. GET that exposes drafts to admins). Returns `AuthUser \| null`. |
 
 Import from `@/app/api/auth`. Never re-implement JWT verification — it lives in [src/lib/aws/cognito.ts](src/lib/aws/cognito.ts).
@@ -125,18 +130,18 @@ const where: Prisma.ProjectWhereInput = {};
 
 ## Status Codes
 
-| Code | Use |
-|---|---|
-| 200 | Successful GET/PUT/PATCH |
-| 201 | Successful POST that created a resource |
-| 204 | Successful DELETE with no body (use `new Response(null, { status: 204 })`) |
-| 400 | Validation error (`ErrorCodes.VALIDATION_ERROR`) |
-| 401 | Auth missing/invalid (`ErrorCodes.UNAUTHORIZED`) |
-| 403 | Auth valid but forbidden — currently unused; reserve `ErrorCodes.UNAUTHORIZED` if you need it |
-| 404 | Resource not found (`ErrorCodes.NOT_FOUND`) |
-| 409 | Slug conflict / duplicate key (`ErrorCodes.CONFLICT`) |
-| 429 | Rate limit (`ErrorCodes.RATE_LIMIT_EXCEEDED`) |
-| 500 | Unhandled — `withErrorHandler` returns this automatically |
+| Code | Use                                                                                           |
+| ---- | --------------------------------------------------------------------------------------------- |
+| 200  | Successful GET/PUT/PATCH                                                                      |
+| 201  | Successful POST that created a resource                                                       |
+| 204  | Successful DELETE with no body (use `new Response(null, { status: 204 })`)                    |
+| 400  | Validation error (`ErrorCodes.VALIDATION_ERROR`)                                              |
+| 401  | Auth missing/invalid (`ErrorCodes.UNAUTHORIZED`)                                              |
+| 403  | Auth valid but forbidden — currently unused; reserve `ErrorCodes.UNAUTHORIZED` if you need it |
+| 404  | Resource not found (`ErrorCodes.NOT_FOUND`)                                                   |
+| 409  | Slug conflict / duplicate key (`ErrorCodes.CONFLICT`)                                         |
+| 429  | Rate limit (`ErrorCodes.RATE_LIMIT_EXCEEDED`)                                                 |
+| 500  | Unhandled — `withErrorHandler` returns this automatically                                     |
 
 ## Cache Invalidation
 

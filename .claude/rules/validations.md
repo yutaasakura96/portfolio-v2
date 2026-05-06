@@ -1,4 +1,4 @@
-Pattern: src/lib/validations/**/*.ts
+Pattern: src/lib/validations/\*_/_.ts
 
 # Validation Schema Rules
 

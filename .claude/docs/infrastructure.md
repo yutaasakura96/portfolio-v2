@@ -12,11 +12,11 @@
 
 ### Human / programmatic users
 
-| User | Type | Credentials | Permissions | Notes |
-|---|---|---|---|---|
-| `yuta` | Developer (you) | Console password + 1 active access key (`AKIA…OHV`, created 2026-03-28) | Member of `admin` group (full admin) | Used for local dev + CLI work. No inline/attached policies — perms come from `admin` group. |
-| `portfolio-admin` | App runtime | 1 active access key (`AKIA…BCT`, created 2026-02-20) — credentials embedded in Amplify env vars `APP_AWS_ACCESS_KEY_ID` / `APP_AWS_SECRET_ACCESS_KEY` | Inline policy `portfolio-v2-app-least-privilege` | This is what the SSR Lambda uses to call S3 + SES at runtime. See policy below. |
-| `WinSCPUser` | Unused | 1 active access key (`AKIA…RQ3`, created 2025-09-04) | None (no policies, no groups) | **Dead account.** Predates this project. Recommend deactivating the key and deleting the user. |
+| User              | Type            | Credentials                                                                                                                                           | Permissions                                      | Notes                                                                                          |
+| ----------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
+| `yuta`            | Developer (you) | Console password + 1 active access key (`AKIA…OHV`, created 2026-03-28)                                                                               | Member of `admin` group (full admin)             | Used for local dev + CLI work. No inline/attached policies — perms come from `admin` group.    |
+| `portfolio-admin` | App runtime     | 1 active access key (`AKIA…BCT`, created 2026-02-20) — credentials embedded in Amplify env vars `APP_AWS_ACCESS_KEY_ID` / `APP_AWS_SECRET_ACCESS_KEY` | Inline policy `portfolio-v2-app-least-privilege` | This is what the SSR Lambda uses to call S3 + SES at runtime. See policy below.                |
+| `WinSCPUser`      | Unused          | 1 active access key (`AKIA…RQ3`, created 2025-09-04)                                                                                                  | None (no policies, no groups)                    | **Dead account.** Predates this project. Recommend deactivating the key and deleting the user. |
 
 ### `portfolio-v2-app-least-privilege` (inline policy on `portfolio-admin`)
 
@@ -28,10 +28,10 @@ Properly scoped least-privilege:
 
 ### Roles
 
-| Role | Trust | Purpose |
-|---|---|---|
+| Role                               | Trust                   | Purpose                                                                                                                                                                                                                                                                      |
+| ---------------------------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `AmplifySSRLoggingRole-d0804d1f-…` | `amplify.amazonaws.com` | **In use** by app `d2v4laatjpx2hq`. Attached managed policy `AmplifySSRLoggingPolicy-…` (CloudWatch Logs write to `/aws/amplify/*`) + inline `AmplifyConsoleSecretsAccess` (`ssm:GetParametersByPath` on `/amplify/d2v4laatjpx2hq/*` — currently unused; see Env Vars note). |
-| `AmplifySSRLoggingRole-791d5dcf-…` | `amplify.amazonaws.com` | **Orphaned.** Created at the same time as the in-use one; not attached to any current app. Safe to delete after confirming. |
+| `AmplifySSRLoggingRole-791d5dcf-…` | `amplify.amazonaws.com` | **Orphaned.** Created at the same time as the in-use one; not attached to any current app. Safe to delete after confirming.                                                                                                                                                  |
 
 ### Service-linked roles (AWS-managed; do not touch)
 
@@ -66,9 +66,9 @@ Custom HTTP headers (HSTS, CSP, X-Frame-Options, etc.) live in [customHttp.yml](
 
 ### Branch mapping
 
-| Branch | Stage | Auto-build | Last deploy | Custom domain subdomain |
-|---|---|---|---|---|
-| `main` | `PRODUCTION` | ✅ | 2026-04-02 (`SUCCEED`) | apex (`asakurayuta.dev`) + `www` |
+| Branch | Stage        | Auto-build | Last deploy            | Custom domain subdomain          |
+| ------ | ------------ | ---------- | ---------------------- | -------------------------------- |
+| `main` | `PRODUCTION` | ✅         | 2026-04-02 (`SUCCEED`) | apex (`asakurayuta.dev`) + `www` |
 
 Only `main` exists in Amplify. PR previews are disabled. Performance mode disabled. Branch TTL 5 min.
 
@@ -86,29 +86,29 @@ Only `main` exists in Amplify. PR previews are disabled. Performance mode disabl
 
 All vars below are stored as **plain Amplify Console env vars** (not Console Secrets — Hosting Gen 1 SSR doesn't support secret injection at runtime). They are encrypted at rest but visible to anyone with Amplify console read access.
 
-| Variable | Source/Maps to | Notes |
-|---|---|---|
-| `AMPLIFY_DOMAIN` | `https://main.d2v4laatjpx2hq.amplifyapp.com` | Amplify default URL |
-| `APP_AWS_REGION` | `ap-southeast-1` | App-level AWS region (the `APP_` prefix is required because Amplify reserves the `AWS_*` namespace) |
-| `APP_AWS_ACCESS_KEY_ID` | `portfolio-admin` IAM user key | **REDACTED — secret** |
-| `APP_AWS_SECRET_ACCESS_KEY` | `portfolio-admin` IAM user key | **REDACTED — secret** |
-| `CLOUDFRONT_DISTRIBUTION_ID` | `E6T76ADR3JLQH` | Assets CDN |
-| `CLOUDFRONT_DOMAIN` | `d11brb6l7qspvw.cloudfront.net` | Assets CDN domain |
-| `COGNITO_USER_POOL_ID` | `ap-southeast-1_SgDbuA78J` | |
-| `COGNITO_CLIENT_ID` | `2iug05u34tocpscs29ajt1n1uo` | |
-| `COGNITO_CLIENT_SECRET` | App client secret | **REDACTED — secret** |
-| `COGNITO_DOMAIN` | `ap-southeast-1sgdbua78j.auth.ap-southeast-1.amazoncognito.com` | Hosted UI domain |
-| `COGNITO_REGION` | `ap-southeast-1` | |
-| `CONTACT_EMAIL` | `yuta.asakura.se@gmail.com` | Inbound contact form recipient |
-| `DATABASE_URL` | Neon pooled URL | **REDACTED — contains DB password** |
-| `DIRECT_URL` | Neon direct URL | **REDACTED — contains DB password.** Used only by `prisma migrate deploy` during build. |
-| `NEXT_PUBLIC_APP_URL` | `https://asakurayuta.dev` | Exposed to client |
-| `NEXT_PUBLIC_CLOUDFRONT_URL` | `https://d11brb6l7qspvw.cloudfront.net` | Exposed to client |
-| `NEXT_PUBLIC_COGNITO_CLIENT_ID` | `2iug05u34tocpscs29ajt1n1uo` | Exposed to client |
-| `NEXT_PUBLIC_COGNITO_DOMAIN` | `ap-southeast-1sgdbua78j.auth.ap-southeast-1.amazoncognito.com` | Exposed to client |
-| `S3_BUCKET_NAME` | `portfolio-v2-images-1771574702` | |
-| `S3_REGION` | `ap-southeast-1` | |
-| `SES_FROM_EMAIL` | `noreply@asakurayuta.dev` | Must match the SES condition in `portfolio-admin` policy |
+| Variable                        | Source/Maps to                                                  | Notes                                                                                               |
+| ------------------------------- | --------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `AMPLIFY_DOMAIN`                | `https://main.d2v4laatjpx2hq.amplifyapp.com`                    | Amplify default URL                                                                                 |
+| `APP_AWS_REGION`                | `ap-southeast-1`                                                | App-level AWS region (the `APP_` prefix is required because Amplify reserves the `AWS_*` namespace) |
+| `APP_AWS_ACCESS_KEY_ID`         | `portfolio-admin` IAM user key                                  | **REDACTED — secret**                                                                               |
+| `APP_AWS_SECRET_ACCESS_KEY`     | `portfolio-admin` IAM user key                                  | **REDACTED — secret**                                                                               |
+| `CLOUDFRONT_DISTRIBUTION_ID`    | `E6T76ADR3JLQH`                                                 | Assets CDN                                                                                          |
+| `CLOUDFRONT_DOMAIN`             | `d11brb6l7qspvw.cloudfront.net`                                 | Assets CDN domain                                                                                   |
+| `COGNITO_USER_POOL_ID`          | `ap-southeast-1_SgDbuA78J`                                      |                                                                                                     |
+| `COGNITO_CLIENT_ID`             | `2iug05u34tocpscs29ajt1n1uo`                                    |                                                                                                     |
+| `COGNITO_CLIENT_SECRET`         | App client secret                                               | **REDACTED — secret**                                                                               |
+| `COGNITO_DOMAIN`                | `ap-southeast-1sgdbua78j.auth.ap-southeast-1.amazoncognito.com` | Hosted UI domain                                                                                    |
+| `COGNITO_REGION`                | `ap-southeast-1`                                                |                                                                                                     |
+| `CONTACT_EMAIL`                 | `yuta.asakura.se@gmail.com`                                     | Inbound contact form recipient                                                                      |
+| `DATABASE_URL`                  | Neon pooled URL                                                 | **REDACTED — contains DB password**                                                                 |
+| `DIRECT_URL`                    | Neon direct URL                                                 | **REDACTED — contains DB password.** Used only by `prisma migrate deploy` during build.             |
+| `NEXT_PUBLIC_APP_URL`           | `https://asakurayuta.dev`                                       | Exposed to client                                                                                   |
+| `NEXT_PUBLIC_CLOUDFRONT_URL`    | `https://d11brb6l7qspvw.cloudfront.net`                         | Exposed to client                                                                                   |
+| `NEXT_PUBLIC_COGNITO_CLIENT_ID` | `2iug05u34tocpscs29ajt1n1uo`                                    | Exposed to client                                                                                   |
+| `NEXT_PUBLIC_COGNITO_DOMAIN`    | `ap-southeast-1sgdbua78j.auth.ap-southeast-1.amazoncognito.com` | Exposed to client                                                                                   |
+| `S3_BUCKET_NAME`                | `portfolio-v2-images-1771574702`                                |                                                                                                     |
+| `S3_REGION`                     | `ap-southeast-1`                                                |                                                                                                     |
+| `SES_FROM_EMAIL`                | `noreply@asakurayuta.dev`                                       | Must match the SES condition in `portfolio-admin` policy                                            |
 
 ---
 
@@ -134,7 +134,9 @@ The application's image bucket — uploads, thumbnails, all WebP-converted asset
   "Principal": { "Service": "cloudfront.amazonaws.com" },
   "Action": "s3:GetObject",
   "Resource": "arn:aws:s3:::portfolio-v2-images-1771574702/*",
-  "Condition": { "ArnLike": { "AWS:SourceArn": "arn:aws:cloudfront::757278011198:distribution/E6T76ADR3JLQH" } }
+  "Condition": {
+    "ArnLike": { "AWS:SourceArn": "arn:aws:cloudfront::757278011198:distribution/E6T76ADR3JLQH" }
+  }
 }
 ```
 
@@ -250,10 +252,10 @@ Fronts the `asakurayuta.dev` site. Owned and managed by Amplify Hosting — not 
 
 ### Verified identities
 
-| Identity | Type | Status | DKIM | MAIL FROM |
-|---|---|---|---|---|
-| `asakurayuta.dev` | Domain | `SUCCESS` | RSA 2048, signing enabled, `SUCCESS` (3 tokens) | `mail.asakurayuta.dev` (`SUCCESS`) |
-| `yuta.asakura.se@gmail.com` | Email address | `SUCCESS` | n/a | n/a |
+| Identity                    | Type          | Status    | DKIM                                            | MAIL FROM                          |
+| --------------------------- | ------------- | --------- | ----------------------------------------------- | ---------------------------------- |
+| `asakurayuta.dev`           | Domain        | `SUCCESS` | RSA 2048, signing enabled, `SUCCESS` (3 tokens) | `mail.asakurayuta.dev` (`SUCCESS`) |
+| `yuta.asakura.se@gmail.com` | Email address | `SUCCESS` | n/a                                             | n/a                                |
 
 Suppression list reasons enabled: `BOUNCE`, `COMPLAINT`. Feedback forwarding on for the domain identity.
 
@@ -271,26 +273,26 @@ The app sends as `noreply@asakurayuta.dev` (the only `FromAddress` allowed by th
 
 ### Mapping: env var → AWS resource
 
-| Var | AWS resource |
-|---|---|
-| `S3_BUCKET_NAME` | S3 bucket `portfolio-v2-images-1771574702` |
-| `CLOUDFRONT_DISTRIBUTION_ID` | CloudFront `E6T76ADR3JLQH` |
-| `CLOUDFRONT_DOMAIN` / `NEXT_PUBLIC_CLOUDFRONT_URL` | `d11brb6l7qspvw.cloudfront.net` |
-| `COGNITO_USER_POOL_ID` | Cognito pool `ap-southeast-1_SgDbuA78J` |
-| `COGNITO_CLIENT_ID` / `NEXT_PUBLIC_COGNITO_CLIENT_ID` | App client `2iug05u34tocpscs29ajt1n1uo` |
-| `COGNITO_DOMAIN` / `NEXT_PUBLIC_COGNITO_DOMAIN` | Cognito hosted UI `ap-southeast-1sgdbua78j` |
-| `COGNITO_CLIENT_SECRET` | App client secret on `2iug05u34tocpscs29ajt1n1uo` |
-| `APP_AWS_ACCESS_KEY_ID` / `APP_AWS_SECRET_ACCESS_KEY` | Access key `AKIA…BCT` on IAM user `portfolio-admin` |
-| `SES_FROM_EMAIL` | Must equal `noreply@asakurayuta.dev` (gated by IAM policy) |
-| `DATABASE_URL` / `DIRECT_URL` | Neon Postgres (not AWS) — `ep-wandering-butterfly-a1v6y74z` in `ap-southeast-1` |
+| Var                                                   | AWS resource                                                                    |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `S3_BUCKET_NAME`                                      | S3 bucket `portfolio-v2-images-1771574702`                                      |
+| `CLOUDFRONT_DISTRIBUTION_ID`                          | CloudFront `E6T76ADR3JLQH`                                                      |
+| `CLOUDFRONT_DOMAIN` / `NEXT_PUBLIC_CLOUDFRONT_URL`    | `d11brb6l7qspvw.cloudfront.net`                                                 |
+| `COGNITO_USER_POOL_ID`                                | Cognito pool `ap-southeast-1_SgDbuA78J`                                         |
+| `COGNITO_CLIENT_ID` / `NEXT_PUBLIC_COGNITO_CLIENT_ID` | App client `2iug05u34tocpscs29ajt1n1uo`                                         |
+| `COGNITO_DOMAIN` / `NEXT_PUBLIC_COGNITO_DOMAIN`       | Cognito hosted UI `ap-southeast-1sgdbua78j`                                     |
+| `COGNITO_CLIENT_SECRET`                               | App client secret on `2iug05u34tocpscs29ajt1n1uo`                               |
+| `APP_AWS_ACCESS_KEY_ID` / `APP_AWS_SECRET_ACCESS_KEY` | Access key `AKIA…BCT` on IAM user `portfolio-admin`                             |
+| `SES_FROM_EMAIL`                                      | Must equal `noreply@asakurayuta.dev` (gated by IAM policy)                      |
+| `DATABASE_URL` / `DIRECT_URL`                         | Neon Postgres (not AWS) — `ep-wandering-butterfly-a1v6y74z` in `ap-southeast-1` |
 
 ### Drift between `.env.example` and Amplify Console
 
-| Issue | Detail |
-|---|---|
-| Variable name mismatch | `.env.example` uses `AWS_REGION` / `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`. Amplify (and the production runtime) use the `APP_AWS_*` prefix because Amplify Hosting reserves `AWS_*`. **Risk:** local dev that copies `.env.example` will not match production var names; SDK code that reads `APP_AWS_*` won't find creds locally. Either rename in `.env.example` to match Amplify, or read both. |
-| Missing from `.env.example` | `COGNITO_REGION`, `AMPLIFY_DOMAIN`, `NEXT_PUBLIC_COGNITO_CLIENT_ID`, `NEXT_PUBLIC_COGNITO_DOMAIN` are set in Amplify but not documented in the template. |
-| Placeholder values out of date | `S3_BUCKET_NAME="portfolio-images-bucket"` in `.env.example` doesn't match the real `portfolio-v2-images-…` pattern. Cosmetic but misleading. |
+| Issue                          | Detail                                                                                                                                                                                                                                                                                                                                                                                                    |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Variable name mismatch         | `.env.example` uses `AWS_REGION` / `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`. Amplify (and the production runtime) use the `APP_AWS_*` prefix because Amplify Hosting reserves `AWS_*`. **Risk:** local dev that copies `.env.example` will not match production var names; SDK code that reads `APP_AWS_*` won't find creds locally. Either rename in `.env.example` to match Amplify, or read both. |
+| Missing from `.env.example`    | `COGNITO_REGION`, `AMPLIFY_DOMAIN`, `NEXT_PUBLIC_COGNITO_CLIENT_ID`, `NEXT_PUBLIC_COGNITO_DOMAIN` are set in Amplify but not documented in the template.                                                                                                                                                                                                                                                  |
+| Placeholder values out of date | `S3_BUCKET_NAME="portfolio-images-bucket"` in `.env.example` doesn't match the real `portfolio-v2-images-…` pattern. Cosmetic but misleading.                                                                                                                                                                                                                                                             |
 
 ---
 
@@ -308,7 +310,7 @@ The app sends as `noreply@asakurayuta.dev` (the only `FromAddress` allowed by th
 ### Concerns (ranked)
 
 1. **Long-lived AWS access keys for the app runtime.** `portfolio-admin` access key `AKIA…BCT` (created 2026-02-20) is the single credential the SSR Lambda uses for every S3 + SES call. This is a known Amplify Hosting Gen 1 limitation — the SSR runtime cannot assume an IAM role. **Mitigations:** rotate the key on a schedule (none today), or migrate to Amplify Hosting Gen 2 / a different deploy target where the function execution role can hold the S3+SES permissions directly.
-2. **Secrets stored as plain Amplify Console env vars.** `APP_AWS_SECRET_ACCESS_KEY`, `COGNITO_CLIENT_SECRET`, `DATABASE_URL` (with Neon password), `DIRECT_URL` are all in the Amplify Console — encrypted at rest but readable by anyone with Amplify console read access. The `AmplifyConsoleSecretsAccess` inline policy on the SSR role *would* allow reading `/amplify/d2v4laatjpx2hq/*` SSM parameters (Console Secrets), but Hosting Gen 1's SSR runtime doesn't inject them, so the workaround in `amplify.yml` is to bake them into a build-time `.env.production` instead. Same exposure surface.
+2. **Secrets stored as plain Amplify Console env vars.** `APP_AWS_SECRET_ACCESS_KEY`, `COGNITO_CLIENT_SECRET`, `DATABASE_URL` (with Neon password), `DIRECT_URL` are all in the Amplify Console — encrypted at rest but readable by anyone with Amplify console read access. The `AmplifyConsoleSecretsAccess` inline policy on the SSR role _would_ allow reading `/amplify/d2v4laatjpx2hq/*` SSM parameters (Console Secrets), but Hosting Gen 1's SSR runtime doesn't inject them, so the workaround in `amplify.yml` is to bake them into a build-time `.env.production` instead. Same exposure surface.
 3. **Unused IAM user `WinSCPUser` with an active access key.** Created 2025-09-04, never rotated, no policies, no recent activity. Delete the access key (or the user) to shrink the credential surface.
 4. **Orphaned IAM role `AmplifySSRLoggingRole-791d5dcf-…`.** Not attached to any current Amplify app. Safe to delete after confirming.
 5. **No secret rotation cadence.** Access key ages: `portfolio-admin` ~2.5 months, `yuta` ~1 month, `WinSCPUser` ~8 months. Cognito client secret created 2026-02-20, never rotated. Database password never rotated. There's no documented rotation policy.

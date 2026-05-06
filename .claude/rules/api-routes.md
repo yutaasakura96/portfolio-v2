@@ -1,4 +1,4 @@
-Pattern: src/app/api/**/*.ts
+Pattern: src/app/api/\*_/_.ts
 
 # API Route Rules
 

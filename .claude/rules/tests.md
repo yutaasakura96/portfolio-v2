@@ -1,4 +1,4 @@
-Pattern: **/*.test.ts, **/*.test.tsx, **/*.spec.ts, **/*.spec.tsx
+Pattern: **/\*.test.ts, **/_.test.tsx, \*\*/_.spec.ts, \*_/_.spec.tsx
 
 # Test Rules
 
@@ -45,6 +45,7 @@ Priority order when adding the first tests:
 ## Running
 
 Add scripts to `package.json` when Vitest is introduced:
+
 - `"test": "vitest"` (replaces the current placeholder)
 - `"test:ci": "vitest run --coverage"`
 - `"test:e2e": "playwright test"`

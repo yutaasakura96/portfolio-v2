@@ -1,4 +1,3 @@
-
 ## Planned MCP Servers (Install in Phase 5)
 
 The audit's MCP suggestions are incomplete. When generating root CLAUDE.md,

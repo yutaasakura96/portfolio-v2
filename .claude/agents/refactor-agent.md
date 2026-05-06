@@ -72,6 +72,7 @@ For these, present the proposed change, the affected files, the rollback plan, a
 ## Reporting
 
 After each session, summarize:
+
 - Files changed (with link in `[file](path)` form).
 - Audit items closed.
 - Anything you stopped on and why.

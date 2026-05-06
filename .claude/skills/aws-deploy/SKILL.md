@@ -19,20 +19,20 @@ This project deploys to AWS Amplify Hosting Gen 1 (SSR Lambda) with a specific s
 
 ## Key facts (cite [infrastructure.md](../../docs/infrastructure.md) for full detail)
 
-| Resource | ID / value |
-|---|---|
-| Account | `757278011198` |
-| Region (primary) | `ap-southeast-1` |
-| Amplify app | `d2v4laatjpx2hq` |
-| Production branch | `main` |
-| Apex domain | `asakurayuta.dev` |
-| S3 bucket (images) | `portfolio-v2-images-1771574702` |
-| CloudFront (assets) | `E6T76ADR3JLQH` (`d11brb6l7qspvw.cloudfront.net`) |
-| Cognito user pool | `ap-southeast-1_SgDbuA78J` |
-| Cognito app client | `2iug05u34tocpscs29ajt1n1uo` |
-| App IAM user | `portfolio-admin` (least-privilege inline policy) |
-| SES sender | `noreply@asakurayuta.dev` |
-| DB | Neon Postgres (NOT AWS) — `ap-southeast-1`, branch `main` |
+| Resource            | ID / value                                                |
+| ------------------- | --------------------------------------------------------- |
+| Account             | `757278011198`                                            |
+| Region (primary)    | `ap-southeast-1`                                          |
+| Amplify app         | `d2v4laatjpx2hq`                                          |
+| Production branch   | `main`                                                    |
+| Apex domain         | `asakurayuta.dev`                                         |
+| S3 bucket (images)  | `portfolio-v2-images-1771574702`                          |
+| CloudFront (assets) | `E6T76ADR3JLQH` (`d11brb6l7qspvw.cloudfront.net`)         |
+| Cognito user pool   | `ap-southeast-1_SgDbuA78J`                                |
+| Cognito app client  | `2iug05u34tocpscs29ajt1n1uo`                              |
+| App IAM user        | `portfolio-admin` (least-privilege inline policy)         |
+| SES sender          | `noreply@asakurayuta.dev`                                 |
+| DB                  | Neon Postgres (NOT AWS) — `ap-southeast-1`, branch `main` |
 
 Env vars use `APP_AWS_*` prefix (Amplify reserves `AWS_*`).
 

@@ -1,4 +1,4 @@
-Pattern: src/components/**/*.tsx
+Pattern: src/components/\*_/_.tsx
 
 # Component Rules
 

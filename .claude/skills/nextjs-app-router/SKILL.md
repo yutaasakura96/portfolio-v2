@@ -67,11 +67,7 @@ export async function generateStaticParams() {
   return projects.map((p) => ({ slug: p.slug }));
 }
 
-export default async function ProjectPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default async function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const project = await getProjectBySlug(slug);
   if (!project) notFound();
@@ -108,7 +104,11 @@ Each route segment SHOULD have a `loading.tsx`. Today only one exists. When you 
 ```tsx
 // src/app/(public)/<segment>/loading.tsx
 export default function Loading() {
-  return <div className="container py-8"><Skeleton /></div>;
+  return (
+    <div className="container py-8">
+      <Skeleton />
+    </div>
+  );
 }
 ```
 
@@ -176,7 +176,7 @@ if (project.featured) revalidatePath("/");
 
 ## Reference files
 
-- Public page: [src/app/(public)/page.tsx](../../../src/app/(public)/page.tsx)
-- Public detail with `generateStaticParams`: [src/app/(public)/projects/[slug]/page.tsx](../../../src/app/(public)/projects/[slug]/page.tsx)
-- Admin layout (auth guard): [src/app/(admin)/admin/(shell)/layout.tsx](../../../src/app/(admin)/admin/(shell)/layout.tsx)
+- Public page: [src/app/(public)/page.tsx](<../../../src/app/(public)/page.tsx>)
+- Public detail with `generateStaticParams`: [src/app/(public)/projects/[slug]/page.tsx](<../../../src/app/(public)/projects/[slug]/page.tsx>)
+- Admin layout (auth guard): [src/app/(admin)/admin/(shell)/layout.tsx](<../../../src/app/(admin)/admin/(shell)/layout.tsx>)
 - Middleware: [src/proxy.ts](../../../src/proxy.ts)

@@ -19,10 +19,10 @@ This project uses Prisma 7.4.1 with Neon serverless Postgres via `@prisma/adapte
 
 Two URLs, both stored in Amplify Console:
 
-| Var | Used for | Pooled? |
-|---|---|---|
-| `DATABASE_URL` | App runtime queries (the singleton in `src/lib/prismaClient.ts`) | Pooled — uses Neon's PgBouncer endpoint |
-| `DIRECT_URL` | `prisma migrate deploy` during build, `prisma migrate dev` locally | Direct — required because migrations need transactions/advisory locks PgBouncer doesn't support |
+| Var            | Used for                                                           | Pooled?                                                                                         |
+| -------------- | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
+| `DATABASE_URL` | App runtime queries (the singleton in `src/lib/prismaClient.ts`)   | Pooled — uses Neon's PgBouncer endpoint                                                         |
+| `DIRECT_URL`   | `prisma migrate deploy` during build, `prisma migrate dev` locally | Direct — required because migrations need transactions/advisory locks PgBouncer doesn't support |
 
 Locally, your `.env` should have BOTH. If only `DATABASE_URL` is set, `prisma migrate dev` will fail.
 
@@ -147,8 +147,13 @@ For public queries, use `select` to exclude admin-only fields and shrink the pay
 const projects = await prisma.project.findMany({
   where: { status: "PUBLISHED" },
   select: {
-    id: true, slug: true, title: true, shortDescription: true,
-    techTags: true, thumbnailImage: true, featured: true,
+    id: true,
+    slug: true,
+    title: true,
+    shortDescription: true,
+    techTags: true,
+    thumbnailImage: true,
+    featured: true,
   },
 });
 ```

@@ -17,39 +17,39 @@ Personal portfolio + admin CMS. Public-facing Next.js site backed by an admin da
 
 ## Commands
 
-| Task | Command |
-|---|---|
-| Dev server | `npm run dev` |
-| Build (incl. lint) | `npm run build` |
-| Lint + format | `npm run lint` |
-| Type check | `npm run type-check` |
-| Bundle analyze | `npm run analyze` |
-| Prisma generate | `npm run prisma:generate` |
-| Prisma migrate (dev) | `npm run prisma:migrate:dev` |
+| Task                    | Command                         |
+| ----------------------- | ------------------------------- |
+| Dev server              | `npm run dev`                   |
+| Build (incl. lint)      | `npm run build`                 |
+| Lint + format           | `npm run lint`                  |
+| Type check              | `npm run type-check`            |
+| Bundle analyze          | `npm run analyze`               |
+| Prisma generate         | `npm run prisma:generate`       |
+| Prisma migrate (dev)    | `npm run prisma:migrate:dev`    |
 | Prisma migrate (deploy) | `npm run prisma:migrate:deploy` |
-| Prisma studio | `npm run prisma:studio` |
-| Seed | `npx prisma db seed` |
+| Prisma studio           | `npm run prisma:studio`         |
+| Seed                    | `npx prisma db seed`            |
 
 No test framework is wired yet. When tests are added, use Vitest (see [.claude/rules/tests.md](.claude/rules/tests.md)).
 
 ## Architecture
 
-| Path | Purpose |
-|---|---|
-| [src/app/(public)/](src/app/(public)/) | Public site (ISR pages, Server Components by default) |
-| [src/app/(admin)/admin/](src/app/(admin)/admin/) | Admin CMS — login + auth-guarded shell |
-| [src/app/api/](src/app/api/) | REST API routes (admin mutations + public reads) |
-| [src/app/api/auth.ts](src/app/api/auth.ts) | `requireAuth` / `optionalAuth` helpers (NOT `src/lib/auth`) |
-| [src/proxy.ts](src/proxy.ts) | Next.js 16 middleware replacement — JWT guard for admin routes |
-| [src/components/ui/](src/components/ui/) | shadcn primitives (do not edit by hand — use `npx shadcn add`) |
-| [src/components/admin/](src/components/admin/) | Admin-only components |
-| [src/components/public/](src/components/public/) | Public site components |
-| [src/lib/data/](src/lib/data/) | Server-side query layer for public pages + canonical types |
-| [src/lib/validations/](src/lib/validations/) | Zod schemas (one file per entity) |
-| [src/lib/aws/](src/lib/aws/) | S3, SES, Cognito clients |
-| [src/lib/errors.ts](src/lib/errors.ts) | `ApiError` + `withErrorHandler` |
-| [src/lib/prismaClient.ts](src/lib/prismaClient.ts) | Singleton Prisma client (Neon adapter) |
-| [prisma/](prisma/) | Schema + migrations + seed |
+| Path                                               | Purpose                                                        |
+| -------------------------------------------------- | -------------------------------------------------------------- |
+| [src/app/(public)/](<src/app/(public)/>)           | Public site (ISR pages, Server Components by default)          |
+| [src/app/(admin)/admin/](<src/app/(admin)/admin/>) | Admin CMS — login + auth-guarded shell                         |
+| [src/app/api/](src/app/api/)                       | REST API routes (admin mutations + public reads)               |
+| [src/app/api/auth.ts](src/app/api/auth.ts)         | `requireAuth` / `optionalAuth` helpers (NOT `src/lib/auth`)    |
+| [src/proxy.ts](src/proxy.ts)                       | Next.js 16 middleware replacement — JWT guard for admin routes |
+| [src/components/ui/](src/components/ui/)           | shadcn primitives (do not edit by hand — use `npx shadcn add`) |
+| [src/components/admin/](src/components/admin/)     | Admin-only components                                          |
+| [src/components/public/](src/components/public/)   | Public site components                                         |
+| [src/lib/data/](src/lib/data/)                     | Server-side query layer for public pages + canonical types     |
+| [src/lib/validations/](src/lib/validations/)       | Zod schemas (one file per entity)                              |
+| [src/lib/aws/](src/lib/aws/)                       | S3, SES, Cognito clients                                       |
+| [src/lib/errors.ts](src/lib/errors.ts)             | `ApiError` + `withErrorHandler`                                |
+| [src/lib/prismaClient.ts](src/lib/prismaClient.ts) | Singleton Prisma client (Neon adapter)                         |
+| [prisma/](prisma/)                                 | Schema + migrations + seed                                     |
 
 Scoped instructions: [src/CLAUDE.md](src/CLAUDE.md), [src/app/api/CLAUDE.md](src/app/api/CLAUDE.md), [prisma/CLAUDE.md](prisma/CLAUDE.md).
 
