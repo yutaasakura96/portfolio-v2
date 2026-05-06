@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { apiClient } from "@/lib/api-client";
 import { ExperienceCreateInput, experienceCreateSchema } from "@/lib/validations/experience";
-import { Experience } from "@/types/experience";
+import type { Experience } from "@/lib/data/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, X } from "lucide-react";

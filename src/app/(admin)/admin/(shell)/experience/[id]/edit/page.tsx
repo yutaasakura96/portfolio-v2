@@ -13,7 +13,7 @@ const ExperienceForm = dynamic(
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiClient } from "@/lib/api-client";
-import { Experience } from "@/types/experience";
+import type { Experience } from "@/lib/data/types";
 import { useQuery } from "@tanstack/react-query";
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";

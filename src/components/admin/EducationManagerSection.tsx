@@ -5,7 +5,7 @@ import { TableSkeleton } from "@/components/admin/TableSkeleton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { apiClient } from "@/lib/api-client";
-import { Education, EducationListResponse } from "@/types/education";
+import type { Education } from "@/lib/data/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AlertCircle, Pencil, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
@@ -31,12 +31,10 @@ export function EducationManagerSection() {
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["admin", "education"],
-    queryFn: async () => {
-      const response = await apiClient.getEducation<Education, { total: number }>({
+    queryFn: () =>
+      apiClient.getEducation<Education, { total: number }>({
         visible: "all",
-      });
-      return response as unknown as EducationListResponse;
-    },
+      }),
   });
 
   const deleteMutation = useMutation({

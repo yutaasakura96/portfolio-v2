@@ -6,7 +6,7 @@ import { TableSkeleton } from "@/components/admin/TableSkeleton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { apiClient } from "@/lib/api-client";
-import { Certification, CertificationListResponse } from "@/types/certification";
+import type { Certification } from "@/lib/data/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AlertCircle, Pencil, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
@@ -34,12 +34,10 @@ export function CertificationsManagerSection() {
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["admin", "certifications"],
-    queryFn: async () => {
-      const response = await apiClient.getCertifications<Certification, { total: number }>({
+    queryFn: () =>
+      apiClient.getCertifications<Certification, { total: number }>({
         visible: "all",
-      });
-      return response as unknown as CertificationListResponse;
-    },
+      }),
   });
 
   const deleteMutation = useMutation({

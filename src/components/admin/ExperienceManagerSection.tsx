@@ -5,7 +5,7 @@ import { TableSkeleton } from "@/components/admin/TableSkeleton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { apiClient } from "@/lib/api-client";
-import { Experience, ExperienceListResponse } from "@/types/experience";
+import type { Experience } from "@/lib/data/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AlertCircle, Pencil, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
@@ -31,12 +31,10 @@ export function ExperienceManagerSection() {
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["admin", "experience"],
-    queryFn: async () => {
-      const response = await apiClient.getExperience<Experience, { total: number }>({
+    queryFn: () =>
+      apiClient.getExperience<Experience, { total: number }>({
         visible: "all",
-      });
-      return response as unknown as ExperienceListResponse;
-    },
+      }),
   });
 
   const deleteMutation = useMutation({

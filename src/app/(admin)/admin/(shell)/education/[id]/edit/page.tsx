@@ -13,7 +13,7 @@ const EducationForm = dynamic(
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiClient } from "@/lib/api-client";
-import { Education } from "@/types/education";
+import type { Education } from "@/lib/data/types";
 import { useQuery } from "@tanstack/react-query";
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";

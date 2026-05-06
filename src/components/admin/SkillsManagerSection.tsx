@@ -5,7 +5,7 @@ import { SkillFormDialog } from "@/components/admin/SkillFormDialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { apiClient } from "@/lib/api-client";
-import { Skill, SkillsGroupedResponse } from "@/types/skill";
+import type { Skill } from "@/lib/data/types";
 import {
   closestCenter,
   DndContext,
@@ -117,7 +117,7 @@ export function SkillsManagerSection() {
         visible: "all",
         grouped: "true",
       });
-      return response as unknown as SkillsGroupedResponse;
+      return response as unknown as { data: Record<string, Skill[]>; meta: { total: number } };
     },
   });
 

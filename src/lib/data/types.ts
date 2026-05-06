@@ -14,6 +14,13 @@ import type {
   SiteSettings,
 } from "../../../generated/prisma/client";
 
+// Value + type re-exports for Prisma enums so consumers (forms, API clients)
+// can import enum constants alongside the model types from a single canonical
+// location (`@/lib/data/types`). Re-exporting the value form means `import {
+// ProficiencyLevel } from "@/lib/data/types"` yields both the runtime const
+// object AND the type, matching the pattern previously living in `src/types/`.
+export { ProjectStatus, PostStatus, ProficiencyLevel } from "../../../generated/prisma/enums";
+
 // ═══════════════════════════════════════════════════════════════════════════
 // PROJECT TYPES
 // ═══════════════════════════════════════════════════════════════════════════

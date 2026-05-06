@@ -23,7 +23,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { apiClient } from "@/lib/api-client";
 import { SkillCreateInput, skillCreateSchema } from "@/lib/validations/skill";
-import { Skill, ProficiencyLevel } from "@/types/skill";
+import { ProficiencyLevel, type Skill } from "@/lib/data/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm, useWatch, type Resolver } from "react-hook-form";

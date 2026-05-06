@@ -18,7 +18,7 @@ import {
   CertificationCreateInput,
   certificationCreateSchema,
 } from "@/lib/validations/certification";
-import { Certification } from "@/types/certification";
+import type { Certification } from "@/lib/data/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";

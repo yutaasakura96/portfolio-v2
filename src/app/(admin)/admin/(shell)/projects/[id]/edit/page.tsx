@@ -17,7 +17,7 @@ import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { use } from "react";
-import { Project } from "@/types/project";
+import type { Project } from "@/lib/data/types";
 
 export default function EditProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
