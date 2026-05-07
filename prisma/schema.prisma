@@ -10,7 +10,7 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
 }
 
 // ═══ HERO (singleton) ═══
@@ -61,9 +61,9 @@ enum ProjectStatus {
 model BlogPost {
   id            String     @id @default(cuid())
   slug          String     @unique
-  title         String
+  title         String     @db.VarChar(200)
   content       String     @db.Text
-  excerpt       String
+  excerpt       String     @db.VarChar(500)
   featuredImage String?
   tags          String[]
   readTime      Int?
@@ -130,35 +130,35 @@ model Experience {
 
 // ═══ EDUCATION ═══
 model Education {
-  id           String    @id @default(cuid())
-  institution  String
-  degree       String
-  field        String
-  startDate    DateTime?
-  endDate      DateTime?
+  id             String    @id @default(cuid())
+  institution    String
+  degree         String
+  field          String
+  startDate      DateTime?
+  endDate        DateTime?
   achievements   String?   @db.Text
   logoUrl        String?
   institutionUrl String?
   documentUrl    String?
   displayOrder   Int       @default(0)
-  visible      Boolean   @default(true)
+  visible        Boolean   @default(true)
 
   @@index([displayOrder])
 }
 
 // ═══ CERTIFICATION ═══
 model Certification {
-  id             String    @id @default(cuid())
-  name           String
-  issuer         String
-  dateEarned     DateTime
-  expirationDate DateTime?
-  credentialId   String?
-  credentialUrl  String?
+  id               String    @id @default(cuid())
+  name             String
+  issuer           String
+  dateEarned       DateTime
+  expirationDate   DateTime?
+  credentialId     String?
+  credentialUrl    String?
   badgeImage       String?
   certificateImage String?
   displayOrder     Int       @default(0)
-  visible        Boolean   @default(true)
+  visible          Boolean   @default(true)
 
   @@index([displayOrder])
 }
