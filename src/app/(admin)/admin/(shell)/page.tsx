@@ -1,26 +1,53 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { prisma } from "@/lib/prismaClient";
-import { FileText, FolderKanban, Mail, Plus } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useDashboardStats } from "@/hooks/use-dashboard-stats";
+import { AlertCircle, FileText, FolderKanban, Mail, Plus } from "lucide-react";
 import Link from "next/link";
 
-export const dynamic = "force-dynamic";
+export default function AdminDashboard() {
+  const { data, isLoading, error } = useDashboardStats();
 
-export default async function AdminDashboard() {
-  const [projectCount, postCount, messageCount, recentProjects, recentPosts] = await Promise.all([
-    prisma.project.count(),
-    prisma.blogPost.count(),
-    prisma.contactMessage.count({ where: { read: false } }),
-    prisma.project.findMany({
-      orderBy: { updatedAt: "desc" },
-      take: 5,
-      select: { id: true, title: true, status: true, updatedAt: true },
-    }),
-    prisma.blogPost.findMany({
-      orderBy: { updatedAt: "desc" },
-      take: 5,
-      select: { id: true, title: true, status: true, updatedAt: true },
-    }),
-  ]);
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Dashboard</h1>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Skeleton className="h-28 w-full" />
+          <Skeleton className="h-28 w-full" />
+          <Skeleton className="h-28 w-full" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Skeleton className="h-64 w-full" />
+          <Skeleton className="h-64 w-full" />
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <div className="flex flex-col items-center gap-4 p-12 text-center bg-white rounded-lg border">
+          <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
+            <AlertCircle className="h-8 w-8 text-red-600" />
+          </div>
+          <div>
+            <h3 className="text-lg font-medium text-gray-900 mb-1">Failed to load dashboard</h3>
+            <p className="text-sm text-gray-600">
+              {error instanceof Error ? error.message : "Unable to load dashboard stats."}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const { projectCount, postCount, messageCount, recentProjects, recentPosts } = data;
 
   return (
     <div className="space-y-6">

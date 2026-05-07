@@ -356,6 +356,11 @@ class ApiClient {
     });
   }
 
+  // ── Admin ─────────────────────────────────────────
+  getDashboardStats<T = unknown>() {
+    return this.request<ApiResponse<T>>("/admin/dashboard-stats");
+  }
+
   // ── Settings ──────────────────────────────────────
   getSettings<T = unknown>() {
     return this.request<ApiResponse<T>>("/settings");
