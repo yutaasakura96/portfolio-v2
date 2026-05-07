@@ -12,7 +12,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   const archivedParam = searchParams.get("archived") ?? "false";
   const sort = searchParams.get("sort") ?? "newest";
   const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10));
-  const pageSize = Math.min(50, Math.max(1, parseInt(searchParams.get("pageSize") ?? "20", 10)));
+  const limit = Math.min(50, Math.max(1, parseInt(searchParams.get("limit") ?? "20", 10)));
 
   // Build where clause
   const where: Prisma.ContactMessageWhereInput = {};
@@ -31,14 +31,14 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   // "all" — no read filter applied
 
   const orderBy = { createdAt: sort === "oldest" ? "asc" : "desc" } as const;
-  const skip = (page - 1) * pageSize;
+  const skip = (page - 1) * limit;
 
   const [messages, total, unreadCount] = await Promise.all([
     prisma.contactMessage.findMany({
       where,
       orderBy,
       skip,
-      take: pageSize,
+      take: limit,
     }),
     prisma.contactMessage.count({ where }),
     prisma.contactMessage.count({
@@ -51,8 +51,8 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     meta: {
       total,
       page,
-      pageSize,
-      totalPages: Math.ceil(total / pageSize),
+      limit,
+      totalPages: Math.ceil(total / limit),
       unreadCount,
     },
   });

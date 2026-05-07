@@ -17,7 +17,7 @@ export type Message = {
 export type MessagesMeta = {
   total: number;
   page: number;
-  pageSize: number;
+  limit: number;
   totalPages: number;
   unreadCount: number;
 };
@@ -32,7 +32,7 @@ export type MessageFilters = {
   archived?: "true" | "false";
   sort?: "newest" | "oldest";
   page?: number;
-  pageSize?: number;
+  limit?: number;
 };
 
 const MESSAGES_KEY = ["messages"] as const;
@@ -43,7 +43,7 @@ function filtersToParams(filters?: MessageFilters): Record<string, string> {
   if (filters?.archived) params.archived = filters.archived;
   if (filters?.sort) params.sort = filters.sort;
   if (filters?.page) params.page = String(filters.page);
-  if (filters?.pageSize) params.pageSize = String(filters.pageSize);
+  if (filters?.limit) params.limit = String(filters.limit);
   return params;
 }
 
@@ -99,7 +99,7 @@ export function useBulkUpdateMessages() {
 }
 
 export function useUnreadCount() {
-  const unreadFilters: MessageFilters = { archived: "false", read: "false", pageSize: 1 };
+  const unreadFilters: MessageFilters = { archived: "false", read: "false", limit: 1 };
   return useQuery({
     queryKey: [...MESSAGES_KEY, { archived: "false", read: "false" }],
     queryFn: () =>

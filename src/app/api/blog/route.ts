@@ -13,7 +13,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   const search = searchParams.get("search");
   const sort = searchParams.get("sort") || "newest";
   const page = parseInt(searchParams.get("page") || "1");
-  const pageSize = Math.min(parseInt(searchParams.get("pageSize") || "10"), 50);
+  const limit = Math.min(parseInt(searchParams.get("limit") ?? "10", 10), 50);
 
   // Require auth to view all statuses (including drafts)
   if (status === "all") {
@@ -53,8 +53,8 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     prisma.blogPost.findMany({
       where,
       orderBy,
-      skip: (page - 1) * pageSize,
-      take: pageSize,
+      skip: (page - 1) * limit,
+      take: limit,
       select: {
         id: true,
         slug: true,
@@ -78,8 +78,8 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     meta: {
       total,
       page,
-      pageSize,
-      totalPages: Math.ceil(total / pageSize),
+      limit,
+      totalPages: Math.ceil(total / limit),
     },
   });
 });

@@ -32,7 +32,7 @@ export default function BlogListPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin", "blog", statusFilter],
-    queryFn: () => apiClient.getBlogPosts({ status: statusFilter, pageSize: "50" }),
+    queryFn: () => apiClient.getBlogPosts({ status: statusFilter, limit: "50" }),
   });
 
   const deleteMutation = useMutation({

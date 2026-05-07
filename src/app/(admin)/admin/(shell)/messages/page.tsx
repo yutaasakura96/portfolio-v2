@@ -36,7 +36,7 @@ export default function MessagesPage() {
     archived: activeTab === "archived" ? "true" : "false",
     sort: "newest",
     page,
-    pageSize: 20,
+    limit: 20,
   };
 
   const { data, isLoading, isError } = useMessages(filters);

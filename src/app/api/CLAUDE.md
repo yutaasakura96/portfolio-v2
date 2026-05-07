@@ -113,8 +113,6 @@ return Response.json({
 });
 ```
 
-The blog and messages routes currently use `pageSize` — that's pending migration, do not copy it.
-
 ## Query Param Parsing — Standard
 
 Use `request.nextUrl.searchParams`. Do not write `new URL(request.url).searchParams` (the blog route does, but `nextUrl` is the standard).
