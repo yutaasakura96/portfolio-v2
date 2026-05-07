@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -138,23 +139,23 @@ export function ProjectBrowser({ projects }: ProjectBrowserProps) {
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         {/* Search Input */}
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
             type="text"
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="Search projects..."
-            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200"
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-input bg-background text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           />
         </div>
 
         {/* Sort Dropdown */}
         <div className="flex items-center gap-2">
-          <SlidersHorizontal className="h-4 w-4 text-gray-400" />
+          <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
           <select
             value={sort}
             onChange={(e) => handleSortChange(e.target.value as SortOption)}
-            className="rounded-lg border border-gray-200 text-sm py-2 px-3 bg-white focus:outline-none focus:ring-2 focus:ring-gray-200"
+            className="rounded-lg border border-input text-sm py-2 px-3 bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           >
             <option value="order">Default Order</option>
             <option value="newest">Newest First</option>
@@ -167,7 +168,7 @@ export function ProjectBrowser({ projects }: ProjectBrowserProps) {
         {hasActiveFilters && (
           <button
             onClick={clearFilters}
-            className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground px-3 py-2 rounded-lg border border-input hover:bg-accent transition-colors"
           >
             <X className="h-3.5 w-3.5" />
             Clear
@@ -182,11 +183,12 @@ export function ProjectBrowser({ projects }: ProjectBrowserProps) {
             <button
               key={tag}
               onClick={() => handleTagChange(tag)}
-              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+              className={cn(
+                "px-3 py-1 rounded-full text-xs font-medium transition-colors",
                 selectedTag === tag
-                  ? "bg-gray-900 text-white"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              }`}
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-accent"
+              )}
             >
               {tag}
             </button>
@@ -197,7 +199,7 @@ export function ProjectBrowser({ projects }: ProjectBrowserProps) {
       {/* Results */}
       {filteredProjects.length > 0 ? (
         <>
-          <p className="text-sm text-gray-500 mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             {filteredProjects.length} project{filteredProjects.length !== 1 ? "s" : ""}
             {hasActiveFilters ? " found" : ""}
           </p>
@@ -209,10 +211,10 @@ export function ProjectBrowser({ projects }: ProjectBrowserProps) {
         </>
       ) : (
         <div className="text-center py-12">
-          <p className="text-gray-500">No projects found matching your criteria.</p>
+          <p className="text-muted-foreground">No projects found matching your criteria.</p>
           <button
             onClick={clearFilters}
-            className="mt-3 text-sm text-gray-600 underline hover:text-gray-900"
+            className="mt-3 text-sm text-muted-foreground underline hover:text-foreground"
           >
             Clear filters
           </button>

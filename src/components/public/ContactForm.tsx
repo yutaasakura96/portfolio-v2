@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { contactMessageSchema, type ContactMessageInput } from "@/lib/validations/contact";
+import { cn } from "@/lib/utils";
 import { Send, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
@@ -63,15 +64,17 @@ export function ContactForm() {
   // ── Success State ──────────────────────────────────
   if (status === "success") {
     return (
-      <div className="rounded-lg border border-green-200 bg-green-50 p-8 text-center">
+      <div className="rounded-lg border border-green-200 bg-green-50 p-8 text-center dark:border-green-900 dark:bg-green-950">
         <CheckCircle className="mx-auto h-12 w-12 text-green-500" />
-        <h3 className="mt-4 text-lg font-semibold text-green-900">Message sent!</h3>
-        <p className="mt-2 text-sm text-green-700">
+        <h3 className="mt-4 text-lg font-semibold text-green-900 dark:text-green-100">
+          Message sent!
+        </h3>
+        <p className="mt-2 text-sm text-green-700 dark:text-green-300">
           Thank you for reaching out. I&apos;ll get back to you as soon as possible.
         </p>
         <button
           onClick={() => setStatus("idle")}
-          className="mt-6 text-sm font-medium text-green-700 underline hover:text-green-900"
+          className="mt-6 text-sm font-medium text-green-700 underline hover:text-green-900 dark:text-green-300 dark:hover:text-green-100"
         >
           Send another message
         </button>
@@ -98,97 +101,105 @@ export function ContactForm() {
 
       {/* Error Banner */}
       {status === "error" && (
-        <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4">
+        <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950">
           <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-500" />
-          <p className="text-sm text-red-700">{errorMessage}</p>
+          <p className="text-sm text-red-700 dark:text-red-300">{errorMessage}</p>
         </div>
       )}
 
       {/* Name */}
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="name" className="block text-sm font-medium text-foreground">
           Name <span className="text-red-500">*</span>
         </label>
         <input
           id="name"
           type="text"
           {...register("name")}
-          className={`mt-1 block w-full rounded-lg border px-4 py-2.5 text-sm shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900/10 ${
-            errors.name
-              ? "border-red-300 focus:border-red-500"
-              : "border-gray-300 focus:border-gray-900"
-          }`}
+          className={cn(
+            "mt-1 block w-full rounded-lg border bg-background px-4 py-2.5 text-sm text-foreground shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring",
+            errors.name ? "border-red-300 focus:border-red-500" : "border-input focus:border-ring"
+          )}
           placeholder="Your name"
           disabled={status === "submitting"}
         />
-        {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
+        {errors.name && (
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name.message}</p>
+        )}
       </div>
 
       {/* Email */}
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="email" className="block text-sm font-medium text-foreground">
           Email <span className="text-red-500">*</span>
         </label>
         <input
           id="email"
           type="email"
           {...register("email")}
-          className={`mt-1 block w-full rounded-lg border px-4 py-2.5 text-sm shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900/10 ${
-            errors.email
-              ? "border-red-300 focus:border-red-500"
-              : "border-gray-300 focus:border-gray-900"
-          }`}
+          className={cn(
+            "mt-1 block w-full rounded-lg border bg-background px-4 py-2.5 text-sm text-foreground shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring",
+            errors.email ? "border-red-300 focus:border-red-500" : "border-input focus:border-ring"
+          )}
           placeholder="your@email.com"
           disabled={status === "submitting"}
         />
-        {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
+        {errors.email && (
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>
+        )}
       </div>
 
       {/* Subject */}
       <div>
-        <label htmlFor="subject" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="subject" className="block text-sm font-medium text-foreground">
           Subject
         </label>
         <input
           id="subject"
           type="text"
           {...register("subject")}
-          className={`mt-1 block w-full rounded-lg border px-4 py-2.5 text-sm shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900/10 ${
+          className={cn(
+            "mt-1 block w-full rounded-lg border bg-background px-4 py-2.5 text-sm text-foreground shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring",
             errors.subject
               ? "border-red-300 focus:border-red-500"
-              : "border-gray-300 focus:border-gray-900"
-          }`}
+              : "border-input focus:border-ring"
+          )}
           placeholder="What is this about?"
           disabled={status === "submitting"}
         />
-        {errors.subject && <p className="mt-1 text-sm text-red-600">{errors.subject.message}</p>}
+        {errors.subject && (
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.subject.message}</p>
+        )}
       </div>
 
       {/* Message */}
       <div>
-        <label htmlFor="message" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="message" className="block text-sm font-medium text-foreground">
           Message <span className="text-red-500">*</span>
         </label>
         <textarea
           id="message"
           rows={6}
           {...register("message")}
-          className={`mt-1 block w-full resize-y rounded-lg border px-4 py-2.5 text-sm shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900/10 ${
+          className={cn(
+            "mt-1 block w-full resize-y rounded-lg border bg-background px-4 py-2.5 text-sm text-foreground shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring",
             errors.message
               ? "border-red-300 focus:border-red-500"
-              : "border-gray-300 focus:border-gray-900"
-          }`}
+              : "border-input focus:border-ring"
+          )}
           placeholder="Your message (at least 10 characters)"
           disabled={status === "submitting"}
         />
-        {errors.message && <p className="mt-1 text-sm text-red-600">{errors.message.message}</p>}
+        {errors.message && (
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.message.message}</p>
+        )}
       </div>
 
       {/* Submit */}
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+        className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {status === "submitting" ? (
           <>

@@ -37,7 +37,9 @@ export function ImageGallery({ groups, projectTitle }: ImageGalleryProps) {
 
   return (
     <div className="mb-8 space-y-6">
-      <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Gallery</h2>
+      <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+        Gallery
+      </h2>
 
       {groups.map((group, groupIdx) => {
         const sortedImages = [...group.images].sort((a, b) => a.order - b.order);
@@ -45,7 +47,7 @@ export function ImageGallery({ groups, projectTitle }: ImageGalleryProps) {
 
         return (
           <div key={groupIdx} className="space-y-3">
-            {group.name && <h3 className="text-sm font-medium text-gray-700">{group.name}</h3>}
+            {group.name && <h3 className="text-sm font-medium text-foreground">{group.name}</h3>}
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {sortedImages.map((img, i) => {
                 const globalIndex = offset + i;
@@ -54,7 +56,7 @@ export function ImageGallery({ groups, projectTitle }: ImageGalleryProps) {
                     key={`${img.url}-${i}`}
                     type="button"
                     onClick={() => setLightboxIndex(globalIndex)}
-                    className="relative aspect-video overflow-hidden rounded-lg bg-gray-100 group cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    className="relative aspect-video overflow-hidden rounded-lg bg-muted group cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                   >
                     <Image
                       src={img.url}

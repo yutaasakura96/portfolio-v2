@@ -14,7 +14,7 @@ Pattern: src/components/\*_/_.tsx
 - Markdown rendering goes through `@/lib/markdown` (sanitized pipeline). Do not call remark/rehype ad-hoc — sanitization is mandatory.
 - Type imports use `import type` and live alongside other `@/` imports.
 - Do NOT introduce Zustand stores. Local state stays in `useState`/`useReducer`; server state stays in TanStack Query.
-- Do NOT add `dark:` Tailwind variants to new public components — `ThemeProvider` is not wired and dark mode is half-implemented.
+- Dark mode is wired via `next-themes` (`<ThemeProvider attribute="class">` in the root layout, toggle in the public `Header`). Prefer theme tokens (`bg-background`, `text-foreground`, `border-border`, `bg-muted`, `text-muted-foreground`, `bg-accent`, `bg-primary` / `text-primary-foreground`) — they adapt to both modes automatically. Use `dark:` variants only when the token system can't express the contrast you need (e.g. status banners that have no token equivalent — `bg-green-50 dark:bg-green-950`). Code-block colors that should stay dark in both modes (e.g. `prose-pre:bg-gray-900`) are an acceptable exception.
 - Do NOT edit files in `src/components/ui/` by hand for shadcn primitive updates — use `npx shadcn@latest add <component>` so the registry stays in sync.
 - Avoid prop drilling more than two levels — lift to a query hook (TanStack) or a layout-level provider instead.
 - Accessibility: all interactive elements need a label (`aria-label` or visible text). Modals/dialogs use Radix primitives so focus trapping is handled — don't roll your own.

@@ -12,8 +12,8 @@ export default function ContactPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6 py-12">
       <div className="mb-10">
-        <h1 className="text-3xl font-bold text-gray-900">Get in Touch</h1>
-        <p className="mt-3 text-gray-600">
+        <h1 className="text-3xl font-bold text-foreground">Get in Touch</h1>
+        <p className="mt-3 text-muted-foreground">
           Have a question, project idea, or just want to say hello? Fill out the form below and
           I&apos;ll get back to you as soon as possible.
         </p>
@@ -27,38 +27,38 @@ export default function ContactPage() {
 
         {/* Sidebar Info */}
         <div className="space-y-6">
-          <div className="rounded-lg border border-gray-200 bg-gray-50 p-6">
-            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+          <div className="rounded-lg border border-border bg-muted p-6">
+            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">
               Other Ways to Reach Me
             </h3>
             <div className="mt-4 space-y-4">
               <div className="flex items-start gap-3">
-                <Mail className="mt-0.5 h-5 w-5 text-gray-400" />
+                <Mail className="mt-0.5 h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-sm font-medium text-gray-700">Email</p>
+                  <p className="text-sm font-medium text-foreground">Email</p>
                   <a
                     href="mailto:your@email.com"
-                    className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     your@email.com
                   </a>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <MapPin className="mt-0.5 h-5 w-5 text-gray-400" />
+                <MapPin className="mt-0.5 h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-sm font-medium text-gray-700">Location</p>
-                  <p className="text-sm text-gray-500">Japan</p>
+                  <p className="text-sm font-medium text-foreground">Location</p>
+                  <p className="text-sm text-muted-foreground">Japan</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="rounded-lg border border-gray-200 bg-gray-50 p-6">
-            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+          <div className="rounded-lg border border-border bg-muted p-6">
+            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">
               Response Time
             </h3>
-            <p className="mt-2 text-sm text-gray-600">
+            <p className="mt-2 text-sm text-muted-foreground">
               I typically respond within 1–2 business days.
             </p>
           </div>

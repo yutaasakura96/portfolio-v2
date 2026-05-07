@@ -17,11 +17,11 @@ interface ProjectCardProps {
 
 export function ProjectCard({ project, priority = false }: ProjectCardProps) {
   return (
-    <article className="group rounded-xl border border-gray-200 bg-white overflow-hidden hover:shadow-md transition-shadow">
+    <article className="group rounded-xl border border-border bg-card overflow-hidden hover:shadow-md transition-shadow">
       {/* Thumbnail */}
       {project.thumbnailImage && (
         <Link href={`/projects/${project.slug}`}>
-          <div className="relative aspect-4/3 overflow-hidden bg-gray-100">
+          <div className="relative aspect-4/3 overflow-hidden bg-muted">
             <Image
               src={project.thumbnailImage}
               alt={project.title}
@@ -37,25 +37,27 @@ export function ProjectCard({ project, priority = false }: ProjectCardProps) {
       {/* Content */}
       <div className="p-5">
         <Link href={`/projects/${project.slug}`}>
-          <h3 className="text-lg font-semibold text-gray-900 group-hover:text-gray-700 transition-colors">
+          <h3 className="text-lg font-semibold text-foreground group-hover:text-muted-foreground transition-colors">
             {project.title}
           </h3>
         </Link>
 
-        <p className="mt-2 text-sm text-gray-600 line-clamp-2">{project.shortDescription}</p>
+        <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+          {project.shortDescription}
+        </p>
 
         {/* Tech Tags */}
         <div className="mt-3 flex flex-wrap gap-1.5">
           {project.techTags.slice(0, 5).map((tag) => (
             <span
               key={tag}
-              className="inline-flex items-center px-2 py-0.5 rounded-md bg-gray-100 text-xs font-medium text-gray-600"
+              className="inline-flex items-center px-2 py-0.5 rounded-md bg-muted text-xs font-medium text-muted-foreground"
             >
               {tag}
             </span>
           ))}
           {project.techTags.length > 5 && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-gray-100 text-xs text-gray-400">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-muted text-xs text-muted-foreground">
               +{project.techTags.length - 5}
             </span>
           )}
@@ -68,7 +70,7 @@ export function ProjectCard({ project, priority = false }: ProjectCardProps) {
               href={project.liveUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-gray-900 transition-colors"
+              className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               <ExternalLink className="h-3.5 w-3.5" />
               Live Demo
@@ -79,7 +81,7 @@ export function ProjectCard({ project, priority = false }: ProjectCardProps) {
               href={project.repoUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-gray-900 transition-colors"
+              className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               <Github className="h-3.5 w-3.5" />
               Code

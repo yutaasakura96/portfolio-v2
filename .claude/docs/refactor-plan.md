@@ -432,12 +432,9 @@ Total: ~9.5 hours of focused work, distributed across 13 sessions.
 - **Deps:** 1.1
 - **Risk:** 🟢
 
-### 9.4 — Remove `next-themes` (only if 7.1 = A) 🟢
+### 9.4 — ~~Remove `next-themes`~~ — **OBSOLETE** (Session 8 took 7.1 Path B)
 
-- **Where:** `package.json` + [src/components/ui/sonner.tsx](../../src/components/ui/sonner.tsx)
-- **Action:** swap Sonner's `useTheme()` for a hardcoded theme prop, then `npm uninstall next-themes`.
-- **Deps:** 7.1 = A
-- **Risk:** 🟢
+- Dark mode was fully implemented in Session 8 (2026-05-07). `next-themes` is now load-bearing — do not remove.
 
 ### 9.5 — 💾 Commit point: "chore: remove unused dependencies"
 

@@ -104,11 +104,26 @@ export function Card({ className, variant, padding, ...props }: CardProps) {
 }
 ```
 
-## Dark mode — DO NOT add `dark:` to public components
+## Dark mode — prefer theme tokens, use `dark:` only when needed
 
-The repo has dark-mode tokens in `globals.css` and `next-themes` installed, but `ThemeProvider` is **not wired** in the root layout. The public site is currently light-only. Adding `dark:` variants to new components creates the appearance of dark mode without it actually working.
+Dark mode is wired: `<ThemeProvider attribute="class">` lives in the root layout (`src/app/layout.tsx`), the toggle is in the public `Header`, and full `.dark` token overrides are defined in `globals.css`.
 
-If the user explicitly asks to enable dark mode, that's a separate coordinated change: wrap the root layout in `ThemeProvider`, add a toggle, then `dark:` variants are fair game.
+Default to **theme tokens** — they adapt automatically:
+
+- `bg-background` / `text-foreground` — page surfaces and primary text
+- `bg-card` / `text-card-foreground` — elevated cards
+- `bg-muted` / `text-muted-foreground` — subdued surfaces and secondary text
+- `bg-accent` — hover backgrounds
+- `bg-primary` / `text-primary-foreground` — primary CTA colors (note: in dark mode these invert; use `bg-foreground text-background` for "always-inverted" CTA bands)
+- `border-border` / `border-input` — neutral borders
+- `ring-ring` — focus ring color
+
+Reach for `dark:` variants only when a token can't express the contrast you need:
+
+- **Status colors** (red/green/blue banners) where the token system has no equivalent: `bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300`.
+- **Code blocks** that should stay dark in both modes (`prose-pre:bg-gray-900`) — that's intentional with `github-dark.css` highlighting; leave as-is.
+
+Avoid: hardcoded `bg-gray-*`, `text-gray-*`, `bg-white`, `bg-black`, `border-gray-*` for neutrals. Migrate to tokens when you find them.
 
 ## Animations
 
@@ -135,7 +150,7 @@ Markdown rendered via `@tailwindcss/typography` — wrap rendered HTML in `prose
 - ❌ Hardcoding colors (`bg-[#fff]`, `text-gray-900`) instead of theme tokens (`bg-background`, `text-foreground`).
 - ❌ Adding a v3-style PostCSS plugin — only `@tailwindcss/postcss` should be in `postcss.config.mjs`.
 - ❌ Importing `tailwindcss/colors` in JS — that's a v3 pattern; v4 colors come from `@theme`.
-- ❌ Using `dark:` variants in new public components — see "Dark mode" above.
+- ❌ Reaching for `dark:` variants when a theme token would do — `text-muted-foreground` already adapts; `dark:text-gray-300` is the wrong tool. See "Dark mode" above.
 - ❌ Skipping `cn()` for static class lists — that's fine; just use `cn()` whenever there's any condition.
 
 ## Reference files

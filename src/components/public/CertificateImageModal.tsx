@@ -22,7 +22,7 @@ export function CertificateImageModal({
         <DialogHeader className="px-6 py-4 border-b">
           <DialogTitle>{certName}</DialogTitle>
         </DialogHeader>
-        <div className="flex items-center justify-center bg-gray-100 p-6 min-h-[500px]">
+        <div className="flex items-center justify-center bg-muted p-6 min-h-[500px]">
           {imageUrl ? (
             <Image
               src={imageUrl}
@@ -33,7 +33,7 @@ export function CertificateImageModal({
               sizes="95vw"
             />
           ) : (
-            <p className="text-gray-500 text-sm">No image available</p>
+            <p className="text-muted-foreground text-sm">No image available</p>
           )}
         </div>
       </DialogContent>

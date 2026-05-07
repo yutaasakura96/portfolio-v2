@@ -70,7 +70,7 @@ Scoped instructions: [src/CLAUDE.md](src/CLAUDE.md), [src/app/api/CLAUDE.md](src
 
 - ❌ Importing `requireAuth` from `@/lib/auth` — that path doesn't exist. Use `@/app/api/auth`.
 - ❌ Adding Zustand stores — the dep is listed but unused; do not introduce it.
-- ❌ Adding `next-themes` ThemeProvider — dark mode is half-installed; either fully implement it (with explicit user approval) or leave it alone.
+- ❌ Hardcoding `gray-*` / `white` / `black` in public components — dark mode is wired (`<ThemeProvider attribute="class">` in the root layout, toggle in the public Header). Prefer theme tokens (`bg-background`, `text-foreground`, `border-border`, etc.) which adapt automatically. Use `dark:` variants only when a token can't express the contrast you need (e.g. status banners that don't have a token equivalent).
 - ❌ Using `import "dotenv/config"` in app code — Next.js loads `.env` automatically. Only `prisma.config.ts` needs it.
 - ❌ Using `AWS_*` env var names — Amplify reserves that namespace. Use `APP_AWS_ACCESS_KEY_ID` / `APP_AWS_SECRET_ACCESS_KEY` / `APP_AWS_REGION`.
 - ❌ Trusting [src/lib/rate-limit.ts](src/lib/rate-limit.ts) in production — it's an in-memory `Map` that does not work in Lambda. New rate-limited endpoints need an external store (Upstash is already in CSP allowlist).

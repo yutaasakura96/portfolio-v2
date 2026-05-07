@@ -49,11 +49,13 @@ export function AboutProfileSection({
         )}
 
         {intro.profileName && (
-          <h2 className="text-xl font-bold text-gray-900">{intro.profileName}</h2>
+          <h2 className="text-xl font-bold text-foreground">{intro.profileName}</h2>
         )}
-        {intro.profileTitle && <p className="mt-1 text-sm text-gray-600">{intro.profileTitle}</p>}
+        {intro.profileTitle && (
+          <p className="mt-1 text-sm text-muted-foreground">{intro.profileTitle}</p>
+        )}
         {intro.profileCompany && (
-          <p className="mt-0.5 text-sm text-gray-500">{intro.profileCompany}</p>
+          <p className="mt-0.5 text-sm text-muted-foreground">{intro.profileCompany}</p>
         )}
 
         {hasSocial && (
@@ -62,7 +64,7 @@ export function AboutProfileSection({
               <a
                 href={`mailto:${email}`}
                 aria-label="Email"
-                className="text-gray-600 transition-all duration-150 hover:text-gray-900 hover:scale-110"
+                className="text-muted-foreground transition-all duration-150 hover:text-foreground hover:scale-110"
               >
                 <Mail className="h-5 w-5" />
               </a>
@@ -73,7 +75,7 @@ export function AboutProfileSection({
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
-                className="text-gray-600 transition-all duration-150 hover:text-gray-900 hover:scale-110"
+                className="text-muted-foreground transition-all duration-150 hover:text-foreground hover:scale-110"
               >
                 <Github className="h-5 w-5" />
               </a>
@@ -84,7 +86,7 @@ export function AboutProfileSection({
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
-                className="text-gray-600 transition-all duration-150 hover:text-gray-900 hover:scale-110"
+                className="text-muted-foreground transition-all duration-150 hover:text-foreground hover:scale-110"
               >
                 <Linkedin className="h-5 w-5" />
               </a>
@@ -96,12 +98,12 @@ export function AboutProfileSection({
       {/* Right: Introduction Content */}
       <div>
         {intro.introHeadline && (
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">{intro.introHeadline}</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-6">{intro.introHeadline}</h2>
         )}
         {paragraphs.length > 0 && (
           <div className="space-y-4 max-w-2xl">
             {paragraphs.map((paragraph, i) => (
-              <p key={i} className="text-gray-600 leading-relaxed">
+              <p key={i} className="text-muted-foreground leading-relaxed">
                 {paragraph}
               </p>
             ))}

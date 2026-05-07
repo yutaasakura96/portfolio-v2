@@ -19,13 +19,13 @@ interface FeaturedProjectsProps {
 
 export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16 bg-muted">
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-bold text-gray-900">Featured Projects</h2>
+          <h2 className="text-2xl font-bold text-foreground">Featured Projects</h2>
           <Link
             href="/projects"
-            className="inline-flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+            className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             View all
             <ArrowRight className="h-4 w-4" />

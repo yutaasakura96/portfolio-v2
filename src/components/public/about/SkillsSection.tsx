@@ -11,7 +11,7 @@ interface SkillsSectionProps {
 
 function SkillCard({ skill }: { skill: Skill }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white p-3 text-center transition-all hover:border-gray-300 hover:shadow-sm">
+    <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-border bg-card p-3 text-center transition-all hover:border-ring hover:shadow-sm">
       <div className="flex h-8 w-8 items-center justify-center">
         {skill.iconUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -27,10 +27,10 @@ function SkillCard({ skill }: { skill: Skill }) {
             {skill.icon}
           </span>
         ) : (
-          <Wrench className="h-5 w-5 text-gray-400" aria-hidden="true" />
+          <Wrench className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
         )}
       </div>
-      <span className="w-full text-wrap text-center text-xs font-medium text-gray-700">
+      <span className="w-full text-wrap text-center text-xs font-medium text-foreground">
         {skill.name}
       </span>
     </div>
@@ -58,12 +58,12 @@ export function SkillsSection({ skills, categoryOrder }: SkillsSectionProps) {
 
   return (
     <section className="mb-16">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">Skills</h2>
+      <h2 className="text-2xl font-bold text-foreground mb-6">Skills</h2>
       <Tabs defaultValue={defaultTab}>
         <div className="overflow-x-auto">
           <TabsList
             variant="line"
-            className="mb-6 w-full justify-start border-b border-gray-200 pb-0"
+            className="mb-6 w-full justify-start border-b border-border pb-0"
           >
             {sortedCategories.map(([category]) => (
               <TabsTrigger

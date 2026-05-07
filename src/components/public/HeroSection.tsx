@@ -22,9 +22,9 @@ export function HeroSection({ hero }: HeroSectionProps) {
   const [resumeOpen, setResumeOpen] = useState(false);
 
   const primaryClass =
-    "inline-flex items-center px-6 py-3 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 transition-colors";
+    "inline-flex items-center px-6 py-3 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors";
   const secondaryClass =
-    "inline-flex items-center px-6 py-3 rounded-lg border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors";
+    "inline-flex items-center px-6 py-3 rounded-lg border border-border text-foreground text-sm font-medium hover:bg-accent transition-colors";
 
   return (
     <section className="relative py-20 sm:py-28">
@@ -32,11 +32,15 @@ export function HeroSection({ hero }: HeroSectionProps) {
         <div className="flex flex-col-reverse items-center gap-10 md:flex-row md:gap-16">
           {/* Text Content */}
           <div className="flex-1 text-center md:text-left">
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+            <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
               {hero.headline}
             </h1>
-            {hero.subheadline && <p className="mt-4 text-xl text-gray-600">{hero.subheadline}</p>}
-            <p className="mt-6 text-base leading-relaxed text-gray-600 max-w-lg">{hero.bio}</p>
+            {hero.subheadline && (
+              <p className="mt-4 text-xl text-muted-foreground">{hero.subheadline}</p>
+            )}
+            <p className="mt-6 text-base leading-relaxed text-muted-foreground max-w-lg">
+              {hero.bio}
+            </p>
 
             {/* CTA Buttons */}
             {ctaButtons.length > 0 && (

@@ -23,7 +23,7 @@ export function EducationSection({ education }: EducationSectionProps) {
 
   return (
     <section className="mb-16">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">Education</h2>
+      <h2 className="text-2xl font-bold text-foreground mb-6">Education</h2>
       <div className="space-y-4">
         {education.map((edu) => {
           const shouldShowImage = edu.logoUrl && !failedImages.has(edu.id);
@@ -31,16 +31,16 @@ export function EducationSection({ education }: EducationSectionProps) {
           return (
             <div
               key={edu.id}
-              className="flex items-start justify-between gap-4 p-5 rounded-xl border border-gray-200 bg-white"
+              className="flex items-start justify-between gap-4 p-5 rounded-xl border border-border bg-card"
             >
               <div className="flex-1 min-w-0">
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-foreground">
                   {edu.institutionUrl ? (
                     <a
                       href={edu.institutionUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded"
+                      className="hover:underline focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded"
                     >
                       {edu.institution}
                     </a>
@@ -49,23 +49,25 @@ export function EducationSection({ education }: EducationSectionProps) {
                   )}
                 </h3>
 
-                <p className="text-sm text-gray-600">{edu.degree}</p>
+                <p className="text-sm text-muted-foreground">{edu.degree}</p>
 
-                {edu.field && <p className="text-sm text-gray-500">{edu.field}</p>}
+                {edu.field && <p className="text-sm text-muted-foreground">{edu.field}</p>}
 
-                <p className="text-sm text-gray-400 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   {formatDateRange(edu.startDate, edu.endDate, "yyyy")}
                 </p>
 
                 {edu.achievements && (
-                  <p className="mt-2 text-sm text-gray-600 leading-relaxed">{edu.achievements}</p>
+                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                    {edu.achievements}
+                  </p>
                 )}
 
                 {edu.documentUrl && (
                   <button
                     type="button"
                     onClick={() => setOpenDocumentId(edu.id)}
-                    className="inline-flex items-center gap-1.5 mt-3 text-xs text-gray-500 hover:text-gray-800 hover:underline focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-1 rounded"
+                    className="inline-flex items-center gap-1.5 mt-3 text-xs text-muted-foreground hover:text-foreground hover:underline focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded"
                   >
                     <FileText className="h-3.5 w-3.5" />
                     View Credentials
@@ -87,7 +89,7 @@ export function EducationSection({ education }: EducationSectionProps) {
                     onError={() => handleImageError(edu.id)}
                   />
                 ) : (
-                  <GraduationCap className="h-5 w-5 text-gray-500" />
+                  <GraduationCap className="h-5 w-5 text-muted-foreground" />
                 )}
               </div>
             </div>

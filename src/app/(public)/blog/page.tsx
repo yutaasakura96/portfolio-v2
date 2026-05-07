@@ -16,8 +16,8 @@ export default async function BlogPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 py-12">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Blog</h1>
-        <p className="mt-2 text-gray-600">
+        <h1 className="text-3xl font-bold text-foreground">Blog</h1>
+        <p className="mt-2 text-muted-foreground">
           Thoughts on web development, software engineering, and technology.
         </p>
       </div>
@@ -30,7 +30,7 @@ export default async function BlogPage() {
         </div>
       ) : (
         <div className="text-center py-16">
-          <p className="text-gray-500">No blog posts published yet. Check back soon!</p>
+          <p className="text-muted-foreground">No blog posts published yet. Check back soon!</p>
         </div>
       )}
     </div>

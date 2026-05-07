@@ -55,7 +55,7 @@ This project uses **Tailwind v4 with `@tailwindcss/postcss`** — there is no `t
   ```
 - **Variants:** for components with multiple visual states use `class-variance-authority` (CVA), following the pattern in [src/components/ui/button.tsx](src/components/ui/button.tsx).
 - **Theme tokens:** reference CSS variables (`bg-background`, `text-foreground`) — these come from `@theme` in `globals.css`. Don't hardcode `#fff` or `gray-900`.
-- **Dark mode:** `.dark` selectors are defined in `globals.css`, but `ThemeProvider` is NOT wired in the root layout. Treat the public site as light-only until dark mode is explicitly turned on. Don't add `dark:` variants to new public components without coordination.
+- **Dark mode:** wired via `next-themes` (`<ThemeProvider attribute="class">` in [src/app/layout.tsx](src/app/layout.tsx); toggle in [src/components/public/ThemeToggle.tsx](src/components/public/ThemeToggle.tsx) mounted in the `Header`). Prefer theme tokens (`bg-background`, `text-foreground`, `border-border`, `bg-muted`, `bg-accent`, etc.) which adapt to both modes. Use `dark:` variants only when the token system can't express the contrast (e.g., status banners that have no token equivalent).
 - **Animations:** use `tw-animate-css` utilities. Don't write custom keyframes inline.
 
 ## State Management

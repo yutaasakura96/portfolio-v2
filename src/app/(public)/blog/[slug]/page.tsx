@@ -83,7 +83,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       {/* Back Link */}
       <Link
         href="/blog"
-        className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 mb-8 transition-colors"
+        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors"
       >
         <ArrowLeft className="h-4 w-4" />
         All Posts
@@ -97,7 +97,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             {post.tags.map((tag) => (
               <span
                 key={tag}
-                className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-blue-50 text-xs font-medium text-blue-700"
+                className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-blue-50 text-xs font-medium text-blue-700 dark:bg-blue-950 dark:text-blue-300"
               >
                 {tag}
               </span>
@@ -105,10 +105,10 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           </div>
         )}
 
-        <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">{post.title}</h1>
+        <h1 className="text-3xl font-bold text-foreground sm:text-4xl">{post.title}</h1>
 
         {/* Meta */}
-        <div className="mt-4 flex items-center gap-4 text-sm text-gray-500">
+        <div className="mt-4 flex items-center gap-4 text-sm text-muted-foreground">
           {post.publishedAt && (
             <span className="inline-flex items-center gap-1.5">
               <Calendar className="h-4 w-4" />
@@ -126,7 +126,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
       {/* Featured Image */}
       {post.featuredImage && (
-        <div className="relative aspect-video overflow-hidden rounded-xl bg-gray-100 mb-8">
+        <div className="relative aspect-video overflow-hidden rounded-xl bg-muted mb-8">
           <Image
             src={post.featuredImage}
             alt={post.title}
@@ -140,15 +140,15 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
       {/* Content */}
       <div
-        className="prose prose-gray prose-lg max-w-none prose-headings:scroll-mt-20 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-code:before:content-none prose-code:after:content-none prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-normal prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-img:rounded-lg prose-img:shadow-md"
+        className="prose prose-gray prose-lg max-w-none dark:prose-invert prose-headings:scroll-mt-20 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline dark:prose-a:text-blue-400 prose-code:before:content-none prose-code:after:content-none prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-normal prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-img:rounded-lg prose-img:shadow-md"
         dangerouslySetInnerHTML={{ __html: contentHtml }}
       />
 
       {/* Bottom CTA */}
-      <div className="mt-12 pt-8 border-t border-gray-200">
-        <p className="text-gray-600">
+      <div className="mt-12 pt-8 border-t border-border">
+        <p className="text-muted-foreground">
           Enjoyed this post?{" "}
-          <Link href="/contact" className="text-gray-900 font-medium hover:underline">
+          <Link href="/contact" className="text-foreground font-medium hover:underline">
             Get in touch
           </Link>{" "}
           — I&apos;d love to hear your thoughts.

@@ -60,8 +60,8 @@ export default async function AboutPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 py-12">
       <div className="mb-12">
-        <h1 className="text-3xl font-bold text-gray-900">{intro?.heading ?? DEFAULT_HEADING}</h1>
-        <p className="mt-2 text-gray-600">{intro?.subheading ?? DEFAULT_SUBHEADING}</p>
+        <h1 className="text-3xl font-bold text-foreground">{intro?.heading ?? DEFAULT_HEADING}</h1>
+        <p className="mt-2 text-muted-foreground">{intro?.subheading ?? DEFAULT_SUBHEADING}</p>
       </div>
 
       {hasProfileSection && (
@@ -75,7 +75,7 @@ export default async function AboutPage() {
 
       {!hasContent ? (
         <div className="text-center py-12">
-          <p className="text-gray-500">Content coming soon.</p>
+          <p className="text-muted-foreground">Content coming soon.</p>
         </div>
       ) : (
         <>
