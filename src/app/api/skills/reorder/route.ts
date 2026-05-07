@@ -29,6 +29,6 @@ export const PUT = withErrorHandler(async (request: NextRequest) => {
   revalidatePath("/about");
 
   return Response.json({
-    data: { success: true, count: parsed.data.orderedIds.length },
+    data: { count: parsed.data.orderedIds.length },
   });
 });

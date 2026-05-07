@@ -16,7 +16,7 @@ export async function POST() {
   try {
     const tokens = await refreshAccessToken(refreshToken);
 
-    const response = NextResponse.json({ data: { success: true } });
+    const response = new NextResponse(null, { status: 204 });
     const isProduction = process.env.NODE_ENV === "production";
 
     response.cookies.set("access_token", tokens.access_token, {

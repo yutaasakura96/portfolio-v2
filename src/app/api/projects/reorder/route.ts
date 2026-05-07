@@ -33,6 +33,6 @@ export const PUT = withErrorHandler(async (request: NextRequest) => {
   revalidatePath("/");
 
   return Response.json({
-    data: { success: true, count: parsed.data.orderedIds.length },
+    data: { count: parsed.data.orderedIds.length },
   });
 });

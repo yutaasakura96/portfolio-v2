@@ -83,7 +83,7 @@ class ApiClient {
   }
 
   signOut() {
-    return this.request<ApiResponse<{ success: boolean }>>("/auth/signout", {
+    return this.request<void>("/auth/signout", {
       method: "POST",
     });
   }

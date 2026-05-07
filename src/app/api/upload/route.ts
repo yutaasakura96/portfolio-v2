@@ -264,7 +264,5 @@ export const DELETE = withErrorHandler(async (req: NextRequest) => {
 
   await deleteImageVariants(key);
 
-  return NextResponse.json({
-    data: { success: true },
-  });
+  return new NextResponse(null, { status: 204 });
 });

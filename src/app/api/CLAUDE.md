@@ -31,7 +31,7 @@ type ApiErrorResponse = {
 };
 ```
 
-**Do NOT** wrap responses in `{ data: { success: true } }` or `{ data: { success: true, message: "..." } }`. The contact and sign-out routes do this — that's the audited inconsistency, not the target. New routes return `{ data: T }` where `T` is the entity (or `T = null` for empty success).
+**Do NOT** wrap responses in `{ data: { success: true } }` or `{ data: { success: true, message: "..." } }`. Return `{ data: T }` where `T` is the entity, or `204 No Content` (no body) for empty-success cases like sign-out / token refresh / DELETE.
 
 ## Required Skeleton
 
@@ -119,7 +119,7 @@ Use `request.nextUrl.searchParams`. Do not write `new URL(request.url).searchPar
 
 ## Where-Clause Typing
 
-Type Prisma `where` objects with the generated `Prisma.<Model>WhereInput`. Do not use `Record<string, unknown>` (the blog route does — that's the bug, not the convention).
+Type Prisma `where` objects with the generated `Prisma.<Model>WhereInput`. Do not use `Record<string, unknown>`.
 
 ```ts
 import { Prisma } from "@/lib/prismaClient";

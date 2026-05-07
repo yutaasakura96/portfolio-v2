@@ -11,7 +11,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   // 1. Honeypot check — silently succeed to fool bots
   if (body.honeypot && body.honeypot.length > 0) {
     return NextResponse.json(
-      { data: { success: true, message: "Your message has been sent successfully." } },
+      { data: { message: "Your message has been sent successfully." } },
       { status: 200 }
     );
   }
@@ -63,7 +63,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
 
   // 6. Return success
   return NextResponse.json(
-    { data: { success: true, message: "Your message has been sent successfully." } },
+    { data: { message: "Your message has been sent successfully." } },
     { status: 200 }
   );
 });

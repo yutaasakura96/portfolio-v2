@@ -14,7 +14,7 @@ export async function POST() {
     // Non-fatal: proceed with cookie clearing even if revocation fails
   }
 
-  const response = NextResponse.json({ data: { success: true } });
+  const response = new NextResponse(null, { status: 204 });
 
   // Clear all auth cookies
   response.cookies.set("access_token", "", {
