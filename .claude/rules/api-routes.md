@@ -20,6 +20,6 @@ Every handler in this tree must follow these rules. See `src/app/api/CLAUDE.md` 
 - Use the singleton `prisma` from `@/lib/prismaClient`. Never `new PrismaClient()`.
 - Mutations return `201` on create, `200` on update, `204` (no body) on delete.
 - Conditional auth (e.g., `?status=DRAFT` is admin-only): check the param first, then `await requireAuth()` only for the privileged branch.
-- Do NOT extend `src/lib/rate-limit.ts` to new endpoints — it doesn't survive Lambda cold starts. Use Upstash for new rate-limited routes.
+- Use `rateLimit()` from `@/lib/rate-limit` for rate-limited endpoints — it's Upstash-backed (sliding window via `@upstash/ratelimit`). The function is async, so always `await` it. Fails open on Upstash errors. Requires `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` env vars.
 - Never log secrets, tokens, or full request bodies. `console.error(error)` for unhandled paths is the current ceiling — improve with Sentry once added.
 - Keep handlers under ~80 lines. If business logic grows, extract to `src/lib/<domain>/` and call from the route.

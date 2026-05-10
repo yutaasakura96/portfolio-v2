@@ -285,6 +285,7 @@ The app sends as `noreply@asakurayuta.dev` (the only `FromAddress` allowed by th
 | `APP_AWS_ACCESS_KEY_ID` / `APP_AWS_SECRET_ACCESS_KEY` | Access key `AKIA…BCT` on IAM user `portfolio-admin`                             |
 | `SES_FROM_EMAIL`                                      | Must equal `noreply@asakurayuta.dev` (gated by IAM policy)                      |
 | `DATABASE_URL` / `DIRECT_URL`                         | Neon Postgres (not AWS) — `ep-wandering-butterfly-a1v6y74z` in `ap-southeast-1` |
+| `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis (not AWS) — `winning-ocelot-85007.upstash.io` in `ap-southeast-1`, PAYG with $20 cap |
 
 ### Drift between `.env.example` and Amplify Console
 

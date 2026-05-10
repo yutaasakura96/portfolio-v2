@@ -73,8 +73,8 @@ Scoped instructions: [src/CLAUDE.md](src/CLAUDE.md), [src/app/api/CLAUDE.md](src
 - ❌ Hardcoding `gray-*` / `white` / `black` in public components — dark mode is wired (`<ThemeProvider attribute="class">` in the root layout, toggle in the public Header). Prefer theme tokens (`bg-background`, `text-foreground`, `border-border`, etc.) which adapt automatically. Use `dark:` variants only when a token can't express the contrast you need (e.g. status banners that don't have a token equivalent).
 - ❌ Using `import "dotenv/config"` in app code — Next.js loads `.env` automatically. Only `prisma.config.ts` needs it.
 - ❌ Using `AWS_*` env var names — Amplify reserves that namespace. Use `APP_AWS_ACCESS_KEY_ID` / `APP_AWS_SECRET_ACCESS_KEY` / `APP_AWS_REGION`.
-- ❌ Trusting [src/lib/rate-limit.ts](src/lib/rate-limit.ts) in production — it's an in-memory `Map` that does not work in Lambda. New rate-limited endpoints need an external store (Upstash is already in CSP allowlist).
-- ❌ Using `pageSize` for new endpoints — standardize on `page` + `limit`. Old endpoints that use `pageSize` (blog, messages) are pending migration.
+- ❌ Forgetting to `await` `rateLimit()` from [src/lib/rate-limit.ts](src/lib/rate-limit.ts) — it became async with the Upstash swap. Missing `await` leaves `result.success` undefined, which the standard `if (!result.success)` check reads as truthy → spurious 429 on every call. Requires `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` in `.env` locally and wired through [amplify.yml](amplify.yml) for production.
+- ❌ Using `pageSize` for new endpoints — standardize on `page` + `limit`.
 - ❌ Returning `{ data: { success: true } }` — use `{ data: T }` or `{ data: T[], meta }`. No `success` envelope.
 
 ## MCP Servers (planned — Phase 5)

@@ -152,7 +152,7 @@ After any mutation that affects a public page, call `revalidatePath` for every a
 
 ## Rate Limiting
 
-The current [src/lib/rate-limit.ts](src/lib/rate-limit.ts) is in-memory and **does not work in Amplify's Lambda runtime**. Existing usage on contact + upload is best-effort. Do NOT extend it to new endpoints. When adding rate limiting to a new endpoint, use Upstash Redis (already in CSP allowlist) — open a separate task.
+[src/lib/rate-limit.ts](src/lib/rate-limit.ts) is Upstash-backed (sliding window via `@upstash/ratelimit` on `@upstash/redis`). Public API: `rateLimit(key, limit, windowMs)` (async — `await` it) and `getClientIp(request)`. Returns `{ success, remaining, resetTime }`. Limiter instances are cached per `(limit, windowMs)` tuple, so calling from a hot path is fine. Fails open on Upstash errors (logs and allows the request) so a brief Redis outage can't take down public endpoints. Requires `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` (set in `.env` locally and wired through [amplify.yml](amplify.yml) for production). Used today by contact (5 req / 15 min per IP) and upload (20 req / 1 min per IP).
 
 ## Public vs Admin Endpoints
 

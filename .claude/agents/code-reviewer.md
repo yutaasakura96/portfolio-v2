@@ -58,9 +58,9 @@ When scanning, explicitly check for:
 7. `Record<string, unknown>` for Prisma `where` clauses.
 8. Calls to `prisma.*` from page components (should go through `src/lib/data/public-queries.ts`).
 9. New files under `src/types/` (should use `src/lib/data/types.ts`).
-10. New uses of `src/lib/rate-limit.ts` (it doesn't work in Lambda).
+10. Calls to `rateLimit()` from `@/lib/rate-limit` that are missing `await` — it's async (Upstash-backed). A missing `await` makes `result.success` undefined, which the typical `if (!result.success)` check reads as truthy → spurious 429 on every request.
 11. Template-literal class concatenation in JSX (should use `cn()`).
-12. `dark:` Tailwind variants in new public components (dark mode is not wired).
+12. Hardcoded color classes (`gray-*`, `white`, `black`) or unnecessary `dark:` variants in new public components — dark mode is wired via `next-themes`; prefer theme tokens (`bg-background`, `text-foreground`, `border-border`, `bg-muted`, `bg-accent`) which adapt automatically. Flag `dark:` only where a token genuinely can't express the needed contrast (e.g. status banners with no token equivalent).
 13. `NextResponse.json` instead of `Response.json`.
 14. Forms without react-hook-form + zodResolver.
 15. Mutations in API routes that don't `revalidatePath` affected pages.
