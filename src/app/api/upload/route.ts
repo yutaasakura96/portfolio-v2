@@ -35,7 +35,7 @@ const deleteUploadSchema = z.object({
 export const POST = withErrorHandler(async (req: NextRequest) => {
   // Rate limit: 20 requests per minute per IP
   const ip = getClientIp(req);
-  const rateLimitResult = rateLimit(`upload:${ip}`, 20, 60 * 1000);
+  const rateLimitResult = await rateLimit(`upload:${ip}`, 20, 60 * 1000);
   if (!rateLimitResult.success) {
     throw new ApiError(
       "Rate limit exceeded. Try again later.",

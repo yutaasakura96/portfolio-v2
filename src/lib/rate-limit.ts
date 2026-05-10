@@ -1,42 +1,58 @@
-interface RateLimitEntry {
-  count: number;
-  resetTime: number;
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+
+/**
+ * Cache `Ratelimit` instances per (limit, windowMs) tuple. The class is
+ * intended to be constructed once and reused; constructing one per call
+ * defeats its internal caching of the Lua script + Redis client.
+ */
+const limiterCache = new Map<string, Ratelimit>();
+
+function getLimiter(limit: number, windowMs: number): Ratelimit {
+  const cacheKey = `${limit}:${windowMs}`;
+  const cached = limiterCache.get(cacheKey);
+  if (cached) return cached;
+
+  // Read env vars lazily — module-top reads break test/build environments
+  // where these are not set.
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) {
+    throw new Error(
+      "UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN must be set to use rateLimit()"
+    );
+  }
+
+  const windowSeconds = Math.max(1, Math.floor(windowMs / 1000));
+  const limiter = new Ratelimit({
+    redis: new Redis({ url, token }),
+    limiter: Ratelimit.slidingWindow(limit, `${windowSeconds} s`),
+    analytics: false,
+    prefix: "rl",
+  });
+
+  limiterCache.set(cacheKey, limiter);
+  return limiter;
 }
 
-const store = new Map<string, RateLimitEntry>();
-
-// Clean up expired entries every 5 minutes
-setInterval(
-  () => {
-    const now = Date.now();
-    for (const [key, entry] of store.entries()) {
-      if (now > entry.resetTime) {
-        store.delete(key);
-      }
-    }
-  },
-  5 * 60 * 1000
-);
-
-export function rateLimit(
+export async function rateLimit(
   key: string,
   limit: number,
   windowMs: number
-): { success: boolean; remaining: number; resetTime: number } {
-  const now = Date.now();
-  const entry = store.get(key);
-
-  if (!entry || now > entry.resetTime) {
-    store.set(key, { count: 1, resetTime: now + windowMs });
-    return { success: true, remaining: limit - 1, resetTime: now + windowMs };
+): Promise<{ success: boolean; remaining: number; resetTime: number }> {
+  try {
+    const limiter = getLimiter(limit, windowMs);
+    const result = await limiter.limit(key);
+    return {
+      success: result.success,
+      remaining: result.remaining,
+      resetTime: result.reset,
+    };
+  } catch (error) {
+    // fail-open: log and allow on Upstash error
+    console.error("rateLimit: Upstash error, failing open", error);
+    return { success: true, remaining: 0, resetTime: Date.now() + windowMs };
   }
-
-  if (entry.count >= limit) {
-    return { success: false, remaining: 0, resetTime: entry.resetTime };
-  }
-
-  entry.count++;
-  return { success: true, remaining: limit - entry.count, resetTime: entry.resetTime };
 }
 
 /**

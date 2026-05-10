@@ -18,7 +18,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
 
   // 2. Rate limiting — 5 requests per 15 minutes per IP
   const ip = getClientIp(request);
-  const result = rateLimit(`contact:${ip}`, 5, 15 * 60 * 1000);
+  const result = await rateLimit(`contact:${ip}`, 5, 15 * 60 * 1000);
   if (!result.success) {
     throw new ApiError(
       "Too many messages sent. Please try again in a few minutes.",

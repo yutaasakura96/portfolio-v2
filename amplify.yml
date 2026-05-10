@@ -37,6 +37,10 @@ frontend:
           # Email
           SES_FROM_EMAIL=${SES_FROM_EMAIL}
           CONTACT_EMAIL=${CONTACT_EMAIL}
+
+          # Rate limiting (Upstash Redis)
+          UPSTASH_REDIS_REST_URL=${UPSTASH_REDIS_REST_URL}
+          UPSTASH_REDIS_REST_TOKEN=${UPSTASH_REDIS_REST_TOKEN}
           EOF
         - npm ci
         - npx prisma generate
