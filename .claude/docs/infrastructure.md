@@ -273,18 +273,18 @@ The app sends as `noreply@asakurayuta.dev` (the only `FromAddress` allowed by th
 
 ### Mapping: env var → AWS resource
 
-| Var                                                   | AWS resource                                                                    |
-| ----------------------------------------------------- | ------------------------------------------------------------------------------- |
-| `S3_BUCKET_NAME`                                      | S3 bucket `portfolio-v2-images-1771574702`                                      |
-| `CLOUDFRONT_DISTRIBUTION_ID`                          | CloudFront `E6T76ADR3JLQH`                                                      |
-| `CLOUDFRONT_DOMAIN` / `NEXT_PUBLIC_CLOUDFRONT_URL`    | `d11brb6l7qspvw.cloudfront.net`                                                 |
-| `COGNITO_USER_POOL_ID`                                | Cognito pool `ap-southeast-1_SgDbuA78J`                                         |
-| `COGNITO_CLIENT_ID` / `NEXT_PUBLIC_COGNITO_CLIENT_ID` | App client `2iug05u34tocpscs29ajt1n1uo`                                         |
-| `COGNITO_DOMAIN` / `NEXT_PUBLIC_COGNITO_DOMAIN`       | Cognito hosted UI `ap-southeast-1sgdbua78j`                                     |
-| `COGNITO_CLIENT_SECRET`                               | App client secret on `2iug05u34tocpscs29ajt1n1uo`                               |
-| `APP_AWS_ACCESS_KEY_ID` / `APP_AWS_SECRET_ACCESS_KEY` | Access key `AKIA…BCT` on IAM user `portfolio-admin`                             |
-| `SES_FROM_EMAIL`                                      | Must equal `noreply@asakurayuta.dev` (gated by IAM policy)                      |
-| `DATABASE_URL` / `DIRECT_URL`                         | Neon Postgres (not AWS) — `ep-wandering-butterfly-a1v6y74z` in `ap-southeast-1` |
+| Var                                                   | AWS resource                                                                                       |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `S3_BUCKET_NAME`                                      | S3 bucket `portfolio-v2-images-1771574702`                                                         |
+| `CLOUDFRONT_DISTRIBUTION_ID`                          | CloudFront `E6T76ADR3JLQH`                                                                         |
+| `CLOUDFRONT_DOMAIN` / `NEXT_PUBLIC_CLOUDFRONT_URL`    | `d11brb6l7qspvw.cloudfront.net`                                                                    |
+| `COGNITO_USER_POOL_ID`                                | Cognito pool `ap-southeast-1_SgDbuA78J`                                                            |
+| `COGNITO_CLIENT_ID` / `NEXT_PUBLIC_COGNITO_CLIENT_ID` | App client `2iug05u34tocpscs29ajt1n1uo`                                                            |
+| `COGNITO_DOMAIN` / `NEXT_PUBLIC_COGNITO_DOMAIN`       | Cognito hosted UI `ap-southeast-1sgdbua78j`                                                        |
+| `COGNITO_CLIENT_SECRET`                               | App client secret on `2iug05u34tocpscs29ajt1n1uo`                                                  |
+| `APP_AWS_ACCESS_KEY_ID` / `APP_AWS_SECRET_ACCESS_KEY` | Access key `AKIA…BCT` on IAM user `portfolio-admin`                                                |
+| `SES_FROM_EMAIL`                                      | Must equal `noreply@asakurayuta.dev` (gated by IAM policy)                                         |
+| `DATABASE_URL` / `DIRECT_URL`                         | Neon Postgres (not AWS) — `ep-wandering-butterfly-a1v6y74z` in `ap-southeast-1`                    |
 | `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis (not AWS) — `winning-ocelot-85007.upstash.io` in `ap-southeast-1`, PAYG with $20 cap |
 
 ### Drift between `.env.example` and Amplify Console
