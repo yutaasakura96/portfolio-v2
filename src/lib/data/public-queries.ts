@@ -22,10 +22,7 @@ import type {
 // ABOUT PAGE INTRO
 // ═══════════════════════════════════════════════════════════════════════════
 
-/**
- * Fetch the About page intro content (singleton).
- * Returns null if no record exists (page uses hardcoded fallbacks).
- */
+/** Fetch the About page intro content (singleton); `null` if no record (page falls back to hardcoded copy). */
 export async function getAboutPageIntro(): Promise<AboutPage | null> {
   try {
     return await prisma.aboutPage.findUnique({ where: { id: "default" } });
@@ -39,10 +36,7 @@ export async function getAboutPageIntro(): Promise<AboutPage | null> {
 // HERO
 // ═══════════════════════════════════════════════════════════════════════════
 
-/**
- * Fetch the hero section content (singleton).
- * Returns null if no hero data exists.
- */
+/** Fetch the hero section content (singleton); `null` if no hero data exists. */
 export async function getHero(): Promise<Hero | null> {
   try {
     return await prisma.hero.findFirst();
@@ -56,10 +50,7 @@ export async function getHero(): Promise<Hero | null> {
 // PROJECTS
 // ═══════════════════════════════════════════════════════════════════════════
 
-/**
- * Fetch all published projects, ordered by display order.
- * Returns only fields needed for public display (excludes large text fields).
- */
+/** Fetch all published projects ordered by `displayOrder`, narrowed to public-card fields. */
 export async function getPublishedProjects(): Promise<PublicProject[]> {
   try {
     return await prisma.project.findMany({
@@ -86,10 +77,7 @@ export async function getPublishedProjects(): Promise<PublicProject[]> {
   }
 }
 
-/**
- * Fetch featured projects for the homepage.
- * @param limit - Maximum number of projects to return (default: 4)
- */
+/** Fetch featured published projects for the homepage (default 4). */
 export async function getFeaturedProjects(limit = 4): Promise<FeaturedProject[]> {
   try {
     return await prisma.project.findMany({
@@ -113,11 +101,7 @@ export async function getFeaturedProjects(limit = 4): Promise<FeaturedProject[]>
   }
 }
 
-/**
- * Fetch a single published project by slug.
- * Returns the full project object including large text fields.
- * @param slug - The project slug
- */
+/** Fetch a single published project by slug (full row including long-text fields); `null` if not found. */
 export async function getProjectBySlug(slug: string): Promise<Project | null> {
   try {
     return await prisma.project.findFirst({
@@ -129,10 +113,7 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
   }
 }
 
-/**
- * Fetch all published project slugs.
- * Useful for static site generation (generateStaticParams).
- */
+/** Fetch all published project slugs (for `generateStaticParams`). */
 export async function getPublishedProjectSlugs(): Promise<Array<{ slug: string }>> {
   try {
     return await prisma.project.findMany({
@@ -145,11 +126,7 @@ export async function getPublishedProjectSlugs(): Promise<Array<{ slug: string }
   }
 }
 
-/**
- * Get adjacent projects for next/previous navigation.
- * Returns the project before and after the given displayOrder.
- * @param currentOrder - The display order of the current project
- */
+/** Get the prev/next published projects bracketing the given `displayOrder` for detail-page navigation. */
 export async function getAdjacentProjects(currentOrder: number): Promise<AdjacentProjects> {
   try {
     const [prev, next] = await Promise.all([
@@ -171,11 +148,7 @@ export async function getAdjacentProjects(currentOrder: number): Promise<Adjacen
   }
 }
 
-/**
- * Fetch a project with its adjacent projects in one call.
- * Useful for project detail pages with navigation.
- * @param slug - The project slug
- */
+/** Fetch a published project plus its prev/next neighbours in one call (for project detail pages). */
 export async function getProjectWithAdjacent(slug: string): Promise<ProjectWithAdjacent> {
   try {
     const project = await getProjectBySlug(slug);
@@ -195,10 +168,7 @@ export async function getProjectWithAdjacent(slug: string): Promise<ProjectWithA
 // BLOG POSTS
 // ═══════════════════════════════════════════════════════════════════════════
 
-/**
- * Fetch published blog posts, ordered by publish date (newest first).
- * @param limit - Optional limit on number of posts to return
- */
+/** Fetch published blog posts ordered by `publishedAt` desc; pass `limit` to cap the result. */
 export async function getPublishedPosts(limit?: number): Promise<PublicBlogPost[]> {
   try {
     return await prisma.blogPost.findMany({
@@ -222,19 +192,12 @@ export async function getPublishedPosts(limit?: number): Promise<PublicBlogPost[
   }
 }
 
-/**
- * Fetch recent blog posts for homepage or sidebar.
- * @param limit - Maximum number of posts to return (default: 3)
- */
+/** Fetch the N most recent published blog posts (default 3) for homepage/sidebar widgets. */
 export async function getRecentPosts(limit = 3): Promise<PublicBlogPost[]> {
   return getPublishedPosts(limit);
 }
 
-/**
- * Fetch a single published blog post by slug.
- * Returns the full post object including content.
- * @param slug - The blog post slug
- */
+/** Fetch a single published blog post by slug (full row including markdown body); `null` if not found. */
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
   try {
     return await prisma.blogPost.findFirst({
@@ -246,10 +209,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
   }
 }
 
-/**
- * Fetch all published blog post slugs.
- * Useful for static site generation (generateStaticParams).
- */
+/** Fetch all published blog post slugs (for `generateStaticParams`). */
 export async function getPublishedPostSlugs(): Promise<Array<{ slug: string }>> {
   try {
     return await prisma.blogPost.findMany({
@@ -262,10 +222,7 @@ export async function getPublishedPostSlugs(): Promise<Array<{ slug: string }>> 
   }
 }
 
-/**
- * Fetch all unique tags from published blog posts.
- * Useful for tag cloud or filter UI.
- */
+/** Fetch the sorted, de-duplicated set of tags across all published blog posts. */
 export async function getAllTags(): Promise<string[]> {
   try {
     const posts = await prisma.blogPost.findMany({
@@ -281,10 +238,7 @@ export async function getAllTags(): Promise<string[]> {
   }
 }
 
-/**
- * Fetch published blog posts filtered by tag.
- * @param tag - The tag to filter by
- */
+/** Fetch published blog posts that include the given tag, ordered by `publishedAt` desc. */
 export async function getPostsByTag(tag: string): Promise<PublicBlogPost[]> {
   try {
     return await prisma.blogPost.findMany({
@@ -314,9 +268,7 @@ export async function getPostsByTag(tag: string): Promise<PublicBlogPost[]> {
 // ABOUT PAGE CONTENT
 // ═══════════════════════════════════════════════════════════════════════════
 
-/**
- * Fetch all visible skills, ordered by display order.
- */
+/** Fetch all visible skills ordered by `displayOrder`. */
 export async function getSkills(): Promise<Skill[]> {
   try {
     return await prisma.skill.findMany({
@@ -329,9 +281,7 @@ export async function getSkills(): Promise<Skill[]> {
   }
 }
 
-/**
- * Fetch skill category names ordered by their displayOrder.
- */
+/** Fetch skill-category names ordered by their `displayOrder`. */
 export async function getSkillCategories(): Promise<string[]> {
   try {
     const categories = await prisma.skillCategory.findMany({
@@ -344,10 +294,7 @@ export async function getSkillCategories(): Promise<string[]> {
   }
 }
 
-/**
- * Fetch skills grouped by category.
- * Returns an object with category names as keys.
- */
+/** Fetch visible skills grouped into a `{ [category]: Skill[] }` map. */
 export async function getSkillsByCategory(): Promise<SkillsByCategory> {
   try {
     const skills = await getSkills();
@@ -367,9 +314,7 @@ export async function getSkillsByCategory(): Promise<SkillsByCategory> {
   }
 }
 
-/**
- * Fetch all visible work experiences, ordered by display order.
- */
+/** Fetch all visible work experiences ordered by `displayOrder`. */
 export async function getExperiences(): Promise<Experience[]> {
   try {
     return await prisma.experience.findMany({
@@ -382,9 +327,7 @@ export async function getExperiences(): Promise<Experience[]> {
   }
 }
 
-/**
- * Fetch all visible education entries, ordered by display order.
- */
+/** Fetch all visible education entries ordered by `displayOrder`. */
 export async function getEducation(): Promise<Education[]> {
   try {
     return await prisma.education.findMany({
@@ -397,9 +340,7 @@ export async function getEducation(): Promise<Education[]> {
   }
 }
 
-/**
- * Fetch all visible certifications, ordered by display order.
- */
+/** Fetch all visible certifications ordered by `displayOrder`. */
 export async function getCertifications(): Promise<Certification[]> {
   try {
     return await prisma.certification.findMany({
@@ -412,9 +353,7 @@ export async function getCertifications(): Promise<Certification[]> {
   }
 }
 
-/**
- * Fetch all about page content in one query for better performance.
- */
+/** Fetch all About-page content (skills, experiences, education, certifications) in parallel. */
 export async function getAboutPageData(): Promise<AboutPageData> {
   try {
     const [skills, experiences, education, certifications] = await Promise.all([
@@ -440,10 +379,7 @@ export async function getAboutPageData(): Promise<AboutPageData> {
 // SITE SETTINGS
 // ═══════════════════════════════════════════════════════════════════════════
 
-/**
- * Fetch site settings (singleton).
- * Returns null if no settings exist.
- */
+/** Fetch site settings (singleton); `null` if no settings row exists. */
 export async function getSiteSettings(): Promise<SiteSettings | null> {
   try {
     return await prisma.siteSettings.findFirst();

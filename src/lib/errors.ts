@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 
+/** Stable error codes returned to API clients in `{ error: { code } }`. */
 export const ErrorCodes = {
   VALIDATION_ERROR: "VALIDATION_ERROR",
   UNAUTHORIZED: "UNAUTHORIZED",
@@ -11,6 +12,7 @@ export const ErrorCodes = {
   INTERNAL_ERROR: "INTERNAL_ERROR",
 } as const;
 
+/** Known API error — throw inside route handlers to produce a structured `{ error }` response with `statusCode`. */
 export class ApiError extends Error {
   constructor(
     message: string,
@@ -22,9 +24,7 @@ export class ApiError extends Error {
   }
 }
 
-/**
- * Wraps an API route handler with consistent error handling.
- */
+/** Wraps an API route handler so thrown `ApiError`s become structured responses and unknown errors become 500s. */
 export function withErrorHandler<TContext = unknown>(
   handler: (request: NextRequest, context?: TContext) => Promise<Response>
 ) {
