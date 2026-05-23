@@ -61,6 +61,7 @@ Before merging a PR that includes:
 - **CSP change in `customHttp.yml`:** ensure no new third-party script/host is missing from `script-src`/`connect-src`/etc.
 - **AWS SDK calls in new code:** verify the IAM action is in `portfolio-admin`'s inline policy (`portfolio-v2-app-least-privilege`). If not, expand the policy first.
 - **Cookie / auth changes:** test `/admin/login` flow on a preview / `main.d2v4laatjpx2hq.amplifyapp.com` before relying on the apex domain.
+- **Rate-limit changes:** `rateLimit()` from [src/lib/rate-limit.ts](../../../src/lib/rate-limit.ts) became async with the Upstash swap. Grep for `rateLimit(` in the diff — every call site must use `await rateLimit(...)`. Missing `await` leaves `result.success` undefined, which the standard `if (!result.success)` check reads as truthy → spurious 429 on every request. Also confirm `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` are present in Amplify Console (wired through [amplify.yml](../../../amplify.yml)) — without them, rate limiting fails open silently but logs noise.
 
 ## Post-deploy verification
 
@@ -78,7 +79,7 @@ curl -sI https://d11brb6l7qspvw.cloudfront.net/<known-key>.webp | head -5
 aws logs tail /aws/amplify/d2v4laatjpx2hq --since 10m --region ap-southeast-1
 ```
 
-If the `aws` MCP server is installed, prefer it for log queries — it wraps these commands with structured output.
+The `aws-api` MCP server (Phase 5) wraps these CLI calls with structured output — prefer it for log queries and post-deploy checks.
 
 ## Environment variables
 

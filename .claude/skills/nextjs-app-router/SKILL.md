@@ -140,14 +140,14 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export async function proxy(request: NextRequest) {
-  // JWT check for /admin routes
+  // JWT check for /admin routes (uses jose, which needs Node)
   // ...
   return NextResponse.next();
 }
 
+// Next 16 runs proxy.ts in the Node runtime by default — no `runtime` field needed.
 export const config = {
   matcher: ["/admin/:path*"],
-  runtime: "nodejs", // jose JWT verification needs Node, not Edge
 };
 ```
 
@@ -173,6 +173,8 @@ if (project.featured) revalidatePath("/");
 - ❌ Setting `dynamic = "force-dynamic"` on a public page that should be ISR — use `revalidate = N` instead.
 - ❌ Creating `loading.tsx` as a Client Component — it can be a Server Component (faster, no hydration).
 - ❌ Calling Prisma from a public page directly — go through `src/lib/data/public-queries.ts`.
+
+See root [CLAUDE.md §Common Mistakes](../../../CLAUDE.md#common-mistakes-this-project-specifically) for project-wide pitfalls (auth import path, env-var naming, `await rateLimit()`, etc.) that apply across all routes.
 
 ## Reference files
 

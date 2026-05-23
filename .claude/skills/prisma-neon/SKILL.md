@@ -1,6 +1,6 @@
 ---
 name: prisma-neon
-description: Use for any Prisma + Neon Postgres operation in this project — migration creation, branch-based safe testing, query patterns specific to the Neon serverless adapter, seed updates. Wraps the rules in prisma/CLAUDE.md and .claude/rules/prisma-schema.md with concrete commands.
+description: Use for any Prisma + Neon Postgres operation in this project — migration creation, branch-based safe testing, query patterns specific to the Neon serverless adapter, seed updates. References the rules in prisma/CLAUDE.md and .claude/rules/prisma-schema.md.
 ---
 
 # Prisma + Neon Skill
@@ -28,34 +28,9 @@ Locally, your `.env` should have BOTH. If only `DATABASE_URL` is set, `prisma mi
 
 ## Standard migration flow
 
-```bash
-# 1. Edit prisma/schema.prisma
-$EDITOR prisma/schema.prisma
+The canonical workflow lives in [prisma/CLAUDE.md §Migration Workflow](../../../prisma/CLAUDE.md) and the schema rules in [.claude/rules/prisma-schema.md](../../rules/prisma-schema.md). Follow those for the create-format-migrate-generate-typecheck loop and the Zod/public-type updates that come after.
 
-# 2. Format and validate the schema
-npm run prisma:format
-
-# 3. Generate the migration. The CLI will:
-#    - diff schema vs DB
-#    - write a SQL file under prisma/migrations/<timestamp>_<name>/
-#    - apply it to your local DB via DIRECT_URL
-npm run prisma:migrate:dev -- --name add_project_archived_flag
-
-# 4. Regenerate Prisma client (also runs in postinstall)
-npm run prisma:generate
-
-# 5. Update the matching Zod schema
-$EDITOR src/lib/validations/<entity>.ts
-
-# 6. Update public types if exposed
-$EDITOR src/lib/data/types.ts
-
-# 7. Verify nothing broke
-npm run type-check
-npm run lint
-```
-
-When the PR merges to `main`, Amplify's build runs `prisma migrate deploy` against `DIRECT_URL` and rebuilds the app.
+Use the **prisma-local** MCP server (Phase 5) for `migrate-status` checks before running `migrate-dev` — it surfaces drift between `prisma/migrations/` and the database without a shell roundtrip.
 
 ## Safe migration testing on a Neon branch
 
@@ -100,7 +75,7 @@ unset DATABASE_URL DIRECT_URL
 neonctl branches delete test-<short-name>
 ```
 
-If a Neon MCP is installed, prefer it over the CLI for branch operations.
+There's no Neon-specific MCP for branch ops — use `neonctl` directly. The **prisma-local** MCP (Phase 5) handles migration status/apply but not Neon branch creation.
 
 ## Query patterns specific to this project
 
