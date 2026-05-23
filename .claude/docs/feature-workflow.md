@@ -395,6 +395,32 @@ Always export both schema and inferred type. Derive PATCH schemas via `.partial(
 
 ---
 
+## Tracking Progress
+
+Three layers, each owning a different time horizon:
+
+### In-session — `TodoWrite` (automatic)
+
+Claude's `TodoWrite` tool tracks the current task list and surfaces it in the UI. It kicks in automatically for any task ≥ 3 steps. You don't need to do anything — but if you see Claude skipping it on a complex task, prompt `use the todo list`.
+
+### Mid-session / hand-off — plan files
+
+Every time Claude enters plan mode, the harness writes a plan to `~/.claude/plans/<slug>.md` (e.g. `~/.claude/plans/do-phase-7-to-reactive-harp.md`). These are durable across sessions on the same machine — useful when you stop mid-feature and resume tomorrow.
+
+For multi-day features, optionally check in a scratchpad at `.claude/docs/wip-<feature-slug>.md` with:
+
+- **Decisions made** (and why — links to PR/Slack/issue threads)
+- **Open questions** waiting on humans
+- **Next steps** so a future session can resume cold
+
+Delete the WIP doc when the feature merges — its purpose is hand-off, not history.
+
+### Cross-session / durable — the PR
+
+The PR description is the authoritative record. Link the WIP doc, key commits, and any external context (issue, design doc). After merge, the PR is the artifact future developers will find via `git log` and `git blame`.
+
+---
+
 ## Before Creating a PR
 
 ```bash
@@ -440,4 +466,51 @@ Invoke via `Skill` when the task matches the trigger — listed under "Starting 
 
 ### Agents
 
-Spawn via the `Agent` tool only when the task matches the agent's description. The four available agents are listed under "Starting a New Feature." For most edits, work directly — agents are for bounded sub-tasks (a full feature build, a database migration, a review pass), not for every step.
+Spawn via the `Agent` tool only when the task matches an agent's description. The full breakdown — built-in subagents, project agents, orchestration patterns — is in the next section.
+
+---
+
+## Agent & Subagent Orchestration
+
+Each agent spawn starts **cold** — it re-derives context you already have, on a fresh token budget. That makes spawning a real cost, not a free win. Two reasons to do it anyway:
+
+1. **Context isolation** — large search results / agent traces stay out of the main session.
+2. **Specialization** — a project agent already knows the conventions for its domain.
+
+### Built-in subagents (from the `Agent` tool)
+
+| Subagent          | When to use                                                                                                                                                              |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Explore`         | Read-only codebase search — "where is X defined / which files reference Y." Pass a breadth hint (`quick` / `medium` / `very thorough`). Cheap; spawn 2–3 in parallel.    |
+| `Plan`            | Designing a non-trivial change before edits. Returns a step-by-step plan with critical files identified. Use when scope spans multiple areas.                            |
+| `general-purpose` | Multi-step research or execution when no specialized agent fits.                                                                                                         |
+
+### Project agents
+
+| Agent             | When to use                                                                                       |
+| ----------------- | ------------------------------------------------------------------------------------------------- |
+| `feature-builder` | Net-new end-to-end feature (model + migration + API route + admin UI + public surface).           |
+| `db-agent`        | Schema changes, migrations, seed updates. Knows the Neon branching workflow.                      |
+| `code-reviewer`   | Read-only review against `.claude/rules/`. Cites the specific rule each issue violates.           |
+| `refactor-agent`  | Bring existing code in line with conventions. The original refactor is done — this is on standby. |
+
+### Orchestration patterns
+
+**Pattern A — Explore-first.** Before designing anything non-trivial, spawn 1–3 `Explore` agents in parallel (single message, multiple `Agent` calls) to map the affected code. Their summaries come back to the main session; the bulky file reads stay in their context. Then design from the summaries.
+
+**Pattern B — Build → Review.** Spawn `feature-builder` to implement the feature, then spawn `code-reviewer` over the resulting diff before opening the PR. The reviewer didn't see the builder's reasoning, so its feedback is independent.
+
+**Pattern C — DB-first feature.** `db-agent` (schema + migration on a Neon branch) → `feature-builder` (Zod schema + API route + admin UI + public read) → `code-reviewer`. Run sequentially — each depends on the previous step's output.
+
+**Parallel spawning.** When agents are independent (e.g. two `Explore` agents searching different areas), put both `Agent` calls in **one** message. Sequential `Agent` calls in separate messages waste round-trips.
+
+### When NOT to spawn
+
+- Single-file edits where you already know what to change.
+- Tasks already in progress in the main session — spawning re-briefs from zero, throwing away the warm context.
+- Tasks small enough that the cold-context briefing costs more than the work itself.
+- "Just to be safe" reviews of trivial diffs — code-reviewer is for non-trivial changes.
+
+### Verify, don't trust
+
+An agent's summary describes what it *intended* to do. When an agent edits files, check the actual diff before reporting work as done — agents can over-state success.

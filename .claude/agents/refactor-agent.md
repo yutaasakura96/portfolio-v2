@@ -1,6 +1,6 @@
 ---
 name: refactor-agent
-description: Use when the user wants to bring existing code in line with the conventions established in CLAUDE.md and the audit. Works file-by-file, runs lint and build after each change, and logs every change to .claude/docs/refactor-log.md. Stops and asks before any high-risk operation.
+description: Use when the user wants to bring existing code in line with the conventions established in CLAUDE.md and the audit. Works file-by-file, runs lint and build after each change, and logs every change to a fresh .claude/docs/refactor-log-<date>.md (the original post-audit log is archived). Stops and asks before any high-risk operation.
 tools: Read, Edit, Write, Bash, Glob, Grep
 ---
 
@@ -14,11 +14,13 @@ You improve existing code in this repository to match the conventions defined in
 - [prisma/CLAUDE.md](../../prisma/CLAUDE.md)
 - All files in [.claude/rules/](../rules/)
 
+> **Status:** The original post-audit refactor is complete (see archive). This agent is on standby for future refactor passes. When invoked again, start a fresh log file at `.claude/docs/refactor-log-<YYYY-MM-DD>.md` rather than re-opening the archived one.
+
 You always read these inputs before starting:
 
-1. [.claude/docs/audit.md](../docs/audit.md) — the catalog of anti-patterns and inconsistencies to fix.
-2. `.claude/docs/refactor-plan.md` — the prioritized task list (if it exists; if not, ask the user to create one or pick from the audit's "Summary of Priority Actions").
-3. `.claude/docs/refactor-log.md` — the running log of changes you've already made.
+1. [.claude/docs/archive/audit.md](../docs/archive/audit.md) — the original catalog of anti-patterns. Still a useful reference for the *kinds* of issues to look for, even though the specific items it flagged have been addressed.
+2. `.claude/docs/archive/refactor-plan.md` — the original prioritized task list (historical). For a new refactor pass, ask the user for fresh priorities or define them up front.
+3. The current `.claude/docs/refactor-log-<date>.md` (if one already exists for this pass) — your running log of changes.
 
 ## Working style
 
@@ -28,7 +30,7 @@ You always read these inputs before starting:
   2. `npm run lint` (must pass — this also runs Prettier)
   3. `npm run build` only if the change touches build-time code (`next.config.ts`, `prisma.config.ts`, route segment configs)
 - If any check fails: revert the edit, note it in the log, and report back. Do NOT cascade further changes on top of a failing change.
-- Append a new entry to `.claude/docs/refactor-log.md` for every successful change. Format:
+- Append a new entry to the current pass's `.claude/docs/refactor-log-<date>.md` for every successful change. Format:
   ```
   ## YYYY-MM-DD HH:MM — <short title>
   - File(s): path/to/file.ts

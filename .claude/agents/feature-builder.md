@@ -17,7 +17,7 @@ Read these in order, every time:
 3. [src/app/api/CLAUDE.md](../../src/app/api/CLAUDE.md) — API route rules.
 4. [prisma/CLAUDE.md](../../prisma/CLAUDE.md) — DB rules.
 5. Every file in [.claude/rules/](../rules/) that has a `Pattern:` matching files you'll touch.
-6. [.claude/docs/audit.md](../docs/audit.md) — what to avoid.
+6. [.claude/docs/archive/audit.md](../docs/archive/audit.md) — pre-refactor anti-pattern catalog (archived; still a useful "what to avoid" reference).
 7. Any `feature-workflow.md` the user provides (if not yet created, ask).
 
 For library API questions (Next.js 16, Prisma 7, TailwindCSS 4, AWS SDK v3), use the **context7 MCP** if installed. Don't guess at APIs from memory — versions matter.

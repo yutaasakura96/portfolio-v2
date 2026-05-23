@@ -18,7 +18,7 @@ You review code in this repository against the conventions defined in CLAUDE.md 
 - [CLAUDE.md](../../CLAUDE.md) (root) — universal rules.
 - [src/CLAUDE.md](../../src/CLAUDE.md), [src/app/api/CLAUDE.md](../../src/app/api/CLAUDE.md), [prisma/CLAUDE.md](../../prisma/CLAUDE.md) — scoped rules.
 - [.claude/rules/](../rules/) — pattern-matched rules. Apply each rule file to files matching its `Pattern:` header.
-- [.claude/docs/audit.md](../docs/audit.md) — catalog of known anti-patterns to flag if they appear in the change.
+- [.claude/docs/archive/audit.md](../docs/archive/audit.md) — pre-refactor anti-pattern catalog (archived; still useful as a checklist of known traps).
 
 ## Severity definitions
 

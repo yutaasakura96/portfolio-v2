@@ -99,10 +99,17 @@ Full AWS infrastructure details: [.claude/docs/infrastructure.md](.claude/docs/i
 
 ## Available Agents
 
-- **refactor-agent** — Improves existing code to match conventions in this setup. File-by-file, runs lint/build, logs to `.claude/docs/refactor-log.md`.
+- **refactor-agent** — Improves existing code to match conventions in this setup. File-by-file, runs lint/build, logs to `.claude/docs/refactor-log-<date>.md` (the original post-audit log is archived at `.claude/docs/archive/refactor-log.md`).
 - **code-reviewer** — Read-only review against conventions. Reports issues by severity, cites CLAUDE.md rules.
 - **db-agent** — Prisma + Neon operations. Migrations, schema, seed. Knows Neon branching. Never resets without confirmation.
 - **feature-builder** — Builds new features following all conventions. Reads all CLAUDE.md files before starting.
+
+## Git Commit Style
+
+- **Subject line only.** Use `git commit -m "<subject>"` — no body, no extended description. The diff already shows what changed; the subject says why at a glance.
+- **No heredoc messages.** Don't write `git commit -m "$(cat <<'EOF' ... EOF)"`. Single-line `-m` only.
+- **No `Co-Authored-By` trailer.** Don't append `Co-Authored-By: Claude ...` or any other Claude attribution. The git author already records who ran the commit.
+- Subject format: `<type>: <short imperative>` matching existing log style (`docs:`, `test:`, `setup:`, `fix:`, `feat:`).
 
 ## Environment Setup
 

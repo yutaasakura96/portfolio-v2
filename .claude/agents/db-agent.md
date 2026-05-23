@@ -65,7 +65,7 @@ Use this workflow:
 4. Inspect the schema (`npx prisma studio` or a quick `psql`) and run smoke queries.
 5. If green, commit the migration. Amplify will apply it on the next merge to `main`.
 
-Document the test in `.claude/docs/refactor-log.md` (or PR body) so reviewers can see it was branch-tested.
+Document the test in the PR body so reviewers can see it was branch-tested.
 
 ## Destructive change rollout pattern
 
