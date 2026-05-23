@@ -77,13 +77,23 @@ Scoped instructions: [src/CLAUDE.md](src/CLAUDE.md), [src/app/api/CLAUDE.md](src
 - ❌ Using `pageSize` for new endpoints — standardize on `page` + `limit`.
 - ❌ Returning `{ data: { success: true } }` — use `{ data: T }` or `{ data: T[], meta }`. No `success` envelope.
 
-## MCP Servers (planned — Phase 5)
+## MCP Servers
 
-When installed, prefer these over manual lookups:
+Prefer these over manual lookups:
 
 - **context7** (user scope) — Live docs for Next.js 16, Prisma 7, TailwindCSS 4. Use for any library API question.
+- **aws-docs** (user scope) — AWS service documentation (`awslabs.aws-documentation-mcp-server`). Use for Amplify, S3, SES, Cognito behavior questions.
+- **aws-iac** (user scope) — CloudFormation/CDK references (`awslabs.aws-iac-mcp-server`). Low value here since infra is Amplify Console-managed, not IaC.
 - **prisma-local** (local scope) — Migration status, schema management. Use before running `prisma migrate dev`. Local only — there is no remote Prisma MCP for Neon.
-- **aws** (local scope) — Infrastructure, deployments, CloudWatch logs. Use for deploy verification and log investigation.
+- **aws-api** (local scope) — AWS API access for S3, SES, Cognito, Amplify (`awslabs.aws-api-mcp-server`). Use for deploy verification and infra state checks. Reads standard AWS SDK creds (`AWS_PROFILE` / `~/.aws/credentials`).
+
+### MCP Usage Rules
+
+- Always consult **context7** before assuming library API details for Next.js 16, Prisma 7, or TailwindCSS 4 — these are post-cutoff versions.
+- Run **prisma-local** `migrate-status` before any `prisma migrate dev`. NEVER run `migrate-reset` without explicit, typed user confirmation (per `prisma/CLAUDE.md`).
+- Use **aws-api** to verify Amplify deploy state and S3/SES/Cognito config before and after deploys — see `.claude/docs/infrastructure.md` for the canonical resource names.
+- Use **aws-docs** for behavior questions (SES sandbox limits, Cognito token TTLs, Amplify SSR caveats) before web search.
+- Treat **aws-iac** as low-priority here — infra is Amplify Console-managed, not CloudFormation/CDK.
 
 Full AWS infrastructure details: [.claude/docs/infrastructure.md](.claude/docs/infrastructure.md).
 

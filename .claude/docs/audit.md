@@ -464,7 +464,7 @@ No Sentry, no structured logging, no health check endpoint. `console.error` is t
 
 1. **No `.claude/agents/` directory** — No specialized agents configured
 2. **No `.claude/rules/` directory** — No scoped rules for areas like API routes or components
-3. **No `.mcp.json`** �� No MCP servers configured (could benefit from a Prisma or DB tool)
+3. ~~**No `.mcp.json`** — No MCP servers configured (could benefit from a Prisma or DB tool)~~ (RESOLVED 2026-05-23 — Phase 5 complete; see MCP Server Assessment below)
 4. **No area-specific instructions** — The admin, public, and API areas have different patterns that could benefit from scoped CLAUDE.md files
 5. **No testing conventions** — CLAUDE.md should document testing strategy (once one exists)
 6. **No deployment/environment docs** — How to set up locally, what env vars are needed
@@ -472,10 +472,21 @@ No Sentry, no structured logging, no health check endpoint. `console.error` is t
 
 ### MCP Server Assessment
 
-No MCP servers configured (`.mcp.json` does not exist). Potential additions:
+**Status (updated 2026-05-23):** Phase 5 complete. Five MCP servers installed and verified — see [CLAUDE.md §MCP Servers](../../CLAUDE.md#mcp-servers) for usage guidance.
 
-- A Neon/PostgreSQL MCP server for direct DB queries during development
-- A GitHub MCP for PR management
+Installed:
+
+- **context7** (user scope) — Live docs for Next.js 16, Prisma 7, Tailwind 4
+- **aws-docs** (user scope) — `awslabs.aws-documentation-mcp-server`
+- **aws-iac** (user scope) — `awslabs.aws-iac-mcp-server` (low value for this project; infra is Amplify Console-managed)
+- **prisma-local** (local scope) — `npx -y prisma mcp` (migrate-status, migrate-dev, etc.) Verified against Neon `neondb` — 10 migrations applied, schema up to date.
+- **aws-api** (local scope) — `awslabs.aws-api-mcp-server` (S3, SES, Cognito, Amplify API access). Verified by listing project buckets (`portfolio-v2-images-1771574702` returned).
+
+No project-shared `.mcp.json` — single-author project, local-scope installs are appropriate.
+
+Deferred / not installed:
+- Dedicated Neon/Postgres query MCP — Prisma MCP covers migration needs; ad-hoc SQL goes through `npx prisma studio`.
+- GitHub MCP — `gh` CLI via Bash is sufficient for PR management at current scale.
 
 ---
 
