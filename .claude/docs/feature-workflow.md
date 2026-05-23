@@ -300,6 +300,8 @@ Prisma's default migration SQL is drop + add — it loses data. For renames, gen
 - [ ] Update or add the query in [src/lib/data/public-queries.ts](../../src/lib/data/public-queries.ts).
 - [ ] Update seed in [prisma/seed.ts](../../prisma/seed.ts) (use `prisma.upsert` for idempotency).
 - [ ] `npm run type-check` clean.
+- [ ] If the change invalidates a template in this `feature-workflow.md`, update the template to match.
+- [ ] If the change reflects a new pattern future schema work should follow, add it to [prisma/CLAUDE.md](../../prisma/CLAUDE.md) or [.claude/rules/prisma-schema.md](../rules/prisma-schema.md).
 
 ---
 
@@ -421,6 +423,43 @@ The PR description is the authoritative record. Link the WIP doc, key commits, a
 
 ---
 
+## Keeping Docs Honest
+
+Docs drift faster than anyone notices. Treat them as code: check at the start, update at the end.
+
+### At feature start — drift check
+
+Before designing, open the docs you'll rely on for this feature and skim for staleness. If a rule cites a file path that no longer exists, a convention that the code no longer follows, or an MCP that's been replaced — flag it, fix it, then start the feature.
+
+Common drift spots:
+
+- File path examples in CLAUDE.md / rules that referenced renamed/moved files.
+- "Common Mistakes" entries describing bugs that have since been fixed (rule is now obsolete).
+- Skill files (`.claude/skills/*`) that quote a pattern the codebase no longer uses.
+- `feature-workflow.md` templates whose source file has changed shape since the template was lifted.
+
+### At feature end — propagate the change
+
+If your feature changes how things are done, update every doc that references the old way. Use this table to decide what to touch:
+
+| Change                                                          | Update                                                                                       |
+| --------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| New env var                                                     | Root [CLAUDE.md](../../CLAUDE.md) §Environment Setup, [amplify.yml](../../amplify.yml), `.env.example`. |
+| New directory, new file naming convention                       | Root [CLAUDE.md](../../CLAUDE.md) §Architecture, matching [.claude/rules/](../rules/) file.  |
+| New pattern that future features should follow                  | The relevant section of this `feature-workflow.md` (replace the template if the example is now wrong). |
+| New "gotcha" / footgun discovered                                | Root [CLAUDE.md](../../CLAUDE.md) §Common Mistakes.                                          |
+| New MCP server installed / removed                              | Root [CLAUDE.md](../../CLAUDE.md) §MCP Servers, [.claude/docs/infrastructure.md](./infrastructure.md) if AWS-related. |
+| Library version bump that changes API shape                     | Anywhere the old API is shown — search `grep -rn '<old-api>' .claude/ CLAUDE.md src/`.        |
+| New agent or skill added                                        | Root [CLAUDE.md](../../CLAUDE.md) §Available Agents, "Available agents" + "Skills" tables in this doc. |
+
+If you delete a file, `grep -rn '<filename>' --include="*.md"` and fix every reference (or repoint to an archive copy, like the post-refactor cleanup did with `audit.md`).
+
+### Heuristic
+
+If the change you're shipping would have made an earlier session easier *if it had been documented*, document it now. Future-you (or future-Claude) will hit the same wall otherwise.
+
+---
+
 ## Before Creating a PR
 
 ```bash
@@ -441,6 +480,8 @@ Then:
    - [ ] No `import "dotenv/config"` in app code (only `prisma.config.ts` needs it).
    - [ ] No new files under `src/types/` (that directory is being phased out — use `src/lib/data/types.ts`).
    - [ ] No new Zustand stores (the dep is listed but unused — keep it that way).
+   - [ ] Touched docs match the code change (CLAUDE.md, `.claude/rules/`, `.claude/skills/`, `feature-workflow.md` examples). See §Keeping Docs Honest for the propagation table.
+   - [ ] No new convention introduced without a corresponding CLAUDE.md or rule-file update.
 
 ---
 
