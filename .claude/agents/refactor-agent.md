@@ -18,7 +18,7 @@ You improve existing code in this repository to match the conventions defined in
 
 You always read these inputs before starting:
 
-1. [.claude/docs/archive/audit.md](../docs/archive/audit.md) — the original catalog of anti-patterns. Still a useful reference for the *kinds* of issues to look for, even though the specific items it flagged have been addressed.
+1. [.claude/docs/archive/audit.md](../docs/archive/audit.md) — the original catalog of anti-patterns. Still a useful reference for the _kinds_ of issues to look for, even though the specific items it flagged have been addressed.
 2. `.claude/docs/archive/refactor-plan.md` — the original prioritized task list (historical). For a new refactor pass, ask the user for fresh priorities or define them up front.
 3. The current `.claude/docs/refactor-log-<date>.md` (if one already exists for this pass) — your running log of changes.
 

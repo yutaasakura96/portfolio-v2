@@ -40,12 +40,12 @@ Trivial additive schema changes (new optional column on a small table) can skip 
 
 Spawn an agent when the task matches its description — not for every step.
 
-| Agent              | When to use                                                                              |
-| ------------------ | ---------------------------------------------------------------------------------------- |
-| `feature-builder`  | Net-new end-to-end feature (model + migration + API route + admin UI + public surface).  |
-| `db-agent`         | Schema changes, migrations, seed updates. Knows the Neon branching workflow.             |
-| `code-reviewer`    | Read-only review before opening the PR. Cites the specific rule each issue violates.     |
-| `refactor-agent`   | Bringing existing code in line with conventions. File-by-file. Logs to `refactor-log.md`. |
+| Agent             | When to use                                                                               |
+| ----------------- | ----------------------------------------------------------------------------------------- |
+| `feature-builder` | Net-new end-to-end feature (model + migration + API route + admin UI + public surface).   |
+| `db-agent`        | Schema changes, migrations, seed updates. Knows the Neon branching workflow.              |
+| `code-reviewer`   | Read-only review before opening the PR. Cites the specific rule each issue violates.      |
+| `refactor-agent`  | Bringing existing code in line with conventions. File-by-file. Logs to `refactor-log.md`. |
 
 ### Skills
 
@@ -121,9 +121,7 @@ export default async function AboutPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 py-12">
       <div className="mb-12">
-        <h1 className="text-3xl font-bold text-foreground">
-          {intro?.heading ?? DEFAULT_HEADING}
-        </h1>
+        <h1 className="text-3xl font-bold text-foreground">{intro?.heading ?? DEFAULT_HEADING}</h1>
         <p className="mt-2 text-muted-foreground">{intro?.subheading}</p>
       </div>
       {/* ... */}
@@ -134,7 +132,7 @@ export default async function AboutPage() {
 
 ### Loading + error states
 
-`loading.tsx` should mirror the page layout with `bg-muted animate-pulse` placeholders — see [src/app/(public)/about/loading.tsx](../../src/app/(public)/about/loading.tsx) for the reference pattern. Skeletons that don't match the layout cause visible reflow on hydration.
+`loading.tsx` should mirror the page layout with `bg-muted animate-pulse` placeholders — see [src/app/(public)/about/loading.tsx](<../../src/app/(public)/about/loading.tsx>) for the reference pattern. Skeletons that don't match the layout cause visible reflow on hydration.
 
 `error.tsx` is a Client Component (`"use client"`) and accepts `{ error, reset }`. Keep it minimal — log to console and offer a reset button.
 
@@ -184,7 +182,12 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   if (status !== "all") where.status = status as ProjectStatus;
 
   const [projects, total] = await Promise.all([
-    prisma.project.findMany({ where, orderBy: { displayOrder: "asc" }, skip: (page - 1) * limit, take: limit }),
+    prisma.project.findMany({
+      where,
+      orderBy: { displayOrder: "asc" },
+      skip: (page - 1) * limit,
+      take: limit,
+    }),
     prisma.project.count({ where }),
   ]);
 
@@ -224,16 +227,16 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
 
 ### Status codes
 
-| Code | When                                                  |
-| ---- | ----------------------------------------------------- |
-| 200  | GET / PUT / PATCH success                             |
-| 201  | POST that created a resource                          |
+| Code | When                                                        |
+| ---- | ----------------------------------------------------------- |
+| 200  | GET / PUT / PATCH success                                   |
+| 201  | POST that created a resource                                |
 | 204  | DELETE with no body — `new Response(null, { status: 204 })` |
-| 400  | Validation — `ErrorCodes.VALIDATION_ERROR`            |
-| 401  | Auth missing/invalid — `ErrorCodes.UNAUTHORIZED`      |
-| 404  | Resource not found — `ErrorCodes.NOT_FOUND`           |
-| 409  | Slug / unique conflict — `ErrorCodes.CONFLICT`        |
-| 429  | Rate limit — `ErrorCodes.RATE_LIMIT_EXCEEDED`         |
+| 400  | Validation — `ErrorCodes.VALIDATION_ERROR`                  |
+| 401  | Auth missing/invalid — `ErrorCodes.UNAUTHORIZED`            |
+| 404  | Resource not found — `ErrorCodes.NOT_FOUND`                 |
+| 409  | Slug / unique conflict — `ErrorCodes.CONFLICT`              |
+| 429  | Rate limit — `ErrorCodes.RATE_LIMIT_EXCEEDED`               |
 
 ### Cache invalidation
 
@@ -397,6 +400,45 @@ Always export both schema and inferred type. Derive PATCH schemas via `.partial(
 
 ---
 
+## Testing
+
+This project uses **Vitest** for unit + integration tests. Full rules in [.claude/rules/tests.md](../rules/tests.md). The workflow guidance:
+
+### When to add a test
+
+- **Always** — new code in [src/lib/validations/](../../src/lib/validations/), [src/lib/errors.ts](../../src/lib/errors.ts), [src/app/api/auth.ts](../../src/app/api/auth.ts), or any new helper with branching logic.
+- **At minimum a happy-path + auth-check test** — every new API route. Place at `src/app/api/<route>/route.test.ts`. Invoke the exported handler with a constructed `NextRequest` — don't spin up a server.
+- **Skip** — pure pass-through Prisma wrappers (Prisma already validates), shadcn primitives (third-party), type-only assertions (`tsc` covers them).
+
+### When to update a test
+
+If your change alters observable behavior, find the existing test and update it in the same commit:
+
+```bash
+grep -rn '<changed-symbol>' --include="*.test.ts" --include="*.test.tsx"
+```
+
+A passing test suite that no longer reflects reality is worse than no tests — it manufactures false confidence.
+
+### Running
+
+```bash
+npm test                       # Watch mode (Vitest default)
+npm test -- --run              # Single run
+npm test -- --run <path>       # Single file
+npm run test:ci                # vitest run --coverage
+```
+
+Run the affected tests locally before opening the PR. CI runs the full suite via `npm run test:ci`.
+
+### Test data
+
+Builders live in `src/test/factories/` (create the directory when the first builder is needed). Don't inline large fixtures.
+
+Do not mock the Prisma client per-test — use a real Postgres test database (Neon branch is ideal — see [prisma/CLAUDE.md](../../prisma/CLAUDE.md)). Mocked DBs hide migration drift.
+
+---
+
 ## Tracking Progress
 
 Three layers, each owning a different time horizon:
@@ -442,21 +484,27 @@ Common drift spots:
 
 If your feature changes how things are done, update every doc that references the old way. Use this table to decide what to touch:
 
-| Change                                                          | Update                                                                                       |
-| --------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| New env var                                                     | Root [CLAUDE.md](../../CLAUDE.md) §Environment Setup, [amplify.yml](../../amplify.yml), `.env.example`. |
-| New directory, new file naming convention                       | Root [CLAUDE.md](../../CLAUDE.md) §Architecture, matching [.claude/rules/](../rules/) file.  |
-| New pattern that future features should follow                  | The relevant section of this `feature-workflow.md` (replace the template if the example is now wrong). |
-| New "gotcha" / footgun discovered                                | Root [CLAUDE.md](../../CLAUDE.md) §Common Mistakes.                                          |
-| New MCP server installed / removed                              | Root [CLAUDE.md](../../CLAUDE.md) §MCP Servers, [.claude/docs/infrastructure.md](./infrastructure.md) if AWS-related. |
-| Library version bump that changes API shape                     | Anywhere the old API is shown — search `grep -rn '<old-api>' .claude/ CLAUDE.md src/`.        |
-| New agent or skill added                                        | Root [CLAUDE.md](../../CLAUDE.md) §Available Agents, "Available agents" + "Skills" tables in this doc. |
+| Change                                         | Update                                                                                                                |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| New env var                                    | Root [CLAUDE.md](../../CLAUDE.md) §Environment Setup, [amplify.yml](../../amplify.yml), `.env.example`.               |
+| New directory, new file naming convention      | Root [CLAUDE.md](../../CLAUDE.md) §Architecture, matching [.claude/rules/](../rules/) file.                           |
+| New pattern that future features should follow | The relevant section of this `feature-workflow.md` (replace the template if the example is now wrong).                |
+| New "gotcha" / footgun discovered              | Root [CLAUDE.md](../../CLAUDE.md) §Common Mistakes.                                                                   |
+| New MCP server installed / removed             | Root [CLAUDE.md](../../CLAUDE.md) §MCP Servers, [.claude/docs/infrastructure.md](./infrastructure.md) if AWS-related. |
+| Library version bump that changes API shape    | Anywhere the old API is shown — search `grep -rn '<old-api>' .claude/ CLAUDE.md src/`.                                |
+| New agent or skill added                       | Root [CLAUDE.md](../../CLAUDE.md) §Available Agents, "Available agents" + "Skills" tables in this doc.                |
 
 If you delete a file, `grep -rn '<filename>' --include="*.md"` and fix every reference (or repoint to an archive copy, like the post-refactor cleanup did with `audit.md`).
 
+### What NOT to update
+
+`.claude/docs/archive/` is frozen history. Don't touch it — not for drift fixes, not for path repointing, not for stylistic edits. Archived docs intentionally capture the state of the project at the time of archiving; "fixing" them erases that signal. If an active doc still links to an archived file (e.g. the `code-reviewer` agent references `archive/audit.md` as an anti-pattern catalog), that's by design — the archive is a historical reference, not a live source of truth.
+
+If something in an archived doc is materially wrong AND still being used as guidance, the right move is to lift the still-useful content into a current doc, then leave the archive untouched.
+
 ### Heuristic
 
-If the change you're shipping would have made an earlier session easier *if it had been documented*, document it now. Future-you (or future-Claude) will hit the same wall otherwise.
+If the change you're shipping would have made an earlier session easier _if it had been documented_, document it now. Future-you (or future-Claude) will hit the same wall otherwise.
 
 ---
 
@@ -482,6 +530,9 @@ Then:
    - [ ] No new Zustand stores (the dep is listed but unused — keep it that way).
    - [ ] Touched docs match the code change (CLAUDE.md, `.claude/rules/`, `.claude/skills/`, `feature-workflow.md` examples). See §Keeping Docs Honest for the propagation table.
    - [ ] No new convention introduced without a corresponding CLAUDE.md or rule-file update.
+   - [ ] No edits to anything under `.claude/docs/archive/` (frozen by policy — see §Keeping Docs Honest).
+   - [ ] Tests added for new logic in `src/lib/` or `src/app/api/` (see §Testing for what to skip).
+   - [ ] Tests updated for any behavior change (`grep -rn '<changed-symbol>' --include="*.test.ts"` and fix matches).
 
 ---
 
@@ -491,13 +542,13 @@ Then:
 
 Use these **before** assuming an API detail, especially for post-cutoff library versions.
 
-| Server          | Scope    | When to use                                                                                          |
-| --------------- | -------- | ---------------------------------------------------------------------------------------------------- |
-| `context7`      | user     | Live docs for Next 16, Prisma 7, Tailwind 4. Always check before assuming syntax in these libraries. |
-| `aws-docs`      | user     | AWS service behavior (Amplify SSR caveats, SES sandbox limits, Cognito token TTLs).                  |
-| `aws-iac`       | user     | Low priority here — infra is Amplify Console-managed, not CloudFormation/CDK.                        |
-| `prisma-local`  | local    | `migrate-status` before any `migrate-dev`. Never `migrate-reset` without typed confirmation.         |
-| `aws-api`       | local    | Deploy state + S3/SES/Cognito config checks. Uses standard AWS SDK creds.                            |
+| Server         | Scope | When to use                                                                                          |
+| -------------- | ----- | ---------------------------------------------------------------------------------------------------- |
+| `context7`     | user  | Live docs for Next 16, Prisma 7, Tailwind 4. Always check before assuming syntax in these libraries. |
+| `aws-docs`     | user  | AWS service behavior (Amplify SSR caveats, SES sandbox limits, Cognito token TTLs).                  |
+| `aws-iac`      | user  | Low priority here — infra is Amplify Console-managed, not CloudFormation/CDK.                        |
+| `prisma-local` | local | `migrate-status` before any `migrate-dev`. Never `migrate-reset` without typed confirmation.         |
+| `aws-api`      | local | Deploy state + S3/SES/Cognito config checks. Uses standard AWS SDK creds.                            |
 
 See [.claude/docs/infrastructure.md](./infrastructure.md) for canonical AWS resource names referenced by `aws-api` calls.
 
@@ -520,11 +571,11 @@ Each agent spawn starts **cold** — it re-derives context you already have, on 
 
 ### Built-in subagents (from the `Agent` tool)
 
-| Subagent          | When to use                                                                                                                                                              |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `Explore`         | Read-only codebase search — "where is X defined / which files reference Y." Pass a breadth hint (`quick` / `medium` / `very thorough`). Cheap; spawn 2–3 in parallel.    |
-| `Plan`            | Designing a non-trivial change before edits. Returns a step-by-step plan with critical files identified. Use when scope spans multiple areas.                            |
-| `general-purpose` | Multi-step research or execution when no specialized agent fits.                                                                                                         |
+| Subagent          | When to use                                                                                                                                                           |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Explore`         | Read-only codebase search — "where is X defined / which files reference Y." Pass a breadth hint (`quick` / `medium` / `very thorough`). Cheap; spawn 2–3 in parallel. |
+| `Plan`            | Designing a non-trivial change before edits. Returns a step-by-step plan with critical files identified. Use when scope spans multiple areas.                         |
+| `general-purpose` | Multi-step research or execution when no specialized agent fits.                                                                                                      |
 
 ### Project agents
 
@@ -554,4 +605,4 @@ Each agent spawn starts **cold** — it re-derives context you already have, on 
 
 ### Verify, don't trust
 
-An agent's summary describes what it *intended* to do. When an agent edits files, check the actual diff before reporting work as done — agents can over-state success.
+An agent's summary describes what it _intended_ to do. When an agent edits files, check the actual diff before reporting work as done — agents can over-state success.
