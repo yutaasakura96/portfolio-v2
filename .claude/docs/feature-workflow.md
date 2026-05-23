@@ -1,0 +1,443 @@
+# Feature Workflow
+
+The standard process for building new features in this repo. Paste [session-starter-template.md](./session-starter-template.md) at the start of every feature session — that prompt will point Claude here.
+
+This doc is grounded in the **current** (post-refactor) codebase. Examples are lifted directly from working files; if you change a pattern in the code, update the example here too.
+
+---
+
+## Starting a New Feature
+
+### Branch
+
+```bash
+git checkout main && git pull
+git checkout -b feature/<short-kebab-name>
+```
+
+Use `feature/`, `fix/`, `chore/`, or `refactor/` prefixes. Keep the slug short and descriptive (`feature/blog-comments`, not `feature/add-the-new-blog-comments-system`).
+
+### Neon database branch (only if the feature touches `prisma/schema.prisma`)
+
+For any schema change that touches a table > 1k rows or drops/renames columns, create a Neon branch first and test the migration there. The [`prisma-neon`](../skills/prisma-neon/) skill walks through this. The short version:
+
+1. Create a branch in the Neon console (or via `prisma-local` MCP).
+2. Point `.env.test` at the branch URL.
+3. `npm run prisma:migrate:deploy` against the branch.
+4. Verify, then merge the migration to `main` and let Amplify deploy.
+
+Trivial additive schema changes (new optional column on a small table) can skip this and go straight to `prisma:migrate:dev`.
+
+### Docs to read first (in order)
+
+1. [CLAUDE.md](../../CLAUDE.md) — root. Critical rules + common mistakes.
+2. [src/CLAUDE.md](../../src/CLAUDE.md) — frontend conventions (component naming, Server/Client decision, state management).
+3. [src/app/api/CLAUDE.md](../../src/app/api/CLAUDE.md) — API route skeleton + response shapes.
+4. [prisma/CLAUDE.md](../../prisma/CLAUDE.md) — only if the feature touches the database.
+5. The matching rule in [.claude/rules/](../rules/) for any file pattern you'll be editing.
+
+### Available agents
+
+Spawn an agent when the task matches its description — not for every step.
+
+| Agent              | When to use                                                                              |
+| ------------------ | ---------------------------------------------------------------------------------------- |
+| `feature-builder`  | Net-new end-to-end feature (model + migration + API route + admin UI + public surface).  |
+| `db-agent`         | Schema changes, migrations, seed updates. Knows the Neon branching workflow.             |
+| `code-reviewer`    | Read-only review before opening the PR. Cites the specific rule each issue violates.     |
+| `refactor-agent`   | Bringing existing code in line with conventions. File-by-file. Logs to `refactor-log.md`. |
+
+### Skills
+
+Invoke when the task matches the skill's trigger:
+
+- [`nextjs-app-router`](../skills/nextjs-app-router/) — new route segment, layout, loading state, error boundary, `proxy.ts`.
+- [`tailwind-v4`](../skills/tailwind-v4/) — adding/changing Tailwind classes or theme tokens (no JS config file in v4).
+- [`prisma-neon`](../skills/prisma-neon/) — any Prisma + Neon operation, especially safe migration testing.
+- [`aws-deploy`](../skills/aws-deploy/) — Amplify deploys, env var changes, S3/CloudFront/SES/Cognito operations.
+
+---
+
+## Adding a New Page (App Router)
+
+### Location
+
+```
+src/app/(public)/<segment>/
+├── page.tsx        # Server Component with ISR
+├── loading.tsx     # Skeleton matching the page layout
+└── error.tsx       # Recoverable error boundary (optional but recommended)
+```
+
+Admin pages live under `src/app/(admin)/admin/<segment>/` and default to Client Components. Public pages default to Server Components.
+
+### Server vs Client decision
+
+| Area                           | Default                   | Add `"use client"` when                                                  |
+| ------------------------------ | ------------------------- | ------------------------------------------------------------------------ |
+| `src/app/(public)/**/page.tsx` | **Server** with ISR       | Almost never. Push interactivity into a child client component.          |
+| `src/app/(admin)/**/page.tsx`  | **Client**                | Default for admin. The dashboard is currently the only server exception. |
+| `src/components/public/**`     | Server unless interactive | Lightboxes, carousels, forms.                                            |
+| `src/components/admin/**`      | **Client**                | Always — admin UI is form-heavy.                                         |
+
+### Data fetching (public)
+
+Always go through [src/lib/data/public-queries.ts](../../src/lib/data/public-queries.ts). Never call Prisma from a page component.
+
+```ts
+// src/lib/data/public-queries.ts
+export async function getAboutPageIntro(): Promise<AboutPage | null> {
+  try {
+    return await prisma.aboutPage.findUnique({ where: { id: "default" } });
+  } catch (error) {
+    console.error("Failed to fetch about page intro:", error);
+    return null;
+  }
+}
+```
+
+Public types come from [src/lib/data/types.ts](../../src/lib/data/types.ts) — do NOT add new files under `src/types/`.
+
+### Page template (real, from `src/app/(public)/about/page.tsx`)
+
+```tsx
+import { Metadata } from "next";
+import { getAboutPageIntro, getHero } from "@/lib/data/public-queries";
+
+export const metadata: Metadata = {
+  title: "About",
+  description: "Learn about ...",
+};
+
+// ISR — rebuild this page at most once per hour
+export const revalidate = 3600;
+
+const DEFAULT_HEADING = "About Me";
+
+export default async function AboutPage() {
+  // Fetch in parallel — never serialize unrelated queries
+  const [intro, hero] = await Promise.all([getAboutPageIntro(), getHero()]);
+
+  return (
+    <div className="mx-auto max-w-5xl px-4 sm:px-6 py-12">
+      <div className="mb-12">
+        <h1 className="text-3xl font-bold text-foreground">
+          {intro?.heading ?? DEFAULT_HEADING}
+        </h1>
+        <p className="mt-2 text-muted-foreground">{intro?.subheading}</p>
+      </div>
+      {/* ... */}
+    </div>
+  );
+}
+```
+
+### Loading + error states
+
+`loading.tsx` should mirror the page layout with `bg-muted animate-pulse` placeholders — see [src/app/(public)/about/loading.tsx](../../src/app/(public)/about/loading.tsx) for the reference pattern. Skeletons that don't match the layout cause visible reflow on hydration.
+
+`error.tsx` is a Client Component (`"use client"`) and accepts `{ error, reset }`. Keep it minimal — log to console and offer a reset button.
+
+---
+
+## Adding a New API Route
+
+### Location
+
+```
+src/app/api/<resource>/route.ts          # Collection endpoint (GET, POST)
+src/app/api/<resource>/[id]/route.ts     # Single resource (GET, PATCH, DELETE)
+```
+
+### Standard response shapes (only three)
+
+```ts
+{ data: T }                              // Single resource
+{ data: T[], meta: { total, page, limit, totalPages } }  // Collection
+{ error: { message, code, details? } }   // Error (set by withErrorHandler)
+```
+
+Never wrap in `{ data: { success: true } }`. Use `204 No Content` for empty-success cases (DELETE, sign-out).
+
+### Skeleton (real, from `src/app/api/projects/route.ts`)
+
+```ts
+import { requireAuth } from "@/app/api/auth";
+import { ApiError, ErrorCodes, withErrorHandler } from "@/lib/errors";
+import { Prisma, ProjectStatus, prisma } from "@/lib/prismaClient";
+import { projectCreateSchema } from "@/lib/validations/project";
+import { revalidatePath } from "next/cache";
+import { NextRequest } from "next/server";
+
+export const GET = withErrorHandler(async (request: NextRequest) => {
+  const searchParams = request.nextUrl.searchParams;
+  const status = searchParams.get("status") ?? "PUBLISHED";
+  const page = parseInt(searchParams.get("page") ?? "1");
+  const limit = parseInt(searchParams.get("limit") ?? "20");
+
+  // Conditional auth — check the param first, then require auth only for the privileged branch
+  if (status === "all" || status === "DRAFT") {
+    await requireAuth();
+  }
+
+  const where: Prisma.ProjectWhereInput = {};
+  if (status !== "all") where.status = status as ProjectStatus;
+
+  const [projects, total] = await Promise.all([
+    prisma.project.findMany({ where, orderBy: { displayOrder: "asc" }, skip: (page - 1) * limit, take: limit }),
+    prisma.project.count({ where }),
+  ]);
+
+  return Response.json({
+    data: projects,
+    meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+  });
+});
+
+export const POST = withErrorHandler(async (request: NextRequest) => {
+  await requireAuth();
+
+  const body = await request.json();
+  const parsed = projectCreateSchema.safeParse(body);
+  if (!parsed.success) {
+    throw new ApiError(
+      "Validation error",
+      400,
+      ErrorCodes.VALIDATION_ERROR,
+      parsed.error.flatten()
+    );
+  }
+
+  const existing = await prisma.project.findUnique({ where: { slug: parsed.data.slug } });
+  if (existing) {
+    throw new ApiError("A project with this slug already exists", 409, ErrorCodes.CONFLICT);
+  }
+
+  const project = await prisma.project.create({ data: parsed.data });
+
+  revalidatePath("/projects");
+  if (project.featured) revalidatePath("/");
+
+  return Response.json({ data: project }, { status: 201 });
+});
+```
+
+### Status codes
+
+| Code | When                                                  |
+| ---- | ----------------------------------------------------- |
+| 200  | GET / PUT / PATCH success                             |
+| 201  | POST that created a resource                          |
+| 204  | DELETE with no body — `new Response(null, { status: 204 })` |
+| 400  | Validation — `ErrorCodes.VALIDATION_ERROR`            |
+| 401  | Auth missing/invalid — `ErrorCodes.UNAUTHORIZED`      |
+| 404  | Resource not found — `ErrorCodes.NOT_FOUND`           |
+| 409  | Slug / unique conflict — `ErrorCodes.CONFLICT`        |
+| 429  | Rate limit — `ErrorCodes.RATE_LIMIT_EXCEEDED`         |
+
+### Cache invalidation
+
+After any mutation affecting a public page, call `revalidatePath` for every affected route. Common pairs:
+
+- Project changes → `/projects` (and `/` if `featured`).
+- Project by slug → also `/projects/${slug}`.
+- Blog post → `/blog` and `/blog/${slug}`.
+- Hero / About / Settings → `/`.
+
+### Rate limiting
+
+`await rateLimit(key, limit, windowMs)` from [src/lib/rate-limit.ts](../../src/lib/rate-limit.ts) — it's async (Upstash-backed). Missing `await` silently returns `undefined.success` → spurious 429s. Used today by `/api/contact` (5 / 15min) and `/api/upload` (20 / 1min).
+
+### What NOT to do
+
+- ❌ `try/catch` inside the handler — let `withErrorHandler` catch.
+- ❌ `NextResponse.json` — use the global `Response.json`.
+- ❌ `Record<string, unknown>` for where clauses — use `Prisma.<Model>WhereInput`.
+- ❌ `new URL(request.url).searchParams` — use `request.nextUrl.searchParams`.
+- ❌ `pageSize` — use `page` + `limit`.
+- ❌ `new PrismaClient()` — import `prisma` from `@/lib/prismaClient`.
+- ❌ `requireAuth` from `@/lib/auth` — that path doesn't exist. Use `@/app/api/auth`.
+
+---
+
+## Adding a New Database Model
+
+### Schema rules (see [.claude/rules/prisma-schema.md](../rules/prisma-schema.md))
+
+- Model name: `PascalCase`, singular (`Comment`, not `Comments`).
+- ID: `String @id @default(cuid())`. No UUIDs, no auto-increment ints.
+- Timestamps: `createdAt DateTime @default(now())` + `updatedAt DateTime @updatedAt`. Skip both only for true singletons.
+- Slugs: `slug String @unique` + `@@index([slug])` for any model with a public detail page.
+- Display ordering: `displayOrder Int @default(0)` + `@@index([status, displayOrder])`.
+- Long text: `@db.Text`. Bounded text: `@db.VarChar(N)` with a realistic limit.
+- Tag arrays: Postgres `String[]` — don't introduce a join table for simple tag lists.
+- New FK: explicit `<rel>Id String` column + `@relation(..., onDelete: <Cascade|Restrict|SetNull>)` + `@@index([<rel>Id])`. Always specify `onDelete`.
+- Many-to-many: explicit join table (a model with both FKs). Don't use Prisma's implicit M:N.
+- Section divider comment (`// ═══ MODEL NAME ═══`) between top-level models.
+
+### Migration workflow
+
+```bash
+# 1. Edit prisma/schema.prisma
+npm run prisma:format            # Validates + formats
+npm run prisma:migrate:dev -- --name descriptive_name
+npm run prisma:generate
+npm run type-check
+```
+
+Before running `migrate:dev`, ask the `prisma-local` MCP for `migrate-status` first — surfaces drift between local schema, migration history, and the database.
+
+**NEVER** run `prisma migrate reset` without explicit, typed user confirmation. It drops all data.
+
+### Renames and drops
+
+Prisma's default migration SQL is drop + add — it loses data. For renames, generate the migration then hand-edit the SQL to use `ALTER TABLE ... RENAME COLUMN`. For drops, do a two-phase migration: (1) deploy code that no longer reads the column, (2) follow-up migration that drops it.
+
+### After the schema change — fan-out checklist
+
+- [ ] Update Zod schema in [src/lib/validations/<entity>.ts](../../src/lib/validations/).
+- [ ] Update public type in [src/lib/data/types.ts](../../src/lib/data/types.ts) (if the field is publicly exposed).
+- [ ] Update or add the query in [src/lib/data/public-queries.ts](../../src/lib/data/public-queries.ts).
+- [ ] Update seed in [prisma/seed.ts](../../prisma/seed.ts) (use `prisma.upsert` for idempotency).
+- [ ] `npm run type-check` clean.
+
+---
+
+## Adding New UI Components
+
+### Location + naming
+
+```
+src/components/public/<PascalCase>.tsx     # Public-site components
+src/components/admin/<PascalCase>.tsx      # Admin-only components
+src/components/ui/<lowercase>.tsx          # shadcn primitives — do not hand-edit
+```
+
+shadcn primitives are added via `npx shadcn@latest add <component>` — never edit them by hand, or the registry drifts.
+
+### Patterns
+
+- Class composition: always `cn()` from [src/lib/utils.ts](../../src/lib/utils.ts). Never template-literal concatenation.
+- Variants: CVA — reference [src/components/ui/button.tsx](../../src/components/ui/button.tsx).
+- Theme tokens (`bg-background`, `text-foreground`, `border-border`, `bg-muted`, `bg-accent`, `bg-primary`/`text-primary-foreground`) over hardcoded colors. `dark:` variants only when no token expresses the contrast (e.g. status banners).
+- Forms: react-hook-form + `@hookform/resolvers/zod` + Sonner toasts + TanStack Query mutations. No exceptions.
+- Client data: `apiClient` from [src/lib/api-client.ts](../../src/lib/api-client.ts) wrapped in TanStack Query. Never `fetch` directly.
+
+### Component template (real, from `src/components/public/ProjectCard.tsx`)
+
+```tsx
+import { ExternalLink } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+
+interface ProjectCardProps {
+  project: {
+    slug: string;
+    title: string;
+    shortDescription: string;
+    techTags: string[];
+    thumbnailImage: string;
+    liveUrl?: string | null;
+  };
+  priority?: boolean;
+}
+
+export function ProjectCard({ project, priority = false }: ProjectCardProps) {
+  return (
+    <article className="group rounded-xl border border-border bg-card overflow-hidden hover:shadow-md transition-shadow">
+      <Link href={`/projects/${project.slug}`}>
+        <div className="relative aspect-4/3 overflow-hidden bg-muted">
+          <Image
+            src={project.thumbnailImage}
+            alt={project.title}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            priority={priority}
+          />
+        </div>
+      </Link>
+      <div className="p-5">
+        <h3 className="text-lg font-semibold text-foreground">{project.title}</h3>
+        <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+          {project.shortDescription}
+        </p>
+      </div>
+    </article>
+  );
+}
+```
+
+No `"use client"` — this is a Server Component. Add the directive only if you use hooks, event handlers, or browser APIs.
+
+### Validation schema template (real, from `src/lib/validations/project.ts`)
+
+```ts
+import { z } from "zod";
+
+const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+const projectBaseSchema = z.object({
+  title: z.string().min(1, "Title is required").max(200),
+  slug: z.string().regex(slugRegex, "Invalid slug format").max(200),
+  shortDescription: z.string().min(1, "Short description is required").max(300),
+  techTags: z.array(z.string().max(50)).min(1, "At least one tech tag required"),
+  status: z.enum(["DRAFT", "PUBLISHED"]).default("DRAFT"),
+});
+
+export const projectCreateSchema = projectBaseSchema;
+export const projectUpdateSchema = projectBaseSchema.partial();
+
+export type ProjectCreateInput = z.infer<typeof projectCreateSchema>;
+export type ProjectUpdateInput = z.infer<typeof projectUpdateSchema>;
+```
+
+Always export both schema and inferred type. Derive PATCH schemas via `.partial()` — don't duplicate.
+
+---
+
+## Before Creating a PR
+
+```bash
+npm run lint        # ESLint + Prettier — must pass
+npm run type-check  # tsc --noEmit — must pass
+npm run build       # Includes lint + Next build — must pass
+npm test            # Vitest — must pass (run the affected tests at minimum)
+```
+
+Then:
+
+1. Spawn the `code-reviewer` agent. It reviews against the rules in [.claude/rules/](../rules/) and cites the specific rule each issue violates.
+2. Manual checklist:
+   - [ ] Every API mutation that affects a public page calls `revalidatePath`.
+   - [ ] New env vars wired through [amplify.yml](../../amplify.yml) (not just `.env`). No `AWS_*` names — use `APP_AWS_*`.
+   - [ ] No `pageSize` introduced (use `page` + `limit`).
+   - [ ] No response shape like `{ data: { success: true } }`.
+   - [ ] No `import "dotenv/config"` in app code (only `prisma.config.ts` needs it).
+   - [ ] No new files under `src/types/` (that directory is being phased out — use `src/lib/data/types.ts`).
+   - [ ] No new Zustand stores (the dep is listed but unused — keep it that way).
+
+---
+
+## Available Tools
+
+### MCP servers
+
+Use these **before** assuming an API detail, especially for post-cutoff library versions.
+
+| Server          | Scope    | When to use                                                                                          |
+| --------------- | -------- | ---------------------------------------------------------------------------------------------------- |
+| `context7`      | user     | Live docs for Next 16, Prisma 7, Tailwind 4. Always check before assuming syntax in these libraries. |
+| `aws-docs`      | user     | AWS service behavior (Amplify SSR caveats, SES sandbox limits, Cognito token TTLs).                  |
+| `aws-iac`       | user     | Low priority here — infra is Amplify Console-managed, not CloudFormation/CDK.                        |
+| `prisma-local`  | local    | `migrate-status` before any `migrate-dev`. Never `migrate-reset` without typed confirmation.         |
+| `aws-api`       | local    | Deploy state + S3/SES/Cognito config checks. Uses standard AWS SDK creds.                            |
+
+See [.claude/docs/infrastructure.md](./infrastructure.md) for canonical AWS resource names referenced by `aws-api` calls.
+
+### Skills
+
+Invoke via `Skill` when the task matches the trigger — listed under "Starting a New Feature" above.
+
+### Agents
+
+Spawn via the `Agent` tool only when the task matches the agent's description. The four available agents are listed under "Starting a New Feature." For most edits, work directly — agents are for bounded sub-tasks (a full feature build, a database migration, a review pass), not for every step.
