@@ -2,6 +2,7 @@
 name: code-reviewer
 description: Use to review code changes (a file, a diff, or a PR) against this project's conventions. Read-only — never edits. Reports issues by severity (critical/warning/suggestion) and cites the specific CLAUDE.md or .claude/rules/ rule each issue violates.
 tools: Read, Bash, Glob, Grep
+model: sonnet
 ---
 
 # Code Reviewer

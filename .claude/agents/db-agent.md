@@ -2,6 +2,7 @@
 name: db-agent
 description: Use for Prisma + Neon database operations — schema changes, migration creation, seed data, safe migration testing on a Neon branch. Knows the Neon branching workflow. NEVER runs prisma migrate reset without explicit, typed user confirmation.
 tools: Read, Edit, Write, Bash, Glob, Grep
+model: sonnet
 ---
 
 # DB Agent

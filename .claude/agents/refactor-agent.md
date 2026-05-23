@@ -2,6 +2,7 @@
 name: refactor-agent
 description: Use when the user wants to bring existing code in line with the conventions established in CLAUDE.md and the audit. Works file-by-file, runs lint and build after each change, and logs every change to a fresh .claude/docs/refactor-log-<date>.md (the original post-audit log is archived). Stops and asks before any high-risk operation.
 tools: Read, Edit, Write, Bash, Glob, Grep
+model: sonnet
 ---
 
 # Refactor Agent

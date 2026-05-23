@@ -99,10 +99,13 @@ Full AWS infrastructure details: [.claude/docs/infrastructure.md](.claude/docs/i
 
 ## Available Agents
 
+- **orchestrator** — Spawns and coordinates other agents for multi-domain features (3+ areas). Strict delegation (no direct edits). See [.claude/docs/feature-workflow.md](.claude/docs/feature-workflow.md) §Agent & Subagent Orchestration → Pattern D.
 - **refactor-agent** — Improves existing code to match conventions in this setup. File-by-file, runs lint/build, logs to `.claude/docs/refactor-log-<date>.md` (the original post-audit log is archived at `.claude/docs/archive/refactor-log.md`).
 - **code-reviewer** — Read-only review against conventions. Reports issues by severity, cites CLAUDE.md rules.
 - **db-agent** — Prisma + Neon operations. Migrations, schema, seed. Knows Neon branching. Never resets without confirmation.
 - **feature-builder** — Builds new features following all conventions. Reads all CLAUDE.md files before starting.
+
+All project agents default to `model: sonnet`. Pass `model: opus` on the `Agent` call only when complexity warrants. Built-in subagents (`Explore` / `Plan` / `general-purpose`) — see feature-workflow.md §Models for per-spawn defaults.
 
 ## Git Commit Style
 

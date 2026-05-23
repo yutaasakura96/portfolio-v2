@@ -581,10 +581,28 @@ Each agent spawn starts **cold** — it re-derives context you already have, on 
 
 | Agent             | When to use                                                                                       |
 | ----------------- | ------------------------------------------------------------------------------------------------- |
+| `orchestrator`    | Multi-domain features (3+ areas) or user explicitly asks for orchestration. Strict-delegate.      |
 | `feature-builder` | Net-new end-to-end feature (model + migration + API route + admin UI + public surface).           |
 | `db-agent`        | Schema changes, migrations, seed updates. Knows the Neon branching workflow.                      |
 | `code-reviewer`   | Read-only review against `.claude/rules/`. Cites the specific rule each issue violates.           |
 | `refactor-agent`  | Bring existing code in line with conventions. The original refactor is done — this is on standby. |
+
+### Models
+
+Project agents have a default model set in their frontmatter. Built-in subagents don't have a definition file — pass `model:` on the `Agent` call.
+
+| Agent / subagent  | Default model | Override to `opus` when                                                                     |
+| ----------------- | ------------- | ------------------------------------------------------------------------------------------- |
+| `orchestrator`    | `sonnet`      | Genuinely novel architectural decisions across many domains.                                |
+| `feature-builder` | `sonnet`      | High-stakes feature where one-pass quality matters more than speed/cost.                    |
+| `db-agent`        | `sonnet`      | Unusually tricky migration (e.g. cross-table data backfill, custom SQL).                    |
+| `code-reviewer`   | `sonnet`      | Security-sensitive diff (auth, payment, PII handling).                                      |
+| `refactor-agent`  | `sonnet`      | Bulk rewrite touching cross-cutting abstractions.                                           |
+| `Explore`         | `haiku`       | Search query requires synthesizing across many unrelated files.                             |
+| `Plan`            | `sonnet`      | Plan needs to weigh several architectural alternatives, not just sequence known steps.      |
+| `general-purpose` | `sonnet`      | Multi-step task with unusual reasoning load.                                                |
+
+Default is `sonnet` for engineering, `haiku` for `Explore` (fast search + summarize). Pass `model: opus` on the `Agent` call only when the task warrants it — opus is slower and more expensive, so reserve it.
 
 ### Orchestration patterns
 
@@ -593,6 +611,8 @@ Each agent spawn starts **cold** — it re-derives context you already have, on 
 **Pattern B — Build → Review.** Spawn `feature-builder` to implement the feature, then spawn `code-reviewer` over the resulting diff before opening the PR. The reviewer didn't see the builder's reasoning, so its feedback is independent.
 
 **Pattern C — DB-first feature.** `db-agent` (schema + migration on a Neon branch) → `feature-builder` (Zod schema + API route + admin UI + public read) → `code-reviewer`. Run sequentially — each depends on the previous step's output.
+
+**Pattern D — Orchestrator-driven.** Main session spawns `orchestrator` with the full feature spec. Orchestrator picks the underlying sub-pattern (usually C plus tests), spawns `db-agent` → `feature-builder` → `code-reviewer` in sequence, verifies between steps, and reports back a structured summary. Use for multi-domain features (3+ areas) or when you want standardized "ready-for-PR" output. **Tradeoff:** adds one cold-start layer (main → orchestrator → subagent). For 2-step flows, spawn directly from main and skip the orchestrator.
 
 **Parallel spawning.** When agents are independent (e.g. two `Explore` agents searching different areas), put both `Agent` calls in **one** message. Sequential `Agent` calls in separate messages waste round-trips.
 
