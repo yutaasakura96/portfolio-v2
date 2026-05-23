@@ -15,14 +15,13 @@ datasource db {
 
 // ═══ HERO (singleton) ═══
 model Hero {
-  id           String   @id @default(cuid())
-  headline     String   @db.VarChar(200)
-  subheadline  String?  @db.VarChar(300)
-  bio          String   @db.Text
-  profileImage String
-  resumeUrl    String?
-  ctaButtons   Json?
-  updatedAt    DateTime @updatedAt
+  id          String   @id @default(cuid())
+  headline    String   @db.VarChar(200)
+  subheadline String?  @db.VarChar(300)
+  bio         String   @db.Text
+  resumeUrl   String?
+  ctaButtons  Json?
+  updatedAt   DateTime @updatedAt
 }
 
 // ═══ PROJECT ═══

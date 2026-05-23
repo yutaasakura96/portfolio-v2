@@ -27,7 +27,6 @@ async function main() {
         headline: "Full-Stack Developer",
         subheadline: "Building modern web applications with React, Node.js, and AWS",
         bio: "I'm a passionate developer with experience building production-grade web applications. I love solving complex problems and creating intuitive user experiences.",
-        profileImage: "https://via.placeholder.com/400x400",
         resumeUrl: null,
         ctaButtons: [
           { label: "View Projects", url: "/projects", variant: "primary" },

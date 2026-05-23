@@ -8,7 +8,6 @@ import {
   getCertifications,
   getEducation,
   getExperiences,
-  getHero,
   getSkillCategories,
   getSkills,
   getSiteSettings,
@@ -34,7 +33,7 @@ type SocialLinks = {
 
 export default async function AboutPage() {
   // Fetch all about page data in parallel for optimal performance
-  const [intro, skills, categoryOrder, experiences, education, certifications, hero, siteSettings] =
+  const [intro, skills, categoryOrder, experiences, education, certifications, siteSettings] =
     await Promise.all([
       getAboutPageIntro(),
       getSkills(),
@@ -42,7 +41,6 @@ export default async function AboutPage() {
       getExperiences(),
       getEducation(),
       getCertifications(),
-      getHero(),
       getSiteSettings(),
     ]);
 
@@ -67,7 +65,7 @@ export default async function AboutPage() {
       {hasProfileSection && (
         <AboutProfileSection
           intro={intro}
-          profileImage={intro?.profileImageUrl ?? hero?.profileImage}
+          profileImage={intro?.profileImageUrl ?? undefined}
           email={siteSettings?.email}
           socialLinks={socialLinks}
         />

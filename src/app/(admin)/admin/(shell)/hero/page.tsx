@@ -37,7 +37,6 @@ type Hero = {
   headline: string;
   subheadline: string | null;
   bio: string;
-  profileImage: string;
   resumeUrl: string | null;
   ctaButtons: unknown;
   updatedAt: Date;
@@ -181,7 +180,6 @@ export default function HeroEditorPage() {
           headline: data.data.headline,
           subheadline: data.data.subheadline ?? "",
           bio: data.data.bio,
-          profileImage: data.data.profileImage ?? "",
           resumeUrl: data.data.resumeUrl ?? "",
           ctaButtons: Array.isArray(data.data.ctaButtons) ? data.data.ctaButtons : [],
         }
@@ -218,7 +216,6 @@ export default function HeroEditorPage() {
 
   const headlineValue = useWatch({ control: form.control, name: "headline" });
   const subheadlineValue = useWatch({ control: form.control, name: "subheadline" });
-  const profileImage = useWatch({ control: form.control, name: "profileImage" });
   const resumeUrl = useWatch({ control: form.control, name: "resumeUrl" });
 
   if (isLoading) {
@@ -310,31 +307,6 @@ export default function HeroEditorPage() {
               {form.formState.errors.bio && (
                 <p id="bio-error" className="text-sm text-red-500">
                   {form.formState.errors.bio.message}
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label>Profile Image</Label>
-              <div className="max-w-xs">
-                <ImageUpload
-                  value={profileImage}
-                  folder="profile"
-                  aspectRatio="aspect-square"
-                  placeholder="Upload your headshot"
-                  onUpload={(result) => {
-                    form.setValue("profileImage", result.urls.original || result.urls.display, {
-                      shouldDirty: true,
-                    });
-                  }}
-                  onRemove={() => {
-                    form.setValue("profileImage", "", { shouldDirty: true });
-                  }}
-                />
-              </div>
-              {form.formState.errors.profileImage && (
-                <p id="profileImage-error" className="text-sm text-red-500">
-                  {form.formState.errors.profileImage.message}
                 </p>
               )}
             </div>
