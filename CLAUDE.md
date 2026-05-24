@@ -8,7 +8,7 @@ Personal portfolio + admin CMS. Public-facing Next.js site backed by an admin da
 - **Database:** Prisma 7.4.1 + Neon Postgres via `@prisma/adapter-neon` + `@neondatabase/serverless`
 - **Styling:** TailwindCSS 4 + `@tailwindcss/postcss`, shadcn (Radix UI primitives), CVA + clsx + `tailwind-merge`
 - **Forms:** react-hook-form + `@hookform/resolvers` + Zod 4
-- **Server state:** TanStack React Query 5 (no Zustand — listed but unused, do not add)
+- **Server state:** TanStack React Query 5 (no Zustand — do not add)
 - **Auth:** AWS Cognito (Hosted UI, OAuth code flow) + jose for JWT verification, HTTP-only cookies
 - **AWS runtime:** Amplify Hosting Gen 1 (SSR), S3 (images), CloudFront (assets CDN), SES (email)
 - **Images:** Sharp → WebP, served via CloudFront
@@ -29,8 +29,10 @@ Personal portfolio + admin CMS. Public-facing Next.js site backed by an admin da
 | Prisma migrate (deploy) | `npm run prisma:migrate:deploy` |
 | Prisma studio           | `npm run prisma:studio`         |
 | Seed                    | `npx prisma db seed`            |
+| Test (watch)            | `npm test`                      |
+| Test (CI + coverage)    | `npm run test:ci`               |
 
-No test framework is wired yet. When tests are added, use Vitest (see [.claude/rules/tests.md](.claude/rules/tests.md)).
+Tests use **Vitest** with **@testing-library/react**. See [.claude/rules/tests.md](.claude/rules/tests.md) for conventions.
 
 ## Architecture
 
@@ -65,7 +67,7 @@ Domain rules (Zod validation, `withErrorHandler`, ISR/client split, image pipeli
 ## Common Mistakes (this project specifically)
 
 - ❌ Importing `requireAuth` from `@/lib/auth` — that path doesn't exist. Use `@/app/api/auth`.
-- ❌ Adding Zustand stores — the dep is listed but unused; do not introduce it.
+- ❌ Adding Zustand stores — the dep was removed; do not introduce it.
 - ❌ Hardcoding `gray-*` / `white` / `black` in public components — dark mode is wired (`<ThemeProvider attribute="class">` in the root layout, toggle in the public Header). Prefer theme tokens (`bg-background`, `text-foreground`, `border-border`, etc.) which adapt automatically. Use `dark:` variants only when a token can't express the contrast you need (e.g. status banners that don't have a token equivalent).
 - ❌ Using `import "dotenv/config"` in app code — Next.js loads `.env` automatically. Only `prisma.config.ts` needs it.
 - ❌ Using `AWS_*` env var names — Amplify reserves that namespace. Use `APP_AWS_ACCESS_KEY_ID` / `APP_AWS_SECRET_ACCESS_KEY` / `APP_AWS_REGION`.
@@ -83,6 +85,7 @@ Prefer these over manual lookups:
 - **prisma-local** (local scope) — Migration status, schema management. Use before running `prisma migrate dev`. Local only — there is no remote Prisma MCP for Neon.
 - **aws-api** (local scope) — AWS API access for S3, SES, Cognito, Amplify (`awslabs.aws-api-mcp-server`). Use for deploy verification and infra state checks. Reads standard AWS SDK creds (`AWS_PROFILE` / `~/.aws/credentials`).
 - **playwright** (project scope) — Headless Chromium browser automation via `@playwright/mcp`. Use for visual verification, screenshot capture, form testing, and end-to-end interaction with the dev server.
+- **github** (project scope) — GitHub API via `@modelcontextprotocol/server-github`. PR/issue management, code search, repo metadata. Requires `GITHUB_PERSONAL_ACCESS_TOKEN` env var.
 
 ### MCP Usage Rules
 
@@ -92,6 +95,7 @@ Prefer these over manual lookups:
 - Use **aws-docs** for behavior questions (SES sandbox limits, Cognito token TTLs, Amplify SSR caveats) before web search.
 - Treat **aws-iac** as low-priority here — infra is Amplify Console-managed, not CloudFormation/CDK.
 - Use **playwright** to verify UI changes by navigating to `http://localhost:3000` (start dev server first). Prefer accessibility snapshots over screenshots for assertions — they are structured data, not images.
+- Use **github** for PR creation, issue triage, and repo queries instead of raw `gh` CLI when structured data is needed.
 
 Full AWS infrastructure details: [.claude/docs/infrastructure.md](.claude/docs/infrastructure.md).
 

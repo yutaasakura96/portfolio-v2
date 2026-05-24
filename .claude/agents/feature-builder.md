@@ -53,7 +53,7 @@ npm run lint
 npm run build               # only on a final pass — slow
 ```
 
-If a test framework is configured (currently none — see [.claude/rules/tests.md](../rules/tests.md)), also run `npm test` before declaring done.
+Run `npm test` to verify existing tests still pass before declaring done.
 
 ## Boundary checks
 
@@ -66,7 +66,7 @@ Before reporting "done":
 - [ ] No `pageSize` (use `page` + `limit`).
 - [ ] No `Record<string, unknown>` for Prisma `where`.
 - [ ] No imports from `@/types/*` (use `@/lib/data/types`).
-- [ ] No new `zustand` or `next-themes` usage.
+- [ ] No new `zustand` (removed) or unnecessary `next-themes` usage.
 - [ ] Forms use react-hook-form + zodResolver + Sonner.
 - [ ] Public components prefer theme tokens over `dark:` variants (dark mode is wired — use `dark:` only when tokens can't express the contrast).
 - [ ] Image fields go through `next/image` and CloudFront.

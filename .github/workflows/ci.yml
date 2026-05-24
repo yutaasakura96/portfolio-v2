@@ -13,14 +13,14 @@ concurrency:
 
 jobs:
   verify:
-    name: Lint, type-check, test
+    name: Lint, type-check, build, test
     runs-on: ubuntu-latest
 
     env:
-      # Dummy value so `prisma generate` (run via `postinstall`) doesn't refuse
-      # to read `prisma.config.ts`. No real DB is touched in CI yet — when a Neon
-      # test branch is wired (see `.claude/rules/tests.md` §CI), swap this for a
-      # real branch URL from secrets.
+      # Dummy value so `prisma generate` (postinstall) and `next build` can
+      # read prisma.config.ts. No real DB is touched in CI.
+      # TODO: swap for a Neon branch URL from GitHub Secrets when integration
+      # tests need a live DB (see `.claude/rules/tests.md` §CI).
       DATABASE_URL: "postgresql://ci:ci@localhost:5432/ci?sslmode=disable"
       # Upstash env vars are read lazily inside `rateLimit()`; unit tests mock
       # the limiter so values here are placeholders for any future integration.
@@ -34,7 +34,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: "npm"
 
       - name: Install dependencies
@@ -45,6 +45,9 @@ jobs:
 
       - name: Type check
         run: npm run type-check
+
+      - name: Build
+        run: npx next build
 
       - name: Test
         run: npm run test:ci

@@ -63,7 +63,7 @@ This project uses **Tailwind v4 with `@tailwindcss/postcss`** — there is no `t
 - **Server state:** TanStack React Query 5 only. Mutations go through hooks like `useMessages` ([src/hooks/use-messages.ts](src/hooks/use-messages.ts)). Use `queryClient.invalidateQueries` after mutations.
 - **Form state:** react-hook-form + `@hookform/resolvers/zod`. Schema imported from `src/lib/validations/`.
 - **URL state:** `useSearchParams` / `nextUrl.searchParams`. Don't reinvent.
-- **Client state:** `useState` / `useReducer` for local. **Do not introduce Zustand** — it's listed in package.json but unused; the convention is to keep it that way.
+- **Client state:** `useState` / `useReducer` for local. **Do not introduce Zustand** — it was removed from the project; do not add it.
 - **Toasts:** `sonner` — `toast.success(...)`, `toast.error(...)`. Don't build custom toast components.
 
 ## Data Fetching

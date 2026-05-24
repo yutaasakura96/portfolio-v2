@@ -52,7 +52,7 @@ When scanning, explicitly check for:
 
 1. API routes not wrapped in `withErrorHandler`.
 2. `requireAuth` imported from `@/lib/auth` (wrong path — should be `@/app/api/auth`).
-3. New imports of `zustand` or `next-themes` in app code.
+3. New imports of `zustand` (removed from project). Unnecessary `next-themes` imports outside ThemeProvider/ThemeToggle.
 4. `import "dotenv/config"` outside `prisma.config.ts`.
 5. `AWS_*` env var names (should be `APP_AWS_*`).
 6. `pageSize` introduced in new code (target is `limit`).

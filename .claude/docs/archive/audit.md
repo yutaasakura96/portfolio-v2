@@ -485,6 +485,7 @@ Installed:
 No project-shared `.mcp.json` — single-author project, local-scope installs are appropriate.
 
 Deferred / not installed:
+
 - Dedicated Neon/Postgres query MCP — Prisma MCP covers migration needs; ad-hoc SQL goes through `npx prisma studio`.
 - GitHub MCP — `gh` CLI via Bash is sufficient for PR management at current scale.
 
@@ -532,65 +533,65 @@ The refactor plan in [.claude/docs/refactor-plan.md](refactor-plan.md) executed 
 
 ### Anti-patterns — closed
 
-| # | Audit anti-pattern                                   | Closed by                                          |
-| - | ---------------------------------------------------- | -------------------------------------------------- |
-| 2 | Duplicate type definitions (`src/types/` vs data layer) | §3.x — `src/types/` deleted; `@/lib/data/types` is canonical |
-| 3 | Admin dashboard server-component / client-shell mismatch | §4.1 — dashboard is now `"use client"` consuming `/api/admin/dashboard-stats` |
-| 4 | In-memory rate limiter doesn't survive Lambda        | §8.5 — replaced with Upstash sliding window        |
-| 5 | `setInterval` at module scope in rate limiter        | §8.5 — Upstash handles TTL server-side; interval gone |
-| 6 | `.env.example` env-name mismatch                     | §1.3 — renamed to `APP_AWS_*`; now matches `amplify.yml` |
-| 7 | `dotenv` import in runtime Prisma client             | §1.1 — removed; §9.3 moved `dotenv` to devDeps     |
+| #   | Audit anti-pattern                                       | Closed by                                                                     |
+| --- | -------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| 2   | Duplicate type definitions (`src/types/` vs data layer)  | §3.x — `src/types/` deleted; `@/lib/data/types` is canonical                  |
+| 3   | Admin dashboard server-component / client-shell mismatch | §4.1 — dashboard is now `"use client"` consuming `/api/admin/dashboard-stats` |
+| 4   | In-memory rate limiter doesn't survive Lambda            | §8.5 — replaced with Upstash sliding window                                   |
+| 5   | `setInterval` at module scope in rate limiter            | §8.5 — Upstash handles TTL server-side; interval gone                         |
+| 6   | `.env.example` env-name mismatch                         | §1.3 — renamed to `APP_AWS_*`; now matches `amplify.yml`                      |
+| 7   | `dotenv` import in runtime Prisma client                 | §1.1 — removed; §9.3 moved `dotenv` to devDeps                                |
 
 ### Inconsistencies — closed
 
-| # | Audit inconsistency                              | Closed by                                                       |
-| - | ------------------------------------------------ | --------------------------------------------------------------- |
-| 1 | Pagination `limit` vs `pageSize`                 | §5.1, §5.2 — blog + messages now use `limit`                    |
-| 2 | API response shape `{ data: { success: true } }` | §5.3, §5.4 — stripped from 10 routes                            |
-| 4 | Where-clause typing `Record<string, unknown>`    | §2.1, §2.2 — both occurrences typed as `Prisma.<Model>WhereInput` |
-| 5 | CLAUDE.md auth import path lie                   | Closed during the rules-file rewrite (path is now `@/app/api/auth`) |
-| 6 | Half-installed dark mode                         | §7.1, §7.2 — fully wired; ~25 public files swept to tokens     |
-| 7 | Mixed admin page rendering strategy              | §4.1 — dashboard converted to client; admin is now uniformly client-side |
+| #   | Audit inconsistency                              | Closed by                                                                |
+| --- | ------------------------------------------------ | ------------------------------------------------------------------------ |
+| 1   | Pagination `limit` vs `pageSize`                 | §5.1, §5.2 — blog + messages now use `limit`                             |
+| 2   | API response shape `{ data: { success: true } }` | §5.3, §5.4 — stripped from 10 routes                                     |
+| 4   | Where-clause typing `Record<string, unknown>`    | §2.1, §2.2 — both occurrences typed as `Prisma.<Model>WhereInput`        |
+| 5   | CLAUDE.md auth import path lie                   | Closed during the rules-file rewrite (path is now `@/app/api/auth`)      |
+| 6   | Half-installed dark mode                         | §7.1, §7.2 — fully wired; ~25 public files swept to tokens               |
+| 7   | Mixed admin page rendering strategy              | §4.1 — dashboard converted to client; admin is now uniformly client-side |
 
 ### Inconsistencies — partial
 
-| # | Item                                             | Status                                                          |
-| - | ------------------------------------------------ | --------------------------------------------------------------- |
-| 3 | Query param parsing style (`new URL` vs `nextUrl`) | 6 of 8 routes use `nextUrl.searchParams`; blog + messages still use `new URL(request.url)`. Flagged in `refactor-final-review.md` §4.2. |
+| #   | Item                                               | Status                                                                                                                                  |
+| --- | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| 3   | Query param parsing style (`new URL` vs `nextUrl`) | 6 of 8 routes use `nextUrl.searchParams`; blog + messages still use `new URL(request.url)`. Flagged in `refactor-final-review.md` §4.2. |
 
 ### Missing fundamentals — closed
 
-| # | Audit gap                                  | Closed by                                                    |
-| - | ------------------------------------------ | ------------------------------------------------------------ |
-| 1 | No test suite                              | §10.1, §10.2, §10.3 — Vitest scaffold + 76 tests + GitHub Actions CI |
-| 3 | Loading states for most public pages       | §8.3 — added for `projects`, `projects/[slug]`, `blog`, `blog/[slug]`, `contact` |
-| 4 | No global error boundary                   | §8.1 — root `src/app/error.tsx` added                        |
-| 5 | No nested not-found                        | §8.2 — `src/app/(public)/not-found.tsx` added                |
+| #   | Audit gap                            | Closed by                                                                        |
+| --- | ------------------------------------ | -------------------------------------------------------------------------------- |
+| 1   | No test suite                        | §10.1, §10.2, §10.3 — Vitest scaffold + 76 tests + GitHub Actions CI             |
+| 3   | Loading states for most public pages | §8.3 — added for `projects`, `projects/[slug]`, `blog`, `blog/[slug]`, `contact` |
+| 4   | No global error boundary             | §8.1 — root `src/app/error.tsx` added                                            |
+| 5   | No nested not-found                  | §8.2 — `src/app/(public)/not-found.tsx` added                                    |
 
 ### Missing fundamentals — explicitly deferred
 
-| # | Item                                             | Decision                                                  |
-| - | ------------------------------------------------ | --------------------------------------------------------- |
-| 6 | No CSRF protection                               | Out-of-scope per plan; SameSite=Lax + same-origin is acceptable here. |
-| 7 | No input sanitization on admin write             | Out-of-scope per plan; separate security pass.            |
-| 8 | No API versioning / OpenAPI                      | Out-of-scope per plan; premature.                         |
-| 9 | No monitoring / Sentry                           | Out-of-scope per plan (§8.6); separate initiative.        |
+| #   | Item                                 | Decision                                                              |
+| --- | ------------------------------------ | --------------------------------------------------------------------- |
+| 6   | No CSRF protection                   | Out-of-scope per plan; SameSite=Lax + same-origin is acceptable here. |
+| 7   | No input sanitization on admin write | Out-of-scope per plan; separate security pass.                        |
+| 8   | No API versioning / OpenAPI          | Out-of-scope per plan; premature.                                     |
+| 9   | No monitoring / Sentry               | Out-of-scope per plan (§8.6); separate initiative.                    |
 
 ### Dependency health — closed
 
-| Package        | Action                                                                      |
-| -------------- | --------------------------------------------------------------------------- |
-| `zustand`      | Removed in §9.1 (zero imports — guard rule remains in CLAUDE.md).           |
-| `@types/sharp` | Removed in §9.2 (sharp ≥ 0.33 ships its own types).                         |
+| Package        | Action                                                                                                |
+| -------------- | ----------------------------------------------------------------------------------------------------- |
+| `zustand`      | Removed in §9.1 (zero imports — guard rule remains in CLAUDE.md).                                     |
+| `@types/sharp` | Removed in §9.2 (sharp ≥ 0.33 ships its own types).                                                   |
 | `dotenv`       | Moved from `dependencies` → `devDependencies` in §9.3 (only used by Prisma CLI + ad-hoc tsx scripts). |
-| `next-themes`  | **Retained** — became load-bearing in §7.1 (Path B).                        |
+| `next-themes`  | **Retained** — became load-bearing in §7.1 (Path B).                                                  |
 
 ### Schema drift — closed
 
-| Item                         | Action                                                                 |
-| ---------------------------- | ---------------------------------------------------------------------- |
-| `BlogPost.title` unbounded   | Migration `tighten_blog_post_varchar_caps` adds `@db.VarChar(200)`.    |
-| `BlogPost.excerpt` unbounded | Same migration adds `@db.VarChar(500)`.                                |
+| Item                         | Action                                                              |
+| ---------------------------- | ------------------------------------------------------------------- |
+| `BlogPost.title` unbounded   | Migration `tighten_blog_post_varchar_caps` adds `@db.VarChar(200)`. |
+| `BlogPost.excerpt` unbounded | Same migration adds `@db.VarChar(500)`.                             |
 
 Migration is applied locally; Amplify pipeline (`prisma migrate deploy`) handles production on next merge to `main`.
 

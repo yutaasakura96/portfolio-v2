@@ -25,12 +25,13 @@ Last updated: 2026-05-24
 
 ## 2. CI/CD & Code Quality
 
-- [ ] GitHub Actions CI pipeline (lint, type-check, build on every PR)
-- [ ] GitHub CodeQL — static security analysis (free for public repos)
-- [ ] Dependabot — dependency vulnerability scanning
-- [ ] Vitest — unit/integration test framework (identified as "Missing Fundamental #1")
+- [x] GitHub MCP for agentic Github administration
+- [x] GitHub Actions CI pipeline (lint, type-check, build, test on every PR)
+- [x] GitHub CodeQL — static security analysis (free for public repos)
+- [x] Dependabot — dependency vulnerability scanning
+- [x] Vitest — unit/integration test framework (5 test files covering errors, auth, validations, contact route)
 - [x] Playwright — E2E browser testing
-- [ ] Remove Zustand — listed as dependency but unused, CLAUDE.md forbids introducing it
+- [x] Remove Zustand — removed from package.json, docs updated
 
 ---
 
@@ -113,7 +114,7 @@ Last updated: 2026-05-24
 ### MCP Servers
 
 - [ ] Portfolio MCP — automate content creation and editing from Claude Code
-- [ ] GitHub MCP — PR/issue management from Claude Code
+- [x] GitHub MCP — PR/issue management from Claude Code
 - [x] Google Chrome MCP — browser automation (already configured)
 - [x] AWS MCP — AWS documentation access (already configured)
 
@@ -132,8 +133,8 @@ Last updated: 2026-05-24
 ## Suggested Priority Order
 
 1. ~~**Bug fixes** — blurred image preview in admin education~~ (done)
-2. **CI/CD foundation** — GitHub Actions + CodeQL + Dependabot + remove Zustand
-3. **Vitest** — unblock testing, cover critical paths
+2. ~~**CI/CD foundation** — GitHub Actions + CodeQL + Dependabot + GitHub MCP + remove Zustand~~ (done)
+3. ~~**Vitest** — test framework wired, 5 test files covering critical paths~~ (done)
 4. **SEO batch** — OG images, sitemap, JSON-LD, RSS, favicon
 5. **Blog features** — social share buttons, LinkedIn importer
 6. **Sentry** — error tracking before adding more features

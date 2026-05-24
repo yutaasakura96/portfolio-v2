@@ -2,11 +2,11 @@ Pattern: **/\*.test.ts, **/_.test.tsx, \*\*/_.spec.ts, \*_/_.spec.tsx
 
 # Test Rules
 
-The project has no test suite yet (audit finding "Missing Fundamental #1"). When tests are introduced, use **Vitest** for unit/integration and **Playwright** for E2E. Until then, these rules apply to any test file added.
+The project uses **Vitest 4.x** with **@testing-library/react** and **@testing-library/jest-dom** for unit/integration tests. Coverage is generated via **@vitest/coverage-v8**. E2E tests will use **Playwright** when introduced.
 
 ## Framework
 
-- Unit / integration: Vitest 1.x with `@vitest/ui` (optional). Configured via `vitest.config.ts` at the repo root.
+- Unit / integration: Vitest 4.x with `@vitest/ui`. Configured via `vitest.config.ts` at the repo root.
 - React component tests: Vitest + `@testing-library/react` + `@testing-library/jest-dom`.
 - E2E: Playwright in a `tests/e2e/` directory at the repo root, NOT under `src/`.
 
@@ -28,12 +28,12 @@ The project has no test suite yet (audit finding "Missing Fundamental #1"). When
 
 ## What to Test
 
-Priority order when adding the first tests:
+Priority order (items marked ✅ already have tests):
 
-1. `src/lib/errors.ts` `withErrorHandler` — happy path, `ApiError` path, unknown error path.
-2. `src/app/api/auth.ts` `requireAuth` / `optionalAuth` — token present/absent/invalid.
-3. `src/lib/validations/*.ts` — boundary cases on Zod schemas.
-4. Critical API routes: contact (rate limit, honeypot), upload (image processing), projects POST (slug conflict).
+1. ✅ `src/lib/errors.ts` `withErrorHandler` — `src/lib/errors.test.ts`
+2. ✅ `src/app/api/auth.ts` `requireAuth` / `optionalAuth` — `src/app/api/auth.test.ts`
+3. ✅ `src/lib/validations/*.ts` — `contact.test.ts`, `project.test.ts`
+4. ~ Critical API routes: contact ✅ (`src/app/api/contact/route.test.ts`), upload (image processing) ❌, projects POST (slug conflict) ❌.
 5. E2E: admin login flow, create project flow.
 
 ## What NOT to Test
@@ -44,14 +44,12 @@ Priority order when adding the first tests:
 
 ## Running
 
-Add scripts to `package.json` when Vitest is introduced:
-
-- `"test": "vitest"` (replaces the current placeholder)
-- `"test:ci": "vitest run --coverage"`
-- `"test:e2e": "playwright test"`
-
-Until then, `npm test` is a no-op — do not claim a feature is "tested" without an actual test file.
+- `npm test` — Vitest in watch mode (interactive development).
+- `npm run test:ci` — single run with v8 coverage (used in CI).
+- `npm run test:e2e` — add when Playwright E2E tests are introduced.
 
 ## CI
 
-Tests must pass before merge once introduced. Add a GitHub Actions workflow that runs `npm run lint`, `npm run type-check`, and `npm run test:ci` against a Neon branch DB.
+CI runs lint, type-check, build, and test on every PR to `main`/`develop`. See `.github/workflows/ci.yml`. Tests must pass before merge.
+
+When a Neon test branch is wired via GitHub Secrets, swap the placeholder `DATABASE_URL` in the CI workflow for the real branch URL to enable integration tests against a live DB.
