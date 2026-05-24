@@ -17,15 +17,9 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      # Dummy value so `prisma generate` (postinstall) and `next build` can
-      # read prisma.config.ts. No real DB is touched in CI.
-      # TODO: swap for a Neon branch URL from GitHub Secrets when integration
-      # tests need a live DB (see `.claude/rules/tests.md` §CI).
-      DATABASE_URL: "postgresql://ci:ci@localhost:5432/ci?sslmode=disable"
-      # Upstash env vars are read lazily inside `rateLimit()`; unit tests mock
-      # the limiter so values here are placeholders for any future integration.
-      UPSTASH_REDIS_REST_URL: "https://placeholder.upstash.io"
-      UPSTASH_REDIS_REST_TOKEN: "placeholder"
+      DATABASE_URL: ${{ github.ref == 'refs/heads/main' && secrets.DATABASE_URL_PROD || secrets.DATABASE_URL_DEV }}
+      UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
+      UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
 
     steps:
       - name: Checkout
