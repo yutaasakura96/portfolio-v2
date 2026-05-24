@@ -53,18 +53,14 @@ No test framework is wired yet. When tests are added, use Vitest (see [.claude/r
 
 Scoped instructions: [src/CLAUDE.md](src/CLAUDE.md), [src/app/api/CLAUDE.md](src/app/api/CLAUDE.md), [prisma/CLAUDE.md](prisma/CLAUDE.md).
 
-## Critical Rules (apply everywhere)
+## Critical Rules (universal — domain-specific rules live in [.claude/rules/](.claude/rules/))
 
-1. **Validate at the boundary with Zod 4.** Every API route input, every form. Schemas live in [src/lib/validations/](src/lib/validations/). Export both schema and inferred type.
-2. **Wrap every API handler in `withErrorHandler`** and throw `ApiError` for known errors. Never return raw 500s.
-3. **Auth import is `@/app/api/auth`** — `requireAuth` for protected routes, `optionalAuth` when behavior differs by login state.
-4. **Use the singleton Prisma client** from `@/lib/prismaClient`. Never instantiate `PrismaClient` directly.
-5. **Types come from [src/lib/data/types.ts](src/lib/data/types.ts).** Do NOT add new files under `src/types/` — that directory is being phased out (see audit, anti-pattern #2).
-6. **Public pages are Server Components with ISR** (`export const revalidate = 3600`). Admin pages are Client Components with TanStack Query. Do not mix.
-7. **Server-side Prisma queries for public reads go through [src/lib/data/public-queries.ts](src/lib/data/public-queries.ts)** — do not call Prisma from page components directly.
-8. **All images: Sharp → WebP**, uploaded via [src/app/api/upload](src/app/api/upload), keyed `{folder}/{entityId}/{variant}_{fileId}.webp`, served from `NEXT_PUBLIC_CLOUDFRONT_URL`.
-9. **Forms: react-hook-form + zodResolver + Sonner toasts + TanStack Query mutations.** No exceptions.
-10. **Cookies are HTTP-only, Secure, SameSite=Lax.** Tokens never touch `localStorage`.
+1. **Auth import is `@/app/api/auth`** — `requireAuth` for protected routes, `optionalAuth` when behavior differs by login state.
+2. **Use the singleton Prisma client** from `@/lib/prismaClient`. Never instantiate `PrismaClient` directly.
+3. **Types come from [src/lib/data/types.ts](src/lib/data/types.ts).** Do NOT add new files under `src/types/` — that directory is being phased out.
+4. **Cookies are HTTP-only, Secure, SameSite=Lax.** Tokens never touch `localStorage`.
+
+Domain rules (Zod validation, `withErrorHandler`, ISR/client split, image pipeline, forms, data layer) are enforced by pattern-matched rule files in [.claude/rules/](.claude/rules/) — they load automatically when you touch matching files.
 
 ## Common Mistakes (this project specifically)
 
@@ -99,13 +95,13 @@ Full AWS infrastructure details: [.claude/docs/infrastructure.md](.claude/docs/i
 
 ## Available Agents
 
-- **orchestrator** — Spawns and coordinates other agents for multi-domain features (3+ areas). Strict delegation (no direct edits). See [.claude/docs/feature-workflow.md](.claude/docs/feature-workflow.md) §Agent & Subagent Orchestration → Pattern D.
+- **orchestrator** — Spawns and coordinates other agents for multi-domain features (3+ areas). Strict delegation (no direct edits). See [.claude/agents/orchestrator.md](.claude/agents/orchestrator.md) for patterns A/B/C/D.
 - **refactor-agent** — Improves existing code to match conventions in this setup. File-by-file, runs lint/build, logs to `.claude/docs/refactor-log-<date>.md` (the original post-audit log is archived at `.claude/docs/archive/refactor-log.md`).
 - **code-reviewer** — Read-only review against conventions. Reports issues by severity, cites CLAUDE.md rules.
 - **db-agent** — Prisma + Neon operations. Migrations, schema, seed. Knows Neon branching. Never resets without confirmation.
 - **feature-builder** — Builds new features following all conventions. Reads all CLAUDE.md files before starting.
 
-All project agents default to `model: sonnet`. Pass `model: opus` on the `Agent` call only when complexity warrants. Built-in subagents (`Explore` / `Plan` / `general-purpose`) — see feature-workflow.md §Models for per-spawn defaults.
+Project agents default to `model: sonnet` except `code-reviewer` which defaults to `model: haiku` (read-only pattern matching). Pass `model: opus` on the `Agent` call only when complexity warrants. Built-in subagents (`Explore` / `Plan` / `general-purpose`) — see feature-workflow.md §Models for per-spawn defaults.
 
 ## Git Commit Style
 

@@ -19,7 +19,7 @@ Read these in order, every time:
 4. [prisma/CLAUDE.md](../../prisma/CLAUDE.md) — DB rules.
 5. Every file in [.claude/rules/](../rules/) that has a `Pattern:` matching files you'll touch.
 6. [.claude/docs/archive/audit.md](../docs/archive/audit.md) — pre-refactor anti-pattern catalog (archived; still a useful "what to avoid" reference).
-7. Any `feature-workflow.md` the user provides (if not yet created, ask).
+7. [.claude/docs/feature-workflow.md](../docs/feature-workflow.md) — process and checklists. [.claude/docs/feature-templates.md](../docs/feature-templates.md) — code examples.
 
 For library API questions (Next.js 16, Prisma 7, TailwindCSS 4, AWS SDK v3), use the **context7 MCP** if installed. Don't guess at APIs from memory — versions matter.
 
@@ -68,7 +68,7 @@ Before reporting "done":
 - [ ] No imports from `@/types/*` (use `@/lib/data/types`).
 - [ ] No new `zustand` or `next-themes` usage.
 - [ ] Forms use react-hook-form + zodResolver + Sonner.
-- [ ] Public components have no `dark:` variants (theme not wired).
+- [ ] Public components prefer theme tokens over `dark:` variants (dark mode is wired — use `dark:` only when tokens can't express the contrast).
 - [ ] Image fields go through `next/image` and CloudFront.
 
 ## Out of scope

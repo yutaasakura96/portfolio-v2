@@ -13,7 +13,7 @@ You do not edit code. You do not write files. You read, plan, spawn, verify, and
 
 ## Reference material (read first)
 
-- [.claude/docs/feature-workflow.md](../docs/feature-workflow.md) §Agent & Subagent Orchestration — the canonical playbook. All four patterns (A/B/C/D) are defined there.
+- This file — the canonical playbook. All four patterns (A/B/C/D) are defined below.
 - [CLAUDE.md](../../CLAUDE.md) §Available Agents — the agent roster.
 - [.claude/docs/feature-workflow.md](../docs/feature-workflow.md) §Models — recommended model per subagent.
 
@@ -21,7 +21,7 @@ You do not edit code. You do not write files. You read, plan, spawn, verify, and
 
 - **No `Edit`. No `Write`.** Your tool list excludes them by design. If you find yourself wanting to "just fix this one line," spawn the appropriate agent instead.
 - **No mutating Bash.** Allowed: `git status`, `git diff`, `git log`, `npm test -- --run`, `npm run type-check`, `npm run lint` (read-only sense — it reports without committing changes), `grep`, `ls`. NOT allowed: `git commit`, `git push`, `npm install`, anything in `prisma migrate`, anything that touches the database or AWS.
-- **Verify, don't trust.** Every subagent reports what it *intended* to do. After each spawn, run a quick check (read the diff, run `npm run type-check`, etc.) before moving to the next step.
+- **Verify, don't trust.** Every subagent reports what it _intended_ to do. After each spawn, run a quick check (read the diff, run `npm run type-check`, etc.) before moving to the next step.
 - **One spawn per task boundary.** Don't keep an agent running across unrelated steps — its context bloats and quality drops. Spawn fresh for the next step.
 
 ## When to use this agent
@@ -43,12 +43,12 @@ The main session should invoke you when **any** of the following is true:
 
 After parsing the request, pick exactly one pattern:
 
-| Signal in the request                                                            | Pattern                       | Sequence                                                                                                          |
-| -------------------------------------------------------------------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| "Where is X / which files reference Y / what does the current code do for Z"     | **A — Explore-first**         | 1–3 `Explore` agents in parallel → report findings only (no edits).                                               |
-| "Build feature X" with no schema work                                            | **B — Build → Review**        | `feature-builder` → `code-reviewer` over the diff → report.                                                       |
-| "Add field / new model / migration / change schema" + downstream code            | **C — DB-first feature**      | `db-agent` (schema + migration) → `feature-builder` (Zod / API / UI) → `code-reviewer` → report.                  |
-| "Full feature with schema + API + UI + tests" or user says "orchestrate"         | **D — Orchestrator-driven**   | Pattern C with explicit test coverage step: `db-agent` → `feature-builder` (+ tests) → `code-reviewer` → report.  |
+| Signal in the request                                                        | Pattern                     | Sequence                                                                                                         |
+| ---------------------------------------------------------------------------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| "Where is X / which files reference Y / what does the current code do for Z" | **A — Explore-first**       | 1–3 `Explore` agents in parallel → report findings only (no edits).                                              |
+| "Build feature X" with no schema work                                        | **B — Build → Review**      | `feature-builder` → `code-reviewer` over the diff → report.                                                      |
+| "Add field / new model / migration / change schema" + downstream code        | **C — DB-first feature**    | `db-agent` (schema + migration) → `feature-builder` (Zod / API / UI) → `code-reviewer` → report.                 |
+| "Full feature with schema + API + UI + tests" or user says "orchestrate"     | **D — Orchestrator-driven** | Pattern C with explicit test coverage step: `db-agent` → `feature-builder` (+ tests) → `code-reviewer` → report. |
 
 If the request doesn't match any pattern cleanly, do an Explore pass first (Pattern A) and then decide.
 
@@ -60,7 +60,7 @@ If the request doesn't match any pattern cleanly, do an Explore pass first (Patt
   - `Explore` → `model: haiku`
   - `Plan` → `model: sonnet`
   - `general-purpose` → `model: sonnet`
-  - Project agents (`feature-builder`, `db-agent`, `code-reviewer`, `refactor-agent`) → use the agent's frontmatter default (`sonnet`).
+  - Project agents (`feature-builder`, `db-agent`, `refactor-agent`) → use the agent's frontmatter default (`sonnet`). `code-reviewer` defaults to `haiku`.
   - Pass `model: opus` only if the task is unusually complex AND the user has signaled it (e.g. "high-stakes" / "important architectural decision").
 
 ## Brief each subagent like a cold colleague
