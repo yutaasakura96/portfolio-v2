@@ -3,6 +3,7 @@ import { deleteImageVariants, uploadToS3 } from "@/lib/aws/s3";
 import { ApiError, ErrorCodes, withErrorHandler } from "@/lib/errors";
 import {
   processCertificateImage,
+  processEducationDocumentImage,
   processFeaturedImage,
   processImage,
   processLogoImage,
@@ -106,18 +107,27 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
     if (file.type === ALLOWED_PDF_MIME) {
       key = `education/${entityId}/doc_${fileId}.pdf`;
       url = await uploadToS3(rawBuffer, key, "application/pdf");
-    } else {
-      const result = await processLogoImage(rawBuffer, "logos", entityId, fileId);
-      key = `education/${entityId}/doc_${fileId}.webp`;
-      url = await uploadToS3(result.display.buffer, key, result.display.contentType);
-    }
 
-    return NextResponse.json({
-      data: {
-        urls: { original: url },
-        key,
-      },
-    });
+      return NextResponse.json({
+        data: {
+          urls: { original: url },
+          key,
+        },
+      });
+    } else {
+      const result = await processEducationDocumentImage(rawBuffer, entityId, fileId);
+      const [displayUrl, origUrl] = await Promise.all([
+        uploadToS3(result.display.buffer, result.display.key, result.display.contentType),
+        uploadToS3(result.original.buffer, result.original.key, result.original.contentType),
+      ]);
+
+      return NextResponse.json({
+        data: {
+          urls: { display: displayUrl, original: origUrl },
+          key: result.display.key,
+        },
+      });
+    }
   }
 
   // Validate image MIME type

@@ -171,6 +171,35 @@ export async function processCertificateImage(
 }
 
 /**
+ * Education document image processing — high-res for diplomas, transcripts, grade sheets.
+ */
+export async function processEducationDocumentImage(
+  inputBuffer: Buffer,
+  entityId: string,
+  fileId: string
+): Promise<{ display: ProcessedImage; original: ProcessedImage }> {
+  const [display, original] = await Promise.all([
+    sharp(inputBuffer)
+      .resize(1400, null, { fit: "inside", withoutEnlargement: true })
+      .webp({ quality: 90 })
+      .toBuffer(),
+    sharp(inputBuffer).rotate().webp({ quality: 90 }).toBuffer(),
+  ]);
+  return {
+    display: {
+      buffer: display,
+      key: `education/${entityId}/doc_${fileId}.webp`,
+      contentType: "image/webp",
+    },
+    original: {
+      buffer: original,
+      key: `education/${entityId}/doc_orig_${fileId}.webp`,
+      contentType: "image/webp",
+    },
+  };
+}
+
+/**
  * Blog featured image processing — wide format for cards and headers.
  */
 export async function processFeaturedImage(

@@ -299,7 +299,9 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
                   "image/webp": [".webp"],
                 }}
                 onUpload={(result) => {
-                  form.setValue("documentUrl", result.urls.original, { shouldDirty: true });
+                  form.setValue("documentUrl", result.urls.display || result.urls.original, {
+                    shouldDirty: true,
+                  });
                 }}
                 onRemove={() => {
                   form.setValue("documentUrl", "", { shouldDirty: true });

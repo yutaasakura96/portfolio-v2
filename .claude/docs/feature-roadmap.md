@@ -19,8 +19,7 @@ Last updated: 2026-05-24
 ## 1. Bug Fixes (Priority)
 
 - [x] Education credential view on about page is not working correctly
-- [ ] Image preview on credential upload in admin education section is blurred
-  - Investigate why other image previews in admin work fine — compare implementations to find the difference
+- [x] Image preview on credential upload in admin education section is blurred
 
 ---
 
@@ -132,7 +131,7 @@ Last updated: 2026-05-24
 
 ## Suggested Priority Order
 
-1. **Bug fixes** — blurred image preview in admin education
+1. ~~**Bug fixes** — blurred image preview in admin education~~ (done)
 2. **CI/CD foundation** — GitHub Actions + CodeQL + Dependabot + remove Zustand
 3. **Vitest** — unblock testing, cover critical paths
 4. **SEO batch** — OG images, sitemap, JSON-LD, RSS, favicon
