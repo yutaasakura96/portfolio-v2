@@ -82,6 +82,7 @@ Prefer these over manual lookups:
 - **aws-iac** (user scope) — CloudFormation/CDK references (`awslabs.aws-iac-mcp-server`). Low value here since infra is Amplify Console-managed, not IaC.
 - **prisma-local** (local scope) — Migration status, schema management. Use before running `prisma migrate dev`. Local only — there is no remote Prisma MCP for Neon.
 - **aws-api** (local scope) — AWS API access for S3, SES, Cognito, Amplify (`awslabs.aws-api-mcp-server`). Use for deploy verification and infra state checks. Reads standard AWS SDK creds (`AWS_PROFILE` / `~/.aws/credentials`).
+- **playwright** (project scope) — Headless Chromium browser automation via `@playwright/mcp`. Use for visual verification, screenshot capture, form testing, and end-to-end interaction with the dev server.
 
 ### MCP Usage Rules
 
@@ -90,6 +91,7 @@ Prefer these over manual lookups:
 - Use **aws-api** to verify Amplify deploy state and S3/SES/Cognito config before and after deploys — see `.claude/docs/infrastructure.md` for the canonical resource names.
 - Use **aws-docs** for behavior questions (SES sandbox limits, Cognito token TTLs, Amplify SSR caveats) before web search.
 - Treat **aws-iac** as low-priority here — infra is Amplify Console-managed, not CloudFormation/CDK.
+- Use **playwright** to verify UI changes by navigating to `http://localhost:3000` (start dev server first). Prefer accessibility snapshots over screenshots for assertions — they are structured data, not images.
 
 Full AWS infrastructure details: [.claude/docs/infrastructure.md](.claude/docs/infrastructure.md).
 
