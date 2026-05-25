@@ -2,7 +2,7 @@
 
 Living document tracking planned features, improvements, and integrations for the portfolio project.
 
-Last updated: 2026-05-24
+Last updated: 2026-05-25
 
 ---
 
@@ -78,7 +78,7 @@ Last updated: 2026-05-24
 
 - [ ] Neon prod-to-dev continuous replication — branch from prod so dev always has real data
 - [ ] Admin audit log — track who changed what, when (simple table)
-- [ ] Content export from admin (JSON/CSV)
+- [ ] Content import/export from admin (JSON/CSV)
 
 ---
 
@@ -135,10 +135,10 @@ Last updated: 2026-05-24
 1. ~~**Bug fixes** — blurred image preview in admin education~~ (done)
 2. ~~**CI/CD foundation** — GitHub Actions + CodeQL + Dependabot + GitHub MCP + remove Zustand~~ (done)
 3. ~~**Vitest** — test framework wired, 5 test files covering critical paths~~ (done)
-4. **SEO batch** — OG images, sitemap, JSON-LD, RSS, favicon
-5. **Blog features** — social share buttons, LinkedIn importer
-6. **Sentry** — error tracking before adding more features
-7. **Neon replication** — better dev/test data story
+4. **Neon replication** — prod-to-dev branch so dev always has real data (blocker for dynamic OG images and other data-dependent features)
+5. **SEO batch** — OG images, sitemap, JSON-LD, RSS, favicon
+6. **Blog features** — social share buttons, LinkedIn importer
+7. **Sentry** — error tracking before adding more features
 8. **Admin improvements** — audit log, content export
 9. **Observability** — CloudWatch, SNS, health check
 10. **Design & UX** — hero 3D element, redesign iterations
