@@ -76,7 +76,8 @@ Last updated: 2026-05-25
 
 ## 6. Database & Data
 
-- [ ] Neon prod-to-dev continuous replication — branch from prod so dev always has real data
+- [x] Neon prod-to-dev continuous replication — branch from prod so dev always has real data　
+      NOTE: Done using Neon DB console's reset from parent
 - [ ] Admin audit log — track who changed what, when (simple table)
 - [ ] Content import/export from admin (JSON/CSV)
 

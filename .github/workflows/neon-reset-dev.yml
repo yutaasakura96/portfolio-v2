@@ -1,0 +1,33 @@
+name: Reset Neon Dev Branch
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1"
+
+jobs:
+  reset:
+    name: Restore dev branch from prod
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Restore Neon dev branch
+        run: |
+          response=$(curl -s -w "\n%{http_code}" -X POST \
+            "https://console.neon.tech/api/v2/projects/${{ secrets.NEON_PROJECT_ID }}/branches/${{ secrets.NEON_DEV_BRANCH_ID }}/restore" \
+            -H "Accept: application/json" \
+            -H "Authorization: Bearer ${{ secrets.NEON_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{"source_branch_id": "${{ secrets.NEON_PROD_BRANCH_ID }}"}')
+
+          http_code=$(echo "$response" | tail -1)
+          body=$(echo "$response" | sed '$d')
+
+          echo "$body" | jq . 2>/dev/null || echo "$body"
+
+          if [ "$http_code" -ge 200 ] && [ "$http_code" -lt 300 ]; then
+            echo "Dev branch restored from prod (HTTP $http_code)"
+          else
+            echo "Failed to restore dev branch (HTTP $http_code)"
+            exit 1
+          fi

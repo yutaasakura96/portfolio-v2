@@ -112,6 +112,30 @@ All vars below are stored as **plain Amplify Console env vars** (not Console Sec
 
 ---
 
+## Neon Postgres
+
+### Project: `polished-snow-20449343` (region: `ap-southeast-1`)
+
+| Branch       | ID                         | Endpoint                          | Purpose                                |
+| ------------ | -------------------------- | --------------------------------- | -------------------------------------- |
+| `production` | `br-twilight-sky-a17ollvy` | `ep-wandering-butterfly-a1v6y74z` | Live data — Amplify `DATABASE_URL`     |
+| `dev`        | `br-red-dawn-a12e2pyj`     | `ep-royal-resonance-a16f8ruh`     | Local dev — child branch of production |
+
+Dev is a copy-on-write child of production. To refresh dev with current prod data:
+
+- **Console:** Branches → `dev` → Reset from parent
+- **Script:** `./scripts/neon-reset-dev.sh` (reads `NEON_*` vars from `.env`)
+- **GitHub Action:** `.github/workflows/neon-reset-dev.yml` (weekly Monday 6am UTC + manual dispatch)
+
+All three call `POST /projects/{project_id}/branches/{branch_id}/restore` with `{"source_branch_id": "<prod_branch_id>"}`.
+
+### Connection URL pattern
+
+- **Pooled (app queries):** `postgresql://neondb_owner:<pass>@<endpoint>-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require`
+- **Direct (migrations):** `postgresql://neondb_owner:<pass>@<endpoint>.ap-southeast-1.aws.neon.tech/neondb?sslmode=require`
+
+---
+
 ## S3
 
 ### `portfolio-v2-images-1771574702` (region: `ap-southeast-1`)
@@ -286,6 +310,10 @@ The app sends as `noreply@asakurayuta.dev` (the only `FromAddress` allowed by th
 | `SES_FROM_EMAIL`                                      | Must equal `noreply@asakurayuta.dev` (gated by IAM policy)                                         |
 | `DATABASE_URL` / `DIRECT_URL`                         | Neon Postgres (not AWS) — `ep-wandering-butterfly-a1v6y74z` in `ap-southeast-1`                    |
 | `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis (not AWS) — `winning-ocelot-85007.upstash.io` in `ap-southeast-1`, PAYG with $20 cap |
+| `NEON_API_KEY`                                        | Neon API key (local + GitHub Actions only — not in Amplify)                                        |
+| `NEON_PROJECT_ID`                                     | Neon project `polished-snow-20449343`                                                              |
+| `NEON_PROD_BRANCH_ID`                                 | Neon production branch `br-twilight-sky-a17ollvy`                                                  |
+| `NEON_DEV_BRANCH_ID`                                  | Neon dev branch `br-red-dawn-a12e2pyj`                                                             |
 
 ### Drift between `.env.example` and Amplify Console
 
