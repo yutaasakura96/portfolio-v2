@@ -32,13 +32,13 @@ export default function AdminDashboard() {
     return (
       <div className="space-y-6">
         <h1 className="text-2xl font-bold">Dashboard</h1>
-        <div className="flex flex-col items-center gap-4 p-12 text-center bg-white rounded-lg border">
-          <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
-            <AlertCircle className="h-8 w-8 text-red-600" />
+        <div className="flex flex-col items-center gap-4 p-12 text-center bg-card rounded-lg border">
+          <div className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-950 flex items-center justify-center">
+            <AlertCircle className="h-8 w-8 text-red-600 dark:text-red-400" />
           </div>
           <div>
-            <h3 className="text-lg font-medium text-gray-900 mb-1">Failed to load dashboard</h3>
-            <p className="text-sm text-gray-600">
+            <h3 className="text-lg font-medium text-foreground mb-1">Failed to load dashboard</h3>
+            <p className="text-sm text-muted-foreground">
               {error instanceof Error ? error.message : "Unable to load dashboard stats."}
             </p>
           </div>
@@ -92,13 +92,13 @@ export default function AdminDashboard() {
       <div className="flex gap-3">
         <Link
           href="/admin/projects/new"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-md text-sm hover:bg-gray-800"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm hover:bg-primary/90"
         >
           <Plus className="h-4 w-4" /> New Project
         </Link>
         <Link
           href="/admin/blog/new"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-md text-sm hover:bg-gray-800"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm hover:bg-primary/90"
         >
           <Plus className="h-4 w-4" /> New Post
         </Link>
@@ -116,7 +116,7 @@ export default function AdminDashboard() {
                 <Link
                   key={project.id}
                   href={`/admin/projects/${project.id}/edit`}
-                  className="flex items-center justify-between p-2 rounded hover:bg-gray-50"
+                  className="flex items-center justify-between p-2 rounded hover:bg-muted"
                 >
                   <span className="text-sm font-medium">{project.title}</span>
                   <span className="text-xs text-muted-foreground">
@@ -141,7 +141,7 @@ export default function AdminDashboard() {
                 <Link
                   key={post.id}
                   href={`/admin/blog/${post.id}/edit`}
-                  className="flex items-center justify-between p-2 rounded hover:bg-gray-50"
+                  className="flex items-center justify-between p-2 rounded hover:bg-muted"
                 >
                   <span className="text-sm font-medium">{post.title}</span>
                   <span className="text-xs text-muted-foreground">

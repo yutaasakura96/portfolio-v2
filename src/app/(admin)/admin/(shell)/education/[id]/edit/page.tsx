@@ -7,7 +7,7 @@ const EducationForm = dynamic(
   () => import("@/components/admin/EducationForm").then((m) => m.EducationForm),
   {
     ssr: false,
-    loading: () => <div className="h-96 animate-pulse rounded-md bg-gray-100" />,
+    loading: () => <div className="h-96 animate-pulse rounded-md bg-muted" />,
   }
 );
 import { Button } from "@/components/ui/button";
@@ -57,13 +57,13 @@ export default function EditEducationPage({ params }: { params: Promise<{ id: st
       <div className="max-w-3xl space-y-6">
         <Breadcrumbs items={breadcrumbs} />
         <h1 className="text-2xl font-bold">Edit Education</h1>
-        <div className="flex flex-col items-center gap-4 p-12 text-center bg-white rounded-lg border">
+        <div className="flex flex-col items-center gap-4 p-12 text-center bg-card rounded-lg border">
           <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
-            <AlertCircle className="h-8 w-8 text-red-600" />
+            <AlertCircle className="h-8 w-8 text-red-600 dark:text-red-400" />
           </div>
           <div>
-            <h3 className="text-lg font-medium text-gray-900 mb-1">Failed to load education</h3>
-            <p className="text-sm text-gray-600">
+            <h3 className="text-lg font-medium text-foreground mb-1">Failed to load education</h3>
+            <p className="text-sm text-muted-foreground">
               {error instanceof Error
                 ? error.message
                 : "The education entry may not exist or there was an error loading it."}

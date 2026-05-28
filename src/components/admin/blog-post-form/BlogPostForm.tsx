@@ -82,7 +82,7 @@ export function BlogPostForm({ initialData }: BlogPostFormProps) {
               <h3 className="font-semibold">Publishing</h3>
 
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-500">Status</span>
+                <span className="text-muted-foreground">Status</span>
                 <Badge variant={statusValue === "PUBLISHED" ? "default" : "secondary"}>
                   {statusValue}
                 </Badge>
@@ -90,7 +90,7 @@ export function BlogPostForm({ initialData }: BlogPostFormProps) {
 
               {initialData?.publishedAt && (
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">Published</span>
+                  <span className="text-muted-foreground">Published</span>
                   <span>{new Date(initialData.publishedAt).toLocaleDateString()}</span>
                 </div>
               )}

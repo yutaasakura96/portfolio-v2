@@ -43,7 +43,7 @@ export function ProjectTagInput({ initialTags }: ProjectTagInputProps) {
         aria-describedby={form.formState.errors.techTags ? "techTags-error" : undefined}
       />
       {form.formState.errors.techTags && (
-        <p id="techTags-error" className="text-sm text-red-500">
+        <p id="techTags-error" className="text-sm text-destructive">
           {form.formState.errors.techTags.message}
         </p>
       )}

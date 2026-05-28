@@ -159,7 +159,7 @@ export function CertificationFormDialog({
               aria-describedby={form.formState.errors.name ? "name-error" : undefined}
             />
             {form.formState.errors.name && (
-              <p id="name-error" className="text-sm text-red-500">
+              <p id="name-error" className="text-sm text-destructive">
                 {form.formState.errors.name.message}
               </p>
             )}
@@ -175,7 +175,7 @@ export function CertificationFormDialog({
               aria-describedby={form.formState.errors.issuer ? "issuer-error" : undefined}
             />
             {form.formState.errors.issuer && (
-              <p id="issuer-error" className="text-sm text-red-500">
+              <p id="issuer-error" className="text-sm text-destructive">
                 {form.formState.errors.issuer.message}
               </p>
             )}
@@ -192,7 +192,7 @@ export function CertificationFormDialog({
                 aria-describedby={form.formState.errors.dateEarned ? "dateEarned-error" : undefined}
               />
               {form.formState.errors.dateEarned && (
-                <p id="dateEarned-error" className="text-sm text-red-500">
+                <p id="dateEarned-error" className="text-sm text-destructive">
                   {form.formState.errors.dateEarned.message}
                 </p>
               )}
@@ -210,7 +210,7 @@ export function CertificationFormDialog({
                 }
               />
               {form.formState.errors.expirationDate && (
-                <p id="expirationDate-error" className="text-sm text-red-500">
+                <p id="expirationDate-error" className="text-sm text-destructive">
                   {form.formState.errors.expirationDate.message}
                 </p>
               )}
@@ -231,7 +231,7 @@ export function CertificationFormDialog({
                 }
               />
               {form.formState.errors.credentialId && (
-                <p id="credentialId-error" className="text-sm text-red-500">
+                <p id="credentialId-error" className="text-sm text-destructive">
                   {form.formState.errors.credentialId.message}
                 </p>
               )}
@@ -250,7 +250,7 @@ export function CertificationFormDialog({
                 }
               />
               {form.formState.errors.displayOrder && (
-                <p id="displayOrder-error" className="text-sm text-red-500">
+                <p id="displayOrder-error" className="text-sm text-destructive">
                   {form.formState.errors.displayOrder.message}
                 </p>
               )}
@@ -270,7 +270,7 @@ export function CertificationFormDialog({
               }
             />
             {form.formState.errors.credentialUrl && (
-              <p id="credentialUrl-error" className="text-sm text-red-500">
+              <p id="credentialUrl-error" className="text-sm text-destructive">
                 {form.formState.errors.credentialUrl.message}
               </p>
             )}
@@ -309,7 +309,7 @@ export function CertificationFormDialog({
               aria-describedby={form.formState.errors.badgeImage ? "badgeImage-error" : undefined}
             />
             {form.formState.errors.badgeImage && (
-              <p id="badgeImage-error" className="text-sm text-red-500">
+              <p id="badgeImage-error" className="text-sm text-destructive">
                 {form.formState.errors.badgeImage.message}
               </p>
             )}

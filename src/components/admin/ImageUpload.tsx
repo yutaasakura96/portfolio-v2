@@ -156,7 +156,7 @@ export function ImageUpload({
       <div className="relative group">
         <div
           className={cn(
-            "relative overflow-hidden rounded-lg bg-gray-100 border",
+            "relative overflow-hidden rounded-lg bg-muted border",
             aspectRatio,
             className,
             !isImageUrl && "flex flex-col items-center justify-center gap-2"
@@ -172,8 +172,8 @@ export function ImageUpload({
             />
           ) : (
             <>
-              <FileText className="h-10 w-10 text-gray-400" />
-              <p className="text-sm text-gray-500">File uploaded</p>
+              <FileText className="h-10 w-10 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">File uploaded</p>
             </>
           )}
         </div>
@@ -202,8 +202,8 @@ export function ImageUpload({
         className,
         "flex flex-col items-center justify-center gap-2 p-6",
         isDragActive
-          ? "border-blue-500 bg-blue-50"
-          : "border-gray-300 hover:border-gray-400 bg-gray-50",
+          ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
+          : "border-input hover:border-muted-foreground bg-muted",
         (disabled || isUploading) && "opacity-50 cursor-not-allowed"
       )}
     >
@@ -212,8 +212,8 @@ export function ImageUpload({
       {isUploading ? (
         <div className="flex flex-col items-center gap-2">
           <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
-          <p className="text-sm text-gray-600">Uploading... {uploadProgress}%</p>
-          <div className="w-48 h-2 bg-gray-200 rounded-full overflow-hidden">
+          <p className="text-sm text-muted-foreground">Uploading... {uploadProgress}%</p>
+          <div className="w-48 h-2 bg-muted rounded-full overflow-hidden">
             <div
               className="h-full bg-blue-500 transition-all duration-300"
               style={{ width: `${uploadProgress}%` }}
@@ -225,10 +225,10 @@ export function ImageUpload({
           {isDragActive ? (
             <Upload className="h-8 w-8 text-blue-500" />
           ) : (
-            <ImageIcon className="h-8 w-8 text-gray-400" />
+            <ImageIcon className="h-8 w-8 text-muted-foreground" />
           )}
-          <p className="text-sm text-gray-600 text-center">{placeholder}</p>
-          <p className="text-xs text-gray-400">JPEG, PNG, WebP, GIF • Max 10MB</p>
+          <p className="text-sm text-muted-foreground text-center">{placeholder}</p>
+          <p className="text-xs text-muted-foreground">JPEG, PNG, WebP, GIF • Max 10MB</p>
         </>
       )}
     </div>

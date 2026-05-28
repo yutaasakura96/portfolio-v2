@@ -6,7 +6,7 @@ const ImageUpload = dynamic(
   () => import("@/components/admin/ImageUpload").then((m) => m.ImageUpload),
   {
     ssr: false,
-    loading: () => <div className="h-40 animate-pulse rounded-md bg-gray-100" />,
+    loading: () => <div className="h-40 animate-pulse rounded-md bg-muted" />,
   }
 );
 import { Button } from "@/components/ui/button";
@@ -106,7 +106,7 @@ export default function AboutManagerPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-24">
-        <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -116,13 +116,13 @@ export default function AboutManagerPage() {
       <div>
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">About Page</h1>
-            <p className="mt-1 text-sm text-gray-500">
+            <h1 className="text-2xl font-bold text-foreground">About Page</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
               Edit the content shown on your{" "}
               <Link
                 href="/about"
                 target="_blank"
-                className="inline-flex items-center gap-1 text-gray-700 hover:text-gray-900 underline underline-offset-2"
+                className="inline-flex items-center gap-1 text-foreground hover:text-foreground underline underline-offset-2"
               >
                 About page
                 <ExternalLink className="h-3 w-3" />
@@ -145,15 +145,15 @@ export default function AboutManagerPage() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Page Heading */}
-        <div className="bg-white rounded-lg border p-6 space-y-6">
-          <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+        <div className="bg-card rounded-lg border p-6 space-y-6">
+          <h2 className="text-sm font-semibold text-foreground uppercase tracking-wide">
             Page Heading
           </h2>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="heading">Heading</Label>
-              <span className="text-xs text-gray-400">{heading?.length ?? 0} / 200</span>
+              <span className="text-xs text-muted-foreground">{heading?.length ?? 0} / 200</span>
             </div>
             <Input
               id="heading"
@@ -161,13 +161,13 @@ export default function AboutManagerPage() {
               placeholder={DEFAULT_HEADING}
               maxLength={200}
             />
-            {errors.heading && <p className="text-sm text-red-500">{errors.heading.message}</p>}
+            {errors.heading && <p className="text-sm text-destructive">{errors.heading.message}</p>}
           </div>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="subheading">Description</Label>
-              <span className="text-xs text-gray-400">{subheading?.length ?? 0} / 500</span>
+              <span className="text-xs text-muted-foreground">{subheading?.length ?? 0} / 500</span>
             </div>
             <Textarea
               id="subheading"
@@ -177,18 +177,18 @@ export default function AboutManagerPage() {
               rows={3}
             />
             {errors.subheading && (
-              <p className="text-sm text-red-500">{errors.subheading.message}</p>
+              <p className="text-sm text-destructive">{errors.subheading.message}</p>
             )}
           </div>
         </div>
 
         {/* Profile Card */}
-        <div className="bg-white rounded-lg border p-6 space-y-6">
+        <div className="bg-card rounded-lg border p-6 space-y-6">
           <div>
-            <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+            <h2 className="text-sm font-semibold text-foreground uppercase tracking-wide">
               Profile Card
             </h2>
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-muted-foreground">
               Shown in the left column of the intro section.
             </p>
           </div>
@@ -217,7 +217,7 @@ export default function AboutManagerPage() {
               maxLength={100}
             />
             {errors.profileName && (
-              <p className="text-sm text-red-500">{errors.profileName.message}</p>
+              <p className="text-sm text-destructive">{errors.profileName.message}</p>
             )}
           </div>
 
@@ -230,7 +230,7 @@ export default function AboutManagerPage() {
               maxLength={150}
             />
             {errors.profileTitle && (
-              <p className="text-sm text-red-500">{errors.profileTitle.message}</p>
+              <p className="text-sm text-destructive">{errors.profileTitle.message}</p>
             )}
           </div>
 
@@ -243,18 +243,18 @@ export default function AboutManagerPage() {
               maxLength={150}
             />
             {errors.profileCompany && (
-              <p className="text-sm text-red-500">{errors.profileCompany.message}</p>
+              <p className="text-sm text-destructive">{errors.profileCompany.message}</p>
             )}
           </div>
         </div>
 
         {/* Introduction Text */}
-        <div className="bg-white rounded-lg border p-6 space-y-6">
+        <div className="bg-card rounded-lg border p-6 space-y-6">
           <div>
-            <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+            <h2 className="text-sm font-semibold text-foreground uppercase tracking-wide">
               Introduction Text
             </h2>
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-muted-foreground">
               Shown in the right column beside the profile card. Social links are pulled from Site
               Settings.
             </p>
@@ -263,7 +263,9 @@ export default function AboutManagerPage() {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="introHeadline">Headline</Label>
-              <span className="text-xs text-gray-400">{introHeadline?.length ?? 0} / 200</span>
+              <span className="text-xs text-muted-foreground">
+                {introHeadline?.length ?? 0} / 200
+              </span>
             </div>
             <Input
               id="introHeadline"
@@ -272,7 +274,7 @@ export default function AboutManagerPage() {
               maxLength={200}
             />
             {errors.introHeadline && (
-              <p className="text-sm text-red-500">{errors.introHeadline.message}</p>
+              <p className="text-sm text-destructive">{errors.introHeadline.message}</p>
             )}
           </div>
 
@@ -284,8 +286,10 @@ export default function AboutManagerPage() {
               placeholder="Write your introduction here. Separate paragraphs with a blank line."
               rows={8}
             />
-            <p className="text-xs text-gray-400">Separate paragraphs with a blank line.</p>
-            {errors.introBio && <p className="text-sm text-red-500">{errors.introBio.message}</p>}
+            <p className="text-xs text-muted-foreground">Separate paragraphs with a blank line.</p>
+            {errors.introBio && (
+              <p className="text-sm text-destructive">{errors.introBio.message}</p>
+            )}
           </div>
         </div>
 

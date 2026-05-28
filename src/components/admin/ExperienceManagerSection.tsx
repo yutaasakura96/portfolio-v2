@@ -72,11 +72,11 @@ export function ExperienceManagerSection() {
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 p-4 text-red-600 bg-red-50 rounded-lg border border-red-200">
+        <div className="flex items-center gap-2 p-4 text-red-600 bg-red-50 rounded-lg border border-red-200 dark:text-red-400 dark:bg-red-950 dark:border-red-800">
           <AlertCircle className="h-5 w-5 shrink-0" />
           <div>
             <p className="font-medium">Failed to load experience</p>
-            <p className="text-sm text-red-500">
+            <p className="text-sm text-destructive">
               {error instanceof Error ? error.message : "Please try again."}
             </p>
           </div>
@@ -87,22 +87,24 @@ export function ExperienceManagerSection() {
         <TableSkeleton rows={5} />
       ) : (
         <>
-          <div className="bg-white rounded-lg border overflow-hidden">
+          <div className="bg-card rounded-lg border overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b bg-gray-50">
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
+                  <tr className="border-b bg-muted">
+                    <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
                       Company
                     </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Role</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
+                    <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
+                      Role
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
                       Date Range
                     </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
+                    <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
                       Visible
                     </th>
-                    <th className="px-4 py-3 text-right text-sm font-medium text-gray-500">
+                    <th className="px-4 py-3 text-right text-sm font-medium text-muted-foreground">
                       Actions
                     </th>
                   </tr>
@@ -111,19 +113,21 @@ export function ExperienceManagerSection() {
                   {data?.data.map((exp) => (
                     <tr
                       key={exp.id}
-                      className="border-b last:border-b-0 hover:bg-gray-50 transition-colors"
+                      className="border-b last:border-b-0 hover:bg-muted transition-colors"
                     >
                       <td className="px-4 py-3">
                         <div className="space-y-1">
-                          <span className="font-medium text-gray-900">{exp.company}</span>
-                          {exp.location && <p className="text-xs text-gray-500">{exp.location}</p>}
+                          <span className="font-medium text-foreground">{exp.company}</span>
+                          {exp.location && (
+                            <p className="text-xs text-muted-foreground">{exp.location}</p>
+                          )}
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-gray-900">{exp.role}</span>
+                        <span className="text-foreground">{exp.role}</span>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-sm text-gray-600">
+                        <span className="text-sm text-muted-foreground">
                           {formatDateRange(exp.startDate, exp.endDate)}
                         </span>
                       </td>
@@ -151,7 +155,7 @@ export function ExperienceManagerSection() {
                             onClick={() => setDeleteId(exp.id)}
                             aria-label={`Delete ${exp.company} experience`}
                           >
-                            <Trash2 className="h-4 w-4 text-red-500" />
+                            <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
                         </div>
                       </td>
@@ -162,11 +166,11 @@ export function ExperienceManagerSection() {
             </div>
             {data?.data.length === 0 && (
               <div className="p-12 text-center">
-                <div className="mx-auto w-16 h-16 mb-4 rounded-full bg-gray-100 flex items-center justify-center">
-                  <Plus className="h-8 w-8 text-gray-400" />
+                <div className="mx-auto w-16 h-16 mb-4 rounded-full bg-muted flex items-center justify-center">
+                  <Plus className="h-8 w-8 text-muted-foreground" />
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-1">No experience yet</h3>
-                <p className="text-sm text-gray-600 mb-4">
+                <h3 className="text-lg font-medium text-foreground mb-1">No experience yet</h3>
+                <p className="text-sm text-muted-foreground mb-4">
                   Get started by adding your first work experience.
                 </p>
                 <Link href="/admin/experience/new">

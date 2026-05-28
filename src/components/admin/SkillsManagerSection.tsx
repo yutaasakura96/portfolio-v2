@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { apiClient } from "@/lib/api-client";
 import type { Skill } from "@/lib/data/types";
+import { cn } from "@/lib/utils";
 import { entityConfigs } from "@/lib/import-export";
 import {
   closestCenter,
@@ -39,12 +40,15 @@ function SortableSkillRow({ skill }: { skill: Skill }) {
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={`flex items-center gap-3 px-4 py-3 bg-white ${isDragging ? "shadow-md rounded-lg z-10 opacity-90" : ""}`}
+      className={cn(
+        "flex items-center gap-3 px-4 py-3 bg-card",
+        isDragging && "shadow-md rounded-lg z-10 opacity-90"
+      )}
     >
       <button
         {...attributes}
         {...listeners}
-        className="cursor-grab touch-none text-gray-300 hover:text-gray-500 active:cursor-grabbing"
+        className="cursor-grab touch-none text-muted-foreground hover:text-foreground active:cursor-grabbing"
         aria-label={`Drag to reorder ${skill.name}`}
       >
         <GripVertical className="h-4 w-4" />
@@ -61,7 +65,7 @@ function SortableSkillRow({ skill }: { skill: Skill }) {
           {skill.icon}
         </span>
       ) : null}
-      <span className="text-sm font-medium text-gray-700 flex-1">{skill.name}</span>
+      <span className="text-sm font-medium text-foreground flex-1">{skill.name}</span>
       {skill.proficiencyLevel && (
         <Badge variant="outline" className="text-xs">
           {skill.proficiencyLevel}
@@ -85,17 +89,20 @@ function SortableCategoryRow({ category }: { category: SkillCategory }) {
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={`flex items-center gap-3 px-4 py-2.5 bg-white ${isDragging ? "shadow-md rounded-lg z-10 opacity-90" : ""}`}
+      className={cn(
+        "flex items-center gap-3 px-4 py-2.5 bg-card",
+        isDragging && "shadow-md rounded-lg z-10 opacity-90"
+      )}
     >
       <button
         {...attributes}
         {...listeners}
-        className="cursor-grab touch-none text-gray-300 hover:text-gray-500 active:cursor-grabbing"
+        className="cursor-grab touch-none text-muted-foreground hover:text-foreground active:cursor-grabbing"
         aria-label={`Drag to reorder ${category.name}`}
       >
         <GripVertical className="h-4 w-4" />
       </button>
-      <span className="text-sm font-medium text-gray-700">{category.name}</span>
+      <span className="text-sm font-medium text-foreground">{category.name}</span>
     </div>
   );
 }
@@ -214,11 +221,11 @@ export function SkillsManagerSection() {
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 p-4 text-red-600 bg-red-50 rounded-lg border border-red-200">
+        <div className="flex items-center gap-2 p-4 text-red-600 bg-red-50 rounded-lg border border-red-200 dark:text-red-400 dark:bg-red-950 dark:border-red-800">
           <AlertCircle className="h-5 w-5 shrink-0" />
           <div>
             <p className="font-medium">Failed to load skills</p>
-            <p className="text-sm text-red-500">
+            <p className="text-sm text-destructive">
               {error instanceof Error ? error.message : "Please try again."}
             </p>
           </div>
@@ -229,18 +236,18 @@ export function SkillsManagerSection() {
         <div className="space-y-4">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="space-y-2">
-              <div className="h-6 w-32 bg-gray-200 rounded animate-pulse" />
-              <div className="bg-white rounded-lg border p-4">
+              <div className="h-6 w-32 bg-muted rounded animate-pulse" />
+              <div className="bg-card rounded-lg border p-4">
                 <div className="space-y-3">
                   {[...Array(4)].map((_, j) => (
                     <div key={j} className="flex items-center justify-between animate-pulse">
                       <div className="flex items-center gap-3 flex-1">
-                        <div className="h-5 w-24 bg-gray-200 rounded" />
-                        <div className="h-5 w-20 bg-gray-200 rounded" />
+                        <div className="h-5 w-24 bg-muted rounded" />
+                        <div className="h-5 w-20 bg-muted rounded" />
                       </div>
                       <div className="flex gap-2">
-                        <div className="h-8 w-8 bg-gray-200 rounded" />
-                        <div className="h-8 w-8 bg-gray-200 rounded" />
+                        <div className="h-8 w-8 bg-muted rounded" />
+                        <div className="h-8 w-8 bg-muted rounded" />
                       </div>
                     </div>
                   ))}
@@ -254,7 +261,7 @@ export function SkillsManagerSection() {
           {categories.length > 1 && (
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
                   Category Order
                 </h3>
                 {isEditingOrder ? (
@@ -282,7 +289,7 @@ export function SkillsManagerSection() {
                 )}
               </div>
 
-              <div className="rounded-lg border bg-white divide-y overflow-hidden">
+              <div className="rounded-lg border bg-card divide-y overflow-hidden">
                 {isEditingOrder ? (
                   <DndContext
                     sensors={sensors}
@@ -300,7 +307,7 @@ export function SkillsManagerSection() {
                   </DndContext>
                 ) : (
                   categories.map((cat) => (
-                    <div key={cat.id} className="px-4 py-2.5 text-sm font-medium text-gray-700">
+                    <div key={cat.id} className="px-4 py-2.5 text-sm font-medium text-foreground">
                       {cat.name}
                     </div>
                   ))
@@ -349,7 +356,7 @@ export function SkillsManagerSection() {
                     </Button>
                   )}
                 </div>
-                <div className="bg-white rounded-lg border divide-y overflow-hidden">
+                <div className="bg-card rounded-lg border divide-y overflow-hidden">
                   {isEditingThisCategory ? (
                     <DndContext
                       sensors={sensors}
@@ -402,7 +409,7 @@ export function SkillsManagerSection() {
                             onClick={() => setDeleteId(skill.id)}
                             aria-label={`Delete ${skill.name}`}
                           >
-                            <Trash2 className="h-4 w-4 text-red-500" />
+                            <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
                         </div>
                       </div>
@@ -414,12 +421,14 @@ export function SkillsManagerSection() {
           })}
         </>
       ) : (
-        <div className="bg-white rounded-lg border p-12 text-center">
-          <div className="mx-auto w-16 h-16 mb-4 rounded-full bg-gray-100 flex items-center justify-center">
-            <Plus className="h-8 w-8 text-gray-400" />
+        <div className="bg-card rounded-lg border p-12 text-center">
+          <div className="mx-auto w-16 h-16 mb-4 rounded-full bg-muted flex items-center justify-center">
+            <Plus className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-1">No skills yet</h3>
-          <p className="text-sm text-gray-600 mb-4">Get started by adding your first skill.</p>
+          <h3 className="text-lg font-medium text-foreground mb-1">No skills yet</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Get started by adding your first skill.
+          </p>
           <Button onClick={() => setIsCreateOpen(true)}>
             <Plus className="h-4 w-4 mr-2" /> Add Skill
           </Button>

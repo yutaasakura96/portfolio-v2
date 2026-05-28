@@ -7,6 +7,7 @@ import { useSettings, useUpdateSettings } from "@/hooks/use-settings";
 import { siteSettingsUpdateSchema, type SiteSettingsUpdateInput } from "@/lib/validations/settings";
 import { ImportExportToolbar } from "@/components/admin/ImportExportToolbar";
 import { entityConfigs } from "@/lib/import-export";
+import { cn } from "@/lib/utils";
 import { Globe, Github, Linkedin, Loader2, Save, Twitter, Youtube } from "lucide-react";
 import { toast } from "sonner";
 
@@ -69,7 +70,7 @@ export default function AdminSettingsPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-24">
-        <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -78,8 +79,8 @@ export default function AdminSettingsPage() {
     <div className="mx-auto max-w-2xl space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Site Settings</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-foreground">Site Settings</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             Configure your portfolio&apos;s global settings.
           </p>
         </div>
@@ -94,63 +95,67 @@ export default function AdminSettingsPage() {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         {/* General Section */}
         <section className="space-y-4">
-          <h2 className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">
+          <h2 className="border-b border-border pb-2 text-lg font-semibold text-foreground">
             General
           </h2>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Site Name <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-foreground">
+              Site Name <span className="text-destructive">*</span>
             </label>
             <input
               type="text"
               {...register("siteName")}
-              className={`mt-1 block w-full rounded-lg border px-4 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10 ${
+              className={cn(
+                "mt-1 block w-full rounded-lg border px-4 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring/10 bg-background text-foreground",
                 errors.siteName
-                  ? "border-red-300 focus:border-red-500"
-                  : "border-gray-300 focus:border-gray-900"
-              }`}
+                  ? "border-destructive/50 focus:border-destructive"
+                  : "border-input focus:border-ring"
+              )}
               placeholder="Your Name | Portfolio"
             />
             {errors.siteName && (
-              <p className="mt-1 text-sm text-red-600">{errors.siteName.message}</p>
+              <p className="mt-1 text-sm text-destructive">{errors.siteName.message}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Site Description</label>
+            <label className="block text-sm font-medium text-foreground">Site Description</label>
             <textarea
               rows={3}
               {...register("siteDescription")}
-              className="mt-1 block w-full resize-y rounded-lg border border-gray-300 px-4 py-2.5 text-sm shadow-sm focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+              className="mt-1 block w-full resize-y rounded-lg border border-input px-4 py-2.5 text-sm shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/10 bg-background text-foreground"
               placeholder="A short description of your portfolio"
             />
             {errors.siteDescription && (
-              <p className="mt-1 text-sm text-red-600">{errors.siteDescription.message}</p>
+              <p className="mt-1 text-sm text-destructive">{errors.siteDescription.message}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Contact Email <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-foreground">
+              Contact Email <span className="text-destructive">*</span>
             </label>
             <input
               type="email"
               {...register("email")}
-              className={`mt-1 block w-full rounded-lg border px-4 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10 ${
+              className={cn(
+                "mt-1 block w-full rounded-lg border px-4 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring/10 bg-background text-foreground",
                 errors.email
-                  ? "border-red-300 focus:border-red-500"
-                  : "border-gray-300 focus:border-gray-900"
-              }`}
+                  ? "border-destructive/50 focus:border-destructive"
+                  : "border-input focus:border-ring"
+              )}
               placeholder="hello@example.com"
             />
-            {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
+            {errors.email && (
+              <p className="mt-1 text-sm text-destructive">{errors.email.message}</p>
+            )}
           </div>
         </section>
 
         {/* Social Links Section */}
         <section className="space-y-4">
-          <h2 className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">
+          <h2 className="border-b border-border pb-2 text-lg font-semibold text-foreground">
             Social Links
           </h2>
 
@@ -189,22 +194,23 @@ export default function AdminSettingsPage() {
             ] as const
           ).map(({ key, icon: Icon, label, placeholder }) => (
             <div key={key}>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+              <label className="flex items-center gap-2 text-sm font-medium text-foreground">
                 <Icon className="h-4 w-4" />
                 {label}
               </label>
               <input
                 type="url"
                 {...register(`socialLinks.${key}`)}
-                className={`mt-1 block w-full rounded-lg border px-4 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10 ${
+                className={cn(
+                  "mt-1 block w-full rounded-lg border px-4 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring/10 bg-background text-foreground",
                   errors.socialLinks?.[key]
-                    ? "border-red-300 focus:border-red-500"
-                    : "border-gray-300 focus:border-gray-900"
-                }`}
+                    ? "border-destructive/50 focus:border-destructive"
+                    : "border-input focus:border-ring"
+                )}
                 placeholder={placeholder}
               />
               {errors.socialLinks?.[key] && (
-                <p className="mt-1 text-sm text-red-600">{errors.socialLinks[key]?.message}</p>
+                <p className="mt-1 text-sm text-destructive">{errors.socialLinks[key]?.message}</p>
               )}
             </div>
           ))}
@@ -212,30 +218,30 @@ export default function AdminSettingsPage() {
 
         {/* Analytics Section */}
         <section className="space-y-4">
-          <h2 className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">
+          <h2 className="border-b border-border pb-2 text-lg font-semibold text-foreground">
             Analytics
           </h2>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Google Analytics ID</label>
+            <label className="block text-sm font-medium text-foreground">Google Analytics ID</label>
             <input
               type="text"
               {...register("googleAnalyticsId")}
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm shadow-sm focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+              className="mt-1 block w-full rounded-lg border border-input px-4 py-2.5 text-sm shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/10 bg-background text-foreground"
               placeholder="G-XXXXXXXXXX"
             />
-            <p className="mt-1 text-xs text-gray-400">
+            <p className="mt-1 text-xs text-muted-foreground">
               Your Google Analytics 4 measurement ID. Leave blank to disable.
             </p>
           </div>
         </section>
 
         {/* Submit */}
-        <div className="flex items-center justify-end gap-3 border-t border-gray-200 pt-6">
+        <div className="flex items-center justify-end gap-3 border-t border-border pt-6">
           <button
             type="submit"
             disabled={!isDirty || updateSettings.isPending}
-            className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {updateSettings.isPending ? (
               <>

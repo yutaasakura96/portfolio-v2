@@ -49,7 +49,7 @@ function SortableImageRow({ img, gi, ii, disabled, onUpdateAlt, onRemove }: Sort
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
       className={cn(
-        "flex items-center gap-3 p-3 bg-gray-50 rounded-lg border",
+        "flex items-center gap-3 p-3 bg-muted rounded-lg border",
         isDragging && "shadow-md z-10 opacity-90"
       )}
     >
@@ -58,7 +58,7 @@ function SortableImageRow({ img, gi, ii, disabled, onUpdateAlt, onRemove }: Sort
         {...attributes}
         {...listeners}
         disabled={disabled}
-        className="cursor-grab touch-none text-gray-300 hover:text-gray-500 active:cursor-grabbing disabled:cursor-not-allowed disabled:opacity-40 shrink-0"
+        className="cursor-grab touch-none text-muted-foreground hover:text-foreground active:cursor-grabbing disabled:cursor-not-allowed disabled:opacity-40 shrink-0"
         aria-label="Drag to reorder image"
       >
         <GripVertical className="h-4 w-4" />
@@ -69,7 +69,7 @@ function SortableImageRow({ img, gi, ii, disabled, onUpdateAlt, onRemove }: Sort
           <button
             type="button"
             title="Click to preview"
-            className="relative h-16 w-24 shrink-0 overflow-hidden rounded bg-gray-100 group/preview block cursor-pointer"
+            className="relative h-16 w-24 shrink-0 overflow-hidden rounded bg-muted group/preview block cursor-pointer"
           >
             <Image
               src={img.url}
@@ -109,7 +109,7 @@ function SortableImageRow({ img, gi, ii, disabled, onUpdateAlt, onRemove }: Sort
         type="button"
         variant="ghost"
         size="icon"
-        className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
+        className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
         onClick={() => onRemove(gi, ii)}
         disabled={disabled}
       >
@@ -147,8 +147,8 @@ function GroupDropzone({ isUploading, disabled, onDrop }: GroupDropzoneProps) {
       className={cn(
         "border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors",
         isDragActive
-          ? "border-blue-500 bg-blue-50"
-          : "border-gray-300 hover:border-gray-400 bg-gray-50",
+          ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
+          : "border-input hover:border-muted-foreground bg-muted",
         isUploading && "opacity-50 cursor-not-allowed"
       )}
     >
@@ -156,15 +156,17 @@ function GroupDropzone({ isUploading, disabled, onDrop }: GroupDropzoneProps) {
       {isUploading ? (
         <div className="flex items-center justify-center gap-2">
           <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
-          <span className="text-sm text-gray-600">Uploading...</span>
+          <span className="text-sm text-muted-foreground">Uploading...</span>
         </div>
       ) : (
         <div className="flex flex-col items-center gap-1">
-          <Plus className="h-5 w-5 text-gray-400" />
-          <p className="text-sm text-gray-600">
+          <Plus className="h-5 w-5 text-muted-foreground" />
+          <p className="text-sm text-muted-foreground">
             {isDragActive ? "Drop images here" : "Add images to group"}
           </p>
-          <p className="text-xs text-gray-400">Drag & drop or click • Multiple files allowed</p>
+          <p className="text-xs text-muted-foreground">
+            Drag & drop or click • Multiple files allowed
+          </p>
         </div>
       )}
     </div>
@@ -308,7 +310,7 @@ export function GalleryUpload({ value, onChange, entityId, disabled = false }: G
   return (
     <div className="space-y-4">
       {value.map((group, gi) => (
-        <div key={gi} className="border rounded-lg p-4 space-y-3 bg-white">
+        <div key={gi} className="border rounded-lg p-4 space-y-3 bg-card">
           {/* Group header */}
           <div className="flex items-center gap-2">
             {/* Group reorder buttons (up/down) */}
@@ -349,7 +351,7 @@ export function GalleryUpload({ value, onChange, entityId, disabled = false }: G
               type="button"
               variant="ghost"
               size="icon"
-              className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50 shrink-0"
+              className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10 shrink-0"
               onClick={() => removeGroup(gi)}
               disabled={disabled}
             >

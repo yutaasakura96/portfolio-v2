@@ -164,7 +164,7 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
                 aria-describedby={form.formState.errors.name ? "name-error" : undefined}
               />
               {form.formState.errors.name && (
-                <p id="name-error" className="text-sm text-red-500">
+                <p id="name-error" className="text-sm text-destructive">
                   {form.formState.errors.name.message}
                 </p>
               )}
@@ -225,7 +225,7 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
                 Type a new category name or choose from existing ones.
               </p>
               {form.formState.errors.category && (
-                <p id="category-error" className="text-sm text-red-500">
+                <p id="category-error" className="text-sm text-destructive">
                   {form.formState.errors.category.message}
                 </p>
               )}
@@ -241,7 +241,7 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
                 aria-describedby={form.formState.errors.icon ? "icon-error" : undefined}
               />
               {form.formState.errors.icon && (
-                <p id="icon-error" className="text-sm text-red-500">
+                <p id="icon-error" className="text-sm text-destructive">
                   {form.formState.errors.icon.message}
                 </p>
               )}
@@ -273,7 +273,9 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
                   aria-invalid={!!form.formState.errors.iconUrl}
                 />
                 {form.formState.errors.iconUrl && (
-                  <p className="text-sm text-red-500">{form.formState.errors.iconUrl.message}</p>
+                  <p className="text-sm text-destructive">
+                    {form.formState.errors.iconUrl.message}
+                  </p>
                 )}
               </div>
               <p className="text-xs text-muted-foreground">
@@ -303,7 +305,7 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
                 </SelectContent>
               </Select>
               {form.formState.errors.proficiencyLevel && (
-                <p className="text-sm text-red-500">
+                <p className="text-sm text-destructive">
                   {form.formState.errors.proficiencyLevel.message}
                 </p>
               )}
@@ -322,7 +324,7 @@ export function SkillFormDialog({ open, onOpenChange, initialData }: SkillFormDi
                 }
               />
               {form.formState.errors.displayOrder && (
-                <p id="displayOrder-error" className="text-sm text-red-500">
+                <p id="displayOrder-error" className="text-sm text-destructive">
                   {form.formState.errors.displayOrder.message}
                 </p>
               )}

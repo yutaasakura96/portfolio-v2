@@ -37,7 +37,7 @@ export function BlogPostMetaFields({ isEditing }: BlogPostMetaFieldsProps) {
           <Label htmlFor="title">Title</Label>
           <Input id="title" placeholder="My Awesome Blog Post" {...form.register("title")} />
           {form.formState.errors.title && (
-            <p className="text-sm text-red-500">{form.formState.errors.title.message}</p>
+            <p className="text-sm text-destructive">{form.formState.errors.title.message}</p>
           )}
         </div>
 
@@ -45,7 +45,7 @@ export function BlogPostMetaFields({ isEditing }: BlogPostMetaFieldsProps) {
         <div className="space-y-2">
           <Label htmlFor="slug">Slug</Label>
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500">/blog/</span>
+            <span className="text-sm text-muted-foreground">/blog/</span>
             <Input
               id="slug"
               placeholder="my-awesome-blog-post"
@@ -57,7 +57,7 @@ export function BlogPostMetaFields({ isEditing }: BlogPostMetaFieldsProps) {
             />
           </div>
           {form.formState.errors.slug && (
-            <p className="text-sm text-red-500">{form.formState.errors.slug.message}</p>
+            <p className="text-sm text-destructive">{form.formState.errors.slug.message}</p>
           )}
         </div>
 
@@ -71,7 +71,7 @@ export function BlogPostMetaFields({ isEditing }: BlogPostMetaFieldsProps) {
             {...form.register("excerpt")}
           />
           {form.formState.errors.excerpt && (
-            <p className="text-sm text-red-500">{form.formState.errors.excerpt.message}</p>
+            <p className="text-sm text-destructive">{form.formState.errors.excerpt.message}</p>
           )}
         </div>
       </CardContent>
