@@ -108,6 +108,7 @@ Full AWS infrastructure details: [.claude/docs/infrastructure.md](.claude/docs/i
 - **code-reviewer** — Read-only review against conventions. Reports issues by severity, cites CLAUDE.md rules.
 - **db-agent** — Prisma + Neon operations. Migrations, schema, seed. Knows Neon branching. Never resets without confirmation.
 - **feature-builder** — Builds new features following all conventions. Reads all CLAUDE.md files before starting.
+- **synthesizer** — Post-build integration validator. Checks cross-domain consistency (schema ↔ Zod ↔ API ↔ UI) after multi-agent builds. Read-only. Spawned by orchestrator in Patterns C/D.
 
 Project agents default to `model: sonnet` except `code-reviewer` which defaults to `model: haiku` (read-only pattern matching). Pass `model: opus` on the `Agent` call only when complexity warrants. Built-in subagents (`Explore` / `Plan` / `general-purpose`) — see feature-workflow.md §Models for per-spawn defaults.
 

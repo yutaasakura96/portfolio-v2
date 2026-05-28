@@ -43,12 +43,12 @@ The main session should invoke you when **any** of the following is true:
 
 After parsing the request, pick exactly one pattern:
 
-| Signal in the request                                                        | Pattern                     | Sequence                                                                                                         |
-| ---------------------------------------------------------------------------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| "Where is X / which files reference Y / what does the current code do for Z" | **A — Explore-first**       | 1–3 `Explore` agents in parallel → report findings only (no edits).                                              |
-| "Build feature X" with no schema work                                        | **B — Build → Review**      | `feature-builder` → `code-reviewer` over the diff → report.                                                      |
-| "Add field / new model / migration / change schema" + downstream code        | **C — DB-first feature**    | `db-agent` (schema + migration) → `feature-builder` (Zod / API / UI) → `code-reviewer` → report.                 |
-| "Full feature with schema + API + UI + tests" or user says "orchestrate"     | **D — Orchestrator-driven** | Pattern C with explicit test coverage step: `db-agent` → `feature-builder` (+ tests) → `code-reviewer` → report. |
+| Signal in the request                                                        | Pattern                     | Sequence                                                                                                                         |
+| ---------------------------------------------------------------------------- | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| "Where is X / which files reference Y / what does the current code do for Z" | **A — Explore-first**       | 1–3 `Explore` agents in parallel → report findings only (no edits).                                                              |
+| "Build feature X" with no schema work                                        | **B — Build → Review**      | `feature-builder` → `code-reviewer` over the diff → report.                                                                      |
+| "Add field / new model / migration / change schema" + downstream code        | **C — DB-first feature**    | `db-agent` (schema + migration) → `feature-builder` (Zod / API / UI) → `synthesizer` → `code-reviewer` → report.                 |
+| "Full feature with schema + API + UI + tests" or user says "orchestrate"     | **D — Orchestrator-driven** | Pattern C with explicit test coverage step: `db-agent` → `feature-builder` (+ tests) → `synthesizer` → `code-reviewer` → report. |
 
 If the request doesn't match any pattern cleanly, do an Explore pass first (Pattern A) and then decide.
 
@@ -60,7 +60,7 @@ If the request doesn't match any pattern cleanly, do an Explore pass first (Patt
   - `Explore` → `model: haiku`
   - `Plan` → `model: sonnet`
   - `general-purpose` → `model: sonnet`
-  - Project agents (`feature-builder`, `db-agent`, `refactor-agent`) → use the agent's frontmatter default (`sonnet`). `code-reviewer` defaults to `haiku`.
+  - Project agents (`feature-builder`, `db-agent`, `refactor-agent`, `synthesizer`) → use the agent's frontmatter default (`sonnet`). `code-reviewer` defaults to `haiku`.
   - Pass `model: opus` only if the task is unusually complex AND the user has signaled it (e.g. "high-stakes" / "important architectural decision").
 
 ## Brief each subagent like a cold colleague
@@ -77,6 +77,7 @@ Terse prompts produce shallow work. Spend tokens on the spawn prompt — it's th
 ## After each spawn — verify
 
 - **`feature-builder` / `db-agent` / `refactor-agent` finished:** run `git status` + `git diff --stat` to see what actually changed. Run `npm run type-check` and `npm run lint` (read-only sense). If either fails, do NOT proceed — report the failure and let the user/main session decide whether to re-spawn or abort.
+- **`synthesizer` finished:** read its report. If status is FAIL (critical integration mismatches), spawn `feature-builder` with a narrow scope to fix the specific items before proceeding to `code-reviewer`. If WARN or PASS, proceed — findings carry into the orchestration report.
 - **`code-reviewer` finished:** read its report, classify findings by severity, decide whether to spawn a fix pass (`feature-builder` with a narrow scope) or report findings as-is.
 - **`Explore` finished:** read its summary, decide whether further exploration is needed or you have enough to design.
 
