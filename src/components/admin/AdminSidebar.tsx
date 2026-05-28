@@ -53,18 +53,18 @@ export function AdminSidebar({ isOpen = false, onClose }: AdminSidebarProps) {
   return (
     <aside
       className={cn(
-        "w-64 bg-white border-r border-gray-200 flex flex-col",
+        "w-64 bg-background border-r border-border flex flex-col",
         "fixed inset-y-0 left-0 z-50 transform transition-transform duration-200",
         "md:relative md:translate-x-0",
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}
     >
-      <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-        <Link href="/admin" className="text-lg font-bold text-gray-900">
+      <div className="p-6 border-b border-border flex items-center justify-between">
+        <Link href="/admin" className="text-lg font-bold text-foreground">
           Portfolio Admin
         </Link>
         <button
-          className="md:hidden p-1 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+          className="md:hidden p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent"
           onClick={onClose}
           aria-label="Close navigation menu"
         >
@@ -83,8 +83,8 @@ export function AdminSidebar({ isOpen = false, onClose }: AdminSidebarProps) {
               className={cn(
                 "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
                 isActive
-                  ? "bg-gray-100 text-gray-900"
-                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                  ? "bg-accent text-foreground"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
               <Icon className="h-4 w-4" />
@@ -94,12 +94,12 @@ export function AdminSidebar({ isOpen = false, onClose }: AdminSidebarProps) {
           );
         })}
       </nav>
-      <div className="p-4 border-t border-gray-200">
+      <div className="p-4 border-t border-border">
         <Link
           href="/"
           target="_blank"
           prefetch={false}
-          className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700"
+          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
         >
           View Public Site ↗
         </Link>

@@ -12,6 +12,7 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import { ImportExportToolbar } from "@/components/admin/ImportExportToolbar";
 import { entityConfigs } from "@/lib/import-export";
+import { cn } from "@/lib/utils";
 import {
   Archive,
   ArchiveRestore,
@@ -132,14 +133,14 @@ export default function MessagesPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-24">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
   if (isError) {
     return (
-      <div className="py-12 text-center text-sm text-red-600">
+      <div className="py-12 text-center text-sm text-destructive">
         Failed to load messages. Please try refreshing the page.
       </div>
     );
@@ -153,8 +154,10 @@ export default function MessagesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Messages</h1>
-          <p className="mt-1 text-sm text-gray-500">Contact form submissions from visitors.</p>
+          <h1 className="text-2xl font-bold text-foreground">Messages</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Contact form submissions from visitors.
+          </p>
         </div>
         <ImportExportToolbar
           entity="messages"
@@ -165,16 +168,17 @@ export default function MessagesPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b border-gray-200">
+      <div className="flex gap-1 border-b border-border">
         {(["inbox", "archived"] as Tab[]).map((tab) => (
           <button
             key={tab}
             onClick={() => switchTab(tab)}
-            className={`px-4 py-2 text-sm font-medium capitalize transition-colors ${
+            className={cn(
+              "px-4 py-2 text-sm font-medium capitalize transition-colors",
               activeTab === tab
-                ? "border-b-2 border-gray-900 text-gray-900"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
+                ? "border-b-2 border-foreground text-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            )}
           >
             {tab}
             {tab === "inbox" && meta && meta.unreadCount > 0 && (
@@ -188,13 +192,15 @@ export default function MessagesPage() {
 
       {/* Bulk action bar */}
       {someSelected && (
-        <div className="flex items-center gap-3 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2.5">
-          <span className="text-sm font-medium text-blue-700">{selected.size} selected</span>
+        <div className="flex items-center gap-3 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2.5 dark:border-blue-800 dark:bg-blue-950">
+          <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+            {selected.size} selected
+          </span>
           <div className="ml-auto flex gap-2">
             <button
               onClick={() => bulkMarkRead(true)}
               disabled={bulkUpdate.isPending}
-              className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-white disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-foreground hover:bg-white dark:hover:bg-blue-900 disabled:opacity-50"
             >
               <MailOpen className="h-3.5 w-3.5" />
               Mark read
@@ -202,7 +208,7 @@ export default function MessagesPage() {
             <button
               onClick={() => bulkMarkRead(false)}
               disabled={bulkUpdate.isPending}
-              className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-white disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-foreground hover:bg-white dark:hover:bg-blue-900 disabled:opacity-50"
             >
               <Mail className="h-3.5 w-3.5" />
               Mark unread
@@ -211,7 +217,7 @@ export default function MessagesPage() {
               <button
                 onClick={() => bulkArchive(true)}
                 disabled={bulkUpdate.isPending}
-                className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-white disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-foreground hover:bg-white dark:hover:bg-blue-900 disabled:opacity-50"
               >
                 <Archive className="h-3.5 w-3.5" />
                 Archive
@@ -220,7 +226,7 @@ export default function MessagesPage() {
               <button
                 onClick={() => bulkArchive(false)}
                 disabled={bulkUpdate.isPending}
-                className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-white disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-foreground hover:bg-white dark:hover:bg-blue-900 disabled:opacity-50"
               >
                 <ArchiveRestore className="h-3.5 w-3.5" />
                 Unarchive
@@ -231,20 +237,20 @@ export default function MessagesPage() {
       )}
 
       {/* Message list */}
-      <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+      <div className="overflow-hidden rounded-lg border border-border bg-card">
         {messages.length === 0 ? (
-          <div className="py-16 text-center text-sm text-gray-500">
+          <div className="py-16 text-center text-sm text-muted-foreground">
             {activeTab === "inbox" ? "No messages in your inbox." : "No archived messages."}
           </div>
         ) : (
           <>
             {/* Header row */}
-            <div className="flex items-center gap-3 border-b border-gray-100 px-4 py-2 text-xs font-medium text-gray-500">
+            <div className="flex items-center gap-3 border-b border-border px-4 py-2 text-xs font-medium text-muted-foreground">
               <input
                 type="checkbox"
                 checked={allSelected}
                 onChange={toggleSelectAll}
-                className="h-4 w-4 rounded border-gray-300 text-gray-900"
+                className="h-4 w-4 rounded border-input text-foreground"
               />
               <span>Select all</span>
             </div>
@@ -257,13 +263,14 @@ export default function MessagesPage() {
               return (
                 <div
                   key={msg.id}
-                  className={`border-b border-gray-100 last:border-0 ${
-                    !msg.read ? "bg-blue-50/50" : "bg-white"
-                  }`}
+                  className={cn(
+                    "border-b border-border last:border-0",
+                    !msg.read ? "bg-accent/50" : "bg-card"
+                  )}
                 >
                   {/* Summary row */}
                   <div
-                    className="flex cursor-pointer items-center gap-3 px-4 py-3 hover:bg-gray-50"
+                    className="flex cursor-pointer items-center gap-3 px-4 py-3 hover:bg-muted"
                     onClick={() => handleRowClick(msg)}
                   >
                     {/* Checkbox */}
@@ -277,7 +284,7 @@ export default function MessagesPage() {
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => toggleSelect(msg.id)}
-                        className="h-4 w-4 rounded border-gray-300 text-gray-900"
+                        className="h-4 w-4 rounded border-input text-foreground"
                       />
                     </div>
 
@@ -290,16 +297,23 @@ export default function MessagesPage() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-baseline justify-between gap-2">
                         <span
-                          className={`text-sm ${!msg.read ? "font-semibold text-gray-900" : "font-medium text-gray-700"}`}
+                          className={cn(
+                            "text-sm",
+                            !msg.read
+                              ? "font-semibold text-foreground"
+                              : "font-medium text-foreground"
+                          )}
                         >
                           {msg.name}
                         </span>
-                        <span className="shrink-0 text-xs text-gray-400">
+                        <span className="shrink-0 text-xs text-muted-foreground">
                           {formatDistanceToNow(new Date(msg.createdAt), { addSuffix: true })}
                         </span>
                       </div>
-                      <div className="text-sm text-gray-600">{msg.subject || "(no subject)"}</div>
-                      <div className="truncate text-xs text-gray-400">
+                      <div className="text-sm text-muted-foreground">
+                        {msg.subject || "(no subject)"}
+                      </div>
+                      <div className="truncate text-xs text-muted-foreground">
                         {msg.message.slice(0, 100)}
                       </div>
                     </div>
@@ -307,27 +321,29 @@ export default function MessagesPage() {
 
                   {/* Expanded detail */}
                   {isExpanded && (
-                    <div className="border-t border-gray-100 bg-gray-50 px-4 py-4">
+                    <div className="border-t border-border bg-muted px-4 py-4">
                       <dl className="space-y-3 text-sm">
                         <div>
-                          <dt className="font-medium text-gray-500">From</dt>
-                          <dd className="mt-0.5 text-gray-900">
+                          <dt className="font-medium text-muted-foreground">From</dt>
+                          <dd className="mt-0.5 text-foreground">
                             {msg.name}{" "}
                             <a
                               href={`mailto:${msg.email}`}
-                              className="text-blue-600 hover:underline"
+                              className="text-primary hover:underline"
                             >
                               &lt;{msg.email}&gt;
                             </a>
                           </dd>
                         </div>
                         <div>
-                          <dt className="font-medium text-gray-500">Subject</dt>
-                          <dd className="mt-0.5 text-gray-900">{msg.subject || "(no subject)"}</dd>
+                          <dt className="font-medium text-muted-foreground">Subject</dt>
+                          <dd className="mt-0.5 text-foreground">
+                            {msg.subject || "(no subject)"}
+                          </dd>
                         </div>
                         <div>
-                          <dt className="font-medium text-gray-500">Message</dt>
-                          <dd className="mt-0.5 whitespace-pre-wrap text-gray-900">
+                          <dt className="font-medium text-muted-foreground">Message</dt>
+                          <dd className="mt-0.5 whitespace-pre-wrap text-foreground">
                             {msg.message}
                           </dd>
                         </div>
@@ -337,7 +353,7 @@ export default function MessagesPage() {
                       <div className="mt-4 flex flex-wrap items-center gap-2">
                         <a
                           href={`mailto:${msg.email}?subject=Re: ${encodeURIComponent(msg.subject || "")}`}
-                          className="inline-flex items-center gap-1.5 rounded-md bg-gray-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-800"
+                          className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90"
                         >
                           <Mail className="h-3.5 w-3.5" />
                           Reply via Email
@@ -350,7 +366,7 @@ export default function MessagesPage() {
                               updateMessage.mutate({ id: msg.id, data: { archived: true } });
                             }}
                             disabled={updateMessage.isPending}
-                            className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted disabled:opacity-50"
                           >
                             <Archive className="h-3.5 w-3.5" />
                             Archive
@@ -362,7 +378,7 @@ export default function MessagesPage() {
                               updateMessage.mutate({ id: msg.id, data: { archived: false } });
                             }}
                             disabled={updateMessage.isPending}
-                            className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted disabled:opacity-50"
                           >
                             <ArchiveRestore className="h-3.5 w-3.5" />
                             Unarchive
@@ -374,7 +390,7 @@ export default function MessagesPage() {
                             e.stopPropagation();
                             setDeleteTarget(msg.id);
                           }}
-                          className="inline-flex items-center gap-1.5 rounded-md border border-red-200 bg-white px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
+                          className="inline-flex items-center gap-1.5 rounded-md border border-destructive/50 bg-card px-3 py-1.5 text-xs font-medium text-destructive hover:bg-destructive/10"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                           Delete
@@ -391,7 +407,7 @@ export default function MessagesPage() {
 
       {/* Pagination */}
       {meta && meta.totalPages > 1 && (
-        <div className="flex items-center justify-between text-sm text-gray-600">
+        <div className="flex items-center justify-between text-sm text-muted-foreground">
           <span>
             Page {meta.page} of {meta.totalPages}
           </span>
@@ -399,7 +415,7 @@ export default function MessagesPage() {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={meta.page <= 1}
-              className="inline-flex items-center gap-1 rounded-md border border-gray-200 px-3 py-1.5 text-xs font-medium hover:bg-gray-50 disabled:opacity-40"
+              className="inline-flex items-center gap-1 rounded-md border border-border px-3 py-1.5 text-xs font-medium hover:bg-muted disabled:opacity-40"
             >
               <ChevronLeft className="h-4 w-4" />
               Prev
@@ -407,7 +423,7 @@ export default function MessagesPage() {
             <button
               onClick={() => setPage((p) => Math.min(meta.totalPages, p + 1))}
               disabled={meta.page >= meta.totalPages}
-              className="inline-flex items-center gap-1 rounded-md border border-gray-200 px-3 py-1.5 text-xs font-medium hover:bg-gray-50 disabled:opacity-40"
+              className="inline-flex items-center gap-1 rounded-md border border-border px-3 py-1.5 text-xs font-medium hover:bg-muted disabled:opacity-40"
             >
               Next
               <ChevronRight className="h-4 w-4" />

@@ -77,7 +77,7 @@ export default function ProjectsListPage() {
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 p-4 text-red-600 bg-red-50 rounded-lg border border-red-200">
+        <div className="flex items-center gap-2 p-4 text-red-600 bg-red-50 rounded-lg border border-red-200 dark:text-red-400 dark:bg-red-950 dark:border-red-800">
           <AlertCircle className="h-5 w-5 shrink-0" />
           <div>
             <p className="font-medium">Failed to load projects</p>
@@ -92,19 +92,21 @@ export default function ProjectsListPage() {
         <TableSkeleton rows={5} />
       ) : (
         <>
-          <div className="bg-white rounded-lg border overflow-hidden">
+          <div className="bg-card rounded-lg border overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b bg-gray-50">
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Title</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
+                  <tr className="border-b bg-muted">
+                    <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
+                      Title
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
                       Status
                     </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
+                    <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
                       Featured
                     </th>
-                    <th className="px-4 py-3 text-right text-sm font-medium text-gray-500">
+                    <th className="px-4 py-3 text-right text-sm font-medium text-muted-foreground">
                       Actions
                     </th>
                   </tr>
@@ -113,15 +115,15 @@ export default function ProjectsListPage() {
                   {data?.data.map((project) => (
                     <tr
                       key={project.id}
-                      className="border-b last:border-b-0 hover:bg-gray-50 transition-colors"
+                      className="border-b last:border-b-0 hover:bg-muted transition-colors"
                     >
                       <td className="px-4 py-3">
                         <div className="space-y-1">
-                          <span className="font-medium text-gray-900">{project.title}</span>
-                          <p className="text-sm text-gray-600 line-clamp-1">
+                          <span className="font-medium text-foreground">{project.title}</span>
+                          <p className="text-sm text-muted-foreground line-clamp-1">
                             {project.shortDescription}
                           </p>
-                          <p className="text-xs text-gray-500">/{project.slug}</p>
+                          <p className="text-xs text-muted-foreground">/{project.slug}</p>
                         </div>
                       </td>
                       <td className="px-4 py-3">
@@ -135,7 +137,7 @@ export default function ProjectsListPage() {
                             ⭐
                           </span>
                         ) : (
-                          <span className="text-gray-400">—</span>
+                          <span className="text-muted-foreground">—</span>
                         )}
                       </td>
                       <td className="px-4 py-3 text-right">
@@ -151,7 +153,7 @@ export default function ProjectsListPage() {
                             onClick={() => setDeleteId(project.id)}
                             aria-label={`Delete ${project.title}`}
                           >
-                            <Trash2 className="h-4 w-4 text-red-500" />
+                            <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
                         </div>
                       </td>
@@ -162,11 +164,11 @@ export default function ProjectsListPage() {
             </div>
             {data?.data.length === 0 && (
               <div className="p-12 text-center">
-                <div className="mx-auto w-16 h-16 mb-4 rounded-full bg-gray-100 flex items-center justify-center">
-                  <Plus className="h-8 w-8 text-gray-400" />
+                <div className="mx-auto w-16 h-16 mb-4 rounded-full bg-muted flex items-center justify-center">
+                  <Plus className="h-8 w-8 text-muted-foreground" />
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-1">No projects yet</h3>
-                <p className="text-sm text-gray-600 mb-4">
+                <h3 className="text-lg font-medium text-foreground mb-1">No projects yet</h3>
+                <p className="text-sm text-muted-foreground mb-4">
                   Get started by creating your first project.
                 </p>
                 <Link href="/admin/projects/new">
@@ -180,7 +182,7 @@ export default function ProjectsListPage() {
 
           {data && data.meta.totalPages > 1 && (
             <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-muted-foreground">
                 Showing {(page - 1) * data.meta.limit + 1} to{" "}
                 {Math.min(page * data.meta.limit, data.meta.total)} of {data.meta.total} projects
               </p>
@@ -213,7 +215,7 @@ export default function ProjectsListPage() {
                       );
                     } else if (pageNum === page - 2 || pageNum === page + 2) {
                       return (
-                        <span key={pageNum} className="px-2 text-gray-400">
+                        <span key={pageNum} className="px-2 text-muted-foreground">
                           ...
                         </span>
                       );

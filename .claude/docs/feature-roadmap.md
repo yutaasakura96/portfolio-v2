@@ -81,8 +81,7 @@ Last updated: 2026-05-28
 - [ ] Admin audit log — track who changed what, when (simple table)
 - [x] Content import/export from admin (JSON/CSV) — 27 new files, 11 modified. JSON+CSV export for all entities, JSON+CSV import with preview/validation for all except messages. Two import modes (create-only, upsert). Rate-limited, CSV injection-safe, date-validated.
 - [ ] Admin dark mode theming pass — hardcoded `bg-white`, `text-gray-*`, `border-gray-*` persist across ~12 admin files (EducationManagerSection, ExperienceManagerSection, CertificationsManagerSection, SkillsManagerSection, and admin pages). Replace with theme tokens (`bg-background`, `text-foreground`, `border-border`, `bg-muted`, `text-muted-foreground`). The import/export components already use proper tokens — this is a pre-existing issue across the admin UI.
-
----
+- drag and drop functionality to reorder certifications/ change order.
 
 ## 7. Blog Features
 

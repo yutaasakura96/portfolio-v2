@@ -10,8 +10,8 @@ import type { BlogPostFormValues } from "./types";
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), {
   ssr: false,
   loading: () => (
-    <div className="h-96 bg-gray-100 rounded-lg animate-pulse flex items-center justify-center">
-      <p className="text-gray-400">Loading editor...</p>
+    <div className="h-96 bg-muted rounded-lg animate-pulse flex items-center justify-center">
+      <p className="text-muted-foreground">Loading editor...</p>
     </div>
   ),
 });

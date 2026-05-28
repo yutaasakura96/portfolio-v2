@@ -76,11 +76,11 @@ export function CertificationsManagerSection() {
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 p-4 text-red-600 bg-red-50 rounded-lg border border-red-200">
+        <div className="flex items-center gap-2 p-4 text-red-600 bg-red-50 rounded-lg border border-red-200 dark:text-red-400 dark:bg-red-950 dark:border-red-800">
           <AlertCircle className="h-5 w-5 shrink-0" />
           <div>
             <p className="font-medium">Failed to load certifications</p>
-            <p className="text-sm text-red-500">
+            <p className="text-sm text-destructive">
               {error instanceof Error ? error.message : "Please try again."}
             </p>
           </div>
@@ -90,7 +90,7 @@ export function CertificationsManagerSection() {
       {isLoading ? (
         <TableSkeleton rows={5} />
       ) : hasCertifications ? (
-        <div className="bg-white rounded-lg border divide-y">
+        <div className="bg-card rounded-lg border divide-y">
           {certifications.map((cert) => {
             const expired = isExpired(cert.expirationDate);
             return (
@@ -106,7 +106,7 @@ export function CertificationsManagerSection() {
                 )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="font-medium text-gray-900">{cert.name}</span>
+                    <span className="font-medium text-foreground">{cert.name}</span>
                     {!cert.visible && <Badge variant="secondary">Hidden</Badge>}
                     {cert.expirationDate && (
                       <Badge variant={expired ? "destructive" : "default"}>
@@ -114,8 +114,8 @@ export function CertificationsManagerSection() {
                       </Badge>
                     )}
                   </div>
-                  <p className="text-sm text-gray-600">{cert.issuer}</p>
-                  <div className="flex items-center gap-4 mt-1 text-xs text-gray-500">
+                  <p className="text-sm text-muted-foreground">{cert.issuer}</p>
+                  <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
                     <span>Earned: {formatDate(cert.dateEarned)}</span>
                     {cert.expirationDate && (
                       <span>
@@ -140,7 +140,7 @@ export function CertificationsManagerSection() {
                     onClick={() => setDeleteId(cert.id)}
                     aria-label={`Delete ${cert.name} certification`}
                   >
-                    <Trash2 className="h-4 w-4 text-red-500" />
+                    <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
                 </div>
               </div>
@@ -148,12 +148,12 @@ export function CertificationsManagerSection() {
           })}
         </div>
       ) : (
-        <div className="bg-white rounded-lg border p-12 text-center">
-          <div className="mx-auto w-16 h-16 mb-4 rounded-full bg-gray-100 flex items-center justify-center">
-            <Plus className="h-8 w-8 text-gray-400" />
+        <div className="bg-card rounded-lg border p-12 text-center">
+          <div className="mx-auto w-16 h-16 mb-4 rounded-full bg-muted flex items-center justify-center">
+            <Plus className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-1">No certifications yet</h3>
-          <p className="text-sm text-gray-600 mb-4">
+          <h3 className="text-lg font-medium text-foreground mb-1">No certifications yet</h3>
+          <p className="text-sm text-muted-foreground mb-4">
             Get started by adding your professional certifications.
           </p>
           <Button onClick={() => setIsCreateOpen(true)}>

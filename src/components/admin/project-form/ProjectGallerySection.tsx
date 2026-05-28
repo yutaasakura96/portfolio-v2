@@ -24,7 +24,7 @@ export function ProjectGallerySection({ projectId }: ProjectGallerySectionProps)
     <>
       <div className="space-y-2">
         <Label>Thumbnail Image</Label>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-muted-foreground">
           Used on project cards. Recommended: 800×600 or larger.
         </p>
         <ImageUpload
@@ -42,7 +42,7 @@ export function ProjectGallerySection({ projectId }: ProjectGallerySectionProps)
           }}
         />
         {form.formState.errors.thumbnailImage && (
-          <p id="thumbnailImage-error" className="text-sm text-red-500">
+          <p id="thumbnailImage-error" className="text-sm text-destructive">
             {form.formState.errors.thumbnailImage.message}
           </p>
         )}
@@ -50,7 +50,7 @@ export function ProjectGallerySection({ projectId }: ProjectGallerySectionProps)
 
       <div className="space-y-2">
         <Label>Gallery Images</Label>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-muted-foreground">
           Screenshots and visuals for the project detail page. Drag to reorder.
         </p>
         <GalleryUpload

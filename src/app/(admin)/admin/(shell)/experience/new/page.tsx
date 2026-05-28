@@ -7,7 +7,7 @@ const ExperienceForm = dynamic(
   () => import("@/components/admin/ExperienceForm").then((m) => m.ExperienceForm),
   {
     ssr: false,
-    loading: () => <div className="h-96 animate-pulse rounded-md bg-gray-100" />,
+    loading: () => <div className="h-96 animate-pulse rounded-md bg-muted" />,
   }
 );
 

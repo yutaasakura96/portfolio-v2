@@ -155,7 +155,7 @@ export function ExperienceForm({ initialData, experienceId }: ExperienceFormProp
                 aria-describedby={form.formState.errors.company ? "company-error" : undefined}
               />
               {form.formState.errors.company && (
-                <p id="company-error" className="text-sm text-red-500">
+                <p id="company-error" className="text-sm text-destructive">
                   {form.formState.errors.company.message}
                 </p>
               )}
@@ -170,7 +170,7 @@ export function ExperienceForm({ initialData, experienceId }: ExperienceFormProp
                 aria-describedby={form.formState.errors.role ? "role-error" : undefined}
               />
               {form.formState.errors.role && (
-                <p id="role-error" className="text-sm text-red-500">
+                <p id="role-error" className="text-sm text-destructive">
                   {form.formState.errors.role.message}
                 </p>
               )}
@@ -187,7 +187,7 @@ export function ExperienceForm({ initialData, experienceId }: ExperienceFormProp
               aria-describedby={form.formState.errors.location ? "location-error" : undefined}
             />
             {form.formState.errors.location && (
-              <p id="location-error" className="text-sm text-red-500">
+              <p id="location-error" className="text-sm text-destructive">
                 {form.formState.errors.location.message}
               </p>
             )}
@@ -205,7 +205,7 @@ export function ExperienceForm({ initialData, experienceId }: ExperienceFormProp
                 aria-describedby={form.formState.errors.startDate ? "startDate-error" : undefined}
               />
               {form.formState.errors.startDate && (
-                <p id="startDate-error" className="text-sm text-red-500">
+                <p id="startDate-error" className="text-sm text-destructive">
                   {form.formState.errors.startDate.message}
                 </p>
               )}
@@ -222,7 +222,7 @@ export function ExperienceForm({ initialData, experienceId }: ExperienceFormProp
                 aria-describedby={form.formState.errors.endDate ? "endDate-error" : undefined}
               />
               {form.formState.errors.endDate && (
-                <p id="endDate-error" className="text-sm text-red-500">
+                <p id="endDate-error" className="text-sm text-destructive">
                   {form.formState.errors.endDate.message}
                 </p>
               )}
@@ -241,7 +241,7 @@ export function ExperienceForm({ initialData, experienceId }: ExperienceFormProp
               aria-describedby={form.formState.errors.description ? "description-error" : undefined}
             />
             {form.formState.errors.description && (
-              <p id="description-error" className="text-sm text-red-500">
+              <p id="description-error" className="text-sm text-destructive">
                 {form.formState.errors.description.message}
               </p>
             )}
@@ -269,7 +269,7 @@ export function ExperienceForm({ initialData, experienceId }: ExperienceFormProp
             {highlights.length > 0 && (
               <div className="space-y-2 mt-2">
                 {highlights.map((highlight, index) => (
-                  <div key={index} className="flex items-center gap-2 p-2 bg-gray-50 rounded-md">
+                  <div key={index} className="flex items-center gap-2 p-2 bg-muted rounded-md">
                     <span className="flex-1 text-sm">{highlight}</span>
                     <Button
                       type="button"
@@ -313,14 +313,14 @@ export function ExperienceForm({ initialData, experienceId }: ExperienceFormProp
                 {techTags.map((tag, index) => (
                   <span
                     key={index}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gray-100 text-xs font-medium text-gray-600"
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-muted text-xs font-medium text-muted-foreground"
                   >
                     {tag}
                     <button
                       type="button"
                       onClick={() => handleRemoveTechTag(index)}
                       aria-label={`Remove ${tag}`}
-                      className="ml-0.5 hover:text-red-500 transition-colors"
+                      className="ml-0.5 hover:text-destructive transition-colors"
                     >
                       <X className="h-3 w-3" />
                     </button>
@@ -344,7 +344,7 @@ export function ExperienceForm({ initialData, experienceId }: ExperienceFormProp
               aria-describedby={form.formState.errors.companyUrl ? "companyUrl-error" : undefined}
             />
             {form.formState.errors.companyUrl && (
-              <p id="companyUrl-error" className="text-sm text-red-500">
+              <p id="companyUrl-error" className="text-sm text-destructive">
                 {form.formState.errors.companyUrl.message}
               </p>
             )}
@@ -370,7 +370,7 @@ export function ExperienceForm({ initialData, experienceId }: ExperienceFormProp
               />
             </div>
             {form.formState.errors.logoUrl && (
-              <p className="text-sm text-red-500">{form.formState.errors.logoUrl.message}</p>
+              <p className="text-sm text-destructive">{form.formState.errors.logoUrl.message}</p>
             )}
           </div>
 
@@ -387,7 +387,7 @@ export function ExperienceForm({ initialData, experienceId }: ExperienceFormProp
               }
             />
             {form.formState.errors.displayOrder && (
-              <p id="displayOrder-error" className="text-sm text-red-500">
+              <p id="displayOrder-error" className="text-sm text-destructive">
                 {form.formState.errors.displayOrder.message}
               </p>
             )}

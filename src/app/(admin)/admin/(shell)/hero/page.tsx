@@ -20,7 +20,7 @@ const ImageUpload = dynamic(
   () => import("@/components/admin/ImageUpload").then((m) => m.ImageUpload),
   {
     ssr: false,
-    loading: () => <div className="h-40 animate-pulse rounded-md bg-gray-100" />,
+    loading: () => <div className="h-40 animate-pulse rounded-md bg-muted" />,
   }
 );
 import {
@@ -78,14 +78,14 @@ function CtaButtonRow({
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium">Button {index + 1}</span>
         <Button type="button" variant="ghost" size="sm" onClick={onRemove}>
-          <Trash2 className="w-4 h-4 text-red-500" />
+          <Trash2 className="w-4 h-4 text-destructive" />
         </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <div className="space-y-2">
           <Label htmlFor={`ctaButtons.${index}.label`}>
-            Label <span className="text-red-500">*</span>
+            Label <span className="text-destructive">*</span>
           </Label>
           <Input
             id={`ctaButtons.${index}.label`}
@@ -94,7 +94,7 @@ function CtaButtonRow({
             aria-invalid={!!errors.ctaButtons?.[index]?.label}
           />
           {errors.ctaButtons?.[index]?.label && (
-            <p className="text-sm text-red-500">{errors.ctaButtons[index]?.label?.message}</p>
+            <p className="text-sm text-destructive">{errors.ctaButtons[index]?.label?.message}</p>
           )}
         </div>
 
@@ -120,7 +120,7 @@ function CtaButtonRow({
 
         <div className="space-y-2">
           <Label htmlFor={`ctaButtons.${index}.variant`}>
-            Style <span className="text-red-500">*</span>
+            Style <span className="text-destructive">*</span>
           </Label>
           <select
             id={`ctaButtons.${index}.variant`}
@@ -131,7 +131,7 @@ function CtaButtonRow({
             <option value="secondary">Secondary</option>
           </select>
           {errors.ctaButtons?.[index]?.variant && (
-            <p className="text-sm text-red-500">{errors.ctaButtons[index]?.variant?.message}</p>
+            <p className="text-sm text-destructive">{errors.ctaButtons[index]?.variant?.message}</p>
           )}
         </div>
       </div>
@@ -139,7 +139,7 @@ function CtaButtonRow({
       {!isResume && (
         <div className="space-y-2">
           <Label htmlFor={`ctaButtons.${index}.url`}>
-            URL <span className="text-red-500">*</span>
+            URL <span className="text-destructive">*</span>
           </Label>
           <Input
             id={`ctaButtons.${index}.url`}
@@ -148,7 +148,7 @@ function CtaButtonRow({
             aria-invalid={!!errors.ctaButtons?.[index]?.url}
           />
           {errors.ctaButtons?.[index]?.url && (
-            <p className="text-sm text-red-500">{errors.ctaButtons[index]?.url?.message}</p>
+            <p className="text-sm text-destructive">{errors.ctaButtons[index]?.url?.message}</p>
           )}
         </div>
       )}
@@ -257,7 +257,7 @@ export default function HeroEditorPage() {
           >
             <div className="space-y-2">
               <Label htmlFor="headline">
-                Headline <span className="text-red-500">*</span>
+                Headline <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="headline"
@@ -267,12 +267,12 @@ export default function HeroEditorPage() {
               />
               <div className="flex items-center justify-between">
                 {form.formState.errors.headline && (
-                  <p id="headline-error" className="text-sm text-red-500">
+                  <p id="headline-error" className="text-sm text-destructive">
                     {form.formState.errors.headline.message}
                   </p>
                 )}
                 <p
-                  className={`text-xs ml-auto ${headlineValue?.length > 200 ? "text-red-500" : "text-muted-foreground"}`}
+                  className={`text-xs ml-auto ${headlineValue?.length > 200 ? "text-destructive" : "text-muted-foreground"}`}
                 >
                   {headlineValue?.length || 0}/200
                 </p>
@@ -291,12 +291,12 @@ export default function HeroEditorPage() {
               />
               <div className="flex items-center justify-between">
                 {form.formState.errors.subheadline && (
-                  <p id="subheadline-error" className="text-sm text-red-500">
+                  <p id="subheadline-error" className="text-sm text-destructive">
                     {form.formState.errors.subheadline.message}
                   </p>
                 )}
                 <p
-                  className={`text-xs ml-auto ${(subheadlineValue?.length ?? 0) > 300 ? "text-red-500" : "text-muted-foreground"}`}
+                  className={`text-xs ml-auto ${(subheadlineValue?.length ?? 0) > 300 ? "text-destructive" : "text-muted-foreground"}`}
                 >
                   {subheadlineValue?.length || 0}/300
                 </p>
@@ -305,7 +305,7 @@ export default function HeroEditorPage() {
 
             <div className="space-y-2">
               <Label htmlFor="bio">
-                Bio <span className="text-red-500">*</span>
+                Bio <span className="text-destructive">*</span>
               </Label>
               <Textarea
                 id="bio"
@@ -315,7 +315,7 @@ export default function HeroEditorPage() {
                 aria-describedby={form.formState.errors.bio ? "bio-error" : undefined}
               />
               {form.formState.errors.bio && (
-                <p id="bio-error" className="text-sm text-red-500">
+                <p id="bio-error" className="text-sm text-destructive">
                   {form.formState.errors.bio.message}
                 </p>
               )}
@@ -339,12 +339,12 @@ export default function HeroEditorPage() {
                 />
               </div>
               {form.formState.errors.resumeUrl && (
-                <p id="resumeUrl-error" className="text-sm text-red-500">
+                <p id="resumeUrl-error" className="text-sm text-destructive">
                   {form.formState.errors.resumeUrl.message}
                 </p>
               )}
               {resumeUrl && (
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   Current:{" "}
                   <a
                     href={resumeUrl ?? ""}
@@ -397,7 +397,9 @@ export default function HeroEditorPage() {
 
               {form.formState.errors.ctaButtons &&
                 !Array.isArray(form.formState.errors.ctaButtons) && (
-                  <p className="text-sm text-red-500">{form.formState.errors.ctaButtons.message}</p>
+                  <p className="text-sm text-destructive">
+                    {form.formState.errors.ctaButtons.message}
+                  </p>
                 )}
             </div>
 

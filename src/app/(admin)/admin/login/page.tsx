@@ -20,7 +20,7 @@ function LoginContent() {
   }, [isAuthenticated, router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-muted">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Admin Login</CardTitle>
@@ -28,7 +28,7 @@ function LoginContent() {
         </CardHeader>
         <CardContent>
           {error && (
-            <div className="mb-4 p-3 rounded-md bg-red-50 text-red-700 text-sm">
+            <div className="mb-4 p-3 rounded-md bg-red-50 text-red-700 text-sm dark:bg-red-950 dark:text-red-400">
               {error === "auth_failed"
                 ? "Authentication failed. Please try again."
                 : `Login error: ${error}`}

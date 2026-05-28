@@ -12,9 +12,9 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
   const { user, signOut } = useAuth();
 
   return (
-    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
+    <header className="h-16 bg-background border-b border-border flex items-center justify-between px-6">
       <button
-        className="md:hidden p-1 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+        className="md:hidden p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent"
         onClick={onMenuClick}
         aria-label="Open navigation menu"
       >
@@ -22,7 +22,7 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
       </button>
       <div className="hidden md:block" />
       <div className="flex items-center gap-4">
-        {user && <span className="text-sm text-gray-600">{user.email}</span>}
+        {user && <span className="text-sm text-muted-foreground">{user.email}</span>}
         <Button variant="ghost" size="sm" onClick={signOut}>
           <LogOut className="h-4 w-4 mr-2" />
           Sign Out

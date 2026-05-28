@@ -17,20 +17,20 @@ export default function AdminError({
   return (
     <div className="flex min-h-[50vh] items-center justify-center">
       <div className="text-center">
-        <h2 className="text-xl font-bold text-gray-900">Something went wrong</h2>
-        <p className="mt-2 text-sm text-gray-600">
+        <h2 className="text-xl font-bold text-foreground">Something went wrong</h2>
+        <p className="mt-2 text-sm text-muted-foreground">
           {error.message || "An unexpected error occurred in the admin panel."}
         </p>
         <div className="mt-6 flex justify-center gap-3">
           <button
             onClick={reset}
-            className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
             Try Again
           </button>
           <Link
             href="/admin"
-            className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            className="rounded-lg border border-input px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
           >
             Go to Dashboard
           </Link>

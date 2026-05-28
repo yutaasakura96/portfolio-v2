@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { apiClient } from "@/lib/api-client";
+import { cn } from "@/lib/utils";
 import { EducationCreateInput, educationCreateSchema } from "@/lib/validations/education";
 import type { Education } from "@/lib/data/types";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -118,7 +119,7 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
               aria-describedby={form.formState.errors.institution ? "institution-error" : undefined}
             />
             {form.formState.errors.institution && (
-              <p id="institution-error" className="text-sm text-red-500">
+              <p id="institution-error" className="text-sm text-destructive">
                 {form.formState.errors.institution.message}
               </p>
             )}
@@ -137,7 +138,7 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
               }
             />
             {form.formState.errors.institutionUrl && (
-              <p id="institutionUrl-error" className="text-sm text-red-500">
+              <p id="institutionUrl-error" className="text-sm text-destructive">
                 {form.formState.errors.institutionUrl.message}
               </p>
             )}
@@ -155,7 +156,7 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
                 aria-describedby={form.formState.errors.degree ? "degree-error" : undefined}
               />
               {form.formState.errors.degree && (
-                <p id="degree-error" className="text-sm text-red-500">
+                <p id="degree-error" className="text-sm text-destructive">
                   {form.formState.errors.degree.message}
                 </p>
               )}
@@ -171,7 +172,7 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
                 aria-describedby={form.formState.errors.field ? "field-error" : undefined}
               />
               {form.formState.errors.field && (
-                <p id="field-error" className="text-sm text-red-500">
+                <p id="field-error" className="text-sm text-destructive">
                   {form.formState.errors.field.message}
                 </p>
               )}
@@ -190,7 +191,7 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
                 aria-describedby={form.formState.errors.startDate ? "startDate-error" : undefined}
               />
               {form.formState.errors.startDate && (
-                <p id="startDate-error" className="text-sm text-red-500">
+                <p id="startDate-error" className="text-sm text-destructive">
                   {form.formState.errors.startDate.message}
                 </p>
               )}
@@ -207,7 +208,7 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
                 aria-describedby={form.formState.errors.endDate ? "endDate-error" : undefined}
               />
               {form.formState.errors.endDate && (
-                <p id="endDate-error" className="text-sm text-red-500">
+                <p id="endDate-error" className="text-sm text-destructive">
                   {form.formState.errors.endDate.message}
                 </p>
               )}
@@ -219,7 +220,10 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
             <div className="flex items-center justify-between">
               <Label htmlFor="achievements">Achievements & Activities</Label>
               <span
-                className={`text-xs ${achievementsLength > 5000 ? "text-red-500" : "text-gray-500"}`}
+                className={cn(
+                  "text-xs",
+                  achievementsLength > 5000 ? "text-destructive" : "text-muted-foreground"
+                )}
               >
                 {achievementsLength}/5000
               </span>
@@ -236,7 +240,7 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
               }
             />
             {form.formState.errors.achievements && (
-              <p id="achievements-error" className="text-sm text-red-500">
+              <p id="achievements-error" className="text-sm text-destructive">
                 {form.formState.errors.achievements.message}
               </p>
             )}
@@ -256,7 +260,7 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
               aria-describedby={form.formState.errors.logoUrl ? "logoUrl-error" : undefined}
             />
             {form.formState.errors.logoUrl && (
-              <p id="logoUrl-error" className="text-sm text-red-500">
+              <p id="logoUrl-error" className="text-sm text-destructive">
                 {form.formState.errors.logoUrl.message}
               </p>
             )}
@@ -309,7 +313,9 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
               />
             </div>
             {form.formState.errors.documentUrl && (
-              <p className="text-sm text-red-500">{form.formState.errors.documentUrl.message}</p>
+              <p className="text-sm text-destructive">
+                {form.formState.errors.documentUrl.message}
+              </p>
             )}
           </div>
 
@@ -326,7 +332,7 @@ export function EducationForm({ initialData, educationId }: EducationFormProps) 
               }
             />
             {form.formState.errors.displayOrder && (
-              <p id="displayOrder-error" className="text-sm text-red-500">
+              <p id="displayOrder-error" className="text-sm text-destructive">
                 {form.formState.errors.displayOrder.message}
               </p>
             )}

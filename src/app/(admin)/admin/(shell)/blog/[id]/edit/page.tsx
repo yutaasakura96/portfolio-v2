@@ -10,7 +10,7 @@ const BlogPostForm = dynamic(
   () => import("@/components/admin/BlogPostForm").then((m) => m.BlogPostForm),
   {
     ssr: false,
-    loading: () => <div className="h-96 animate-pulse rounded-md bg-gray-100" />,
+    loading: () => <div className="h-96 animate-pulse rounded-md bg-muted" />,
   }
 );
 import { Skeleton } from "@/components/ui/skeleton";
@@ -47,11 +47,11 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ id: str
       <div className="space-y-6">
         <Breadcrumbs items={breadcrumbs} />
         <h1 className="text-2xl font-bold">Edit Post</h1>
-        <div className="flex flex-col items-center gap-4 p-12 text-center bg-white rounded-lg border">
+        <div className="flex flex-col items-center gap-4 p-12 text-center bg-card rounded-lg border">
           <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
-            <AlertCircle className="h-8 w-8 text-red-600" />
+            <AlertCircle className="h-8 w-8 text-red-600 dark:text-red-400" />
           </div>
-          <p className="text-gray-600">Failed to load blog post.</p>
+          <p className="text-muted-foreground">Failed to load blog post.</p>
           <Link href="/admin/blog">
             <Button variant="outline">Back to Blog Posts</Button>
           </Link>

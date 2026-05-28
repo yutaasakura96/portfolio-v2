@@ -88,8 +88,8 @@ export default function BlogListPage() {
       {isLoading ? (
         <TableSkeleton rows={3} />
       ) : posts.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-lg border">
-          <p className="text-gray-500">No blog posts yet.</p>
+        <div className="text-center py-12 bg-card rounded-lg border">
+          <p className="text-muted-foreground">No blog posts yet.</p>
           <Link href="/admin/blog/new">
             <Button className="mt-4" variant="outline">
               <Plus className="h-4 w-4 mr-2" /> Create your first post
@@ -101,13 +101,13 @@ export default function BlogListPage() {
           {posts.map((post) => (
             <div
               key={post.id}
-              className="flex items-center justify-between p-4 bg-white rounded-lg border hover:border-gray-300 transition-colors"
+              className="flex items-center justify-between p-4 bg-card rounded-lg border hover:border-muted-foreground transition-colors"
             >
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <Link
                     href={`/admin/blog/${post.id}/edit`}
-                    className="font-medium text-gray-900 hover:text-blue-600 truncate"
+                    className="font-medium text-foreground hover:text-primary truncate"
                   >
                     {post.title}
                   </Link>
@@ -123,7 +123,7 @@ export default function BlogListPage() {
                     )}
                   </Badge>
                 </div>
-                <div className="flex items-center gap-3 text-sm text-gray-500">
+                <div className="flex items-center gap-3 text-sm text-muted-foreground">
                   {post.publishedAt && (
                     <span>{format(new Date(post.publishedAt), "MMM d, yyyy")}</span>
                   )}
@@ -133,7 +133,7 @@ export default function BlogListPage() {
                     </span>
                   )}
                   {post.tags.length > 0 && (
-                    <span className="text-gray-400">
+                    <span className="text-muted-foreground">
                       {post.tags.slice(0, 3).join(", ")}
                       {post.tags.length > 3 && ` +${post.tags.length - 3}`}
                     </span>
@@ -157,7 +157,7 @@ export default function BlogListPage() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-red-500 hover:text-red-700"
+                  className="text-destructive hover:text-destructive"
                   onClick={() => setDeleteId(post.id)}
                 >
                   <Trash2 className="h-4 w-4" />

@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 import type { ProjectCreateInput } from "@/lib/validations/project";
 import { useFormContext, useWatch } from "react-hook-form";
 
@@ -72,7 +73,7 @@ export function ProjectMetaFields({ isEditing }: ProjectMetaFieldsProps) {
             aria-describedby={form.formState.errors.title ? "title-error" : undefined}
           />
           {form.formState.errors.title && (
-            <p id="title-error" className="text-sm text-red-500">
+            <p id="title-error" className="text-sm text-destructive">
               {form.formState.errors.title.message}
             </p>
           )}
@@ -87,7 +88,7 @@ export function ProjectMetaFields({ isEditing }: ProjectMetaFieldsProps) {
             aria-describedby={form.formState.errors.slug ? "slug-error" : undefined}
           />
           {form.formState.errors.slug && (
-            <p id="slug-error" className="text-sm text-red-500">
+            <p id="slug-error" className="text-sm text-destructive">
               {form.formState.errors.slug.message}
             </p>
           )}
@@ -97,7 +98,12 @@ export function ProjectMetaFields({ isEditing }: ProjectMetaFieldsProps) {
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <Label htmlFor="shortDescription">Short Description *</Label>
-          <span className={`text-xs ${shortDescLength > 300 ? "text-red-500" : "text-gray-500"}`}>
+          <span
+            className={cn(
+              "text-xs",
+              shortDescLength > 300 ? "text-destructive" : "text-muted-foreground"
+            )}
+          >
             {shortDescLength}/300
           </span>
         </div>
@@ -111,7 +117,7 @@ export function ProjectMetaFields({ isEditing }: ProjectMetaFieldsProps) {
           }
         />
         {form.formState.errors.shortDescription && (
-          <p id="shortDescription-error" className="text-sm text-red-500">
+          <p id="shortDescription-error" className="text-sm text-destructive">
             {form.formState.errors.shortDescription.message}
           </p>
         )}
@@ -127,7 +133,7 @@ export function ProjectMetaFields({ isEditing }: ProjectMetaFieldsProps) {
           aria-describedby={form.formState.errors.description ? "description-error" : undefined}
         />
         {form.formState.errors.description && (
-          <p id="description-error" className="text-sm text-red-500">
+          <p id="description-error" className="text-sm text-destructive">
             {form.formState.errors.description.message}
           </p>
         )}
@@ -144,7 +150,7 @@ export function ProjectMetaFields({ isEditing }: ProjectMetaFieldsProps) {
             aria-describedby={form.formState.errors.problem ? "problem-error" : undefined}
           />
           {form.formState.errors.problem && (
-            <p id="problem-error" className="text-sm text-red-500">
+            <p id="problem-error" className="text-sm text-destructive">
               {form.formState.errors.problem.message}
             </p>
           )}
@@ -159,7 +165,7 @@ export function ProjectMetaFields({ isEditing }: ProjectMetaFieldsProps) {
             aria-describedby={form.formState.errors.solution ? "solution-error" : undefined}
           />
           {form.formState.errors.solution && (
-            <p id="solution-error" className="text-sm text-red-500">
+            <p id="solution-error" className="text-sm text-destructive">
               {form.formState.errors.solution.message}
             </p>
           )}
@@ -176,7 +182,7 @@ export function ProjectMetaFields({ isEditing }: ProjectMetaFieldsProps) {
           aria-describedby={form.formState.errors.role ? "role-error" : undefined}
         />
         {form.formState.errors.role && (
-          <p id="role-error" className="text-sm text-red-500">
+          <p id="role-error" className="text-sm text-destructive">
             {form.formState.errors.role.message}
           </p>
         )}
@@ -194,7 +200,7 @@ export function ProjectMetaFields({ isEditing }: ProjectMetaFieldsProps) {
             aria-describedby={form.formState.errors.startDate ? "startDate-error" : undefined}
           />
           {form.formState.errors.startDate && (
-            <p id="startDate-error" className="text-sm text-red-500">
+            <p id="startDate-error" className="text-sm text-destructive">
               {form.formState.errors.startDate.message}
             </p>
           )}
@@ -210,7 +216,7 @@ export function ProjectMetaFields({ isEditing }: ProjectMetaFieldsProps) {
             aria-describedby={form.formState.errors.endDate ? "endDate-error" : undefined}
           />
           {form.formState.errors.endDate && (
-            <p id="endDate-error" className="text-sm text-red-500">
+            <p id="endDate-error" className="text-sm text-destructive">
               {form.formState.errors.endDate.message}
             </p>
           )}
@@ -229,7 +235,7 @@ export function ProjectMetaFields({ isEditing }: ProjectMetaFieldsProps) {
             aria-describedby={form.formState.errors.liveUrl ? "liveUrl-error" : undefined}
           />
           {form.formState.errors.liveUrl && (
-            <p id="liveUrl-error" className="text-sm text-red-500">
+            <p id="liveUrl-error" className="text-sm text-destructive">
               {form.formState.errors.liveUrl.message}
             </p>
           )}
@@ -245,7 +251,7 @@ export function ProjectMetaFields({ isEditing }: ProjectMetaFieldsProps) {
             aria-describedby={form.formState.errors.repoUrl ? "repoUrl-error" : undefined}
           />
           {form.formState.errors.repoUrl && (
-            <p id="repoUrl-error" className="text-sm text-red-500">
+            <p id="repoUrl-error" className="text-sm text-destructive">
               {form.formState.errors.repoUrl.message}
             </p>
           )}
@@ -263,7 +269,7 @@ export function ProjectMetaFields({ isEditing }: ProjectMetaFieldsProps) {
           aria-describedby={form.formState.errors.displayOrder ? "displayOrder-error" : undefined}
         />
         {form.formState.errors.displayOrder && (
-          <p id="displayOrder-error" className="text-sm text-red-500">
+          <p id="displayOrder-error" className="text-sm text-destructive">
             {form.formState.errors.displayOrder.message}
           </p>
         )}
