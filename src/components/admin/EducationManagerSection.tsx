@@ -1,11 +1,13 @@
 "use client";
 
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { ImportExportToolbar } from "@/components/admin/ImportExportToolbar";
 import { TableSkeleton } from "@/components/admin/TableSkeleton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { apiClient } from "@/lib/api-client";
 import type { Education } from "@/lib/data/types";
+import { entityConfigs } from "@/lib/import-export";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AlertCircle, Pencil, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
@@ -54,11 +56,19 @@ export function EducationManagerSection() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Education</h2>
-        <Link href="/admin/education/new">
-          <Button>
-            <Plus className="h-4 w-4 mr-2" /> New Education
-          </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <ImportExportToolbar
+            entity="education"
+            entityLabel="Education"
+            entityConfig={entityConfigs.education}
+            queryKey={["admin", "education"]}
+          />
+          <Link href="/admin/education/new">
+            <Button>
+              <Plus className="h-4 w-4 mr-2" /> New Education
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {error && (

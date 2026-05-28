@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { TableSkeleton } from "@/components/admin/TableSkeleton";
+import { ImportExportToolbar } from "@/components/admin/ImportExportToolbar";
+import { entityConfigs } from "@/lib/import-export";
 import { Plus, Pencil, Trash2, Eye, EyeOff, Clock } from "lucide-react";
 import { useState } from "react";
 import { format } from "date-fns";
@@ -53,11 +55,19 @@ export default function BlogListPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Blog Posts</h1>
-        <Link href="/admin/blog/new">
-          <Button>
-            <Plus className="h-4 w-4 mr-2" /> New Post
-          </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <ImportExportToolbar
+            entity="blog"
+            entityLabel="Blog Posts"
+            entityConfig={entityConfigs.blog}
+            queryKey={["admin", "blog"]}
+          />
+          <Link href="/admin/blog/new">
+            <Button>
+              <Plus className="h-4 w-4 mr-2" /> New Post
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Status Filter */}

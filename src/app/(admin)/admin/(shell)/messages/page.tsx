@@ -10,6 +10,8 @@ import {
   type MessageFilters,
 } from "@/hooks/use-messages";
 import { formatDistanceToNow } from "date-fns";
+import { ImportExportToolbar } from "@/components/admin/ImportExportToolbar";
+import { entityConfigs } from "@/lib/import-export";
 import {
   Archive,
   ArchiveRestore,
@@ -149,9 +151,17 @@ export default function MessagesPage() {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Messages</h1>
-        <p className="mt-1 text-sm text-gray-500">Contact form submissions from visitors.</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Messages</h1>
+          <p className="mt-1 text-sm text-gray-500">Contact form submissions from visitors.</p>
+        </div>
+        <ImportExportToolbar
+          entity="messages"
+          entityLabel="Messages"
+          entityConfig={entityConfigs.messages}
+          queryKey={["messages"]}
+        />
       </div>
 
       {/* Tabs */}

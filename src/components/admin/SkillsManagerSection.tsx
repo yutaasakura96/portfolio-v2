@@ -1,11 +1,13 @@
 "use client";
 
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { ImportExportToolbar } from "@/components/admin/ImportExportToolbar";
 import { SkillFormDialog } from "@/components/admin/SkillFormDialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { apiClient } from "@/lib/api-client";
 import type { Skill } from "@/lib/data/types";
+import { entityConfigs } from "@/lib/import-export";
 import {
   closestCenter,
   DndContext,
@@ -198,9 +200,17 @@ export function SkillsManagerSection() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Skills</h2>
-        <Button onClick={() => setIsCreateOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" /> Add Skill
-        </Button>
+        <div className="flex items-center gap-2">
+          <ImportExportToolbar
+            entity="skills"
+            entityLabel="Skills"
+            entityConfig={entityConfigs.skills}
+            queryKey={["admin", "skills"]}
+          />
+          <Button onClick={() => setIsCreateOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" /> Add Skill
+          </Button>
+        </div>
       </div>
 
       {error && (

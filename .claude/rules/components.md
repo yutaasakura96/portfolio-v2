@@ -18,3 +18,4 @@ Pattern: src/components/\*_/_.tsx
 - Do NOT edit files in `src/components/ui/` by hand for shadcn primitive updates — use `npx shadcn@latest add <component>` so the registry stays in sync.
 - Avoid prop drilling more than two levels — lift to a query hook (TanStack) or a layout-level provider instead.
 - Accessibility: all interactive elements need a label (`aria-label` or visible text). Modals/dialogs use Radix primitives so focus trapping is handled — don't roll your own.
+- Import/export UI: admin pages use `<ImportExportToolbar>` (from `src/components/admin/ImportExportToolbar.tsx`) which bundles `ExportButtons` + `ImportDialog`. Pass the entity's config from `entityConfigs` in `src/lib/import-export/entity-configs.ts`. Do not build ad-hoc export/import UIs per page.

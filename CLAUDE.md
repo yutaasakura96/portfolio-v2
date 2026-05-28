@@ -13,6 +13,7 @@ Personal portfolio + admin CMS. Public-facing Next.js site backed by an admin da
 - **AWS runtime:** Amplify Hosting Gen 1 (SSR), S3 (images), CloudFront (assets CDN), SES (email)
 - **Images:** Sharp → WebP, served via CloudFront
 - **Markdown:** remark + rehype (`remark-gfm`, `rehype-sanitize`, `rehype-slug`, `rehype-highlight`)
+- **Import/Export:** papaparse (CSV parsing/generation for admin bulk import/export)
 - **Toasts:** Sonner. **Icons:** lucide-react. **Fonts:** Geist.
 
 ## Commands
@@ -47,6 +48,7 @@ Tests use **Vitest** with **@testing-library/react**. See [.claude/rules/tests.m
 | [src/components/admin/](src/components/admin/)     | Admin-only components                                          |
 | [src/components/public/](src/components/public/)   | Public site components                                         |
 | [src/lib/data/](src/lib/data/)                     | Server-side query layer for public pages + canonical types     |
+| [src/lib/import-export/](src/lib/import-export/)   | Bulk import/export: entity configs, CSV utils, validation      |
 | [src/lib/validations/](src/lib/validations/)       | Zod schemas (one file per entity)                              |
 | [src/lib/aws/](src/lib/aws/)                       | S3, SES, Cognito clients                                       |
 | [src/lib/errors.ts](src/lib/errors.ts)             | `ApiError` + `withErrorHandler`                                |

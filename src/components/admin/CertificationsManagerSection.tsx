@@ -2,11 +2,13 @@
 
 import { CertificationFormDialog } from "@/components/admin/CertificationFormDialog";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { ImportExportToolbar } from "@/components/admin/ImportExportToolbar";
 import { TableSkeleton } from "@/components/admin/TableSkeleton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { apiClient } from "@/lib/api-client";
 import type { Certification } from "@/lib/data/types";
+import { entityConfigs } from "@/lib/import-export";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AlertCircle, Pencil, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
@@ -60,9 +62,17 @@ export function CertificationsManagerSection() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Certifications</h2>
-        <Button onClick={() => setIsCreateOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" /> Add Certification
-        </Button>
+        <div className="flex items-center gap-2">
+          <ImportExportToolbar
+            entity="certifications"
+            entityLabel="Certifications"
+            entityConfig={entityConfigs.certifications}
+            queryKey={["admin", "certifications"]}
+          />
+          <Button onClick={() => setIsCreateOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" /> Add Certification
+          </Button>
+        </div>
       </div>
 
       {error && (

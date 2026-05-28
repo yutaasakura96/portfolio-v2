@@ -17,6 +17,8 @@ import { apiClient } from "@/lib/api-client";
 import { aboutPageUpdateSchema, type AboutPageUpdateInput } from "@/lib/validations/about";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ImportExportToolbar } from "@/components/admin/ImportExportToolbar";
+import { entityConfigs } from "@/lib/import-export";
 import { ExternalLink, Loader2, Save } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
@@ -127,9 +129,17 @@ export default function AboutManagerPage() {
               </Link>
             </p>
           </div>
-          {isDirty && (
-            <span className="text-xs text-amber-600 font-medium mt-1">Unsaved changes</span>
-          )}
+          <div className="flex items-center gap-4">
+            <ImportExportToolbar
+              entity="about"
+              entityLabel="About"
+              entityConfig={entityConfigs.about}
+              queryKey={["admin", "about"]}
+            />
+            {isDirty && (
+              <span className="text-xs text-amber-600 font-medium mt-1">Unsaved changes</span>
+            )}
+          </div>
         </div>
       </div>
 

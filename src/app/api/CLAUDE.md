@@ -152,13 +152,28 @@ After any mutation that affects a public page, call `revalidatePath` for every a
 
 ## Rate Limiting
 
-[src/lib/rate-limit.ts](src/lib/rate-limit.ts) is Upstash-backed (sliding window via `@upstash/ratelimit` on `@upstash/redis`). Public API: `rateLimit(key, limit, windowMs)` (async — `await` it) and `getClientIp(request)`. Returns `{ success, remaining, resetTime }`. Limiter instances are cached per `(limit, windowMs)` tuple, so calling from a hot path is fine. Fails open on Upstash errors (logs and allows the request) so a brief Redis outage can't take down public endpoints. Requires `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` (set in `.env` locally and wired through [amplify.yml](amplify.yml) for production). Used today by contact (5 req / 15 min per IP) and upload (20 req / 1 min per IP).
+[src/lib/rate-limit.ts](src/lib/rate-limit.ts) is Upstash-backed (sliding window via `@upstash/ratelimit` on `@upstash/redis`). Public API: `rateLimit(key, limit, windowMs)` (async — `await` it) and `getClientIp(request)`. Returns `{ success, remaining, resetTime }`. Limiter instances are cached per `(limit, windowMs)` tuple, so calling from a hot path is fine. Fails open on Upstash errors (logs and allows the request) so a brief Redis outage can't take down public endpoints. Requires `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` (set in `.env` locally and wired through [amplify.yml](amplify.yml) for production). Used today by contact (5 req / 15 min per IP), upload (20 req / 1 min per IP), import (10 req / 1 min per IP), and export (30 req / 1 min per IP).
 
 ## Public vs Admin Endpoints
 
 - **Public POST endpoints** (currently only contact): rate-limit, honeypot, no auth.
 - **All other mutations:** `requireAuth` first, then validate.
 - **Public GET endpoints:** no auth, but if any param can expose admin data (`?status=DRAFT`), gate that branch with `requireAuth`.
+
+## Import/Export Routes
+
+Every entity has `export/route.ts` (GET) and optionally `import/route.ts` (POST). These follow the standard skeleton with two exceptions:
+
+- **Export routes return raw file content** (JSON or CSV) with `Content-Disposition: attachment` headers — NOT the `{ data: T }` envelope. This is intentional: the browser downloads the file directly via `<a href="/api/entity/export?format=json">`. Do not wrap export responses in `{ data: ... }`.
+- **Import routes accept `{ items: T[], mode: "create" | "upsert" }` for collections** and a bare object for singletons. They return `{ data: { created, updated, skipped } }`.
+
+Shared utilities live in [src/lib/import-export/](src/lib/import-export/):
+
+- `entity-configs.ts` — central registry of per-entity config (unique keys, array/JSON/numeric fields, schemas, revalidation paths)
+- `csv-utils.ts` — CSV flatten/unflatten with formula injection protection
+- `validation-helpers.ts` — row validation, field stripping, unique key lookup
+
+When adding a new entity, add its config to `entityConfigs` in `entity-configs.ts` and create the corresponding `export/route.ts` and `import/route.ts` following the existing patterns.
 
 ## What Not to Do
 

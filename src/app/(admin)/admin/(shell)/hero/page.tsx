@@ -10,6 +10,8 @@ import { apiClient } from "@/lib/api-client";
 import { HeroUpdateInput, heroUpdateSchema } from "@/lib/validations/hero";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ImportExportToolbar } from "@/components/admin/ImportExportToolbar";
+import { entityConfigs } from "@/lib/import-export";
 import { Plus, Trash2 } from "lucide-react";
 import { useEffect } from "react";
 import dynamic from "next/dynamic";
@@ -231,9 +233,17 @@ export default function HeroEditorPage() {
     <div className="max-w-3xl space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Edit Hero Section</h1>
-        {form.formState.isDirty && (
-          <span className="text-sm text-amber-600 font-medium">● Unsaved changes</span>
-        )}
+        <div className="flex items-center gap-4">
+          <ImportExportToolbar
+            entity="hero"
+            entityLabel="Hero"
+            entityConfig={entityConfigs.hero}
+            queryKey={["admin", "hero"]}
+          />
+          {form.formState.isDirty && (
+            <span className="text-sm text-amber-600 font-medium">● Unsaved changes</span>
+          )}
+        </div>
       </div>
 
       <Card>

@@ -5,6 +5,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSettings, useUpdateSettings } from "@/hooks/use-settings";
 import { siteSettingsUpdateSchema, type SiteSettingsUpdateInput } from "@/lib/validations/settings";
+import { ImportExportToolbar } from "@/components/admin/ImportExportToolbar";
+import { entityConfigs } from "@/lib/import-export";
 import { Globe, Github, Linkedin, Loader2, Save, Twitter, Youtube } from "lucide-react";
 import { toast } from "sonner";
 
@@ -74,11 +76,19 @@ export default function AdminSettingsPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Site Settings</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Configure your portfolio&apos;s global settings.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Site Settings</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            Configure your portfolio&apos;s global settings.
+          </p>
+        </div>
+        <ImportExportToolbar
+          entity="settings"
+          entityLabel="Settings"
+          entityConfig={entityConfigs.settings}
+          queryKey={["admin", "settings"]}
+        />
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">

@@ -372,6 +372,16 @@ class ApiClient {
       body: JSON.stringify(data),
     });
   }
+  // ── Import/Export ─────────────────────────────────
+  importEntity<TResult = unknown>(
+    entity: string,
+    data: { items: unknown[]; mode: "create" | "upsert" } | Record<string, unknown>
+  ) {
+    return this.request<ApiResponse<TResult>>(`/${entity}/import`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
 }
 
 export const apiClient = new ApiClient();

@@ -21,3 +21,4 @@ These files are the single source of input shapes for both API routes and forms.
 - Shared atoms (slug schema, tag-list schema) live in `src/lib/validations/shared.ts` — extend that file rather than duplicating across entities.
 - Do NOT use Zod schemas as DB-layer types — that's what Prisma's generated types are for. Validations describe inputs; Prisma describes the row shape.
 - File-upload schemas validate `mimeType` against an explicit allowlist (`["image/jpeg", "image/png", "image/webp"]`). Never allow arbitrary MIME types.
+- Import schemas reuse the entity's `createSchema` (with `.refine()` intact) via `entityConfigs` in `src/lib/import-export/entity-configs.ts`. Do not bypass refinements by using a base schema — import data must pass the same validation as manual creation.

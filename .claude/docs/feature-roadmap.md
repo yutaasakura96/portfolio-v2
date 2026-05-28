@@ -2,7 +2,7 @@
 
 Living document tracking planned features, improvements, and integrations for the portfolio project.
 
-Last updated: 2026-05-25
+Last updated: 2026-05-28
 
 ---
 
@@ -79,7 +79,8 @@ Last updated: 2026-05-25
 - [x] Neon prod-to-dev continuous replication — branch from prod so dev always has real data　
       NOTE: Done using Neon DB console's reset from parent
 - [ ] Admin audit log — track who changed what, when (simple table)
-- [ ] Content import/export from admin (JSON/CSV)
+- [x] Content import/export from admin (JSON/CSV) — 27 new files, 11 modified. JSON+CSV export for all entities, JSON+CSV import with preview/validation for all except messages. Two import modes (create-only, upsert). Rate-limited, CSV injection-safe, date-validated.
+- [ ] Admin dark mode theming pass — hardcoded `bg-white`, `text-gray-*`, `border-gray-*` persist across ~12 admin files (EducationManagerSection, ExperienceManagerSection, CertificationsManagerSection, SkillsManagerSection, and admin pages). Replace with theme tokens (`bg-background`, `text-foreground`, `border-border`, `bg-muted`, `text-muted-foreground`). The import/export components already use proper tokens — this is a pre-existing issue across the admin UI.
 
 ---
 
@@ -136,11 +137,11 @@ Last updated: 2026-05-25
 1. ~~**Bug fixes** — blurred image preview in admin education~~ (done)
 2. ~~**CI/CD foundation** — GitHub Actions + CodeQL + Dependabot + GitHub MCP + remove Zustand~~ (done)
 3. ~~**Vitest** — test framework wired, 5 test files covering critical paths~~ (done)
-4. **Neon replication** — prod-to-dev branch so dev always has real data (blocker for dynamic OG images and other data-dependent features)
+4. ~~**Neon replication** — prod-to-dev branch so dev always has real data (blocker for dynamic OG images and other data-dependent features)
 5. **SEO batch** — OG images, sitemap, JSON-LD, RSS, favicon
 6. **Blog features** — social share buttons, LinkedIn importer
 7. **Sentry** — error tracking before adding more features
-8. **Admin improvements** — audit log, content export
+8. **Admin improvements** — audit log, ~~content import/export~~ (done), admin dark mode theming pass
 9. **Observability** — CloudWatch, SNS, health check
 10. **Design & UX** — hero 3D element, redesign iterations
 11. **Tooling** — new skills, Portfolio MCP, diagram generator

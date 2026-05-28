@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { apiClient } from "@/lib/api-client";
 import type { Project } from "@/lib/data/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ImportExportToolbar } from "@/components/admin/ImportExportToolbar";
+import { entityConfigs } from "@/lib/import-export";
 import { AlertCircle, Pencil, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -59,11 +61,19 @@ export default function ProjectsListPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Projects</h1>
-        <Link href="/admin/projects/new">
-          <Button>
-            <Plus className="h-4 w-4 mr-2" /> New Project
-          </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <ImportExportToolbar
+            entity="projects"
+            entityLabel="Projects"
+            entityConfig={entityConfigs.projects}
+            queryKey={["admin", "projects"]}
+          />
+          <Link href="/admin/projects/new">
+            <Button>
+              <Plus className="h-4 w-4 mr-2" /> New Project
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {error && (
