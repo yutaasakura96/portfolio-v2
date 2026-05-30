@@ -2,7 +2,7 @@
 
 Living document tracking planned features, improvements, and integrations for the portfolio project.
 
-Last updated: 2026-05-28
+Last updated: 2026-05-30
 
 ---
 
@@ -80,12 +80,12 @@ Last updated: 2026-05-28
       NOTE: Done using Neon DB console's reset from parent
 - [ ] Admin audit log — track who changed what, when (simple table)
 - [x] Content import/export from admin (JSON/CSV) — 27 new files, 11 modified. JSON+CSV export for all entities, JSON+CSV import with preview/validation for all except messages. Two import modes (create-only, upsert). Rate-limited, CSV injection-safe, date-validated.
-- [ ] Admin dark mode theming pass — hardcoded `bg-white`, `text-gray-*`, `border-gray-*` persist across ~12 admin files (EducationManagerSection, ExperienceManagerSection, CertificationsManagerSection, SkillsManagerSection, and admin pages). Replace with theme tokens (`bg-background`, `text-foreground`, `border-border`, `bg-muted`, `text-muted-foreground`). The import/export components already use proper tokens — this is a pre-existing issue across the admin UI.
-- drag and drop functionality to reorder certifications/ change order.
+- [x] Admin dark mode theming pass — hardcoded `bg-white`, `text-gray-*`, `border-gray-*` persist across ~12 admin files (EducationManagerSection, ExperienceManagerSection, CertificationsManagerSection, SkillsManagerSection, and admin pages). Replace with theme tokens (`bg-background`, `text-foreground`, `border-border`, `bg-muted`, `text-muted-foreground`). The import/export components already use proper tokens — this is a pre-existing issue across the admin UI.
+- [ ] Drag-and-drop reordering for certifications (and other entities with `displayOrder`)
 
 ## 7. Blog Features
 
-- [ ] LinkedIn post importer — pull existing LinkedIn posts and convert them into blog entries, preserving the original publish date
+- [ ] LinkedIn post importer — pull existing LinkedIn posts in my profile and convert them into blog entries, preserving the original publish date
 - [ ] Social share buttons — one-click sharing to LinkedIn, Facebook, Instagram, and other major platforms
 - [ ] Blog reading time estimate (also listed under SEO)
 - [ ] Auto-generated table of contents (also listed under SEO)
@@ -94,6 +94,8 @@ Last updated: 2026-05-28
 
 ## 8. Portfolio Design & UX
 
+- [ ] Admin theme toggle — add light/dark mode switcher to the admin layout (public site already has one)
+- [ ] Admin dashboard — surface key metrics (page visits, countries from Google Analytics, errors from Sentry, and other important figures)
 - [ ] Complete portfolio redesign — research best practices, iterate incrementally
   - Research trending Claude Code skills/agents and AI design tools that can generate or redesign full websites with modern, polished UI (e.g. design-system generators, UI cloning agents, portfolio-specific skills). Evaluate which ones produce the best results before committing to an approach.
 - [ ] Interactive 3D element on hero page (Three.js / React Three Fiber)
@@ -108,6 +110,10 @@ Last updated: 2026-05-28
 
 - [ ] Add new Claude Code skills — [10 must-have skills for Claude Code (2026)](https://medium.com/@unicodeveloper/10-must-have-skills-for-claude-and-any-coding-agent-in-2026-b5451b013051)
 - [ ] Prompt writer agent — refine prompts for better Claude Code output
+  - Hook idea: trigger prompt writer agent to refine the user's prompt, then return it for final review/editing before execution.
+- [ ] Multi-agent orchestrator workflow — full pipeline: prompt → prompt writer agent → user confirmation → plan agent → orchestrator → feature-builder / refactor / db / explore agents → code-reviewer → documentation agent
+- [ ] Documentation agent — auto-generate and update project docs (folder structure, features, API, tech stack, setup)
+- [ ] Post-implementation doc hook — trigger documentation agent after feature builds to keep docs in sync and avoid drift.
 - [ ] New skills/tools/agents derived from existing repos
 - [ ] Excalidraw diagram generator — visual architecture diagrams
   - References: [Medium skill guide](https://medium.com/@unicodeveloper/10-must-have-skills-for-claude-and-any-coding-agent-in-2026-b5451b013051), [AWS architecture diagram skill](https://github.com/vidanov/aws-architecture-diagram-skill)
@@ -123,6 +129,7 @@ Last updated: 2026-05-28
 
 - [ ] GitHub wiki for project documentation
 - [ ] Architecture diagram (Excalidraw or AWS diagram skill)
+- [ ] Comprehensive project documentation — folder structure, features, API reference, tech stack, setup guide, and all key information
 
 ### Media & Demo
 
