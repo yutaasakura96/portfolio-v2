@@ -8,7 +8,10 @@ const experienceBaseSchema = z.object({
   endDate: z.preprocess((val) => (val === "" ? null : val), z.coerce.date().optional().nullable()),
   description: z.string().min(1),
   highlights: z.array(z.string().max(500)).default([]),
-  techTags: z.array(z.string().max(100)).default([]),
+  techTags: z
+    .array(z.string().max(100))
+    .default([])
+    .transform((tags) => [...new Set(tags)]),
   logoUrl: z.url().or(z.literal("")).optional(),
   companyUrl: z.url().or(z.literal("")).optional(),
   displayOrder: z.number().int().default(0),

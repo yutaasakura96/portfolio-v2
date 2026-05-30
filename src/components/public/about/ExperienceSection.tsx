@@ -99,7 +99,7 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
                           Technologies Used:
                         </span>
                         <div className="mt-1.5 flex flex-wrap gap-1.5">
-                          {exp.techTags.map((tag) => (
+                          {[...new Set(exp.techTags)].map((tag) => (
                             <span
                               key={tag}
                               className="inline-flex items-center px-2 py-0.5 rounded-md bg-muted text-xs font-medium text-muted-foreground"
