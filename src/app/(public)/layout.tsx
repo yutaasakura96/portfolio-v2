@@ -2,6 +2,7 @@ import { GoogleAnalytics } from "@/components/public/GoogleAnalytics";
 import { Footer } from "@/components/public/Footer";
 import { Header } from "@/components/public/Header";
 import { prisma } from "@/lib/prismaClient";
+import { Toaster } from "sonner";
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const settings = await prisma.siteSettings.findUnique({
@@ -17,6 +18,7 @@ export default async function PublicLayout({ children }: { children: React.React
         <main className="flex-1">{children}</main>
         <Footer />
       </div>
+      <Toaster position="bottom-right" />
     </>
   );
 }

@@ -94,6 +94,7 @@ Domain rules (Zod validation, `withErrorHandler`, ISR/client split, image pipeli
 - ❌ Forgetting to `await` `rateLimit()` from [src/lib/rate-limit.ts](src/lib/rate-limit.ts) — it became async with the Upstash swap. Missing `await` leaves `result.success` undefined, which the standard `if (!result.success)` check reads as truthy → spurious 429 on every call. Requires `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` in `.env` locally and wired through [amplify.yml](amplify.yml) for production.
 - ❌ Using `pageSize` for new endpoints — standardize on `page` + `limit`.
 - ❌ Returning `{ data: { success: true } }` — use `{ data: T }` or `{ data: T[], meta }`. No `success` envelope.
+- ❌ Using `NEXT_PUBLIC_APP_URL` to build social share URLs — it resolves to `http://localhost:3000` in dev, producing broken share links. Canonical public URLs (e.g. in `SocialShareButtons`) are hardcoded to `https://asakurayuta.dev/...` intentionally.
 
 ## MCP Servers
 

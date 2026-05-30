@@ -64,7 +64,7 @@ This project uses **Tailwind v4 with `@tailwindcss/postcss`** — there is no `t
 - **Form state:** react-hook-form + `@hookform/resolvers/zod`. Schema imported from `src/lib/validations/`.
 - **URL state:** `useSearchParams` / `nextUrl.searchParams`. Don't reinvent.
 - **Client state:** `useState` / `useReducer` for local. **Do not introduce Zustand** — it was removed from the project; do not add it.
-- **Toasts:** `sonner` — `toast.success(...)`, `toast.error(...)`. Don't build custom toast components.
+- **Toasts:** `sonner` — `toast.success(...)`, `toast.error(...)`. Don't build custom toast components. `<Toaster position="bottom-right" />` is mounted in both the public layout (`src/app/(public)/layout.tsx`) and the admin layout, so Sonner toasts work on all public pages as well as admin pages.
 
 ## Data Fetching
 

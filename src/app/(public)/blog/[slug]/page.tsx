@@ -4,6 +4,7 @@ import { JsonLd } from "@/components/public/JsonLd";
 import { getPostBySlug, getPublishedPostSlugs } from "@/lib/data/public-queries";
 import { markdownToHtml } from "@/lib/markdown";
 import { formatReadingTime } from "@/lib/reading-time";
+import SocialShareButtons from "@/components/public/SocialShareButtons";
 import { format } from "date-fns";
 import { ArrowLeft, Calendar, Clock } from "lucide-react";
 import { Metadata } from "next";
@@ -146,7 +147,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       />
 
       {/* Bottom CTA */}
-      <div className="mt-12 pt-8 border-t border-border">
+      <div className="mt-12 pt-8 border-t border-border space-y-4">
+        <SocialShareButtons url={`https://asakurayuta.dev/blog/${post.slug}`} title={post.title} />
         <p className="text-muted-foreground">
           Enjoyed this post?{" "}
           <Link href="/contact" className="text-foreground font-medium hover:underline">

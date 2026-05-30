@@ -86,7 +86,7 @@ Last updated: 2026-05-30
 ## 7. Blog Features
 
 - [ ] LinkedIn post importer — pull existing LinkedIn posts in my profile and convert them into blog entries, preserving the original publish date
-- [ ] Social share buttons — one-click sharing to LinkedIn, Facebook, Instagram, and other major platforms
+- [x] Social share buttons — one-click sharing to LinkedIn, Facebook, and X/Twitter via native share URLs (no third-party SDKs); copy-link button via clipboard API + Sonner toast. Rendered on blog post detail pages (`src/components/public/SocialShareButtons.tsx`). Share URL is hardcoded to `https://asakurayuta.dev/blog/${slug}` (not `NEXT_PUBLIC_APP_URL`, which resolves to localhost in dev).
 - [x] Blog reading time estimate (also listed under SEO)
 - [ ] Auto-generated table of contents (also listed under SEO)
 
@@ -145,7 +145,7 @@ Last updated: 2026-05-30
 3. ~~**Vitest** — test framework wired, 5 test files covering critical paths~~ (done)
 4. ~~**Neon replication** — prod-to-dev branch so dev always has real data (blocker for dynamic OG images and other data-dependent features)
 5. **SEO batch** — OG images, sitemap, JSON-LD, RSS, favicon
-6. **Blog features** — social share buttons, LinkedIn importer
+6. **Blog features** — ~~social share buttons~~ (done), LinkedIn importer
 7. **Sentry** — error tracking before adding more features
 8. **Admin improvements** — audit log, ~~content import/export~~ (done), admin dark mode theming pass
 9. **Observability** — CloudWatch, SNS, health check
