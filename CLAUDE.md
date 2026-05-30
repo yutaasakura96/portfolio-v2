@@ -57,6 +57,23 @@ Tests use **Vitest** with **@testing-library/react**. See [.claude/rules/tests.m
 
 Scoped instructions: [src/CLAUDE.md](src/CLAUDE.md), [src/app/api/CLAUDE.md](src/app/api/CLAUDE.md), [prisma/CLAUDE.md](prisma/CLAUDE.md).
 
+## Request Routing
+
+Before starting implementation, evaluate the scope of the request:
+
+| Signal                                                                        | Route to                                               |
+| ----------------------------------------------------------------------------- | ------------------------------------------------------ |
+| Request touches 3+ areas (schema + API + UI, or API + multiple pages + tests) | **orchestrator** agent — do NOT start editing directly |
+| User says "orchestrate", "multi-agent", or "full pipeline"                    | **orchestrator** agent                                 |
+| Single entity end-to-end (schema through UI)                                  | **feature-builder** agent directly                     |
+| Schema-only change (migration, new model, field change)                       | **db-agent** directly                                  |
+| Convention alignment of existing code                                         | **refactor-agent** directly                            |
+| Review or audit                                                               | **code-reviewer** directly                             |
+| Documentation update (docs out of sync, roadmap update)                       | **documentation-agent** directly                       |
+| Single-file edit, typo fix, quick lookup                                      | Handle directly in main session                        |
+
+If uncertain whether the orchestrator is needed, ask the user: "This looks like it might span multiple domains. Should I use the orchestrator to coordinate, or handle it directly?"
+
 ## Critical Rules (universal — domain-specific rules live in [.claude/rules/](.claude/rules/))
 
 1. **Auth import is `@/app/api/auth`** — `requireAuth` for protected routes, `optionalAuth` when behavior differs by login state.
@@ -109,6 +126,7 @@ Full AWS infrastructure details: [.claude/docs/infrastructure.md](.claude/docs/i
 - **db-agent** — Prisma + Neon operations. Migrations, schema, seed. Knows Neon branching. Never resets without confirmation.
 - **feature-builder** — Builds new features following all conventions. Reads all CLAUDE.md files before starting.
 - **synthesizer** — Post-build integration validator. Checks cross-domain consistency (schema ↔ Zod ↔ API ↔ UI) after multi-agent builds. Read-only. Spawned by orchestrator in Patterns C/D.
+- **documentation-agent** — Keeps project docs in sync with the codebase. Reads all CLAUDE.md files, rules, and roadmap, diffs against actual code, and updates only documentation files. Run after significant changes or when the post-commit hook suggests it.
 
 Project agents default to `model: sonnet` except `code-reviewer` which defaults to `model: haiku` (read-only pattern matching). Pass `model: opus` on the `Agent` call only when complexity warrants. Built-in subagents (`Explore` / `Plan` / `general-purpose`) — see feature-workflow.md §Models for per-spawn defaults.
 

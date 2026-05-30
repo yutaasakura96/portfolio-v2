@@ -35,13 +35,14 @@ Trivial additive schema changes (new optional column on a small table) can skip 
 
 Spawn an agent when the task matches its description — not for every step.
 
-| Agent             | When to use                                                                                       |
-| ----------------- | ------------------------------------------------------------------------------------------------- |
-| `feature-builder` | Net-new end-to-end feature (model + migration + API route + admin UI + public surface).           |
-| `db-agent`        | Schema changes, migrations, seed updates. Knows the Neon branching workflow.                      |
-| `synthesizer`     | Cross-domain integration check after multi-agent builds. Spawned by orchestrator in Patterns C/D. |
-| `code-reviewer`   | Read-only review before opening the PR. Cites the specific rule each issue violates.              |
-| `refactor-agent`  | Bringing existing code in line with conventions. File-by-file. Logs to `refactor-log.md`.         |
+| Agent                 | When to use                                                                                                       |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `feature-builder`     | Net-new end-to-end feature (model + migration + API route + admin UI + public surface).                           |
+| `db-agent`            | Schema changes, migrations, seed updates. Knows the Neon branching workflow.                                      |
+| `synthesizer`         | Cross-domain integration check after multi-agent builds. Spawned by orchestrator in Patterns C/D.                 |
+| `code-reviewer`       | Read-only review before opening the PR. Cites the specific rule each issue violates.                              |
+| `refactor-agent`      | Bringing existing code in line with conventions. File-by-file. Logs to `refactor-log.md`.                         |
+| `documentation-agent` | Update project docs (CLAUDE.md, roadmap, rules) after significant changes. Run when post-commit hook suggests it. |
 
 ### Skills
 

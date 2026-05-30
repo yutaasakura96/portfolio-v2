@@ -109,11 +109,10 @@ Last updated: 2026-05-30
 ### Skills & Agents
 
 - [ ] Add new Claude Code skills — [10 must-have skills for Claude Code (2026)](https://medium.com/@unicodeveloper/10-must-have-skills-for-claude-and-any-coding-agent-in-2026-b5451b013051)
-- [ ] Prompt writer agent — refine prompts for better Claude Code output
-  - Hook idea: trigger prompt writer agent to refine the user's prompt, then return it for final review/editing before execution.
-- [ ] Multi-agent orchestrator workflow — full pipeline: prompt → prompt writer agent → user confirmation → plan agent → orchestrator → feature-builder / refactor / db / explore agents → code-reviewer → documentation agent
-- [ ] Documentation agent — auto-generate and update project docs (folder structure, features, API, tech stack, setup)
-- [ ] Post-implementation doc hook — trigger documentation agent after feature builds to keep docs in sync and avoid drift.
+- [x] Documentation agent — standalone agent that reads codebase, diffs against docs, and updates CLAUDE.md files, roadmap, and rules. `.claude/agents/documentation-agent.md`
+- [x] Post-commit doc reminder hook — PostToolUse hook on `Bash` that detects significant commits (schema, API routes, pages, agents, rules) and suggests running the documentation-agent. `.claude/hooks/post-commit-doc-reminder.sh`
+- [x] Orchestrator auto-routing — implemented as a Request Routing decision-tree table in `CLAUDE.md` (not a hook — hooks can't evaluate user intent). Routes requests to the correct agent based on scope signals.
+- [-] Prompt writer agent — deferred. Better to improve CLAUDE.md rules so agents already know what you want, rather than adding a rewrite layer that creates friction. Revisit if CLAUDE.md improvements aren't enough.
 - [ ] New skills/tools/agents derived from existing repos
 - [ ] Excalidraw diagram generator — visual architecture diagrams
   - References: [Medium skill guide](https://medium.com/@unicodeveloper/10-must-have-skills-for-claude-and-any-coding-agent-in-2026-b5451b013051), [AWS architecture diagram skill](https://github.com/vidanov/aws-architecture-diagram-skill)
@@ -150,4 +149,4 @@ Last updated: 2026-05-30
 8. **Admin improvements** — audit log, ~~content import/export~~ (done), admin dark mode theming pass
 9. **Observability** — CloudWatch, SNS, health check
 10. **Design & UX** — hero 3D element, redesign iterations
-11. **Tooling** — new skills, Portfolio MCP, diagram generator
+11. **Tooling** — documentation agent + hooks first, then new skills, Portfolio MCP, diagram generator
