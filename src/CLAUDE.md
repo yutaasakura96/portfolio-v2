@@ -6,7 +6,7 @@ Applies to everything under `src/` (components, hooks, app routes, libs).
 
 - **Files: `PascalCase.tsx`** for React components (e.g. `ProjectForm.tsx`, `Header.tsx`).
 - **Files: `kebab-case.ts`** for non-component modules (e.g. `api-client.ts`, `public-queries.ts`).
-- **Hooks: `use-kebab-case.ts`** in [src/hooks/](src/hooks/) (matching existing `use-auth.ts`, `use-messages.ts`).
+- **Hooks: `use-kebab-case.ts`** in [src/hooks/](src/hooks/) (matching existing `use-auth.ts`, `use-messages.ts`, `use-dnd-reorder.ts`). Generic reusable hooks belong here — e.g. `use-dnd-reorder.ts` encapsulates dnd-kit draft state + TanStack Query save mutation for any entity with `displayOrder`.
 - **shadcn primitives in [src/components/ui/](src/components/ui/) keep the shadcn lowercase convention** (`button.tsx`, `dialog.tsx`). Do not rename them.
 - One component per file. Default export is the component; named exports for variants/types.
 
