@@ -3,6 +3,8 @@ import { Calendar, Clock } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+import { formatReadingTime } from "@/lib/reading-time";
+
 interface BlogPostCardProps {
   post: {
     slug: string;
@@ -69,7 +71,7 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
           {post.readTime && (
             <span className="inline-flex items-center gap-1">
               <Clock className="h-3.5 w-3.5" />
-              {post.readTime} min read
+              {formatReadingTime(post.readTime)}
             </span>
           )}
         </div>

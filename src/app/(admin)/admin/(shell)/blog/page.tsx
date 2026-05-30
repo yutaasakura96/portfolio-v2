@@ -10,6 +10,7 @@ import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { TableSkeleton } from "@/components/admin/TableSkeleton";
 import { ImportExportToolbar } from "@/components/admin/ImportExportToolbar";
 import { entityConfigs } from "@/lib/import-export";
+import { formatReadingTime } from "@/lib/reading-time";
 import { Plus, Pencil, Trash2, Eye, EyeOff, Clock } from "lucide-react";
 import { useState } from "react";
 import { format } from "date-fns";
@@ -129,7 +130,7 @@ export default function BlogListPage() {
                   )}
                   {post.readTime && (
                     <span className="flex items-center gap-1">
-                      <Clock className="h-3 w-3" /> {post.readTime} min read
+                      <Clock className="h-3 w-3" /> {formatReadingTime(post.readTime)}
                     </span>
                   )}
                   {post.tags.length > 0 && (

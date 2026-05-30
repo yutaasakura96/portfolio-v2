@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { prisma } from "@/lib/prismaClient";
+import { formatReadingTime } from "@/lib/reading-time";
 
 export const runtime = "nodejs";
 
@@ -80,7 +81,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
                 display: "flex",
               }}
             >
-              {post.readTime} min read
+              {formatReadingTime(post.readTime)}
             </div>
           </>
         )}

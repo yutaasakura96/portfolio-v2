@@ -1,6 +1,7 @@
 import { requireAuth } from "@/app/api/auth";
 import { ApiError, ErrorCodes, withErrorHandler } from "@/lib/errors";
 import { Prisma, prisma } from "@/lib/prismaClient";
+import { calculateReadingTime } from "@/lib/reading-time";
 import { blogPostCreateSchema } from "@/lib/validations/blog";
 import { revalidatePath } from "next/cache";
 import { NextRequest } from "next/server";
@@ -109,8 +110,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
     throw new ApiError("A post with this slug already exists", 409, ErrorCodes.CONFLICT);
   }
 
-  const wordCount = data.content.split(/\s+/).filter(Boolean).length;
-  const readTime = Math.max(1, Math.ceil(wordCount / 200));
+  const readTime = calculateReadingTime(data.content);
 
   const publishedAt =
     data.status === "PUBLISHED" && !data.publishedAt ? new Date() : data.publishedAt || null;

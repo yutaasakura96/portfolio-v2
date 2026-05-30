@@ -2,6 +2,7 @@ import { requireAuth } from "@/app/api/auth";
 import { ApiError, ErrorCodes, withErrorHandler } from "@/lib/errors";
 import { deleteS3Folder } from "@/lib/aws/s3";
 import { prisma } from "@/lib/prismaClient";
+import { calculateReadingTime } from "@/lib/reading-time";
 import { blogPostUpdateSchema } from "@/lib/validations/blog";
 import { revalidatePath } from "next/cache";
 import { NextRequest } from "next/server";
@@ -64,8 +65,7 @@ export const PUT = withErrorHandler(
     // Recalculate read time if content changed
     let readTime = existing.readTime;
     if (data.content) {
-      const wordCount = data.content.split(/\s+/).filter(Boolean).length;
-      readTime = Math.max(1, Math.ceil(wordCount / 200));
+      readTime = calculateReadingTime(data.content);
     }
 
     // Handle publish: set publishedAt on first publish; preserve on unpublish

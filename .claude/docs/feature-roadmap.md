@@ -43,7 +43,7 @@ Last updated: 2026-05-30
 - [ ] JSON-LD structured data (Person, Article, Project schemas)
 - [ ] RSS feed for blog posts
 - [ ] Custom logo/favicon on navbar and browser tabs
-- [ ] Blog reading time estimate
+- [x] Blog reading time estimate
 - [ ] Auto-generated table of contents for blog posts
 
 ---
@@ -87,7 +87,7 @@ Last updated: 2026-05-30
 
 - [ ] LinkedIn post importer — pull existing LinkedIn posts in my profile and convert them into blog entries, preserving the original publish date
 - [ ] Social share buttons — one-click sharing to LinkedIn, Facebook, Instagram, and other major platforms
-- [ ] Blog reading time estimate (also listed under SEO)
+- [x] Blog reading time estimate (also listed under SEO)
 - [ ] Auto-generated table of contents (also listed under SEO)
 
 ---

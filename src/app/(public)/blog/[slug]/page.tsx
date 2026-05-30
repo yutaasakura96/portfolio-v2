@@ -3,6 +3,7 @@ import { BreadcrumbJsonLd } from "@/components/public/BreadcrumbJsonLd";
 import { JsonLd } from "@/components/public/JsonLd";
 import { getPostBySlug, getPublishedPostSlugs } from "@/lib/data/public-queries";
 import { markdownToHtml } from "@/lib/markdown";
+import { formatReadingTime } from "@/lib/reading-time";
 import { format } from "date-fns";
 import { ArrowLeft, Calendar, Clock } from "lucide-react";
 import { Metadata } from "next";
@@ -118,7 +119,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           {post.readTime && (
             <span className="inline-flex items-center gap-1.5">
               <Clock className="h-4 w-4" />
-              {post.readTime} min read
+              {formatReadingTime(post.readTime)}
             </span>
           )}
         </div>

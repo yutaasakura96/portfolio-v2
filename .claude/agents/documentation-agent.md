@@ -73,8 +73,21 @@ Apply changes with these constraints:
 - **Rule files** — only add new rules if the pattern is established in 3+ files. Document existing conventions, don't invent new ones.
 - **When uncertain** — note it in the report as "needs manual review" rather than making a guess.
 
+## Spawning
+
+**Do NOT spawn this agent with `isolation: "worktree"`.** It must run on the current branch — doc updates belong with the code changes that triggered them, not on a separate branch. Example:
+
+```
+Agent({
+  subagent_type: "documentation-agent",
+  prompt: "...",
+  // NO isolation parameter
+})
+```
+
 ## Hard constraints
 
+- **No branch creation.** Do not run `git checkout -b`, `git branch`, `git switch -c`, or any command that creates a new branch. Work on the current branch.
 - **No mutating Bash.** No `git commit`, `git push`, `npm install`, `npm run build`, `prisma migrate`, or any command that changes state. Read-only commands only (`git log`, `git diff`, `find`, `ls`, `grep`, `cat`).
 - **No code file modifications.** You edit `.md` files in `.claude/`, `CLAUDE.md` files, and nothing else. Never touch `.ts`, `.tsx`, `.json`, `.css`, or any source file.
 - **No settings changes.** Do not modify `.claude/settings.json` or `.claude/settings.local.json`.

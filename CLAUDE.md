@@ -37,23 +37,24 @@ Tests use **Vitest** with **@testing-library/react**. See [.claude/rules/tests.m
 
 ## Architecture
 
-| Path                                               | Purpose                                                        |
-| -------------------------------------------------- | -------------------------------------------------------------- |
-| [src/app/(public)/](<src/app/(public)/>)           | Public site (ISR pages, Server Components by default)          |
-| [src/app/(admin)/admin/](<src/app/(admin)/admin/>) | Admin CMS — login + auth-guarded shell                         |
-| [src/app/api/](src/app/api/)                       | REST API routes (admin mutations + public reads)               |
-| [src/app/api/auth.ts](src/app/api/auth.ts)         | `requireAuth` / `optionalAuth` helpers (NOT `src/lib/auth`)    |
-| [src/proxy.ts](src/proxy.ts)                       | Next.js 16 middleware replacement — JWT guard for admin routes |
-| [src/components/ui/](src/components/ui/)           | shadcn primitives (do not edit by hand — use `npx shadcn add`) |
-| [src/components/admin/](src/components/admin/)     | Admin-only components                                          |
-| [src/components/public/](src/components/public/)   | Public site components                                         |
-| [src/lib/data/](src/lib/data/)                     | Server-side query layer for public pages + canonical types     |
-| [src/lib/import-export/](src/lib/import-export/)   | Bulk import/export: entity configs, CSV utils, validation      |
-| [src/lib/validations/](src/lib/validations/)       | Zod schemas (one file per entity)                              |
-| [src/lib/aws/](src/lib/aws/)                       | S3, SES, Cognito clients                                       |
-| [src/lib/errors.ts](src/lib/errors.ts)             | `ApiError` + `withErrorHandler`                                |
-| [src/lib/prismaClient.ts](src/lib/prismaClient.ts) | Singleton Prisma client (Neon adapter)                         |
-| [prisma/](prisma/)                                 | Schema + migrations + seed                                     |
+| Path                                               | Purpose                                                                               |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| [src/app/(public)/](<src/app/(public)/>)           | Public site (ISR pages, Server Components by default)                                 |
+| [src/app/(admin)/admin/](<src/app/(admin)/admin/>) | Admin CMS — login + auth-guarded shell                                                |
+| [src/app/api/](src/app/api/)                       | REST API routes (admin mutations + public reads)                                      |
+| [src/app/api/auth.ts](src/app/api/auth.ts)         | `requireAuth` / `optionalAuth` helpers (NOT `src/lib/auth`)                           |
+| [src/proxy.ts](src/proxy.ts)                       | Next.js 16 middleware replacement — JWT guard for admin routes                        |
+| [src/components/ui/](src/components/ui/)           | shadcn primitives (do not edit by hand — use `npx shadcn add`)                        |
+| [src/components/admin/](src/components/admin/)     | Admin-only components                                                                 |
+| [src/components/public/](src/components/public/)   | Public site components                                                                |
+| [src/lib/data/](src/lib/data/)                     | Server-side query layer for public pages + canonical types                            |
+| [src/lib/import-export/](src/lib/import-export/)   | Bulk import/export: entity configs, CSV utils, validation                             |
+| [src/lib/validations/](src/lib/validations/)       | Zod schemas (one file per entity)                                                     |
+| [src/lib/aws/](src/lib/aws/)                       | S3, SES, Cognito clients                                                              |
+| [src/lib/reading-time.ts](src/lib/reading-time.ts) | `calculateReadingTime(markdown)` + `formatReadingTime(minutes)` — shared blog utility |
+| [src/lib/errors.ts](src/lib/errors.ts)             | `ApiError` + `withErrorHandler`                                                       |
+| [src/lib/prismaClient.ts](src/lib/prismaClient.ts) | Singleton Prisma client (Neon adapter)                                                |
+| [prisma/](prisma/)                                 | Schema + migrations + seed                                                            |
 
 Scoped instructions: [src/CLAUDE.md](src/CLAUDE.md), [src/app/api/CLAUDE.md](src/app/api/CLAUDE.md), [prisma/CLAUDE.md](prisma/CLAUDE.md).
 
