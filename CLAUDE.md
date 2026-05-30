@@ -37,24 +37,17 @@ Tests use **Vitest** with **@testing-library/react**. See [.claude/rules/tests.m
 
 ## Architecture
 
-| Path                                               | Purpose                                                                               |
-| -------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| [src/app/(public)/](<src/app/(public)/>)           | Public site (ISR pages, Server Components by default)                                 |
-| [src/app/(admin)/admin/](<src/app/(admin)/admin/>) | Admin CMS — login + auth-guarded shell                                                |
-| [src/app/api/](src/app/api/)                       | REST API routes (admin mutations + public reads)                                      |
-| [src/app/api/auth.ts](src/app/api/auth.ts)         | `requireAuth` / `optionalAuth` helpers (NOT `src/lib/auth`)                           |
-| [src/proxy.ts](src/proxy.ts)                       | Next.js 16 middleware replacement — JWT guard for admin routes                        |
-| [src/components/ui/](src/components/ui/)           | shadcn primitives (do not edit by hand — use `npx shadcn add`)                        |
-| [src/components/admin/](src/components/admin/)     | Admin-only components                                                                 |
-| [src/components/public/](src/components/public/)   | Public site components                                                                |
-| [src/lib/data/](src/lib/data/)                     | Server-side query layer for public pages + canonical types                            |
-| [src/lib/import-export/](src/lib/import-export/)   | Bulk import/export: entity configs, CSV utils, validation                             |
-| [src/lib/validations/](src/lib/validations/)       | Zod schemas (one file per entity)                                                     |
-| [src/lib/aws/](src/lib/aws/)                       | S3, SES, Cognito clients                                                              |
-| [src/lib/reading-time.ts](src/lib/reading-time.ts) | `calculateReadingTime(markdown)` + `formatReadingTime(minutes)` — shared blog utility |
-| [src/lib/errors.ts](src/lib/errors.ts)             | `ApiError` + `withErrorHandler`                                                       |
-| [src/lib/prismaClient.ts](src/lib/prismaClient.ts) | Singleton Prisma client (Neon adapter)                                                |
-| [prisma/](prisma/)                                 | Schema + migrations + seed                                                            |
+| Path                                               | Purpose                                                        |
+| -------------------------------------------------- | -------------------------------------------------------------- |
+| [src/app/(public)/](<src/app/(public)/>)           | Public site (ISR, Server Components by default)                |
+| [src/app/(admin)/admin/](<src/app/(admin)/admin/>) | Admin CMS — login + auth-guarded shell                         |
+| [src/app/api/auth.ts](src/app/api/auth.ts)         | `requireAuth` / `optionalAuth` (NOT `src/lib/auth`)            |
+| [src/proxy.ts](src/proxy.ts)                       | Next.js 16 middleware replacement — JWT guard for admin routes |
+| [src/components/ui/](src/components/ui/)           | shadcn primitives (use `npx shadcn add`, don't hand-edit)      |
+| [src/lib/data/](src/lib/data/)                     | Server-side query layer + canonical types                      |
+| [src/lib/validations/](src/lib/validations/)       | Zod schemas (one file per entity)                              |
+| [src/lib/errors.ts](src/lib/errors.ts)             | `ApiError` + `withErrorHandler`                                |
+| [src/lib/prismaClient.ts](src/lib/prismaClient.ts) | Singleton Prisma client (Neon adapter)                         |
 
 Scoped instructions: [src/CLAUDE.md](src/CLAUDE.md), [src/app/api/CLAUDE.md](src/app/api/CLAUDE.md), [prisma/CLAUDE.md](prisma/CLAUDE.md).
 
@@ -86,51 +79,26 @@ Domain rules (Zod validation, `withErrorHandler`, ISR/client split, image pipeli
 
 ## Common Mistakes (this project specifically)
 
-- ❌ Importing `requireAuth` from `@/lib/auth` — that path doesn't exist. Use `@/app/api/auth`.
-- ❌ Adding Zustand stores — the dep was removed; do not introduce it.
-- ❌ Hardcoding `gray-*` / `white` / `black` in public components — dark mode is wired (`<ThemeProvider attribute="class">` in the root layout, toggle in the public Header). Prefer theme tokens (`bg-background`, `text-foreground`, `border-border`, etc.) which adapt automatically. Use `dark:` variants only when a token can't express the contrast you need (e.g. status banners that don't have a token equivalent).
+- ❌ Hardcoding colors in public components — use theme tokens (`bg-background`, `text-foreground`, `border-border`). Dark mode is wired via `next-themes`.
 - ❌ Using `import "dotenv/config"` in app code — Next.js loads `.env` automatically. Only `prisma.config.ts` needs it.
-- ❌ Using `AWS_*` env var names — Amplify reserves that namespace. Use `APP_AWS_ACCESS_KEY_ID` / `APP_AWS_SECRET_ACCESS_KEY` / `APP_AWS_REGION`.
-- ❌ Forgetting to `await` `rateLimit()` from [src/lib/rate-limit.ts](src/lib/rate-limit.ts) — it became async with the Upstash swap. Missing `await` leaves `result.success` undefined, which the standard `if (!result.success)` check reads as truthy → spurious 429 on every call. Requires `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` in `.env` locally and wired through [amplify.yml](amplify.yml) for production.
-- ❌ Using `pageSize` for new endpoints — standardize on `page` + `limit`.
-- ❌ Returning `{ data: { success: true } }` — use `{ data: T }` or `{ data: T[], meta }`. No `success` envelope.
-- ❌ Using `NEXT_PUBLIC_APP_URL` to build social share URLs — it resolves to `http://localhost:3000` in dev, producing broken share links. Canonical public URLs (e.g. in `SocialShareButtons`) are hardcoded to `https://asakurayuta.dev/...` intentionally.
+- ❌ Using `AWS_*` env var names — Amplify reserves that namespace. Use `APP_AWS_*`.
+- ❌ Forgetting to `await` `rateLimit()` — it's async (Upstash-backed). Missing `await` → spurious 429s.
+- ❌ Using `NEXT_PUBLIC_APP_URL` for public-facing URLs — resolves to localhost in dev. Hardcode `https://asakurayuta.dev/...` for share links, OG tags, etc.
 
 ## MCP Servers
 
-Prefer these over manual lookups:
-
-- **context7** (user scope) — Live docs for Next.js 16, Prisma 7, TailwindCSS 4. Use for any library API question.
-- **aws-docs** (user scope) — AWS service documentation (`awslabs.aws-documentation-mcp-server`). Use for Amplify, S3, SES, Cognito behavior questions.
-- **aws-iac** (user scope) — CloudFormation/CDK references (`awslabs.aws-iac-mcp-server`). Low value here since infra is Amplify Console-managed, not IaC.
-- **prisma-local** (local scope) — Migration status, schema management. Use before running `prisma migrate dev`. Local only — there is no remote Prisma MCP for Neon.
-- **aws-api** (local scope) — AWS API access for S3, SES, Cognito, Amplify (`awslabs.aws-api-mcp-server`). Use for deploy verification and infra state checks. Reads standard AWS SDK creds (`AWS_PROFILE` / `~/.aws/credentials`).
-- **playwright** (project scope) — Headless Chromium browser automation via `@playwright/mcp`. Use for visual verification, screenshot capture, form testing, and end-to-end interaction with the dev server.
-- **github** (project scope) — GitHub API via `@modelcontextprotocol/server-github`. PR/issue management, code search, repo metadata. Requires `GITHUB_PERSONAL_ACCESS_TOKEN` env var.
-
-### MCP Usage Rules
-
-- Always consult **context7** before assuming library API details for Next.js 16, Prisma 7, or TailwindCSS 4 — these are post-cutoff versions.
-- Run **prisma-local** `migrate-status` before any `prisma migrate dev`. NEVER run `migrate-reset` without explicit, typed user confirmation (per `prisma/CLAUDE.md`).
-- Use **aws-api** to verify Amplify deploy state and S3/SES/Cognito config before and after deploys — see `.claude/docs/infrastructure.md` for the canonical resource names.
-- Use **aws-docs** for behavior questions (SES sandbox limits, Cognito token TTLs, Amplify SSR caveats) before web search.
-- Treat **aws-iac** as low-priority here — infra is Amplify Console-managed, not CloudFormation/CDK.
-- Use **playwright** to verify UI changes by navigating to `http://localhost:3000` (start dev server first). Prefer accessibility snapshots over screenshots for assertions — they are structured data, not images.
-- Use **github** for PR creation, issue triage, and repo queries instead of raw `gh` CLI when structured data is needed.
-
-Full AWS infrastructure details: [.claude/docs/infrastructure.md](.claude/docs/infrastructure.md).
+- **context7** — Live docs for Next.js 16, Prisma 7, TailwindCSS 4. IMPORTANT: always consult before assuming post-cutoff library APIs.
+- **aws-docs** — AWS service documentation. Use for Amplify, S3, SES, Cognito behavior questions before web search.
+- **aws-api** — AWS API access for deploy verification and infra state checks. See [.claude/docs/infrastructure.md](.claude/docs/infrastructure.md).
+- **prisma-local** — Migration status, schema management. Run `migrate-status` before `migrate dev`. NEVER run `migrate-reset` without user confirmation.
+- **playwright** — Browser automation for visual verification at `http://localhost:3000`.
+- **github** — GitHub API for PR/issue management, code search.
 
 ## Available Agents
 
-- **orchestrator** — Spawns and coordinates other agents for multi-domain features (3+ areas). Strict delegation (no direct edits). See [.claude/agents/orchestrator.md](.claude/agents/orchestrator.md) for patterns A/B/C/D.
-- **refactor-agent** — Improves existing code to match conventions in this setup. File-by-file, runs lint/build, logs to `.claude/docs/refactor-log-<date>.md` (the original post-audit log is archived at `.claude/docs/archive/refactor-log.md`).
-- **code-reviewer** — Read-only review against conventions. Reports issues by severity, cites CLAUDE.md rules.
-- **db-agent** — Prisma + Neon operations. Migrations, schema, seed. Knows Neon branching. Never resets without confirmation.
-- **feature-builder** — Builds new features following all conventions. Reads all CLAUDE.md files before starting.
-- **synthesizer** — Post-build integration validator. Checks cross-domain consistency (schema ↔ Zod ↔ API ↔ UI) after multi-agent builds. Read-only. Spawned by orchestrator in Patterns C/D.
-- **documentation-agent** — Keeps project docs in sync with the codebase. Reads all CLAUDE.md files, rules, and roadmap, diffs against actual code, and updates only documentation files. Run after significant changes or when the post-commit hook suggests it.
+Agents: **orchestrator**, **feature-builder**, **db-agent**, **refactor-agent**, **code-reviewer**, **synthesizer**, **documentation-agent**. Definitions in [.claude/agents/](.claude/agents/). See Request Routing table above for when to use each.
 
-Project agents default to `model: sonnet` except `code-reviewer` which defaults to `model: haiku` (read-only pattern matching). Pass `model: opus` on the `Agent` call only when complexity warrants. Built-in subagents (`Explore` / `Plan` / `general-purpose`) — see feature-workflow.md §Models for per-spawn defaults.
+Defaults: `model: sonnet` (except `code-reviewer` → `haiku`). Override to `opus` only when complexity warrants.
 
 ## Claude Hooks
 
