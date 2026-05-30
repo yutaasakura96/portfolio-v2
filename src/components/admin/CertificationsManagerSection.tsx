@@ -6,11 +6,21 @@ import { ImportExportToolbar } from "@/components/admin/ImportExportToolbar";
 import { TableSkeleton } from "@/components/admin/TableSkeleton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  DndContext,
+  SortableContext,
+  closestCenter,
+  useDndReorder,
+  verticalListSortingStrategy,
+} from "@/hooks/use-dnd-reorder";
 import { apiClient } from "@/lib/api-client";
 import type { Certification } from "@/lib/data/types";
+import { cn } from "@/lib/utils";
 import { entityConfigs } from "@/lib/import-export";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AlertCircle, Pencil, Plus, Trash2 } from "lucide-react";
+import { AlertCircle, GripVertical, Pencil, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -28,6 +38,48 @@ function isExpired(expirationDate: Date | string | null): boolean {
   return new Date(expirationDate) < new Date();
 }
 
+function SortableCertificationCard({ cert }: { cert: Certification }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: cert.id,
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className={cn(
+        "flex items-center gap-4 px-4 py-3 bg-card",
+        isDragging && "shadow-md rounded-lg z-10 opacity-90"
+      )}
+    >
+      <button
+        {...attributes}
+        {...listeners}
+        className="cursor-grab touch-none text-muted-foreground hover:text-foreground active:cursor-grabbing"
+        aria-label={`Drag to reorder ${cert.name}`}
+      >
+        <GripVertical className="h-4 w-4" />
+      </button>
+      {cert.badgeImage && (
+        <Image
+          src={cert.badgeImage}
+          alt={cert.name}
+          width={40}
+          height={40}
+          className="h-10 w-10 object-contain rounded"
+        />
+      )}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="font-medium text-foreground">{cert.name}</span>
+          {!cert.visible && <Badge variant="secondary">Hidden</Badge>}
+        </div>
+        <p className="text-sm text-muted-foreground">{cert.issuer}</p>
+      </div>
+    </div>
+  );
+}
+
 export function CertificationsManagerSection() {
   const queryClient = useQueryClient();
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -40,6 +92,24 @@ export function CertificationsManagerSection() {
       apiClient.getCertifications<Certification, { total: number }>({
         visible: "all",
       }),
+  });
+
+  const certifications = (data?.data ?? []) as Certification[];
+
+  const {
+    isEditing: isEditingOrder,
+    draftItems: draftCerts,
+    sensors,
+    enterEditMode,
+    cancelEditMode,
+    saveOrder,
+    handleDragEnd,
+    isSaving,
+  } = useDndReorder({
+    items: certifications,
+    mutationFn: (ids) => apiClient.reorderCertifications(ids),
+    queryKey: ["admin", "certifications"],
+    successMessage: "Certification order saved",
   });
 
   const deleteMutation = useMutation({
@@ -55,7 +125,6 @@ export function CertificationsManagerSection() {
     },
   });
 
-  const certifications = data?.data ?? [];
   const hasCertifications = certifications.length > 0;
 
   return (
@@ -63,13 +132,30 @@ export function CertificationsManagerSection() {
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Certifications</h2>
         <div className="flex items-center gap-2">
-          <ImportExportToolbar
-            entity="certifications"
-            entityLabel="Certifications"
-            entityConfig={entityConfigs.certifications}
-            queryKey={["admin", "certifications"]}
-          />
-          <Button onClick={() => setIsCreateOpen(true)}>
+          {certifications.length > 1 &&
+            (isEditingOrder ? (
+              <div className="flex gap-2">
+                <Button variant="ghost" size="sm" onClick={cancelEditMode} disabled={isSaving}>
+                  Cancel
+                </Button>
+                <Button size="sm" onClick={saveOrder} disabled={isSaving}>
+                  {isSaving ? "Saving…" : "Save Order"}
+                </Button>
+              </div>
+            ) : (
+              <Button variant="outline" size="sm" onClick={enterEditMode}>
+                Edit Order
+              </Button>
+            ))}
+          {!isEditingOrder && (
+            <ImportExportToolbar
+              entity="certifications"
+              entityLabel="Certifications"
+              entityConfig={entityConfigs.certifications}
+              queryKey={["admin", "certifications"]}
+            />
+          )}
+          <Button onClick={() => setIsCreateOpen(true)} disabled={isEditingOrder}>
             <Plus className="h-4 w-4 mr-2" /> Add Certification
           </Button>
         </div>
@@ -90,62 +176,79 @@ export function CertificationsManagerSection() {
       {isLoading ? (
         <TableSkeleton rows={5} />
       ) : hasCertifications ? (
-        <div className="bg-card rounded-lg border divide-y">
-          {certifications.map((cert) => {
-            const expired = isExpired(cert.expirationDate);
-            return (
-              <div key={cert.id} className="flex items-center gap-4 px-4 py-3">
-                {cert.badgeImage && (
-                  <Image
-                    src={cert.badgeImage}
-                    alt={cert.name}
-                    width={48}
-                    height={48}
-                    className="h-12 w-12 object-contain rounded"
-                  />
-                )}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-medium text-foreground">{cert.name}</span>
-                    {!cert.visible && <Badge variant="secondary">Hidden</Badge>}
-                    {cert.expirationDate && (
-                      <Badge variant={expired ? "destructive" : "default"}>
-                        {expired ? "Expired" : "Active"}
-                      </Badge>
-                    )}
+        <div className="bg-card rounded-lg border divide-y overflow-hidden">
+          {isEditingOrder ? (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={draftCerts.map((c) => c.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                {draftCerts.map((cert) => (
+                  <SortableCertificationCard key={cert.id} cert={cert} />
+                ))}
+              </SortableContext>
+            </DndContext>
+          ) : (
+            certifications.map((cert) => {
+              const expired = isExpired(cert.expirationDate);
+              return (
+                <div key={cert.id} className="flex items-center gap-4 px-4 py-3">
+                  {cert.badgeImage && (
+                    <Image
+                      src={cert.badgeImage}
+                      alt={cert.name}
+                      width={48}
+                      height={48}
+                      className="h-12 w-12 object-contain rounded"
+                    />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-medium text-foreground">{cert.name}</span>
+                      {!cert.visible && <Badge variant="secondary">Hidden</Badge>}
+                      {cert.expirationDate && (
+                        <Badge variant={expired ? "destructive" : "default"}>
+                          {expired ? "Expired" : "Active"}
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground">{cert.issuer}</p>
+                    <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
+                      <span>Earned: {formatDate(cert.dateEarned)}</span>
+                      {cert.expirationDate && (
+                        <span>
+                          {expired ? "Expired" : "Expires"}: {formatDate(cert.expirationDate)}
+                        </span>
+                      )}
+                      {cert.credentialId && <span>ID: {cert.credentialId}</span>}
+                    </div>
                   </div>
-                  <p className="text-sm text-muted-foreground">{cert.issuer}</p>
-                  <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
-                    <span>Earned: {formatDate(cert.dateEarned)}</span>
-                    {cert.expirationDate && (
-                      <span>
-                        {expired ? "Expired" : "Expires"}: {formatDate(cert.expirationDate)}
-                      </span>
-                    )}
-                    {cert.credentialId && <span>ID: {cert.credentialId}</span>}
+                  <div className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setEditingCert(cert)}
+                      aria-label={`Edit ${cert.name} certification`}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setDeleteId(cert.id)}
+                      aria-label={`Delete ${cert.name} certification`}
+                    >
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setEditingCert(cert)}
-                    aria-label={`Edit ${cert.name} certification`}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setDeleteId(cert.id)}
-                    aria-label={`Delete ${cert.name} certification`}
-                  >
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                  </Button>
-                </div>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
       ) : (
         <div className="bg-card rounded-lg border p-12 text-center">
