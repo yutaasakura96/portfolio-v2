@@ -130,6 +130,17 @@ Full AWS infrastructure details: [.claude/docs/infrastructure.md](.claude/docs/i
 
 Project agents default to `model: sonnet` except `code-reviewer` which defaults to `model: haiku` (read-only pattern matching). Pass `model: opus` on the `Agent` call only when complexity warrants. Built-in subagents (`Explore` / `Plan` / `general-purpose`) — see feature-workflow.md §Models for per-spawn defaults.
 
+## Claude Hooks
+
+Configured in `.claude/settings.json`. All hooks run in the project directory.
+
+| Hook file                     | Trigger                     | Effect                                                                                                                          |
+| ----------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `pre-edit-branch-guard.sh`    | PreToolUse — `Edit\|Write`  | Blocks all file edits on `main` and `develop`. Prints instructions to create a feature branch. Exit 2.                          |
+| `pre-commit-gate.sh`          | PreToolUse — `Bash`         | Intercepts `git commit` commands and runs `npm run type-check`. Blocks the commit if type-check fails.                          |
+| `post-edit-format.sh`         | PostToolUse — `Write\|Edit` | Runs Prettier on the edited file after each Edit/Write (`.ts`, `.tsx`, `.json`, `.css`, `.md`).                                 |
+| `post-commit-doc-reminder.sh` | PostToolUse — `Bash`        | After a `git commit`, scans changed files for schema/API/page/agent/rule patterns and suggests running the documentation-agent. |
+
 ## Git Commit Style
 
 - **Subject line only.** Use `git commit -m "<subject>"` — no body, no extended description. The diff already shows what changed; the subject says why at a glance.

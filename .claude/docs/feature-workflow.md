@@ -17,6 +17,8 @@ git checkout -b feature/<short-kebab-name>
 
 Use `feature/`, `fix/`, `chore/`, or `refactor/` prefixes.
 
+> **Enforced:** The `pre-edit-branch-guard` hook (PreToolUse on `Edit|Write`) blocks all file edits on `main` and `develop`. You must create a feature branch before any code changes.
+
 ### Neon database branch (only if the feature touches `prisma/schema.prisma`)
 
 For schema changes touching a table > 1k rows or dropping/renaming columns, create a Neon branch first. The [`prisma-neon`](../skills/prisma-neon/) skill walks through this.

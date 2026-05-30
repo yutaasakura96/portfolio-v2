@@ -112,6 +112,7 @@ Last updated: 2026-05-30
 - [x] Documentation agent — standalone agent that reads codebase, diffs against docs, and updates CLAUDE.md files, roadmap, and rules. `.claude/agents/documentation-agent.md`
 - [x] Post-commit doc reminder hook — PostToolUse hook on `Bash` that detects significant commits (schema, API routes, pages, agents, rules) and suggests running the documentation-agent. `.claude/hooks/post-commit-doc-reminder.sh`
 - [x] Orchestrator auto-routing — implemented as a Request Routing decision-tree table in `CLAUDE.md` (not a hook — hooks can't evaluate user intent). Routes requests to the correct agent based on scope signals.
+- [x] Pre-edit branch guard hook — PreToolUse hook on `Edit|Write` that blocks file edits on `main`/`develop` and prints instructions to create a feature branch. `.claude/hooks/pre-edit-branch-guard.sh`
 - [-] Prompt writer agent — deferred. Better to improve CLAUDE.md rules so agents already know what you want, rather than adding a rewrite layer that creates friction. Revisit if CLAUDE.md improvements aren't enough.
 - [ ] New skills/tools/agents derived from existing repos
 - [ ] Excalidraw diagram generator — visual architecture diagrams
