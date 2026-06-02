@@ -19,3 +19,9 @@ Pattern: src/components/\*_/_.tsx
 - Avoid prop drilling more than two levels — lift to a query hook (TanStack) or a layout-level provider instead.
 - Accessibility: all interactive elements need a label (`aria-label` or visible text). Modals/dialogs use Radix primitives so focus trapping is handled — don't roll your own.
 - Import/export UI: admin pages use `<ImportExportToolbar>` (from `src/components/admin/ImportExportToolbar.tsx`) which bundles `ExportButtons` + `ImportDialog`. Pass the entity's config from `entityConfigs` in `src/lib/import-export/entity-configs.ts`. Do not build ad-hoc export/import UIs per page.
+
+## UI Skills (auto-triggered when editing components)
+
+- **shadcn skill**: Use for component composition patterns (`FieldGroup` for forms, `ToggleGroup` for option sets), CLI operations (`npx shadcn@latest add/search/docs`), and semantic color tokens. No manual `dark:` overrides — use `bg-background`, `text-muted-foreground`, etc. No `space-x-*`/`space-y-*` — use `flex` with `gap-*`. Use `size-*` when width = height.
+- **emil-design-eng skill**: Consult when adding animations or transitions. Key rules: UI animations under 300ms, custom easing curves (never CSS defaults), never `scale(0)` (use `scale(0.95)` + opacity), buttons need `:active` states (`scale(0.97)`), popovers use `transform-origin: var(--radix-popover-content-transform-origin)`, CSS transitions over keyframes for interruptible UI, gate hover animations behind `@media (hover: hover) and (pointer: fine)`, honor `prefers-reduced-motion`.
+- **web-design-guidelines skill**: Run on component files before merging UI PRs. Checks: icon-only buttons need `aria-label`, no `outline-none` without visible focus replacement, `tabular-nums` for number columns, `color-scheme: dark` set, hydration-safe rendering.

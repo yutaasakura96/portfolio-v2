@@ -66,6 +66,22 @@ Before starting implementation, evaluate the scope of the request:
 | Documentation update (docs out of sync, roadmap update)                       | **documentation-agent** directly                       |
 | Single-file edit, typo fix, quick lookup                                      | Handle directly in main session                        |
 
+## UI Skills
+
+Three design-quality skills are installed and should be used during UI work:
+
+| Skill                     | Trigger                                                               | When to use                                                                                                                                                  |
+| ------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **shadcn**                | Auto-triggers on `components.json` detection, shadcn component work   | Adding/composing shadcn components, using the CLI (`npx shadcn@latest add/search/docs`), styling with semantic tokens, form layout with `FieldGroup`/`Field` |
+| **emil-design-eng**       | Invoke when adding animations, transitions, or micro-interactions     | Review animation code, add `:active` states, set `transform-origin` on popovers, choose easing curves. Use selectively — not every component needs it        |
+| **web-design-guidelines** | Invoke for UI review/audit, accessibility checks, pre-PR quality gate | Run `/web-design-guidelines <file-or-pattern>` before merging any UI PR. Checks a11y, focus states, dark mode, hydration safety, forms, animation, touch     |
+
+### Skill integration points
+
+- **Building a new component or page**: use `shadcn` skill for composition patterns + semantic colors. If the component has motion, consult `emil-design-eng` for animation decisions.
+- **Before merging UI changes**: run `web-design-guidelines` on changed `.tsx` files as a quality gate.
+- **Animation/transition work**: always consult `emil-design-eng` — it provides specific duration/easing/transform-origin guidance that matches our Radix UI + Sonner stack.
+
 If uncertain whether the orchestrator is needed, ask the user: "This looks like it might span multiple domains. Should I use the orchestrator to coordinate, or handle it directly?"
 
 ## Critical Rules (universal — domain-specific rules live in [.claude/rules/](.claude/rules/))
