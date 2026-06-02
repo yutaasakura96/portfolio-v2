@@ -3,6 +3,7 @@
 import { UnreadBadge } from "@/components/admin/UnreadBadge";
 import { cn } from "@/lib/utils";
 import {
+  ArrowUpDown,
   Award,
   Briefcase,
   FileText,
@@ -40,6 +41,7 @@ const navItems: NavItem[] = [
   { href: "/admin/education", label: "Education", icon: GraduationCap },
   { href: "/admin/certifications", label: "Certifications", icon: Award },
   { href: "/admin/settings", label: "Settings", icon: Settings },
+  { href: "/admin/import", label: "Import / Export", icon: ArrowUpDown },
 ];
 
 interface AdminSidebarProps {

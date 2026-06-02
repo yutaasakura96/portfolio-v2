@@ -36,3 +36,20 @@ export type ImportResult = {
   updated: number;
   skipped: number;
 };
+
+export type UnifiedImportResult = {
+  results: Record<string, ImportResult>;
+  totalCreated: number;
+  totalUpdated: number;
+  totalSkipped: number;
+};
+
+export type UnifiedValidationSummary = Record<
+  string,
+  {
+    validCount: number;
+    errorCount: number;
+    validItems: Record<string, unknown>[];
+    errors: Array<{ index: number; messages: string[] }>;
+  }
+>;

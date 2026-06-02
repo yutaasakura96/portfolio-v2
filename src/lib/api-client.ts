@@ -382,6 +382,13 @@ class ApiClient {
       body: JSON.stringify(data),
     });
   }
+
+  importUnified<TResult = unknown>(data: Record<string, unknown>) {
+    return this.request<ApiResponse<TResult>>("/admin/import/unified", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
 }
 
 export const apiClient = new ApiClient();
