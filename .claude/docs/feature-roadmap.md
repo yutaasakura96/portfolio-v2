@@ -2,7 +2,7 @@
 
 Living document tracking planned features, improvements, and integrations for the portfolio project.
 
-Last updated: 2026-05-30
+Last updated: 2026-06-02
 
 ---
 
@@ -37,13 +37,13 @@ Last updated: 2026-05-30
 
 ## 3. SEO & Discoverability
 
+- [x] Blog reading time estimate
 - [ ] Improve SEO — meta tags, structured data, performance
 - [ ] Custom Open Graph images — dynamic OG images per page/post
 - [ ] Sitemap.xml generation
 - [ ] JSON-LD structured data (Person, Article, Project schemas)
 - [ ] RSS feed for blog posts
 - [ ] Custom logo/favicon on navbar and browser tabs
-- [x] Blog reading time estimate
 - [ ] Auto-generated table of contents for blog posts
 
 ---
@@ -76,18 +76,20 @@ Last updated: 2026-05-30
 
 ## 6. Database & Data
 
-- [x] Neon prod-to-dev continuous replication — branch from prod so dev always has real data　
-      NOTE: Done using Neon DB console's reset from parent
-- [ ] Admin audit log — track who changed what, when (simple table)
-- [x] Content import/export from admin (JSON/CSV) — 27 new files, 11 modified. JSON+CSV export for all entities, JSON+CSV import with preview/validation for all except messages. Two import modes (create-only, upsert). Rate-limited, CSV injection-safe, date-validated.
-- [x] Admin dark mode theming pass — hardcoded `bg-white`, `text-gray-*`, `border-gray-*` persist across ~12 admin files (EducationManagerSection, ExperienceManagerSection, CertificationsManagerSection, SkillsManagerSection, and admin pages). Replace with theme tokens (`bg-background`, `text-foreground`, `border-border`, `bg-muted`, `text-muted-foreground`). The import/export components already use proper tokens — this is a pre-existing issue across the admin UI.
+- [x] Neon prod-to-dev continuous replication — branch from prod so dev always has real data (done using Neon DB console's reset from parent)
+- [x] Content import/export from admin (JSON/CSV) — JSON+CSV export for all entities, JSON+CSV import with preview/validation for all except messages. Two import modes (create-only, upsert). Rate-limited, CSV injection-safe, date-validated.
+- [x] Admin dark mode theming pass — replaced hardcoded colors with theme tokens across ~38 admin files
 - [x] Drag-and-drop reordering for certifications (and other entities with `displayOrder`) — `use-dnd-reorder.ts` generic hook + `CertificationsManagerSection` Edit Order mode
+- [ ] Admin audit log — track who changed what, when (simple table)
+- [ ] Unified JSON import — extend import functionality to support importing all entities from a single JSON file
+
+---
 
 ## 7. Blog Features
 
-- [ ] LinkedIn post importer — pull existing LinkedIn posts in my profile and convert them into blog entries, preserving the original publish date
-- [x] Social share buttons — one-click sharing to LinkedIn, Facebook, and X/Twitter via native share URLs (no third-party SDKs); copy-link button via clipboard API + Sonner toast. Rendered on blog post detail pages (`src/components/public/SocialShareButtons.tsx`). Share URL is hardcoded to `https://asakurayuta.dev/blog/${slug}` (not `NEXT_PUBLIC_APP_URL`, which resolves to localhost in dev).
+- [x] Social share buttons — one-click sharing to LinkedIn, Facebook, and X/Twitter via native share URLs (no third-party SDKs); copy-link button via clipboard API + Sonner toast
 - [x] Blog reading time estimate (also listed under SEO)
+- [ ] LinkedIn post importer — pull existing LinkedIn posts and convert them into blog entries, preserving the original publish date
 - [ ] Auto-generated table of contents (also listed under SEO)
 
 ---
@@ -96,6 +98,7 @@ Last updated: 2026-05-30
 
 - [ ] Admin theme toggle — add light/dark mode switcher to the admin layout (public site already has one)
 - [ ] Admin dashboard — surface key metrics (page visits, countries from Google Analytics, errors from Sentry, and other important figures)
+- [ ] Categorize certifications — add category field, render with tab UI similar to skills (azure, aws, anthropic, language, etc.)
 - [ ] Complete portfolio redesign — research best practices, iterate incrementally
   - Research trending Claude Code skills/agents and AI design tools that can generate or redesign full websites with modern, polished UI (e.g. design-system generators, UI cloning agents, portfolio-specific skills). Evaluate which ones produce the best results before committing to an approach.
 - [ ] Interactive 3D element on hero page (Three.js / React Three Fiber)
@@ -108,28 +111,28 @@ Last updated: 2026-05-30
 
 ### Skills & Agents
 
+- [x] Documentation agent — standalone agent that reads codebase, diffs against docs, and updates CLAUDE.md files, roadmap, and rules
+- [x] Post-commit doc reminder hook — PostToolUse hook on `Bash` that detects significant commits and suggests running the documentation-agent
+- [x] Orchestrator auto-routing — implemented as a Request Routing decision-tree table in `CLAUDE.md`
+- [x] Pre-edit branch guard hook — PreToolUse hook on `Edit|Write` that blocks file edits on `main`/`develop`
+- [-] Prompt writer agent — deferred. Better to improve CLAUDE.md rules directly. Revisit if improvements aren't enough.
 - [ ] Add new Claude Code skills — [10 must-have skills for Claude Code (2026)](https://medium.com/@unicodeveloper/10-must-have-skills-for-claude-and-any-coding-agent-in-2026-b5451b013051)
-- [x] Documentation agent — standalone agent that reads codebase, diffs against docs, and updates CLAUDE.md files, roadmap, and rules. `.claude/agents/documentation-agent.md`
-- [x] Post-commit doc reminder hook — PostToolUse hook on `Bash` that detects significant commits (schema, API routes, pages, agents, rules) and suggests running the documentation-agent. `.claude/hooks/post-commit-doc-reminder.sh`
-- [x] Orchestrator auto-routing — implemented as a Request Routing decision-tree table in `CLAUDE.md` (not a hook — hooks can't evaluate user intent). Routes requests to the correct agent based on scope signals.
-- [x] Pre-edit branch guard hook — PreToolUse hook on `Edit|Write` that blocks file edits on `main`/`develop` and prints instructions to create a feature branch. `.claude/hooks/pre-edit-branch-guard.sh`
-- [-] Prompt writer agent — deferred. Better to improve CLAUDE.md rules so agents already know what you want, rather than adding a rewrite layer that creates friction. Revisit if CLAUDE.md improvements aren't enough.
 - [ ] New skills/tools/agents derived from existing repos
 - [ ] Excalidraw diagram generator — visual architecture diagrams
   - References: [Medium skill guide](https://medium.com/@unicodeveloper/10-must-have-skills-for-claude-and-any-coding-agent-in-2026-b5451b013051), [AWS architecture diagram skill](https://github.com/vidanov/aws-architecture-diagram-skill)
 
 ### MCP Servers
 
-- [ ] Portfolio MCP — automate content creation and editing from Claude Code
 - [x] GitHub MCP — PR/issue management from Claude Code
 - [x] Google Chrome MCP — browser automation (already configured)
 - [x] AWS MCP — AWS documentation access (already configured)
+- [ ] Portfolio MCP — automate content creation and editing from Claude Code
 
 ### Documentation
 
 - [ ] GitHub wiki for project documentation
 - [ ] Architecture diagram (Excalidraw or AWS diagram skill)
-- [ ] Comprehensive project documentation — folder structure, features, API reference, tech stack, setup guide, and all key information
+- [ ] Comprehensive project documentation — folder structure, features, API reference, tech stack, setup guide
 
 ### Media & Demo
 
@@ -140,14 +143,16 @@ Last updated: 2026-05-30
 
 ## Suggested Priority Order
 
-1. ~~**Bug fixes** — blurred image preview in admin education~~ (done)
-2. ~~**CI/CD foundation** — GitHub Actions + CodeQL + Dependabot + GitHub MCP + remove Zustand~~ (done)
-3. ~~**Vitest** — test framework wired, 5 test files covering critical paths~~ (done)
-4. ~~**Neon replication** — prod-to-dev branch so dev always has real data (blocker for dynamic OG images and other data-dependent features)
-5. **SEO batch** — OG images, sitemap, JSON-LD, RSS, favicon
-6. **Blog features** — ~~social share buttons~~ (done), LinkedIn importer
-7. **Sentry** — error tracking before adding more features
-8. **Admin improvements** — audit log, ~~content import/export~~ (done), admin dark mode theming pass
-9. **Observability** — CloudWatch, SNS, health check
-10. **Design & UX** — hero 3D element, redesign iterations
-11. **Tooling** — documentation agent + hooks first, then new skills, Portfolio MCP, diagram generator
+1. ~~**Bug fixes** — education credential view + blurred image preview~~ (done)
+2. ~~**CI/CD foundation** — GitHub Actions + CodeQL + Dependabot + GitHub MCP + Vitest + Playwright~~ (done)
+3. ~~**Neon replication** — prod-to-dev branch so dev always has real data~~ (done)
+4. ~~**Content import/export** — JSON+CSV bulk import/export for all entities~~ (done)
+5. ~~**Admin dark mode** — theme token pass across all admin files~~ (done)
+6. ~~**Blog enhancements** — social share buttons + reading time~~ (done)
+7. **SEO batch** — OG images, sitemap, JSON-LD, RSS, favicon
+8. **Blog features** — LinkedIn importer, table of contents
+9. **Sentry** — error tracking before adding more features
+10. **Admin improvements** — audit log, certification categories, unified JSON import, admin theme toggle, dashboard
+11. **Observability** — CloudWatch, SNS, health check
+12. **Design & UX** — hero 3D element, redesign iterations
+13. **Tooling** — new skills, Portfolio MCP, diagram generator
