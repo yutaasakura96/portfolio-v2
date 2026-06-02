@@ -120,12 +120,13 @@ Defaults: `model: sonnet` (except `code-reviewer` → `haiku`). Override to `opu
 
 Configured in `.claude/settings.json`. All hooks run in the project directory.
 
-| Hook file                     | Trigger                     | Effect                                                                                                                          |
-| ----------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `pre-edit-branch-guard.sh`    | PreToolUse — `Edit\|Write`  | Blocks all file edits on `main` and `develop`. Prints instructions to create a feature branch. Exit 2.                          |
-| `pre-commit-gate.sh`          | PreToolUse — `Bash`         | Intercepts `git commit` commands and runs `npm run type-check`. Blocks the commit if type-check fails.                          |
-| `post-edit-format.sh`         | PostToolUse — `Write\|Edit` | Runs Prettier on the edited file after each Edit/Write (`.ts`, `.tsx`, `.json`, `.css`, `.md`).                                 |
-| `post-commit-doc-reminder.sh` | PostToolUse — `Bash`        | After a `git commit`, scans changed files for schema/API/page/agent/rule patterns and suggests running the documentation-agent. |
+| Hook file                        | Trigger                     | Effect                                                                                                                                                           |
+| -------------------------------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pre-edit-branch-guard.sh`       | PreToolUse — `Edit\|Write`  | Blocks all file edits on `main` and `develop`. Prints instructions to create a feature branch. Exit 2.                                                           |
+| `pre-commit-gate.sh`             | PreToolUse — `Bash`         | Intercepts `git commit` commands and runs `npm run type-check`. Blocks the commit if type-check fails.                                                           |
+| `post-edit-format.sh`            | PostToolUse — `Write\|Edit` | Runs Prettier on the edited file after each Edit/Write (`.ts`, `.tsx`, `.json`, `.css`, `.md`).                                                                  |
+| `post-commit-doc-reminder.sh`    | PostToolUse — `Bash`        | After a `git commit`, scans changed files for schema/API/page/agent/rule patterns and suggests running the documentation-agent.                                  |
+| `post-edit-ui-skill-reminder.sh` | PostToolUse — `Write\|Edit` | After editing `.tsx` files in `src/components/` or `src/app/`, reminds to use `emil-design-eng` (if animation code detected) and `web-design-guidelines` skills. |
 
 ## Git Commit Style
 

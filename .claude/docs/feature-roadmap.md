@@ -2,7 +2,7 @@
 
 Living document tracking planned features, improvements, and integrations for the portfolio project.
 
-Last updated: 2026-06-02
+Last updated: 2026-06-03
 
 ---
 
@@ -101,10 +101,12 @@ Last updated: 2026-06-02
 - [ ] Admin dashboard — surface key metrics (page visits, countries from Google Analytics, errors from Sentry, and other important figures)
 - [ ] Categorize certifications — add category field, render with tab UI similar to skills (azure, aws, anthropic, language, etc.)
 - [ ] Complete portfolio redesign — research best practices, iterate incrementally
-  - Research trending Claude Code skills/agents and AI design tools that can generate or redesign full websites with modern, polished UI (e.g. design-system generators, UI cloning agents, portfolio-specific skills). Evaluate which ones produce the best results before committing to an approach.
+  - UI skills are installed and ready: `shadcn` (component composition), `emil-design-eng` (design engineering + animations), `web-design-guidelines` (Vercel interface guidelines, pre-PR quality gate). Skills live in `.agents/skills/` with symlinks in `.claude/skills/`.
 - [ ] Interactive 3D element on hero page (Three.js / React Three Fiber)
 - [ ] Internationalization (i18n) — evaluate if multilingual audience justifies maintenance cost
 - [ ] Dark mode refinements
+- [ ] Add micro-interactions and animation polish — use `emil-design-eng` skill for transitions, spring physics, and interaction choreography
+- [ ] Improve UI/UX quality — use `shadcn` skill for component composition patterns and `web-design-guidelines` skill as a pre-PR quality gate
 
 ---
 
@@ -118,6 +120,7 @@ Last updated: 2026-06-02
 - [x] Pre-edit branch guard hook — PreToolUse hook on `Edit|Write` that blocks file edits on `main`/`develop`
 - [-] Prompt writer agent — deferred. Better to improve CLAUDE.md rules directly. Revisit if improvements aren't enough.
 - [ ] Add new Claude Code skills — [10 must-have skills for Claude Code (2026)](https://medium.com/@unicodeveloper/10-must-have-skills-for-claude-and-any-coding-agent-in-2026-b5451b013051)
+- [x] Install UI skills — researched 7 candidates (Impeccable, UI UX Pro Max, Emil Kowalski, shadcn/ui, interaction-design, interface-design, web-design-guidelines); installed 3: `shadcn` (auto-triggers on component work), `emil-design-eng` (selective for animations/transitions), `web-design-guidelines` (pre-PR quality gate). Wired into `CLAUDE.md` UI Skills section and `.claude/rules/components.md`.
 - [ ] New skills/tools/agents derived from existing repos
 - [ ] Excalidraw diagram generator — visual architecture diagrams
   - References: [Medium skill guide](https://medium.com/@unicodeveloper/10-must-have-skills-for-claude-and-any-coding-agent-in-2026-b5451b013051), [AWS architecture diagram skill](https://github.com/vidanov/aws-architecture-diagram-skill)
