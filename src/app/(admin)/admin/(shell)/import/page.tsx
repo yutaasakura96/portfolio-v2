@@ -15,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { apiClient } from "@/lib/api-client";
 import { entityConfigs } from "@/lib/import-export";
 import { validateUnifiedImport } from "@/lib/import-export/unified-import";
@@ -53,9 +53,7 @@ export default function UnifiedImportPage() {
   const [step, setStep] = useState<Step>("upload");
   const [fileName, setFileName] = useState("");
   const [mode, setMode] = useState<ImportMode>("create");
-  const [rawPayload, setRawPayload] = useState<Record<string, unknown>>({});
   const [validation, setValidation] = useState<UnifiedValidationSummary>({});
-  const [isImporting, setIsImporting] = useState(false);
   const [importResult, setImportResult] = useState<UnifiedImportResult | null>(null);
 
   const entityKeys = useMemo(() => Object.keys(validation), [validation]);
@@ -74,9 +72,7 @@ export default function UnifiedImportPage() {
     setStep("upload");
     setFileName("");
     setMode("create");
-    setRawPayload({});
     setValidation({});
-    setIsImporting(false);
     setImportResult(null);
   }, []);
 
@@ -89,7 +85,8 @@ export default function UnifiedImportPage() {
       throw new Error("File must contain a JSON object with entity keys.");
     }
 
-    const { mode: _mode, ...entities } = parsed as Record<string, unknown>;
+    const entities = { ...(parsed as Record<string, unknown>) };
+    delete entities.mode;
     const summary = validateUnifiedImport(entities);
 
     if (Object.keys(summary).length === 0) {
@@ -98,7 +95,6 @@ export default function UnifiedImportPage() {
       );
     }
 
-    setRawPayload(entities);
     setValidation(summary);
     setStep("preview");
   }, []);
@@ -131,7 +127,6 @@ export default function UnifiedImportPage() {
   const handleImport = async () => {
     if (totalValid === 0) return;
     setStep("importing");
-    setIsImporting(true);
 
     try {
       const payload: Record<string, unknown> = { mode };
@@ -163,7 +158,6 @@ export default function UnifiedImportPage() {
       const message = err instanceof Error ? err.message : "Import failed";
       toast.error(message);
       setStep("preview");
-      setIsImporting(false);
     }
   };
 
