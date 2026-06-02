@@ -27,7 +27,7 @@ Last updated: 2026-06-02
 
 - [x] GitHub MCP for agentic Github administration
 - [x] GitHub Actions CI pipeline (lint, type-check, build, test on every PR)
-- [ ] Update GitHub Actions to Node.js 24 — `actions/checkout@v4` and `actions/setup-node@v4` use deprecated Node.js 20; forced migration June 16, 2026
+- [x] Update GitHub Actions to Node.js 24 — `actions/checkout@v6`, `actions/setup-node@v6`, `github/codeql-action@v4` (all Node.js 24)
 - [x] GitHub CodeQL — static security analysis (free for public repos)
 - [x] Dependabot — dependency vulnerability scanning
 - [x] Vitest — unit/integration test framework (5 test files covering errors, auth, validations, contact route)
