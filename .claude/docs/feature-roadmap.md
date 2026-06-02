@@ -81,7 +81,7 @@ Last updated: 2026-06-02
 - [x] Admin dark mode theming pass — replaced hardcoded colors with theme tokens across ~38 admin files
 - [x] Drag-and-drop reordering for certifications (and other entities with `displayOrder`) — `use-dnd-reorder.ts` generic hook + `CertificationsManagerSection` Edit Order mode
 - [ ] Admin audit log — track who changed what, when (simple table)
-- [ ] Unified JSON import — extend import functionality to support importing all entities from a single JSON file
+- [x] Unified JSON import/export — export all entities to a single JSON file and import them back; admin "Import / Export" page at `/admin/import`
 
 ---
 
@@ -152,7 +152,7 @@ Last updated: 2026-06-02
 7. **SEO batch** — OG images, sitemap, JSON-LD, RSS, favicon
 8. **Blog features** — LinkedIn importer, table of contents
 9. **Sentry** — error tracking before adding more features
-10. **Admin improvements** — audit log, certification categories, unified JSON import, admin theme toggle, dashboard
+10. **Admin improvements** — audit log, certification categories, admin theme toggle, dashboard
 11. **Observability** — CloudWatch, SNS, health check
 12. **Design & UX** — hero 3D element, redesign iterations
 13. **Tooling** — new skills, Portfolio MCP, diagram generator

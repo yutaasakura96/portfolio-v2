@@ -13,7 +13,7 @@ Personal portfolio + admin CMS. Public-facing Next.js site backed by an admin da
 - **AWS runtime:** Amplify Hosting Gen 1 (SSR), S3 (images), CloudFront (assets CDN), SES (email)
 - **Images:** Sharp → WebP, served via CloudFront
 - **Markdown:** remark + rehype (`remark-gfm`, `rehype-sanitize`, `rehype-slug`, `rehype-highlight`)
-- **Import/Export:** papaparse (CSV parsing/generation for admin bulk import/export)
+- **Import/Export:** papaparse (CSV), unified JSON export/import (`/api/admin/export/unified`, `/api/admin/import/unified`) for full-site backup/restore
 - **Toasts:** Sonner. **Icons:** lucide-react. **Fonts:** Geist.
 
 ## Commands

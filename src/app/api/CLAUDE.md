@@ -167,11 +167,19 @@ Every entity has `export/route.ts` (GET) and optionally `import/route.ts` (POST)
 - **Export routes return raw file content** (JSON or CSV) with `Content-Disposition: attachment` headers — NOT the `{ data: T }` envelope. This is intentional: the browser downloads the file directly via `<a href="/api/entity/export?format=json">`. Do not wrap export responses in `{ data: ... }`.
 - **Import routes accept `{ items: T[], mode: "create" | "upsert" }` for collections** and a bare object for singletons. They return `{ data: { created, updated, skipped } }`.
 
+**Unified export/import** (`src/app/api/admin/export/unified/route.ts`, `src/app/api/admin/import/unified/route.ts`) operate across all entities at once:
+
+- `GET /api/admin/export/unified?format=json` — exports all entities into a single JSON file (raw `Content-Disposition: attachment`, same as per-entity exports). Skips entities with `importDisabled` (messages). Rate-limited at 30 req/min.
+- `POST /api/admin/import/unified` — accepts `{ mode: "create" | "upsert", hero?: {...}, projects?: [...], ... }` with 10 MB max body. Processes in a transaction. Returns `{ data: { results, totalCreated, totalUpdated, totalSkipped } }`. Rate-limited at 5 req/min.
+
+The admin UI lives at `/admin/import` ("Import / Export" in the sidebar). Shared logic: `src/lib/import-export/unified-import.ts` (`IMPORT_ORDER`, `unifiedImportBodySchema`, `validateUnifiedImport()`).
+
 Shared utilities live in [src/lib/import-export/](src/lib/import-export/):
 
 - `entity-configs.ts` — central registry of per-entity config (unique keys, array/JSON/numeric fields, schemas, revalidation paths)
 - `csv-utils.ts` — CSV flatten/unflatten with formula injection protection
 - `validation-helpers.ts` — row validation, field stripping, unique key lookup
+- `unified-import.ts` — `IMPORT_ORDER`, `unifiedImportBodySchema`, `validateUnifiedImport()` for the unified endpoints
 
 When adding a new entity, add its config to `entityConfigs` in `entity-configs.ts` and create the corresponding `export/route.ts` and `import/route.ts` following the existing patterns.
 
