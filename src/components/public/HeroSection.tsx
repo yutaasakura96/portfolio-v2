@@ -149,52 +149,7 @@ export function HeroSection({ hero }: HeroSectionProps) {
               transition:
                 "opacity 800ms var(--ease-out) 600ms, transform 800ms var(--ease-out) 600ms",
             }}
-          >
-            <div className="rounded-xl border border-border bg-card/80 backdrop-blur-sm p-5 font-mono text-xs leading-relaxed shadow-lg">
-              <div className="flex items-center gap-1.5 mb-4">
-                <span className="w-2.5 h-2.5 rounded-full bg-destructive/60" />
-                <span
-                  className="w-2.5 h-2.5 rounded-full"
-                  style={{ backgroundColor: "oklch(from var(--accent-signature) l c h / 0.6)" }}
-                />
-                <span className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
-              </div>
-              <div className="space-y-1 text-muted-foreground">
-                <p>
-                  <span className="text-[var(--accent-signature)]">const</span>{" "}
-                  <span className="text-foreground">developer</span> = {"{"}
-                </p>
-                <p className="pl-4">
-                  name:{" "}
-                  <span className="text-green-600 dark:text-green-400">
-                    &quot;Yuta Asakura&quot;
-                  </span>
-                  ,
-                </p>
-                <p className="pl-4">
-                  role:{" "}
-                  <span className="text-green-600 dark:text-green-400">&quot;Full-Stack&quot;</span>
-                  ,
-                </p>
-                <p className="pl-4">stack: [</p>
-                <p className="pl-8">
-                  <span className="text-green-600 dark:text-green-400">&quot;Next.js&quot;</span>,
-                </p>
-                <p className="pl-8">
-                  <span className="text-green-600 dark:text-green-400">&quot;TypeScript&quot;</span>
-                  ,
-                </p>
-                <p className="pl-8">
-                  <span className="text-green-600 dark:text-green-400">&quot;AWS&quot;</span>,
-                </p>
-                <p className="pl-4">],</p>
-                <p className="pl-4">
-                  open: <span className="text-[var(--accent-signature)]">true</span>,
-                </p>
-                <p>{"}"}</p>
-              </div>
-            </div>
-          </div>
+          ></div>
         </div>
       </div>
 

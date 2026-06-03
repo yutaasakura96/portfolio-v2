@@ -98,6 +98,7 @@ Last updated: 2026-06-03
 ## 8. Portfolio Design & UX
 
 - [ ] Admin theme toggle — add light/dark mode switcher to the admin layout (public site already has one)
+- admin pages doesnt look like public pages. admin should look like publc pages for consistency.
 - [ ] Admin dashboard — surface key metrics (page visits, countries from Google Analytics, errors from Sentry, and other important figures)
 - [ ] Categorize certifications — add category field, render with tab UI similar to skills (azure, aws, anthropic, language, etc.)
 - [ ] Complete portfolio redesign — research best practices, iterate incrementally
@@ -109,6 +110,7 @@ Last updated: 2026-06-03
 - [ ] Improve UI/UX quality — use `shadcn` skill for component composition patterns and `web-design-guidelines` skill as a pre-PR quality gate
 - Hamburger menue drop down design doesnt match the current design.
 - Drag and drop functionality for certificates that will auto populate form.
+- switching tabs for skills doesnt have an micro interactions or effects. the tabs also has black bar under. should match the orange bar like in the nav bar.
 
 ---
 

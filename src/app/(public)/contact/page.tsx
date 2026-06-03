@@ -41,7 +41,7 @@ export default function ContactPage() {
                     href="mailto:your@email.com"
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    your@email.com
+                    yuta.asakura.se@email.com
                   </a>
                 </div>
               </div>
