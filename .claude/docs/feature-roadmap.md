@@ -132,8 +132,13 @@ Last updated: 2026-06-03
   ALREADY AVAILABLE (built-in): - [x] /review (fast) — built-in skill, no install needed - [x] /ultrareview — built-in cloud review (Pro/Max only, 3 runs/5-20 USD)
 
 - [ ] Excalidraw diagram generator — visual architecture diagrams
-  - References: [Medium skill guide](https://medium.com/@unicodeveloper/10-must-have-skills-for-claude-and-any-coding-agent-in-2026-b5451b013051), [AWS architecture diagram skill](https://github.com/vidanov/aws-architecture-diagram-skill)
-- remove all unused branches except main and develop branch.
+  - References: npx skills add https://github.com/coleam00/excalidraw-diagram-skill --skill excalidraw-diagram
+  - https://medium.com/@unicodeveloper/10-must-have-skills-for-claude-and-any-coding-agent-in-2026-b5451b013051
+- [ ] AWS architecture diagram skill
+  - References: https://github.com/vidanov/aws-architecture-diagram-skill
+  - npx skills add vidanov/aws-architecture-diagram-skill
+
+- [x] remove all unused branches except main and develop branch.
 
 ### MCP Servers
 
