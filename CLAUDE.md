@@ -106,7 +106,7 @@ Domain rules (Zod validation, `withErrorHandler`, ISR/client split, image pipeli
 
 ## Common Mistakes (this project specifically)
 
-- ❌ Hardcoding colors in public components — use theme tokens (`bg-background`, `text-foreground`, `border-border`). Dark mode is wired via `next-themes`.
+- ❌ Hardcoding colors in public components — use theme tokens (`bg-background`, `text-foreground`, `border-border`). Dark mode is wired via `next-themes`. For the brand orange accent (active indicators, underlines), use `var(--accent-signature)` — never hardcode the color value.
 - ❌ Using `import "dotenv/config"` in app code — Next.js loads `.env` automatically. Only `prisma.config.ts` needs it.
 - ❌ Using `AWS_*` env var names — Amplify reserves that namespace. Use `APP_AWS_*`.
 - ❌ Forgetting to `await` `rateLimit()` — it's async (Upstash-backed). Missing `await` → spurious 429s.

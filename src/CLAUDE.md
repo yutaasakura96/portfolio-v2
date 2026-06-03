@@ -56,6 +56,7 @@ This project uses **Tailwind v4 with `@tailwindcss/postcss`** — there is no `t
 - **Variants:** for components with multiple visual states use `class-variance-authority` (CVA), following the pattern in [src/components/ui/button.tsx](src/components/ui/button.tsx).
 - **Theme tokens:** reference CSS variables (`bg-background`, `text-foreground`) — these come from `@theme` in `globals.css`. Don't hardcode `#fff` or `gray-900`.
 - **Dark mode:** wired via `next-themes` (`<ThemeProvider attribute="class">` in [src/app/layout.tsx](src/app/layout.tsx); toggle in [src/components/public/ThemeToggle.tsx](src/components/public/ThemeToggle.tsx) mounted in the `Header`). Prefer theme tokens (`bg-background`, `text-foreground`, `border-border`, `bg-muted`, `bg-accent`, etc.) which adapt to both modes. Use `dark:` variants only when the token system can't express the contrast (e.g., status banners that have no token equivalent).
+- **Signature accent color:** `--accent-signature` (defined in `globals.css` `@theme` block, orange — `oklch(0.75 0.15 55)` light / `oklch(0.65 0.1 55)` dark) is the brand orange used for active indicators: nav link underlines, tab active bars, mobile nav left-border highlight. Reference it as `var(--accent-signature)` (inline style or arbitrary Tailwind value). Do NOT hardcode the orange color — use the token.
 - **Animations:** use `tw-animate-css` utilities. Don't write custom keyframes inline.
 
 ## State Management

@@ -127,10 +127,10 @@ export function Header() {
                 href={item.href}
                 onClick={() => setMobileMenuOpen(false)}
                 className={cn(
-                  "block px-3 py-2.5 rounded-md text-sm font-medium transition-colors",
+                  "block border-l-2 px-3 py-2.5 rounded-r-md text-sm font-medium transition-[color,border-color,background-color] duration-200",
                   isActive
-                    ? "text-foreground bg-accent"
-                    : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                    ? "text-foreground border-l-[var(--accent-signature)] bg-[var(--accent-signature)]/5"
+                    : "text-muted-foreground border-l-transparent hover:text-foreground hover:bg-accent/50"
                 )}
                 tabIndex={mobileMenuOpen ? 0 : -1}
               >

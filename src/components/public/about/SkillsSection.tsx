@@ -77,7 +77,11 @@ export function SkillsSection({ skills, categoryOrder }: SkillsSectionProps) {
           </TabsList>
         </div>
         {sortedCategories.map(([category, categorySkills]) => (
-          <TabsContent key={category} value={category}>
+          <TabsContent
+            key={category}
+            value={category}
+            className="animate-in fade-in-0 duration-200"
+          >
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
               {categorySkills.map((skill) => (
                 <SkillCard key={skill.id} skill={skill} />
