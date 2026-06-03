@@ -2,7 +2,7 @@
 
 Living document tracking planned features, improvements, and integrations for the portfolio project.
 
-Last updated: 2026-06-03
+Last updated: 2026-06-04
 
 ---
 
@@ -131,10 +131,10 @@ Last updated: 2026-06-03
   EVALUATED & SKIPPED: - [-] `superpowers@claude-plugins-official` — structured TDD/debug methodology. Skipped: overlaps with existing CLAUDE.md workflow, hooks, and orchestrator routing. - [-] `get-shit-done-cc` — meta-prompting + spec-driven dev. Skipped: installs its own CLAUDE.md/hooks, would conflict with existing setup. - [-] `claude-mem` (thedotmack) — persistent memory across sessions. Skipped: HIGH security risk (unauthenticated HTTP API on port 37777), and built-in `.claude/projects/` memory already covers this.
   ALREADY AVAILABLE (built-in): - [x] /review (fast) — built-in skill, no install needed - [x] /ultrareview — built-in cloud review (Pro/Max only, 3 runs/5-20 USD)
 
-- [ ] Excalidraw diagram generator — visual architecture diagrams
+- [x] Excalidraw diagram generator — visual architecture diagrams; installed to `.agents/skills/excalidraw-diagram`; generated `architecture.excalidraw` at repo root
   - References: npx skills add https://github.com/coleam00/excalidraw-diagram-skill --skill excalidraw-diagram
-  - https://medium.com/@unicodeveloper/10-must-have-skills-for-claude-and-any-coding-agent-in-2026-b5451b013051
-- [ ] AWS architecture diagram skill
+    - https://medium.com/@unicodeveloper/10-must-have-skills-for-claude-and-any-coding-agent-in-2026-b5451b013051
+- [x] AWS architecture diagram skill — installed to `.agents/skills/aws-architecture-diagram`; generated `docs/aws-architecture.drawio` + `docs/aws-architecture.md`
   - References: https://github.com/vidanov/aws-architecture-diagram-skill
   - npx skills add vidanov/aws-architecture-diagram-skill
 
@@ -150,7 +150,7 @@ Last updated: 2026-06-03
 ### Documentation
 
 - [ ] GitHub wiki for project documentation
-- [ ] Architecture diagram (Excalidraw or AWS diagram skill)
+- [x] Architecture diagram — `architecture.excalidraw` (app architecture) and `docs/aws-architecture.drawio` (AWS infrastructure) generated using installed diagram skills
 - [ ] Comprehensive project documentation — folder structure, features, API reference, tech stack, setup guide
 
 ### Media & Demo

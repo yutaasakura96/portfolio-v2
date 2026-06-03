@@ -1,11 +1,23 @@
 {
   "version": 1,
   "skills": {
+    "aws-architecture-diagram": {
+      "source": "vidanov/aws-architecture-diagram-skill",
+      "sourceType": "github",
+      "skillPath": "claude/SKILL.md",
+      "computedHash": "e52587b3e8f82de6f177179e51cf77e7445f26c85f20527f114f76b87f8c0fa9"
+    },
     "emil-design-eng": {
       "source": "emilkowalski/skill",
       "sourceType": "github",
       "skillPath": "skills/emil-design-eng/SKILL.md",
       "computedHash": "8bdf9e4e6de7a4969147bf4828a4ad2c5aacd9fba4b690b250a85e0467ca387d"
+    },
+    "excalidraw-diagram": {
+      "source": "coleam00/excalidraw-diagram-skill",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "fc91249969c7c1adc1f810ddfe10f18e206b78609467bb4955248e9138932e8a"
     },
     "shadcn": {
       "source": "shadcn/ui",

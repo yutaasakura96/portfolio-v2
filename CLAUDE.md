@@ -83,6 +83,17 @@ Four design-quality skills are installed and should be used during UI work:
 - **Before merging UI changes**: run `web-design-guidelines` on changed `.tsx` files as a quality gate.
 - **Animation/transition work**: always consult `emil-design-eng` — it provides specific duration/easing/transform-origin guidance that matches our Radix UI + Sonner stack.
 
+## Diagram Skills
+
+Two architecture diagram skills are installed for generating visual documentation:
+
+| Skill                        | Location                                   | Output format     | When to use                                                                        |
+| ---------------------------- | ------------------------------------------ | ----------------- | ---------------------------------------------------------------------------------- |
+| **excalidraw-diagram**       | `.agents/skills/excalidraw-diagram/`       | `.excalidraw`     | App architecture diagrams, component flow diagrams, system overviews               |
+| **aws-architecture-diagram** | `.agents/skills/aws-architecture-diagram/` | `.drawio` + `.md` | AWS infrastructure diagrams (Amplify, S3, CloudFront, Cognito, Neon, SES topology) |
+
+Generated artifacts: `architecture.excalidraw` (repo root) and `docs/aws-architecture.drawio` + `docs/aws-architecture.md`.
+
 ## Plugins
 
 Three plugins extend Claude Code's core capabilities:

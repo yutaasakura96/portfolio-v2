@@ -52,6 +52,8 @@ Spawn an agent when the task matches its description — not for every step.
 - [`tailwind-v4`](../skills/tailwind-v4/) — adding/changing Tailwind classes or theme tokens (no JS config file in v4).
 - [`prisma-neon`](../skills/prisma-neon/) — any Prisma + Neon operation, especially safe migration testing.
 - [`aws-deploy`](../skills/aws-deploy/) — Amplify deploys, env var changes, S3/CloudFront/SES/Cognito operations.
+- [`excalidraw-diagram`](../skills/excalidraw-diagram/) — generate visual architecture diagrams in Excalidraw format (`.excalidraw`).
+- [`aws-architecture-diagram`](../skills/aws-architecture-diagram/) — generate AWS infrastructure diagrams in draw.io format (`.drawio`) with a companion markdown guide.
 
 ---
 
