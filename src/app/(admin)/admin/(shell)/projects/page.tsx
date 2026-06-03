@@ -81,7 +81,7 @@ export default function ProjectsListPage() {
           <AlertCircle className="h-5 w-5 shrink-0" />
           <div>
             <p className="font-medium">Failed to load projects</p>
-            <p className="text-sm text-red-500">
+            <p className="text-sm text-destructive">
               {error instanceof Error ? error.message : "Please try again."}
             </p>
           </div>

@@ -147,7 +147,7 @@ function GroupDropzone({ isUploading, disabled, onDrop }: GroupDropzoneProps) {
       className={cn(
         "border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors",
         isDragActive
-          ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
+          ? "border-primary bg-primary/5"
           : "border-input hover:border-muted-foreground bg-muted",
         isUploading && "opacity-50 cursor-not-allowed"
       )}
@@ -155,7 +155,7 @@ function GroupDropzone({ isUploading, disabled, onDrop }: GroupDropzoneProps) {
       <input {...getInputProps()} />
       {isUploading ? (
         <div className="flex items-center justify-center gap-2">
-          <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
+          <Loader2 className="h-4 w-4 animate-spin text-primary" />
           <span className="text-sm text-muted-foreground">Uploading...</span>
         </div>
       ) : (

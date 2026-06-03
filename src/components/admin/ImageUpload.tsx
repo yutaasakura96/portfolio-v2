@@ -202,7 +202,7 @@ export function ImageUpload({
         className,
         "flex flex-col items-center justify-center gap-2 p-6",
         isDragActive
-          ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
+          ? "border-primary bg-primary/5"
           : "border-input hover:border-muted-foreground bg-muted",
         (disabled || isUploading) && "opacity-50 cursor-not-allowed"
       )}
@@ -211,11 +211,11 @@ export function ImageUpload({
 
       {isUploading ? (
         <div className="flex flex-col items-center gap-2">
-          <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
+          <Loader2 className="h-8 w-8 text-primary animate-spin" />
           <p className="text-sm text-muted-foreground">Uploading... {uploadProgress}%</p>
           <div className="w-48 h-2 bg-muted rounded-full overflow-hidden">
             <div
-              className="h-full bg-blue-500 transition-all duration-300"
+              className="h-full bg-primary transition-all duration-300"
               style={{ width: `${uploadProgress}%` }}
             />
           </div>
@@ -223,7 +223,7 @@ export function ImageUpload({
       ) : (
         <>
           {isDragActive ? (
-            <Upload className="h-8 w-8 text-blue-500" />
+            <Upload className="h-8 w-8 text-primary" />
           ) : (
             <ImageIcon className="h-8 w-8 text-muted-foreground" />
           )}

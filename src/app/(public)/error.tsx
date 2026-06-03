@@ -15,7 +15,7 @@ export default function Error({
 
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 py-24 text-center">
-      <p className="text-sm font-semibold text-red-500">Something went wrong</p>
+      <p className="text-sm font-semibold text-destructive">Something went wrong</p>
       <h1 className="mt-2 text-3xl font-bold text-foreground">Unexpected Error</h1>
       <p className="mt-4 text-muted-foreground">
         An error occurred while loading this page. Please try again.

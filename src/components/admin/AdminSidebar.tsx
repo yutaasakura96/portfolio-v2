@@ -64,7 +64,7 @@ export function AdminSidebar({ isOpen = false, onClose }: AdminSidebarProps) {
           Portfolio Admin
         </Link>
         <button
-          className="md:hidden p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent"
+          className="md:hidden p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
           onClick={onClose}
           aria-label="Close navigation menu"
         >

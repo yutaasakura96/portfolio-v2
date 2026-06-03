@@ -107,7 +107,7 @@ export default function AdminSettingsPage() {
               type="text"
               {...register("siteName")}
               className={cn(
-                "mt-1 block w-full rounded-lg border px-4 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring/10 bg-background text-foreground",
+                "mt-1 block w-full rounded-lg border px-4 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring/30 bg-background text-foreground",
                 errors.siteName
                   ? "border-destructive/50 focus:border-destructive"
                   : "border-input focus:border-ring"
@@ -124,7 +124,7 @@ export default function AdminSettingsPage() {
             <textarea
               rows={3}
               {...register("siteDescription")}
-              className="mt-1 block w-full resize-y rounded-lg border border-input px-4 py-2.5 text-sm shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/10 bg-background text-foreground"
+              className="mt-1 block w-full resize-y rounded-lg border border-input px-4 py-2.5 text-sm shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/30 bg-background text-foreground"
               placeholder="A short description of your portfolio"
             />
             {errors.siteDescription && (
@@ -140,7 +140,7 @@ export default function AdminSettingsPage() {
               type="email"
               {...register("email")}
               className={cn(
-                "mt-1 block w-full rounded-lg border px-4 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring/10 bg-background text-foreground",
+                "mt-1 block w-full rounded-lg border px-4 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring/30 bg-background text-foreground",
                 errors.email
                   ? "border-destructive/50 focus:border-destructive"
                   : "border-input focus:border-ring"
@@ -202,7 +202,7 @@ export default function AdminSettingsPage() {
                 type="url"
                 {...register(`socialLinks.${key}`)}
                 className={cn(
-                  "mt-1 block w-full rounded-lg border px-4 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring/10 bg-background text-foreground",
+                  "mt-1 block w-full rounded-lg border px-4 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring/30 bg-background text-foreground",
                   errors.socialLinks?.[key]
                     ? "border-destructive/50 focus:border-destructive"
                     : "border-input focus:border-ring"
@@ -227,7 +227,7 @@ export default function AdminSettingsPage() {
             <input
               type="text"
               {...register("googleAnalyticsId")}
-              className="mt-1 block w-full rounded-lg border border-input px-4 py-2.5 text-sm shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/10 bg-background text-foreground"
+              className="mt-1 block w-full rounded-lg border border-input px-4 py-2.5 text-sm shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/30 bg-background text-foreground"
               placeholder="G-XXXXXXXXXX"
             />
             <p className="mt-1 text-xs text-muted-foreground">

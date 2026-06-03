@@ -33,8 +33,8 @@ export default function AdminDashboard() {
       <div className="space-y-6">
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <div className="flex flex-col items-center gap-4 p-12 text-center bg-card rounded-lg border">
-          <div className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-950 flex items-center justify-center">
-            <AlertCircle className="h-8 w-8 text-red-600 dark:text-red-400" />
+          <div className="size-16 rounded-full bg-destructive/10 flex items-center justify-center">
+            <AlertCircle className="h-8 w-8 text-destructive" />
           </div>
           <div>
             <h3 className="text-lg font-medium text-foreground mb-1">Failed to load dashboard</h3>

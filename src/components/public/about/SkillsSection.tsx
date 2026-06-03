@@ -11,7 +11,7 @@ interface SkillsSectionProps {
 
 function SkillCard({ skill }: { skill: Skill }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-border bg-card p-3 text-center transition-all hover:border-ring hover:shadow-sm">
+    <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-border bg-card p-3 text-center transition-[border-color,box-shadow] hover:border-ring hover:shadow-sm">
       <div className="flex h-8 w-8 items-center justify-center">
         {skill.iconUrl ? (
           // eslint-disable-next-line @next/next/no-img-element

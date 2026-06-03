@@ -14,7 +14,7 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
   return (
     <header className="h-16 bg-background border-b border-border flex items-center justify-between px-6">
       <button
-        className="md:hidden p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent"
+        className="md:hidden p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
         onClick={onMenuClick}
         aria-label="Open navigation menu"
       >
