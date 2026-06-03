@@ -68,19 +68,30 @@ Before starting implementation, evaluate the scope of the request:
 
 ## UI Skills
 
-Three design-quality skills are installed and should be used during UI work:
+Four design-quality skills are installed and should be used during UI work:
 
-| Skill                     | Trigger                                                               | When to use                                                                                                                                                  |
-| ------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **shadcn**                | Auto-triggers on `components.json` detection, shadcn component work   | Adding/composing shadcn components, using the CLI (`npx shadcn@latest add/search/docs`), styling with semantic tokens, form layout with `FieldGroup`/`Field` |
-| **emil-design-eng**       | Invoke when adding animations, transitions, or micro-interactions     | Review animation code, add `:active` states, set `transform-origin` on popovers, choose easing curves. Use selectively — not every component needs it        |
-| **web-design-guidelines** | Invoke for UI review/audit, accessibility checks, pre-PR quality gate | Run `/web-design-guidelines <file-or-pattern>` before merging any UI PR. Checks a11y, focus states, dark mode, hydration safety, forms, animation, touch     |
+| Skill                     | Trigger                                                               | When to use                                                                                                                                                                 |
+| ------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **shadcn**                | Auto-triggers on `components.json` detection, shadcn component work   | Adding/composing shadcn components, using the CLI (`npx shadcn@latest add/search/docs`), styling with semantic tokens, form layout with `FieldGroup`/`Field`                |
+| **emil-design-eng**       | Invoke when adding animations, transitions, or micro-interactions     | Review animation code, add `:active` states, set `transform-origin` on popovers, choose easing curves. Use selectively — not every component needs it                       |
+| **frontend-design**       | Auto-triggers when building web components, pages, or applications    | Overall visual design direction — typography, color palettes, layout composition, distinctive aesthetics. Complements `emil-design-eng` (motion) and `shadcn` (composition) |
+| **web-design-guidelines** | Invoke for UI review/audit, accessibility checks, pre-PR quality gate | Run `/web-design-guidelines <file-or-pattern>` before merging any UI PR. Checks a11y, focus states, dark mode, hydration safety, forms, animation, touch                    |
 
 ### Skill integration points
 
-- **Building a new component or page**: use `shadcn` skill for composition patterns + semantic colors. If the component has motion, consult `emil-design-eng` for animation decisions.
+- **Building a new component or page**: use `frontend-design` for visual direction + `shadcn` skill for composition patterns + semantic colors. If the component has motion, consult `emil-design-eng` for animation decisions.
 - **Before merging UI changes**: run `web-design-guidelines` on changed `.tsx` files as a quality gate.
 - **Animation/transition work**: always consult `emil-design-eng` — it provides specific duration/easing/transform-origin guidance that matches our Radix UI + Sonner stack.
+
+## Plugins
+
+Three plugins extend Claude Code's core capabilities:
+
+| Plugin                                        | Purpose                                                                                           |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **skill-creator** (claude-plugins-official)   | Create, eval, improve, and benchmark skills. Use to iterate on existing project skills with data. |
+| **context-mode** (mksglu, v1.0.162)           | Sandboxes tool output for ~98% context window savings. SQLite session tracking + lifecycle hooks. |
+| **frontend-design** (claude-plugins-official) | Production-grade UI design with distinctive aesthetics. Listed above under UI Skills.             |
 
 If uncertain whether the orchestrator is needed, ask the user: "This looks like it might span multiple domains. Should I use the orchestrator to coordinate, or handle it directly?"
 
@@ -120,13 +131,12 @@ Defaults: `model: sonnet` (except `code-reviewer` → `haiku`). Override to `opu
 
 Configured in `.claude/settings.json`. All hooks run in the project directory.
 
-| Hook file                        | Trigger                     | Effect                                                                                                                                                           |
-| -------------------------------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pre-edit-branch-guard.sh`       | PreToolUse — `Edit\|Write`  | Blocks all file edits on `main` and `develop`. Prints instructions to create a feature branch. Exit 2.                                                           |
-| `pre-commit-gate.sh`             | PreToolUse — `Bash`         | Intercepts `git commit` commands and runs `npm run type-check`. Blocks the commit if type-check fails.                                                           |
-| `post-edit-format.sh`            | PostToolUse — `Write\|Edit` | Runs Prettier on the edited file after each Edit/Write (`.ts`, `.tsx`, `.json`, `.css`, `.md`).                                                                  |
-| `post-commit-doc-reminder.sh`    | PostToolUse — `Bash`        | After a `git commit`, scans changed files for schema/API/page/agent/rule patterns and suggests running the documentation-agent.                                  |
-| `post-edit-ui-skill-reminder.sh` | PostToolUse — `Write\|Edit` | After editing `.tsx` files in `src/components/` or `src/app/`, reminds to use `emil-design-eng` (if animation code detected) and `web-design-guidelines` skills. |
+| Hook file                     | Trigger                     | Effect                                                                                                                          |
+| ----------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `pre-edit-branch-guard.sh`    | PreToolUse — `Edit\|Write`  | Blocks all file edits on `main` and `develop`. Prints instructions to create a feature branch. Exit 2.                          |
+| `pre-commit-gate.sh`          | PreToolUse — `Bash`         | Intercepts `git commit` commands and runs `npm run type-check`. Blocks the commit if type-check fails.                          |
+| `post-edit-format.sh`         | PostToolUse — `Write\|Edit` | Runs Prettier on the edited file after each Edit/Write (`.ts`, `.tsx`, `.json`, `.css`, `.md`).                                 |
+| `post-commit-doc-reminder.sh` | PostToolUse — `Bash`        | After a `git commit`, scans changed files for schema/API/page/agent/rule patterns and suggests running the documentation-agent. |
 
 ## Git Commit Style
 

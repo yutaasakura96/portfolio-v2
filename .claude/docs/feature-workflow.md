@@ -226,15 +226,16 @@ Skim docs you'll rely on for staleness. Common drift spots:
 
 ### At feature end — propagate the change
 
-| Change                                  | Update                                                                             |
-| --------------------------------------- | ---------------------------------------------------------------------------------- |
-| New env var                             | Root CLAUDE.md §Environment Setup, amplify.yml, `.env.example`.                    |
-| New directory / naming convention       | Root CLAUDE.md §Architecture, matching `.claude/rules/` file.                      |
-| New pattern for future features         | The relevant section of this doc or `feature-templates.md`.                        |
-| New gotcha / footgun                    | Root CLAUDE.md §Common Mistakes.                                                   |
-| New MCP server installed / removed      | Root CLAUDE.md §MCP Servers, `.claude/docs/infrastructure.md` if AWS-related.      |
-| Library version bump changing API shape | Search `grep -rn '<old-api>' .claude/ CLAUDE.md src/`.                             |
-| New agent or skill added                | Root CLAUDE.md §Available Agents, this doc's "Available agents" + "Skills" tables. |
+| Change                                  | Update                                                                                                                          |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| New env var                             | Root CLAUDE.md §Environment Setup, amplify.yml, `.env.example`.                                                                 |
+| New directory / naming convention       | Root CLAUDE.md §Architecture, matching `.claude/rules/` file.                                                                   |
+| New pattern for future features         | The relevant section of this doc or `feature-templates.md`.                                                                     |
+| New gotcha / footgun                    | Root CLAUDE.md §Common Mistakes.                                                                                                |
+| New MCP server installed / removed      | Root CLAUDE.md §MCP Servers, `.claude/docs/infrastructure.md` if AWS-related.                                                   |
+| Library version bump changing API shape | Search `grep -rn '<old-api>' .claude/ CLAUDE.md src/`.                                                                          |
+| New agent or skill added                | Root CLAUDE.md §Available Agents, this doc's "Available agents" + "Skills" tables.                                              |
+| New plugin installed / removed          | Root CLAUDE.md §Plugins table + §UI Skills table (if design-related), `.claude/rules/components.md` UI Skills section, roadmap. |
 
 ### What NOT to update
 

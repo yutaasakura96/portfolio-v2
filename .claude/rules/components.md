@@ -22,6 +22,9 @@ Pattern: src/components/\*_/_.tsx
 
 ## UI Skills (auto-triggered when editing components)
 
+Four design-quality skills are available. Use all four as described:
+
 - **shadcn skill**: Use for component composition patterns (`FieldGroup` for forms, `ToggleGroup` for option sets), CLI operations (`npx shadcn@latest add/search/docs`), and semantic color tokens. No manual `dark:` overrides — use `bg-background`, `text-muted-foreground`, etc. No `space-x-*`/`space-y-*` — use `flex` with `gap-*`. Use `size-*` when width = height.
 - **emil-design-eng skill**: Consult when adding animations or transitions. Key rules: UI animations under 300ms, custom easing curves (never CSS defaults), never `scale(0)` (use `scale(0.95)` + opacity), buttons need `:active` states (`scale(0.97)`), popovers use `transform-origin: var(--radix-popover-content-transform-origin)`, CSS transitions over keyframes for interruptible UI, gate hover animations behind `@media (hover: hover) and (pointer: fine)`, honor `prefers-reduced-motion`.
+- **frontend-design skill**: Use for overall visual design direction — typography, color palettes, layout composition, and distinctive aesthetics. Invoke when building a new component or page to set the visual foundation. Complements `emil-design-eng` (motion) and `shadcn` (composition). Auto-triggers when building web components, pages, or applications.
 - **web-design-guidelines skill**: Run on component files before merging UI PRs. Checks: icon-only buttons need `aria-label`, no `outline-none` without visible focus replacement, `tabular-nums` for number columns, `color-scheme: dark` set, hydration-safe rendering.

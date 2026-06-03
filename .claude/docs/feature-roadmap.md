@@ -101,12 +101,14 @@ Last updated: 2026-06-03
 - [ ] Admin dashboard — surface key metrics (page visits, countries from Google Analytics, errors from Sentry, and other important figures)
 - [ ] Categorize certifications — add category field, render with tab UI similar to skills (azure, aws, anthropic, language, etc.)
 - [ ] Complete portfolio redesign — research best practices, iterate incrementally
-  - UI skills are installed and ready: `shadcn` (component composition), `emil-design-eng` (design engineering + animations), `web-design-guidelines` (Vercel interface guidelines, pre-PR quality gate). Skills live in `.agents/skills/` with symlinks in `.claude/skills/`.
+  - UI skills are installed and ready: `shadcn` (component composition), `emil-design-eng` (design engineering + animations), `frontend-design` (visual design direction + distinctive aesthetics), `web-design-guidelines` (Vercel interface guidelines, pre-PR quality gate). Skills live in `.agents/skills/` with symlinks in `.claude/skills/`; `frontend-design` is installed as a plugin.
 - [ ] Interactive 3D element on hero page (Three.js / React Three Fiber)
 - [ ] Internationalization (i18n) — evaluate if multilingual audience justifies maintenance cost
 - [ ] Dark mode refinements
 - [ ] Add micro-interactions and animation polish — use `emil-design-eng` skill for transitions, spring physics, and interaction choreography
 - [ ] Improve UI/UX quality — use `shadcn` skill for component composition patterns and `web-design-guidelines` skill as a pre-PR quality gate
+- Hamburger menue drop down design doesnt match the current design.
+- Drag and drop functionality for certificates that will auto populate form.
 
 ---
 
@@ -119,11 +121,16 @@ Last updated: 2026-06-03
 - [x] Orchestrator auto-routing — implemented as a Request Routing decision-tree table in `CLAUDE.md`
 - [x] Pre-edit branch guard hook — PreToolUse hook on `Edit|Write` that blocks file edits on `main`/`develop`
 - [-] Prompt writer agent — deferred. Better to improve CLAUDE.md rules directly. Revisit if improvements aren't enough.
-- [ ] Add new Claude Code skills — [10 must-have skills for Claude Code (2026)](https://medium.com/@unicodeveloper/10-must-have-skills-for-claude-and-any-coding-agent-in-2026-b5451b013051)
 - [x] Install UI skills — researched 7 candidates (Impeccable, UI UX Pro Max, Emil Kowalski, shadcn/ui, interaction-design, interface-design, web-design-guidelines); installed 3: `shadcn` (auto-triggers on component work), `emil-design-eng` (selective for animations/transitions), `web-design-guidelines` (pre-PR quality gate). Wired into `CLAUDE.md` UI Skills section and `.claude/rules/components.md`.
-- [ ] New skills/tools/agents derived from existing repos
+- [~] Add new Claude Code skills — [10 must-have skills for Claude Code (2026)](https://medium.com/@unicodeveloper/10-must-have-skills-for-claude-and-any-coding-agent-in-2026-b5451b013051)
+- [~] New plugins/skills installed and evaluated:
+  INSTALLED: - [x] `skill-creator@claude-plugins-official` — create, eval, improve, and benchmark skills (4 modes: Create, Eval, Improve, Benchmark) - [x] `context-mode@context-mode` (v1.0.162) — sandboxes tool output for ~98% context window savings, SQLite session tracking, 6 sandbox tools + lifecycle hooks - [x] `frontend-design@claude-plugins-official` — production-grade UI design with distinctive aesthetics (complements `emil-design-eng` for animation + `shadcn` for composition + `web-design-guidelines` for quality gate)
+  EVALUATED & SKIPPED: - [-] `superpowers@claude-plugins-official` — structured TDD/debug methodology. Skipped: overlaps with existing CLAUDE.md workflow, hooks, and orchestrator routing. - [-] `get-shit-done-cc` — meta-prompting + spec-driven dev. Skipped: installs its own CLAUDE.md/hooks, would conflict with existing setup. - [-] `claude-mem` (thedotmack) — persistent memory across sessions. Skipped: HIGH security risk (unauthenticated HTTP API on port 37777), and built-in `.claude/projects/` memory already covers this.
+  ALREADY AVAILABLE (built-in): - [x] /review (fast) — built-in skill, no install needed - [x] /ultrareview — built-in cloud review (Pro/Max only, 3 runs/5-20 USD)
+
 - [ ] Excalidraw diagram generator — visual architecture diagrams
   - References: [Medium skill guide](https://medium.com/@unicodeveloper/10-must-have-skills-for-claude-and-any-coding-agent-in-2026-b5451b013051), [AWS architecture diagram skill](https://github.com/vidanov/aws-architecture-diagram-skill)
+- remove all unused branches except main and develop branch.
 
 ### MCP Servers
 
