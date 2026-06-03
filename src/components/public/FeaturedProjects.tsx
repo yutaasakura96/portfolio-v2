@@ -34,7 +34,7 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {projects.map((project, index) => (
-            <ProjectCard key={project.id} project={project} priority={index === 0} />
+            <ProjectCard key={project.id} project={project} priority={index === 0} index={index} />
           ))}
         </div>
       </div>

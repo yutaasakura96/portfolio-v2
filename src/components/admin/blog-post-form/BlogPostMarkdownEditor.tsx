@@ -41,7 +41,7 @@ export function BlogPostMarkdownEditor() {
           />
         </div>
         {form.formState.errors.content && (
-          <p className="text-sm text-red-500 mt-2">{form.formState.errors.content.message}</p>
+          <p className="text-sm text-destructive mt-2">{form.formState.errors.content.message}</p>
         )}
       </CardContent>
     </Card>

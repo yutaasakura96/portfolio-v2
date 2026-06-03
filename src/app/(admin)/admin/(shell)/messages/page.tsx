@@ -182,7 +182,7 @@ export default function MessagesPage() {
           >
             {tab}
             {tab === "inbox" && meta && meta.unreadCount > 0 && (
-              <span className="ml-2 rounded-full bg-red-500 px-1.5 py-0.5 text-[11px] font-semibold text-white">
+              <span className="ml-2 rounded-full bg-destructive px-1.5 py-0.5 text-[11px] font-semibold text-destructive-foreground">
                 {meta.unreadCount}
               </span>
             )}
@@ -192,15 +192,13 @@ export default function MessagesPage() {
 
       {/* Bulk action bar */}
       {someSelected && (
-        <div className="flex items-center gap-3 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2.5 dark:border-blue-800 dark:bg-blue-950">
-          <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
-            {selected.size} selected
-          </span>
+        <div className="flex items-center gap-3 rounded-lg border border-primary/20 bg-primary/5 px-4 py-2.5">
+          <span className="text-sm font-medium text-primary">{selected.size} selected</span>
           <div className="ml-auto flex gap-2">
             <button
               onClick={() => bulkMarkRead(true)}
               disabled={bulkUpdate.isPending}
-              className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-foreground hover:bg-white dark:hover:bg-blue-900 disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted disabled:opacity-50"
             >
               <MailOpen className="h-3.5 w-3.5" />
               Mark read
@@ -208,7 +206,7 @@ export default function MessagesPage() {
             <button
               onClick={() => bulkMarkRead(false)}
               disabled={bulkUpdate.isPending}
-              className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-foreground hover:bg-white dark:hover:bg-blue-900 disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted disabled:opacity-50"
             >
               <Mail className="h-3.5 w-3.5" />
               Mark unread
@@ -217,7 +215,7 @@ export default function MessagesPage() {
               <button
                 onClick={() => bulkArchive(true)}
                 disabled={bulkUpdate.isPending}
-                className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-foreground hover:bg-white dark:hover:bg-blue-900 disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted disabled:opacity-50"
               >
                 <Archive className="h-3.5 w-3.5" />
                 Archive
@@ -226,7 +224,7 @@ export default function MessagesPage() {
               <button
                 onClick={() => bulkArchive(false)}
                 disabled={bulkUpdate.isPending}
-                className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-foreground hover:bg-white dark:hover:bg-blue-900 disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted disabled:opacity-50"
               >
                 <ArchiveRestore className="h-3.5 w-3.5" />
                 Unarchive
@@ -290,7 +288,7 @@ export default function MessagesPage() {
 
                     {/* Unread dot */}
                     <div className="flex w-2 shrink-0 items-center justify-center">
-                      {!msg.read && <span className="h-2 w-2 rounded-full bg-blue-500" />}
+                      {!msg.read && <span className="h-2 w-2 rounded-full bg-primary" />}
                     </div>
 
                     {/* Content */}

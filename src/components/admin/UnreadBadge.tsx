@@ -8,7 +8,7 @@ export function UnreadBadge() {
   if (!count) return null;
 
   return (
-    <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[11px] font-semibold text-white">
+    <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1 text-[11px] font-semibold text-destructive-foreground">
       {count > 99 ? "99+" : count}
     </span>
   );

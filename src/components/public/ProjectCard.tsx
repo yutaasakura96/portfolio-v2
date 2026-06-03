@@ -13,11 +13,15 @@ interface ProjectCardProps {
     repoUrl?: string | null;
   };
   priority?: boolean;
+  index?: number;
 }
 
-export function ProjectCard({ project, priority = false }: ProjectCardProps) {
+export function ProjectCard({ project, priority = false, index = 0 }: ProjectCardProps) {
   return (
-    <article className="group rounded-xl border border-border bg-card overflow-hidden hover:shadow-md transition-shadow">
+    <article
+      className="group rounded-xl border border-border bg-card overflow-hidden hover:shadow-md transition-shadow animate-in fade-in-0 slide-in-from-bottom-2"
+      style={{ animationDelay: `${index * 50}ms`, animationFillMode: "backwards" }}
+    >
       {/* Thumbnail */}
       {project.thumbnailImage && (
         <Link href={`/projects/${project.slug}`}>

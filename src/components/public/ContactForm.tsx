@@ -102,7 +102,7 @@ export function ContactForm() {
       {/* Error Banner */}
       {status === "error" && (
         <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950">
-          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-500" />
+          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
           <p className="text-sm text-red-700 dark:text-red-300">{errorMessage}</p>
         </div>
       )}
@@ -110,7 +110,7 @@ export function ContactForm() {
       {/* Name */}
       <div>
         <label htmlFor="name" className="block text-sm font-medium text-foreground">
-          Name <span className="text-red-500">*</span>
+          Name <span className="text-destructive">*</span>
         </label>
         <input
           id="name"
@@ -118,20 +118,20 @@ export function ContactForm() {
           {...register("name")}
           className={cn(
             "mt-1 block w-full rounded-lg border bg-background px-4 py-2.5 text-sm text-foreground shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring",
-            errors.name ? "border-red-300 focus:border-red-500" : "border-input focus:border-ring"
+            errors.name
+              ? "border-destructive/50 focus:border-destructive"
+              : "border-input focus:border-ring"
           )}
           placeholder="Your name"
           disabled={status === "submitting"}
         />
-        {errors.name && (
-          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name.message}</p>
-        )}
+        {errors.name && <p className="mt-1 text-sm text-destructive">{errors.name.message}</p>}
       </div>
 
       {/* Email */}
       <div>
         <label htmlFor="email" className="block text-sm font-medium text-foreground">
-          Email <span className="text-red-500">*</span>
+          Email <span className="text-destructive">*</span>
         </label>
         <input
           id="email"
@@ -139,14 +139,14 @@ export function ContactForm() {
           {...register("email")}
           className={cn(
             "mt-1 block w-full rounded-lg border bg-background px-4 py-2.5 text-sm text-foreground shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring",
-            errors.email ? "border-red-300 focus:border-red-500" : "border-input focus:border-ring"
+            errors.email
+              ? "border-destructive/50 focus:border-destructive"
+              : "border-input focus:border-ring"
           )}
           placeholder="your@email.com"
           disabled={status === "submitting"}
         />
-        {errors.email && (
-          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>
-        )}
+        {errors.email && <p className="mt-1 text-sm text-destructive">{errors.email.message}</p>}
       </div>
 
       {/* Subject */}
@@ -161,21 +161,21 @@ export function ContactForm() {
           className={cn(
             "mt-1 block w-full rounded-lg border bg-background px-4 py-2.5 text-sm text-foreground shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring",
             errors.subject
-              ? "border-red-300 focus:border-red-500"
+              ? "border-destructive/50 focus:border-destructive"
               : "border-input focus:border-ring"
           )}
           placeholder="What is this about?"
           disabled={status === "submitting"}
         />
         {errors.subject && (
-          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.subject.message}</p>
+          <p className="mt-1 text-sm text-destructive">{errors.subject.message}</p>
         )}
       </div>
 
       {/* Message */}
       <div>
         <label htmlFor="message" className="block text-sm font-medium text-foreground">
-          Message <span className="text-red-500">*</span>
+          Message <span className="text-destructive">*</span>
         </label>
         <textarea
           id="message"
@@ -184,14 +184,14 @@ export function ContactForm() {
           className={cn(
             "mt-1 block w-full resize-y rounded-lg border bg-background px-4 py-2.5 text-sm text-foreground shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring",
             errors.message
-              ? "border-red-300 focus:border-red-500"
+              ? "border-destructive/50 focus:border-destructive"
               : "border-input focus:border-ring"
           )}
           placeholder="Your message (at least 10 characters)"
           disabled={status === "submitting"}
         />
         {errors.message && (
-          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.message.message}</p>
+          <p className="mt-1 text-sm text-destructive">{errors.message.message}</p>
         )}
       </div>
 

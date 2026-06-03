@@ -15,11 +15,15 @@ interface BlogPostCardProps {
     readTime: number | null;
     publishedAt: Date | null;
   };
+  index?: number;
 }
 
-export function BlogPostCard({ post }: BlogPostCardProps) {
+export function BlogPostCard({ post, index = 0 }: BlogPostCardProps) {
   return (
-    <article className="group rounded-xl border border-border bg-card overflow-hidden hover:shadow-md transition-shadow">
+    <article
+      className="group rounded-xl border border-border bg-card overflow-hidden hover:shadow-md transition-shadow animate-in fade-in-0 slide-in-from-bottom-2"
+      style={{ animationDelay: `${index * 50}ms`, animationFillMode: "backwards" }}
+    >
       {/* Featured Image */}
       {post.featuredImage && (
         <Link href={`/blog/${post.slug}`}>

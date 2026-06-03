@@ -204,8 +204,8 @@ export function ProjectBrowser({ projects }: ProjectBrowserProps) {
             {hasActiveFilters ? " found" : ""}
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {filteredProjects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
+            {filteredProjects.map((project, i) => (
+              <ProjectCard key={project.id} project={project} index={i} />
             ))}
           </div>
         </>

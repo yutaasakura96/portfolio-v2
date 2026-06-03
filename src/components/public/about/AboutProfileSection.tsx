@@ -33,9 +33,9 @@ export function AboutProfileSection({
       {/* Left: Profile Card */}
       <div className="flex flex-col items-center text-center">
         {profileImage && (
-          <div className="relative w-44 h-44 mx-auto mb-6">
+          <div className="relative size-44 mx-auto mb-6">
             {/* Profile image */}
-            <div className="relative w-44 h-44 rounded-full overflow-hidden z-10">
+            <div className="relative size-44 rounded-full overflow-hidden z-10">
               <Image
                 src={profileImage}
                 alt={intro.profileName ?? "Profile photo"}
@@ -64,7 +64,7 @@ export function AboutProfileSection({
               <a
                 href={`mailto:${email}`}
                 aria-label="Email"
-                className="text-muted-foreground transition-all duration-150 hover:text-foreground hover:scale-110"
+                className="text-muted-foreground transition-[color,transform] duration-150 hover:text-foreground hover:scale-110"
               >
                 <Mail className="h-5 w-5" />
               </a>
@@ -75,7 +75,7 @@ export function AboutProfileSection({
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
-                className="text-muted-foreground transition-all duration-150 hover:text-foreground hover:scale-110"
+                className="text-muted-foreground transition-[color,transform] duration-150 hover:text-foreground hover:scale-110"
               >
                 <Github className="h-5 w-5" />
               </a>
@@ -86,7 +86,7 @@ export function AboutProfileSection({
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
-                className="text-muted-foreground transition-all duration-150 hover:text-foreground hover:scale-110"
+                className="text-muted-foreground transition-[color,transform] duration-150 hover:text-foreground hover:scale-110"
               >
                 <Linkedin className="h-5 w-5" />
               </a>
