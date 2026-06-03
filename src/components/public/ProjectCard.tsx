@@ -19,8 +19,8 @@ interface ProjectCardProps {
 export function ProjectCard({ project, priority = false, index = 0 }: ProjectCardProps) {
   return (
     <article
-      className="group rounded-xl border border-border bg-card overflow-hidden hover:shadow-md transition-shadow animate-in fade-in-0 slide-in-from-bottom-2"
-      style={{ animationDelay: `${index * 50}ms`, animationFillMode: "backwards" }}
+      className="card-interactive group rounded-xl border border-border bg-card overflow-hidden stagger-item"
+      style={{ animationDelay: `${index * 80}ms` }}
     >
       {/* Thumbnail */}
       {project.thumbnailImage && (
@@ -30,10 +30,13 @@ export function ProjectCard({ project, priority = false, index = 0 }: ProjectCar
               src={project.thumbnailImage}
               alt={project.title}
               fill
-              className="object-cover group-hover:scale-105 transition-transform duration-300"
+              className="object-cover transition-transform duration-500"
+              style={{ transitionTimingFunction: "var(--ease-out)" }}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               priority={priority}
             />
+            {/* Hover overlay */}
+            <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/5 transition-colors duration-300" />
           </div>
         </Link>
       )}
@@ -41,7 +44,7 @@ export function ProjectCard({ project, priority = false, index = 0 }: ProjectCar
       {/* Content */}
       <div className="p-5">
         <Link href={`/projects/${project.slug}`}>
-          <h3 className="text-lg font-semibold text-foreground group-hover:text-muted-foreground transition-colors">
+          <h3 className="text-lg font-semibold text-foreground group-hover:text-[var(--accent-signature)] transition-colors duration-200">
             {project.title}
           </h3>
         </Link>
@@ -74,9 +77,9 @@ export function ProjectCard({ project, priority = false, index = 0 }: ProjectCar
               href={project.liveUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+              className="arrow-link inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
-              <ExternalLink className="h-3.5 w-3.5" />
+              <ExternalLink className="h-3.5 w-3.5 arrow-icon" />
               Live Demo
             </a>
           )}

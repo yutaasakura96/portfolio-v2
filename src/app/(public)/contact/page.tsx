@@ -1,6 +1,6 @@
-import { Metadata } from "next";
 import { ContactForm } from "@/components/public/ContactForm";
 import { Mail, MapPin } from "lucide-react";
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -12,8 +12,9 @@ export default function ContactPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6 py-12">
       <div className="mb-10">
-        <h1 className="text-3xl font-bold text-foreground">Get in Touch</h1>
-        <p className="mt-3 text-muted-foreground">
+        <p className="text-sm font-medium text-[var(--accent-signature)] mb-1">Contact</p>
+        <h1 className="text-3xl font-bold text-foreground sm:text-4xl">Get in Touch</h1>
+        <p className="mt-3 text-muted-foreground max-w-lg">
           Have a question, project idea, or just want to say hello? Fill out the form below and
           I&apos;ll get back to you as soon as possible.
         </p>

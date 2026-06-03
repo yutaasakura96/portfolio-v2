@@ -1,8 +1,8 @@
 "use client";
 
-import type { Skill } from "../../../../generated/prisma/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Wrench } from "lucide-react";
+import type { Skill } from "../../../../generated/prisma/client";
 
 interface SkillsSectionProps {
   skills: Skill[];
@@ -11,7 +11,7 @@ interface SkillsSectionProps {
 
 function SkillCard({ skill }: { skill: Skill }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-border bg-card p-3 text-center transition-[border-color,box-shadow] hover:border-ring hover:shadow-sm">
+    <div className="card-interactive flex flex-col items-center justify-center gap-2 rounded-xl border border-border bg-card p-3 text-center">
       <div className="flex h-8 w-8 items-center justify-center">
         {skill.iconUrl ? (
           // eslint-disable-next-line @next/next/no-img-element

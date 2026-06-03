@@ -64,7 +64,7 @@ export function AboutProfileSection({
               <a
                 href={`mailto:${email}`}
                 aria-label="Email"
-                className="text-muted-foreground transition-[color,transform] duration-150 hover:text-foreground hover:scale-110"
+                className="pressable text-muted-foreground hover:text-foreground transition-colors duration-200"
               >
                 <Mail className="h-5 w-5" />
               </a>
@@ -75,7 +75,7 @@ export function AboutProfileSection({
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
-                className="text-muted-foreground transition-[color,transform] duration-150 hover:text-foreground hover:scale-110"
+                className="pressable text-muted-foreground hover:text-foreground transition-colors duration-200"
               >
                 <Github className="h-5 w-5" />
               </a>
@@ -86,7 +86,7 @@ export function AboutProfileSection({
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
-                className="text-muted-foreground transition-[color,transform] duration-150 hover:text-foreground hover:scale-110"
+                className="pressable text-muted-foreground hover:text-foreground transition-colors duration-200"
               >
                 <Linkedin className="h-5 w-5" />
               </a>

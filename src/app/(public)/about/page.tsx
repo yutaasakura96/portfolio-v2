@@ -8,9 +8,9 @@ import {
   getCertifications,
   getEducation,
   getExperiences,
+  getSiteSettings,
   getSkillCategories,
   getSkills,
-  getSiteSettings,
 } from "@/lib/data/public-queries";
 import { Metadata } from "next";
 
@@ -58,8 +58,13 @@ export default async function AboutPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 py-12">
       <div className="mb-12">
-        <h1 className="text-3xl font-bold text-foreground">{intro?.heading ?? DEFAULT_HEADING}</h1>
-        <p className="mt-2 text-muted-foreground">{intro?.subheading ?? DEFAULT_SUBHEADING}</p>
+        <p className="text-sm font-medium text-[var(--accent-signature)] mb-1">Background</p>
+        <h1 className="text-3xl font-bold text-foreground sm:text-4xl">
+          {intro?.heading ?? DEFAULT_HEADING}
+        </h1>
+        <p className="mt-3 text-muted-foreground max-w-lg">
+          {intro?.subheading ?? DEFAULT_SUBHEADING}
+        </p>
       </div>
 
       {hasProfileSection && (

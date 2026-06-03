@@ -186,8 +186,8 @@ export function ProjectBrowser({ projects }: ProjectBrowserProps) {
               className={cn(
                 "px-3 py-1 rounded-full text-xs font-medium transition-colors",
                 selectedTag === tag
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground hover:bg-accent"
+                  ? "bg-foreground text-background"
+                  : "bg-muted text-muted-foreground hover:bg-accent pressable"
               )}
             >
               {tag}

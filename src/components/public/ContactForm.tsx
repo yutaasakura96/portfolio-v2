@@ -1,11 +1,11 @@
 "use client";
 
+import { cn } from "@/lib/utils";
+import { contactMessageSchema, type ContactMessageInput } from "@/lib/validations/contact";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AlertCircle, CheckCircle, Loader2, Send } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { contactMessageSchema, type ContactMessageInput } from "@/lib/validations/contact";
-import { cn } from "@/lib/utils";
-import { Send, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
 
@@ -64,17 +64,22 @@ export function ContactForm() {
   // ── Success State ──────────────────────────────────
   if (status === "success") {
     return (
-      <div className="rounded-lg border border-green-200 bg-green-50 p-8 text-center dark:border-green-900 dark:bg-green-950">
-        <CheckCircle className="mx-auto h-12 w-12 text-green-500" />
-        <h3 className="mt-4 text-lg font-semibold text-green-900 dark:text-green-100">
-          Message sent!
-        </h3>
+      <div className="rounded-xl border border-green-200 bg-green-50 p-10 text-center dark:border-green-900 dark:bg-green-950">
+        <div
+          className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-green-100 dark:bg-green-900 mb-4"
+          style={{
+            animation: "staggerIn 500ms var(--ease-bounce) forwards",
+          }}
+        >
+          <CheckCircle className="h-7 w-7 text-green-500" />
+        </div>
+        <h3 className="text-lg font-semibold text-green-900 dark:text-green-100">Message sent!</h3>
         <p className="mt-2 text-sm text-green-700 dark:text-green-300">
           Thank you for reaching out. I&apos;ll get back to you as soon as possible.
         </p>
         <button
           onClick={() => setStatus("idle")}
-          className="mt-6 text-sm font-medium text-green-700 underline hover:text-green-900 dark:text-green-300 dark:hover:text-green-100"
+          className="pressable mt-6 text-sm font-medium text-green-700 underline hover:text-green-900 dark:text-green-300 dark:hover:text-green-100"
         >
           Send another message
         </button>
@@ -82,9 +87,12 @@ export function ContactForm() {
     );
   }
 
+  const inputBase =
+    "mt-1.5 block w-full rounded-lg border bg-background px-4 py-2.5 text-sm text-foreground transition-[border-color,box-shadow] duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--accent-signature)]/30 focus:border-[var(--accent-signature)]";
+
   // ── Form ───────────────────────────────────────────
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
       {/* Honeypot — hidden from users, visible to bots */}
       <div className="absolute -left-[9999px] -top-[9999px]" aria-hidden="true">
         <label htmlFor="honeypot">
@@ -107,46 +115,38 @@ export function ContactForm() {
         </div>
       )}
 
-      {/* Name */}
-      <div>
-        <label htmlFor="name" className="block text-sm font-medium text-foreground">
-          Name <span className="text-destructive">*</span>
-        </label>
-        <input
-          id="name"
-          type="text"
-          {...register("name")}
-          className={cn(
-            "mt-1 block w-full rounded-lg border bg-background px-4 py-2.5 text-sm text-foreground shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring",
-            errors.name
-              ? "border-destructive/50 focus:border-destructive"
-              : "border-input focus:border-ring"
-          )}
-          placeholder="Your name"
-          disabled={status === "submitting"}
-        />
-        {errors.name && <p className="mt-1 text-sm text-destructive">{errors.name.message}</p>}
-      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        {/* Name */}
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium text-foreground">
+            Name <span className="text-[var(--accent-signature)]">*</span>
+          </label>
+          <input
+            id="name"
+            type="text"
+            {...register("name")}
+            className={cn(inputBase, errors.name ? "border-destructive/50" : "border-input")}
+            placeholder="Your name"
+            disabled={status === "submitting"}
+          />
+          {errors.name && <p className="mt-1 text-sm text-destructive">{errors.name.message}</p>}
+        </div>
 
-      {/* Email */}
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-foreground">
-          Email <span className="text-destructive">*</span>
-        </label>
-        <input
-          id="email"
-          type="email"
-          {...register("email")}
-          className={cn(
-            "mt-1 block w-full rounded-lg border bg-background px-4 py-2.5 text-sm text-foreground shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring",
-            errors.email
-              ? "border-destructive/50 focus:border-destructive"
-              : "border-input focus:border-ring"
-          )}
-          placeholder="your@email.com"
-          disabled={status === "submitting"}
-        />
-        {errors.email && <p className="mt-1 text-sm text-destructive">{errors.email.message}</p>}
+        {/* Email */}
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-foreground">
+            Email <span className="text-[var(--accent-signature)]">*</span>
+          </label>
+          <input
+            id="email"
+            type="email"
+            {...register("email")}
+            className={cn(inputBase, errors.email ? "border-destructive/50" : "border-input")}
+            placeholder="your@email.com"
+            disabled={status === "submitting"}
+          />
+          {errors.email && <p className="mt-1 text-sm text-destructive">{errors.email.message}</p>}
+        </div>
       </div>
 
       {/* Subject */}
@@ -158,12 +158,7 @@ export function ContactForm() {
           id="subject"
           type="text"
           {...register("subject")}
-          className={cn(
-            "mt-1 block w-full rounded-lg border bg-background px-4 py-2.5 text-sm text-foreground shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring",
-            errors.subject
-              ? "border-destructive/50 focus:border-destructive"
-              : "border-input focus:border-ring"
-          )}
+          className={cn(inputBase, errors.subject ? "border-destructive/50" : "border-input")}
           placeholder="What is this about?"
           disabled={status === "submitting"}
         />
@@ -175,19 +170,18 @@ export function ContactForm() {
       {/* Message */}
       <div>
         <label htmlFor="message" className="block text-sm font-medium text-foreground">
-          Message <span className="text-destructive">*</span>
+          Message <span className="text-[var(--accent-signature)]">*</span>
         </label>
         <textarea
           id="message"
-          rows={6}
+          rows={5}
           {...register("message")}
           className={cn(
-            "mt-1 block w-full resize-y rounded-lg border bg-background px-4 py-2.5 text-sm text-foreground shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring",
-            errors.message
-              ? "border-destructive/50 focus:border-destructive"
-              : "border-input focus:border-ring"
+            inputBase,
+            "resize-y",
+            errors.message ? "border-destructive/50" : "border-input"
           )}
-          placeholder="Your message (at least 10 characters)"
+          placeholder="Your message..."
           disabled={status === "submitting"}
         />
         {errors.message && (
@@ -199,7 +193,7 @@ export function ContactForm() {
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+        className="pressable focus-signature arrow-link inline-flex items-center gap-2 rounded-lg bg-foreground px-6 py-2.5 text-sm font-medium text-background transition-colors hover:bg-foreground/90 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {status === "submitting" ? (
           <>
@@ -208,7 +202,7 @@ export function ContactForm() {
           </>
         ) : (
           <>
-            <Send className="h-4 w-4" />
+            <Send className="h-4 w-4 arrow-icon" />
             Send Message
           </>
         )}

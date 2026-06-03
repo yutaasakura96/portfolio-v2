@@ -21,8 +21,8 @@ interface BlogPostCardProps {
 export function BlogPostCard({ post, index = 0 }: BlogPostCardProps) {
   return (
     <article
-      className="group rounded-xl border border-border bg-card overflow-hidden hover:shadow-md transition-shadow animate-in fade-in-0 slide-in-from-bottom-2"
-      style={{ animationDelay: `${index * 50}ms`, animationFillMode: "backwards" }}
+      className="card-interactive group rounded-xl border border-border bg-card overflow-hidden stagger-item"
+      style={{ animationDelay: `${index * 80}ms` }}
     >
       {/* Featured Image */}
       {post.featuredImage && (
@@ -32,9 +32,11 @@ export function BlogPostCard({ post, index = 0 }: BlogPostCardProps) {
               src={post.featuredImage}
               alt={post.title}
               fill
-              className="object-cover group-hover:scale-105 transition-transform duration-300"
+              className="object-cover transition-transform duration-500"
+              style={{ transitionTimingFunction: "var(--ease-out)" }}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             />
+            <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/5 transition-colors duration-300" />
           </div>
         </Link>
       )}
@@ -46,7 +48,7 @@ export function BlogPostCard({ post, index = 0 }: BlogPostCardProps) {
             {post.tags.slice(0, 3).map((tag) => (
               <span
                 key={tag}
-                className="inline-flex items-center px-2 py-0.5 rounded-md bg-blue-50 text-xs font-medium text-blue-700 dark:bg-blue-950 dark:text-blue-300"
+                className="inline-flex items-center px-2 py-0.5 rounded-md bg-muted text-xs font-medium text-muted-foreground"
               >
                 {tag}
               </span>
@@ -56,7 +58,7 @@ export function BlogPostCard({ post, index = 0 }: BlogPostCardProps) {
 
         {/* Title */}
         <Link href={`/blog/${post.slug}`}>
-          <h3 className="text-lg font-semibold text-foreground group-hover:text-muted-foreground transition-colors line-clamp-2">
+          <h3 className="text-lg font-semibold text-foreground group-hover:text-[var(--accent-signature)] transition-colors duration-200 line-clamp-2">
             {post.title}
           </h3>
         </Link>

@@ -1,4 +1,8 @@
+"use client";
+
 import { BlogPostCard } from "@/components/public/BlogPostCard";
+import { useReveal } from "@/hooks/use-reveal";
+import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
@@ -18,17 +22,25 @@ interface RecentPostsProps {
 }
 
 export function RecentPosts({ posts }: RecentPostsProps) {
+  const { ref, visible } = useReveal();
+
   return (
-    <section className="py-16">
+    <section
+      ref={ref as React.RefObject<HTMLElement>}
+      className={cn("reveal py-14 sm:py-16 border-border", visible && "visible")}
+    >
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-bold text-foreground">Recent Posts</h2>
+        <div className="flex items-end justify-between mb-8">
+          <div>
+            <p className="text-sm font-medium text-[var(--accent-signature)] mb-1">Blog</p>
+            <h2 className="text-2xl font-bold text-foreground sm:text-3xl">Recent Posts</h2>
+          </div>
           <Link
             href="/blog"
-            className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className="arrow-link inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             View all
-            <ArrowRight className="h-4 w-4" />
+            <ArrowRight className="h-4 w-4 arrow-icon" />
           </Link>
         </div>
 
