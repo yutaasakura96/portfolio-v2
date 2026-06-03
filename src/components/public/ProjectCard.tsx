@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { ExternalLink, Github } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,35 +15,51 @@ interface ProjectCardProps {
   };
   priority?: boolean;
   index?: number;
+  featured?: boolean;
 }
 
-export function ProjectCard({ project, priority = false, index = 0 }: ProjectCardProps) {
+export function ProjectCard({
+  project,
+  priority = false,
+  index = 0,
+  featured = false,
+}: ProjectCardProps) {
   return (
     <article
-      className="card-interactive group rounded-xl border border-border bg-card overflow-hidden stagger-item"
+      className={cn(
+        "card-interactive group rounded-xl border border-border bg-card overflow-hidden stagger-item",
+        featured && "sm:flex sm:flex-row"
+      )}
       style={{ animationDelay: `${index * 80}ms` }}
     >
       {/* Thumbnail */}
       {project.thumbnailImage && (
         <Link href={`/projects/${project.slug}`}>
-          <div className="relative aspect-4/3 overflow-hidden bg-muted">
-            <Image
-              src={project.thumbnailImage}
-              alt={project.title}
-              fill
-              className="object-cover transition-transform duration-500"
-              style={{ transitionTimingFunction: "var(--ease-out)" }}
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              priority={priority}
-            />
-            {/* Hover overlay */}
-            <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/5 transition-colors duration-300" />
+          <div className={cn(featured && "sm:w-2/5 sm:flex-shrink-0")}>
+            <div
+              className={cn(
+                "relative overflow-hidden bg-muted",
+                featured ? "aspect-video sm:h-full sm:aspect-auto" : "aspect-4/3"
+              )}
+            >
+              <Image
+                src={project.thumbnailImage}
+                alt={project.title}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                style={{ transitionTimingFunction: "var(--ease-out)" }}
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                priority={priority}
+              />
+              {/* Hover overlay */}
+              <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/5 transition-colors duration-300" />
+            </div>
           </div>
         </Link>
       )}
 
       {/* Content */}
-      <div className="p-5">
+      <div className={cn("p-5", featured && "sm:flex sm:flex-col sm:justify-center sm:p-8")}>
         <Link href={`/projects/${project.slug}`}>
           <h3 className="text-lg font-semibold text-foreground group-hover:text-[var(--accent-signature)] transition-colors duration-200">
             {project.title}

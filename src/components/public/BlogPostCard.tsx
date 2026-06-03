@@ -32,7 +32,7 @@ export function BlogPostCard({ post, index = 0 }: BlogPostCardProps) {
               src={post.featuredImage}
               alt={post.title}
               fill
-              className="object-cover transition-transform duration-500"
+              className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
               style={{ transitionTimingFunction: "var(--ease-out)" }}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             />

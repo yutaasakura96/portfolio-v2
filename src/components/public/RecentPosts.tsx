@@ -33,11 +33,13 @@ export function RecentPosts({ posts }: RecentPostsProps) {
         <div className="flex items-end justify-between mb-8">
           <div>
             <p className="text-sm font-medium text-[var(--accent-signature)] mb-1">Blog</p>
-            <h2 className="text-2xl font-bold text-foreground sm:text-3xl">Recent Posts</h2>
+            <h2 className="font-display text-2xl font-bold text-foreground sm:text-3xl">
+              Recent Posts
+            </h2>
           </div>
           <Link
             href="/blog"
-            className="arrow-link inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className="arrow-link inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2.5 -my-2.5"
           >
             View all
             <ArrowRight className="h-4 w-4 arrow-icon" />

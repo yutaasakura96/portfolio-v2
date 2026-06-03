@@ -11,7 +11,7 @@ export function CTASection() {
   return (
     <section
       ref={ref as React.RefObject<HTMLElement>}
-      className={cn("reveal py-14 sm:py-16", visible && "visible")}
+      className={cn("reveal py-14 sm:py-16 section-alt-bg", visible && "visible")}
     >
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
         <div className="relative rounded-2xl border border-border bg-card p-10 sm:p-14 overflow-hidden">
@@ -28,7 +28,7 @@ export function CTASection() {
             <p className="text-sm font-medium text-[var(--accent-signature)] mb-2">
               Let&apos;s connect
             </p>
-            <h2 className="text-2xl font-bold text-foreground sm:text-3xl">
+            <h2 className="font-display text-2xl font-bold text-foreground sm:text-3xl">
               Interested in working together?
             </h2>
             <p className="mt-4 text-muted-foreground leading-relaxed">

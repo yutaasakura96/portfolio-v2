@@ -86,35 +86,60 @@ export function Header() {
             aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileMenuOpen}
           >
-            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            <span className="relative block w-5 h-5" aria-hidden="true">
+              <Menu
+                className={cn(
+                  "absolute inset-0 h-5 w-5 transition-all duration-200",
+                  mobileMenuOpen ? "opacity-0 rotate-90 scale-75" : "opacity-100 rotate-0 scale-100"
+                )}
+                style={{ transitionTimingFunction: "var(--ease-out)" }}
+              />
+              <X
+                className={cn(
+                  "absolute inset-0 h-5 w-5 transition-all duration-200",
+                  mobileMenuOpen
+                    ? "opacity-100 rotate-0 scale-100"
+                    : "opacity-0 -rotate-90 scale-75"
+                )}
+                style={{ transitionTimingFunction: "var(--ease-out)" }}
+              />
+            </span>
           </button>
         </div>
       </div>
 
-      {mobileMenuOpen && (
-        <nav className="md:hidden border-t border-border bg-background/95 backdrop-blur-md px-4 pb-4 pt-2">
-          {navItems.map((item, i) => {
+      <nav
+        className={cn(
+          "md:hidden border-t border-border bg-background/95 backdrop-blur-md overflow-hidden transition-all duration-200",
+          mobileMenuOpen
+            ? "max-h-96 opacity-100"
+            : "max-h-0 opacity-0 pointer-events-none border-transparent"
+        )}
+        style={{ transitionTimingFunction: "var(--ease-out)" }}
+        aria-hidden={!mobileMenuOpen}
+      >
+        <div className="px-4 pb-4 pt-2">
+          {navItems.map((item) => {
             const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
-
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={() => setMobileMenuOpen(false)}
                 className={cn(
-                  "stagger-item block px-3 py-2.5 rounded-md text-sm font-medium transition-colors",
+                  "block px-3 py-2.5 rounded-md text-sm font-medium transition-colors",
                   isActive
                     ? "text-foreground bg-accent"
                     : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
                 )}
-                style={{ animationDelay: `${i * 50}ms` }}
+                tabIndex={mobileMenuOpen ? 0 : -1}
               >
                 {item.label}
               </Link>
             );
           })}
-        </nav>
-      )}
+        </div>
+      </nav>
     </header>
   );
 }

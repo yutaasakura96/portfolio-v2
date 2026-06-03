@@ -33,21 +33,41 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
         <div className="flex items-end justify-between mb-8">
           <div>
             <p className="text-sm font-medium text-[var(--accent-signature)] mb-1">Portfolio</p>
-            <h2 className="text-2xl font-bold text-foreground sm:text-3xl">Featured Projects</h2>
+            <h2 className="font-display text-2xl font-bold text-foreground sm:text-3xl">
+              Featured Projects
+            </h2>
           </div>
           <Link
             href="/projects"
-            className="arrow-link inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className="arrow-link inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2.5 -my-2.5"
           >
             View all
             <ArrowRight className="h-4 w-4 arrow-icon" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {projects.map((project, index) => (
-            <ProjectCard key={project.id} project={project} priority={index === 0} index={index} />
-          ))}
+        <div className="space-y-6">
+          {projects[0] && (
+            <ProjectCard
+              key={projects[0].id}
+              project={projects[0]}
+              priority={true}
+              index={0}
+              featured={true}
+            />
+          )}
+          {projects.length > 1 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {projects.slice(1).map((project, index) => (
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  priority={false}
+                  index={index + 1}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>
