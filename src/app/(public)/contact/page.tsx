@@ -1,5 +1,5 @@
 import { ContactForm } from "@/components/public/ContactForm";
-import { Mail, MapPin } from "lucide-react";
+import { Clock, MessageSquare } from "lucide-react";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -29,37 +29,26 @@ export default function ContactPage() {
         {/* Sidebar Info */}
         <div className="space-y-6">
           <div className="rounded-lg border border-border bg-muted p-6">
-            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">
-              Other Ways to Reach Me
-            </h3>
-            <div className="mt-4 space-y-4">
-              <div className="flex items-start gap-3">
-                <Mail className="mt-0.5 h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium text-foreground">Email</p>
-                  <a
-                    href="mailto:your@email.com"
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    yuta.asakura.se@email.com
-                  </a>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <MapPin className="mt-0.5 h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium text-foreground">Location</p>
-                  <p className="text-sm text-muted-foreground">Japan</p>
-                </div>
-              </div>
+            <div className="flex items-center gap-2 mb-3">
+              <MessageSquare className="h-5 w-5 text-muted-foreground" />
+              <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">
+                What to Expect
+              </h3>
             </div>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li>I&apos;ll reply to the email address you provide in the form.</li>
+              <li>Project inquiries, collaborations, and general questions are all welcome.</li>
+            </ul>
           </div>
 
           <div className="rounded-lg border border-border bg-muted p-6">
-            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">
-              Response Time
-            </h3>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 mb-3">
+              <Clock className="h-5 w-5 text-muted-foreground" />
+              <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">
+                Response Time
+              </h3>
+            </div>
+            <p className="text-sm text-muted-foreground">
               I typically respond within 1–2 business days.
             </p>
           </div>
