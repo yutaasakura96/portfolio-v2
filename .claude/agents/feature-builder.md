@@ -3,6 +3,16 @@ name: feature-builder
 description: Use to build a new feature end-to-end (model + migration + API route + admin UI + public surface) following all of this project's conventions. Reads every CLAUDE.md and rule file before starting. Uses context7 MCP (when available) for library API questions.
 tools: Read, Edit, Write, Bash, Glob, Grep
 model: sonnet
+maxTurns: 50
+memory: user
+skills:
+  - prisma-neon
+  - nextjs-app-router
+  - tailwind-v4
+  - shadcn
+mcpServers:
+  - context7
+  - prisma-local
 ---
 
 # Feature Builder

@@ -3,6 +3,7 @@ name: synthesizer
 description: Post-build integration validator. Reads the combined diff from all preceding agents, checks cross-domain consistency (schema-to-Zod-to-API-to-UI), and flags integration gaps. Spawned by orchestrator in Patterns C/D after feature-builder, before code-reviewer. Read-only — never edits.
 tools: Read, Bash, Glob, Grep
 model: sonnet
+maxTurns: 15
 ---
 
 # Synthesizer

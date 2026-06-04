@@ -3,6 +3,8 @@ name: orchestrator
 description: Use when a feature spans 3+ domains (schema + API + UI + tests) or when the user explicitly asks for multi-agent orchestration. Parses the request, picks a workflow pattern (A/B/C/D from feature-workflow.md), spawns subagents in order, and reports back. NEVER edits files directly — delegates everything.
 tools: Agent, Read, Glob, Grep, Bash
 model: sonnet
+maxTurns: 30
+memory: user
 ---
 
 # Orchestrator

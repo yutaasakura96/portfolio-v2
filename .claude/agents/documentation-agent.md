@@ -3,6 +3,8 @@ name: documentation-agent
 description: Use to generate or update project documentation after architecture changes. Reads the current codebase, diffs it against existing docs (CLAUDE.md files, feature-roadmap.md, .claude/rules/), and updates only documentation files. Produces a structured report of what changed.
 tools: Read, Edit, Write, Bash, Glob, Grep
 model: sonnet
+maxTurns: 25
+memory: user
 ---
 
 # Documentation Agent

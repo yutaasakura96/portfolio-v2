@@ -51,6 +51,7 @@
             "type": "command",
             "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/post-commit-doc-reminder.sh",
             "timeout": 10,
+            "async": true,
             "statusMessage": "Checking if docs need updating..."
           }
         ]

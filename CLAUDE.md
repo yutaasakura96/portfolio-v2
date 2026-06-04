@@ -4,8 +4,8 @@ Personal portfolio + admin CMS. Public-facing Next.js site backed by an admin da
 
 ## Tech Stack
 
-- **Framework:** Next.js 16.2.2 (App Router, `proxy.ts` middleware), React 19.2.3, TypeScript 5 (strict)
-- **Database:** Prisma 7.4.1 + Neon Postgres via `@prisma/adapter-neon` + `@neondatabase/serverless`
+- **Framework:** Next.js (App Router, `proxy.ts` middleware), React, TypeScript (strict) — see @package.json for exact versions
+- **Database:** Prisma + Neon Postgres via `@prisma/adapter-neon` + `@neondatabase/serverless`
 - **Styling:** TailwindCSS 4 + `@tailwindcss/postcss`, shadcn (Radix UI primitives), CVA + clsx + `tailwind-merge`
 - **Forms:** react-hook-form + `@hookform/resolvers` + Zod 4
 - **Server state:** TanStack React Query 5 (no Zustand — do not add)
@@ -18,20 +18,7 @@ Personal portfolio + admin CMS. Public-facing Next.js site backed by an admin da
 
 ## Commands
 
-| Task                    | Command                         |
-| ----------------------- | ------------------------------- |
-| Dev server              | `npm run dev`                   |
-| Build (incl. lint)      | `npm run build`                 |
-| Lint + format           | `npm run lint`                  |
-| Type check              | `npm run type-check`            |
-| Bundle analyze          | `npm run analyze`               |
-| Prisma generate         | `npm run prisma:generate`       |
-| Prisma migrate (dev)    | `npm run prisma:migrate:dev`    |
-| Prisma migrate (deploy) | `npm run prisma:migrate:deploy` |
-| Prisma studio           | `npm run prisma:studio`         |
-| Seed                    | `npx prisma db seed`            |
-| Test (watch)            | `npm test`                      |
-| Test (CI + coverage)    | `npm run test:ci`               |
+All scripts are in @package.json. Key commands: `npm run dev`, `npm run build`, `npm run lint`, `npm run type-check`, `npm test`, `npm run prisma:generate`, `npm run prisma:migrate:dev`.
 
 Tests use **Vitest** with **@testing-library/react**. See [.claude/rules/tests.md](.claude/rules/tests.md) for conventions.
 
@@ -153,14 +140,7 @@ Defaults: `model: sonnet` (except `code-reviewer` → `haiku`). Override to `opu
 
 ## Claude Hooks
 
-Configured in `.claude/settings.json`. All hooks run in the project directory.
-
-| Hook file                     | Trigger                     | Effect                                                                                                                          |
-| ----------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `pre-edit-branch-guard.sh`    | PreToolUse — `Edit\|Write`  | Blocks all file edits on `main` and `develop`. Prints instructions to create a feature branch. Exit 2.                          |
-| `pre-commit-gate.sh`          | PreToolUse — `Bash`         | Intercepts `git commit` commands and runs `npm run type-check`. Blocks the commit if type-check fails.                          |
-| `post-edit-format.sh`         | PostToolUse — `Write\|Edit` | Runs Prettier on the edited file after each Edit/Write (`.ts`, `.tsx`, `.json`, `.css`, `.md`).                                 |
-| `post-commit-doc-reminder.sh` | PostToolUse — `Bash`        | After a `git commit`, scans changed files for schema/API/page/agent/rule patterns and suggests running the documentation-agent. |
+Hooks are configured in `.claude/settings.json` — read it for current behavior. Key gates: branch guard blocks edits on `main`/`develop`, type-check gates commits, Prettier auto-formats after edits.
 
 ## Git Commit Style
 
@@ -172,3 +152,13 @@ Configured in `.claude/settings.json`. All hooks run in the project directory.
 ## Environment Setup
 
 Local dev needs a `.env` (not `.env.example` — it has drift; see [.claude/docs/infrastructure.md](.claude/docs/infrastructure.md) §Environment Variables). Production env lives in Amplify Console and is materialized into `.env.production` at build time by [amplify.yml](amplify.yml).
+
+## Compaction
+
+When compacting, always preserve:
+
+- The full list of files modified in the current task
+- The current git branch name and any in-progress PR
+- Which agent workflow step we are on (if orchestrator is running)
+- Any user decisions or preferences stated in this session
+- Error messages from failed builds/tests that haven't been resolved yet
