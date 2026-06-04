@@ -46,3 +46,6 @@ next-env.d.ts
 
 # playwright MCP runtime artifacts
 .playwright-mcp/
+
+# draw.io backup files
+.*drawio.bkp
