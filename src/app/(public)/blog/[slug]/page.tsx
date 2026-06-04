@@ -12,7 +12,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-export const revalidate = 1800;
+export const revalidate = 60;
 
 export async function generateStaticParams() {
   const posts = await getPublishedPostSlugs();

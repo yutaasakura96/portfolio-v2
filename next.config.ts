@@ -13,6 +13,43 @@ const nextConfig: NextConfig = {
   },
   // Required for sharp to work in Next.js 15+ serverless/Amplify environments
   serverExternalPackages: ["sharp"],
+  experimental: {
+    staleTimes: {
+      dynamic: 0,
+      static: 10,
+    },
+  },
+  async headers() {
+    return [
+      {
+        source: "/((?!api|_next|admin).*)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, s-maxage=10, stale-while-revalidate=31536000",
+          },
+        ],
+      },
+      {
+        source: "/api/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "no-store, no-cache, must-revalidate",
+          },
+        ],
+      },
+      {
+        source: "/admin/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "private, no-cache, no-store, must-revalidate",
+          },
+        ],
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     "Portfolio projects by Yuta Asakura — full-stack web applications built with Next.js, TypeScript, AWS, and more.",
 };
 
-export const revalidate = 3600;
+export const revalidate = 60;
 
 export default async function ProjectsPage() {
   const projects = await getPublishedProjects();

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     "Yuta Asakura — Full-stack developer building modern web applications with Next.js, TypeScript, and AWS.",
 };
 
-export const revalidate = 3600; // ISR: revalidate every hour
+export const revalidate = 60;
 
 export default async function HomePage() {
   const [hero, featuredProjects, recentPosts] = await Promise.all([
