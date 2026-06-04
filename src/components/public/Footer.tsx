@@ -1,6 +1,5 @@
 import { getSiteSettings } from "@/lib/data/public-queries";
 import { Github, Linkedin, Mail, Twitter } from "lucide-react";
-import Link from "next/link";
 
 type SocialLinks = {
   github?: string;
@@ -25,113 +24,62 @@ export async function Footer() {
 
   return (
     <footer className="border-t border-border bg-background">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 py-12">
-        {/* Main footer content - 3 columns */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 mb-10">
-          {/* Brand column */}
-          <div>
-            <p className="text-lg font-bold text-foreground mb-3">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 py-6">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+            <span className="font-bold text-foreground">
               YA
               <span className="text-[var(--accent-signature)]">.</span>
-            </p>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Building thoughtful software for the modern web.
-            </p>
+            </span>
+            <span className="text-xs">
+              &copy; {currentYear} {siteName}
+            </span>
           </div>
 
-          {/* Navigation column */}
-          <div>
-            <h3 className="text-sm font-semibold text-foreground mb-3">Navigation</h3>
-            <nav className="flex flex-col gap-2">
-              <Link
-                href="/"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          <div className="flex items-center gap-1">
+            {socialLinks.github && (
+              <a
+                href={socialLinks.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground transition-colors hover:text-foreground"
+                aria-label="GitHub"
               >
-                Home
-              </Link>
-              <Link
-                href="/projects"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                <Github className="h-4 w-4" />
+              </a>
+            )}
+            {socialLinks.linkedin && (
+              <a
+                href={socialLinks.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground transition-colors hover:text-foreground"
+                aria-label="LinkedIn"
               >
-                Projects
-              </Link>
-              <Link
-                href="/blog"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                <Linkedin className="h-4 w-4" />
+              </a>
+            )}
+            {socialLinks.twitter && (
+              <a
+                href={socialLinks.twitter}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground transition-colors hover:text-foreground"
+                aria-label="Twitter"
               >
-                Blog
-              </Link>
-              <Link
-                href="/about"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                <Twitter className="h-4 w-4" />
+              </a>
+            )}
+            {email && (
+              <a
+                href={`mailto:${email}`}
+                className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground transition-colors hover:text-foreground"
+                aria-label="Email"
               >
-                About
-              </Link>
-              <Link
-                href="/contact"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Contact
-              </Link>
-            </nav>
+                <Mail className="h-4 w-4" />
+              </a>
+            )}
           </div>
-
-          {/* Social column */}
-          <div>
-            <h3 className="text-sm font-semibold text-foreground mb-3">Connect</h3>
-            <div className="flex flex-col gap-3">
-              {socialLinks.github && (
-                <a
-                  href={socialLinks.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <Github className="h-4 w-4" />
-                  <span>GitHub</span>
-                </a>
-              )}
-              {socialLinks.linkedin && (
-                <a
-                  href={socialLinks.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <Linkedin className="h-4 w-4" />
-                  <span>LinkedIn</span>
-                </a>
-              )}
-              {socialLinks.twitter && (
-                <a
-                  href={socialLinks.twitter}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <Twitter className="h-4 w-4" />
-                  <span>Twitter</span>
-                </a>
-              )}
-              {email && (
-                <a
-                  href={`mailto:${email}`}
-                  className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <Mail className="h-4 w-4" />
-                  <span>Email</span>
-                </a>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom row - copyright */}
-        <div className="pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-muted-foreground">
-            © {currentYear} {siteName}
-          </p>
-          <p className="text-xs text-muted-foreground">Built with Next.js & TypeScript</p>
         </div>
       </div>
     </footer>
