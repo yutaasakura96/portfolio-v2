@@ -139,8 +139,10 @@ Last updated: 2026-06-04
   - npx skills add vidanov/aws-architecture-diagram-skill
 
 - [x] remove all unused branches except main and develop branch.
-- im wondering what is better, claude cowork or playwright mcp or google mcp for agents to have a look at the UI and confirm if the changes made are correct
-- when i make changes on the admin side, it doesnt refresh the public side automatically, maybe because of caching on the client side. It should refresh all the caching so the public web page is always updated
+- [x] UI verification tool decision — Playwright MCP chosen as default for agents (headless, reliable, no external deps). Documented in CLAUDE.md § UI Verification and .claude/rules/components.md.
+- [x] Cache revalidation fix — unified import now revalidates detail pages (`/projects/[slug]`, `/blog/[slug]`) via `detailPathPrefix` in entity configs. Blog import also revalidates homepage.
+- full audit agentic workflow findout token optimization needs
+- use draw.io skill to create a diagram of current agentic workflow/orchestration.
 
 ### MCP Servers
 

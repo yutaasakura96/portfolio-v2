@@ -94,6 +94,19 @@ Two architecture diagram skills are installed for generating visual documentatio
 
 Generated artifacts: `architecture.excalidraw` (repo root) and `docs/aws-architecture.drawio` + `docs/aws-architecture.md`.
 
+## UI Verification
+
+After UI changes, agents must verify visually using **Playwright MCP** (`mcp__playwright__*`) against the dev server at `http://localhost:3000`.
+
+| Step | Tool                       | Purpose                         |
+| ---- | -------------------------- | ------------------------------- |
+| 1    | `browser_navigate`         | Load the changed page           |
+| 2    | `browser_snapshot`         | Check DOM structure and content |
+| 3    | `browser_take_screenshot`  | Visual verification             |
+| 4    | `browser_console_messages` | Check for runtime errors        |
+
+**Do not use Chrome MCP** (`mcp__Claude_in_Chrome__*`) for agent verification — Playwright MCP is headless, reliable, and requires no external browser window. Chrome MCP is available for manual user-driven sessions only.
+
 ## Plugins
 
 Three plugins extend Claude Code's core capabilities:

@@ -10,20 +10,26 @@ import { NextRequest } from "next/server";
 
 import type { ImportMode, ImportResult } from "@/lib/import-export/types";
 
+type CollectionImportResult = ImportResult & { affectedSlugs: string[] };
+
 async function importCollectionItems(
   tx: Parameters<Parameters<typeof prisma.$transaction>[0]>[0],
   config: (typeof entityConfigs)[string],
   items: Record<string, unknown>[],
   mode: ImportMode
-): Promise<ImportResult> {
+): Promise<CollectionImportResult> {
   let created = 0;
   let updated = 0;
   let skipped = 0;
+  const affectedSlugs: string[] = [];
   const model = (tx as never)[config.prismaModel] as {
     findFirst: (args: { where: Record<string, unknown> }) => Promise<{ id: string } | null>;
     create: (args: { data: unknown }) => Promise<unknown>;
     update: (args: { where: { id: string }; data: unknown }) => Promise<unknown>;
   };
+
+  const slugField =
+    config.detailPathPrefix && config.uniqueKey?.type === "single" ? config.uniqueKey.field : null;
 
   for (const item of items) {
     const where = lookupUniqueKey(config, item);
@@ -35,14 +41,20 @@ async function importCollectionItems(
       } else {
         await model.update({ where: { id: existing.id }, data: item });
         updated++;
+        if (slugField && typeof item[slugField] === "string") {
+          affectedSlugs.push(item[slugField] as string);
+        }
       }
     } else {
       await model.create({ data: item });
       created++;
+      if (slugField && typeof item[slugField] === "string") {
+        affectedSlugs.push(item[slugField] as string);
+      }
     }
   }
 
-  return { created, updated, skipped };
+  return { created, updated, skipped, affectedSlugs };
 }
 
 async function importSingletonItem(
@@ -98,6 +110,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   const { mode, ...entities } = parsed.data;
   const results: Record<string, ImportResult> = {};
   const allRevalidatePaths = new Set<string>();
+  const detailPaths: string[] = [];
 
   await prisma.$transaction(
     async (tx) => {
@@ -114,12 +127,19 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
             entityData as Record<string, unknown>
           );
         } else {
-          results[entityKey] = await importCollectionItems(
+          const result = await importCollectionItems(
             tx,
             config,
             entityData as Record<string, unknown>[],
             mode
           );
+          results[entityKey] = result;
+
+          if (config.detailPathPrefix) {
+            for (const slug of result.affectedSlugs) {
+              detailPaths.push(`${config.detailPathPrefix}/${slug}`);
+            }
+          }
         }
 
         for (const p of config.revalidatePaths) {
@@ -131,6 +151,9 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   );
 
   for (const p of allRevalidatePaths) {
+    revalidatePath(p);
+  }
+  for (const p of detailPaths) {
     revalidatePath(p);
   }
 

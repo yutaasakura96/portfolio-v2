@@ -21,6 +21,7 @@ export type EntityConfig = {
   formats: ("json" | "csv")[];
   importDisabled: boolean;
   revalidatePaths: string[];
+  detailPathPrefix?: string;
   importSchema: z.ZodType;
   orderBy: Record<string, string>;
 };

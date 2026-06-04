@@ -29,3 +29,7 @@ Four design-quality skills are available. Use all four as described:
 - **emil-design-eng skill**: Consult when adding animations or transitions. Key rules: UI animations under 300ms, custom easing curves (never CSS defaults), never `scale(0)` (use `scale(0.95)` + opacity), buttons need `:active` states (`scale(0.97)`), popovers use `transform-origin: var(--radix-popover-content-transform-origin)`, CSS transitions over keyframes for interruptible UI, gate hover animations behind `@media (hover: hover) and (pointer: fine)`, honor `prefers-reduced-motion`.
 - **frontend-design skill**: Use for overall visual design direction — typography, color palettes, layout composition, and distinctive aesthetics. Invoke when building a new component or page to set the visual foundation. Complements `emil-design-eng` (motion) and `shadcn` (composition). Auto-triggers when building web components, pages, or applications.
 - **web-design-guidelines skill**: Run on component files before merging UI PRs. Checks: icon-only buttons need `aria-label`, no `outline-none` without visible focus replacement, `tabular-nums` for number columns, `color-scheme: dark` set, hydration-safe rendering.
+
+## UI Verification
+
+After any visual change, verify using **Playwright MCP** at `http://localhost:3000` — navigate to the changed page, take a snapshot, and check console for errors. Do not use Chrome MCP for agent verification (see `CLAUDE.md` § UI Verification).
