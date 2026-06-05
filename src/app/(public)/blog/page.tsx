@@ -16,7 +16,6 @@ export default async function BlogPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 py-12">
       <div className="mb-10">
-        <p className="text-sm font-medium text-[var(--accent-signature)] mb-1">Writing</p>
         <h1 className="text-3xl font-bold text-foreground sm:text-4xl">Blog</h1>
         <p className="mt-3 text-muted-foreground max-w-lg">
           Thoughts on web development, software engineering, and technology.
