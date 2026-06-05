@@ -39,6 +39,7 @@ Spawn an agent when the task matches its description — not for every step.
 
 | Agent                 | When to use                                                                                                       |
 | --------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `orchestrator`        | Requests touching 3+ domains (schema + API + UI) or when the user says "orchestrate" / "full pipeline".           |
 | `feature-builder`     | Net-new end-to-end feature (model + migration + API route + admin UI + public surface).                           |
 | `db-agent`            | Schema changes, migrations, seed updates. Knows the Neon branching workflow.                                      |
 | `synthesizer`         | Cross-domain integration check after multi-agent builds. Spawned by orchestrator in Patterns C/D.                 |
@@ -54,6 +55,16 @@ Spawn an agent when the task matches its description — not for every step.
 - [`aws-deploy`](../skills/aws-deploy/) — Amplify deploys, env var changes, S3/CloudFront/SES/Cognito operations.
 - [`excalidraw-diagram`](../skills/excalidraw-diagram/) — generate visual architecture diagrams in Excalidraw format (`.excalidraw`).
 - [`aws-architecture-diagram`](../skills/aws-architecture-diagram/) — generate AWS infrastructure diagrams in draw.io format (`.drawio`) with a companion markdown guide.
+
+### Slash commands
+
+Three project slash commands are available in `.claude/commands/`:
+
+| Command      | What it does                                                                               |
+| ------------ | ------------------------------------------------------------------------------------------ |
+| `/check`     | Runs `lint` → `type-check` → `test` sequentially and reports a pass/fail summary table.    |
+| `/new-route` | Scaffolds a new API route at the path you pass, following all `api-routes.md` conventions. |
+| `/pr-ready`  | Runs the full quality gate, then drafts a PR title + description. Does NOT create the PR.  |
 
 ---
 
