@@ -1,9 +1,20 @@
 "use client";
 
 import type { Hero } from "@/lib/data/types";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ResumeModal } from "./ResumeModal";
+
+const HeroBlob = dynamic(() => import("./HeroBlob").then((m) => ({ default: m.HeroBlob })), {
+  ssr: false,
+  loading: () => (
+    <div
+      className="w-full h-full rounded-full opacity-[0.08] dark:opacity-[0.04] blur-3xl"
+      style={{ background: `radial-gradient(circle, var(--accent-signature), transparent 70%)` }}
+    />
+  ),
+});
 
 interface CtaButton {
   label: string;
@@ -139,17 +150,25 @@ export function HeroSection({ hero }: HeroSectionProps) {
             </div>
           </div>
 
-          {/* Decorative code block */}
+          {/* Interactive 3D blob */}
           <div
-            className="hidden lg:block lg:flex-shrink-0 lg:w-72"
+            className="hidden lg:block lg:flex-shrink-0 lg:w-[22rem] lg:h-[22rem] relative"
             aria-hidden="true"
             style={{
               opacity: mounted ? 1 : 0,
-              transform: mounted ? "translateY(0)" : "translateY(20px)",
+              transform: mounted ? "translateY(0) scale(1)" : "translateY(20px) scale(0.95)",
               transition:
                 "opacity 800ms var(--ease-out) 600ms, transform 800ms var(--ease-out) 600ms",
             }}
-          ></div>
+          >
+            <div
+              className="absolute inset-0 rounded-full opacity-20 dark:opacity-10 blur-3xl -z-10"
+              style={{
+                background: `radial-gradient(circle, var(--accent-signature), transparent 70%)`,
+              }}
+            />
+            <HeroBlob />
+          </div>
         </div>
       </div>
 
