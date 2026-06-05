@@ -2,7 +2,7 @@
 
 Living document tracking planned features, improvements, and integrations for the portfolio project.
 
-Last updated: 2026-06-05
+Last updated: 2026-06-06
 
 ---
 
@@ -100,10 +100,10 @@ Last updated: 2026-06-05
 - [ ] Admin theme toggle — add light/dark mode switcher to the admin layout (public site already has one)
 - admin pages doesnt look like public pages. admin should look like publc pages for consistency.
 - [ ] Admin dashboard — surface key metrics (page visits, countries from Google Analytics, errors from Sentry, and other important figures)
-- [ ] Categorize certifications — add category field, render with tab UI similar to skills (azure, aws, anthropic, language, etc.)
-- [ ] Complete portfolio redesign — research best practices, iterate incrementally
+- [ ] Categorize certifications — add category field, render with tab UI similar to skills or something unique (azure, aws, anthropic, language, etc.)
+- [x] Complete portfolio redesign — research best practices, iterate incrementally
   - UI skills are installed and ready: `shadcn` (component composition), `emil-design-eng` (design engineering + animations), `frontend-design` (visual design direction + distinctive aesthetics), `web-design-guidelines` (Vercel interface guidelines, pre-PR quality gate). Skills live in `.agents/skills/` with symlinks in `.claude/skills/`; `frontend-design` is installed as a plugin.
-- [ ] Interactive 3D element on hero page (Three.js / React Three Fiber)
+- [x] Interactive 3D element on hero page (Three.js / React Three Fiber) — `HeroBlob.tsx` using `@react-three/fiber` + `three`; morphing GLSL shader blob with mouse/hover interaction
 - [ ] Internationalization (i18n) — evaluate if multilingual audience justifies maintenance cost
 - [ ] Dark mode refinements
 - [ ] Add micro-interactions and animation polish — use `emil-design-eng` skill for transitions, spring physics, and interaction choreography
@@ -179,5 +179,5 @@ Last updated: 2026-06-05
 9. **Sentry** — error tracking before adding more features
 10. **Admin improvements** — audit log, certification categories, admin theme toggle, dashboard
 11. **Observability** — CloudWatch, SNS, health check
-12. **Design & UX** — hero 3D element, redesign iterations
+12. **Design & UX** — redesign iterations, micro-interactions, dark mode refinements
 13. **Tooling** — new skills, Portfolio MCP, diagram generator
