@@ -105,7 +105,7 @@ Last updated: 2026-06-06
   - UI skills are installed and ready: `shadcn` (component composition), `emil-design-eng` (design engineering + animations), `frontend-design` (visual design direction + distinctive aesthetics), `web-design-guidelines` (Vercel interface guidelines, pre-PR quality gate). Skills live in `.agents/skills/` with symlinks in `.claude/skills/`; `frontend-design` is installed as a plugin.
 - [x] Interactive 3D element on hero page (Three.js / React Three Fiber) — `HeroBlob.tsx` using `@react-three/fiber` + `three`; morphing GLSL shader blob with mouse/hover interaction
 - [ ] Internationalization (i18n) — evaluate if multilingual audience justifies maintenance cost
-- [ ] Dark mode refinements
+- [x] Dark mode refinements
 - [ ] Add micro-interactions and animation polish — use `emil-design-eng` skill for transitions, spring physics, and interaction choreography
 - [ ] Improve UI/UX quality — use `shadcn` skill for component composition patterns and `web-design-guidelines` skill as a pre-PR quality gate
 - Drag and drop functionality for certificates that will auto populate form.
