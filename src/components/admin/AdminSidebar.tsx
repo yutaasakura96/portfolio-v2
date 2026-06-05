@@ -62,8 +62,12 @@ export function AdminSidebar({ isOpen = false, onClose }: AdminSidebarProps) {
       )}
     >
       <div className="p-6 border-b border-border flex items-center justify-between">
-        <Link href="/admin" className="text-lg font-bold text-foreground">
-          Portfolio Admin
+        <Link
+          href="/admin"
+          className="text-lg font-bold text-foreground pressable transition-[color,transform] duration-200 hover:text-muted-foreground"
+        >
+          YA<span className="text-[var(--accent-signature)]">.</span>
+          <span className="ml-2 text-sm font-normal text-muted-foreground">Admin</span>
         </Link>
         <button
           className="md:hidden p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
@@ -83,9 +87,9 @@ export function AdminSidebar({ isOpen = false, onClose }: AdminSidebarProps) {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors pressable",
                 isActive
-                  ? "bg-accent text-foreground"
+                  ? "bg-[var(--accent-signature)]/10 text-foreground border-l-2 border-l-[var(--accent-signature)] -ml-[2px]"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >

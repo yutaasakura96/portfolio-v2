@@ -1,5 +1,6 @@
 "use client";
 
+import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { LogOut, Menu } from "lucide-react";
@@ -23,7 +24,8 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
       <div className="hidden md:block" />
       <div className="flex items-center gap-4">
         {user && <span className="text-sm text-muted-foreground">{user.email}</span>}
-        <Button variant="ghost" size="sm" onClick={signOut}>
+        <ThemeToggle />
+        <Button variant="ghost" size="sm" onClick={signOut} className="pressable">
           <LogOut className="h-4 w-4 mr-2" />
           Sign Out
         </Button>

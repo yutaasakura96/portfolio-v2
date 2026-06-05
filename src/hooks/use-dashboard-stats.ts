@@ -10,12 +10,41 @@ export type DashboardRecentItem = {
   updatedAt: string;
 };
 
+export type DashboardRecentMessage = {
+  id: string;
+  name: string;
+  subject: string;
+  createdAt: string;
+};
+
+export type ExpiringCertification = {
+  id: string;
+  name: string;
+  issuer: string;
+  expirationDate: string;
+};
+
 export type DashboardStats = {
   projectCount: number;
   postCount: number;
   messageCount: number;
   recentProjects: DashboardRecentItem[];
   recentPosts: DashboardRecentItem[];
+  publishedProjectCount: number;
+  draftProjectCount: number;
+  publishedPostCount: number;
+  draftPostCount: number;
+  totalMessageCount: number;
+  archivedMessageCount: number;
+  recentMessages: DashboardRecentMessage[];
+  skillCount: number;
+  experienceCount: number;
+  educationCount: number;
+  certificationCount: number;
+  expiringCertifications: ExpiringCertification[];
+  lastPublishedPost: { publishedAt: string; title: string } | null;
+  hasHero: boolean;
+  hasAbout: boolean;
 };
 
 const DASHBOARD_STATS_KEY = ["admin", "dashboard-stats"] as const;
