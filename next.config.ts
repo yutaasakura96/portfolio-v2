@@ -16,7 +16,7 @@ const nextConfig: NextConfig = {
   experimental: {
     staleTimes: {
       dynamic: 0,
-      static: 10,
+      static: 30,
     },
   },
   async headers() {

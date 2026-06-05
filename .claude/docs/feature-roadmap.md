@@ -141,8 +141,9 @@ Last updated: 2026-06-04
 - [x] remove all unused branches except main and develop branch.
 - [x] UI verification tool decision — Playwright MCP chosen as default for agents (headless, reliable, no external deps). Documented in CLAUDE.md § UI Verification and .claude/rules/components.md.
 - [x] Cache revalidation fix — unified import now revalidates detail pages (`/projects/[slug]`, `/blog/[slug]`) via `detailPathPrefix` in entity configs. Blog import also revalidates homepage.
-- full audit agentic workflow findout token optimization needs
-- use draw.io skill to create a diagram of current agentic workflow/orchestration.
+- [x] full audit agentic workflow findout token optimization needs
+- use /excalidraw-diagram skill to to create a diagram of current agentic workflow/orchestration. skill to create a diagram of current agentic workflow/orchestration.
+- codebase full audit. check type safety, type system, warnings, bugs, errors in code and bad practices. use /ultrareview or whatever agent or skill that is best.
 
 ### MCP Servers
 
