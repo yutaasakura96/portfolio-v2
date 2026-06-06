@@ -16,6 +16,7 @@ Personal portfolio + admin CMS. Public-facing Next.js site backed by an admin da
 - **Markdown:** remark + rehype (`remark-gfm`, `rehype-sanitize`, `rehype-slug`, `rehype-highlight`)
 - **Import/Export:** papaparse (CSV), unified JSON export/import (`/api/admin/export/unified`, `/api/admin/import/unified`) for full-site backup/restore
 - **Toasts:** Sonner. **Icons:** lucide-react. **Fonts:** Geist.
+- **Error tracking:** `@sentry/nextjs` — three config files (`sentry.client.config.ts`, `sentry.server.config.ts`, `sentry.edge.config.ts`) + `instrumentation.ts` (Next.js hook; exports `onRequestError = Sentry.captureRequestError`). `next.config.ts` is wrapped with `withSentryConfig`. DSN read from `NEXT_PUBLIC_SENTRY_DSN`; source-map uploads use `SENTRY_AUTH_TOKEN` (build-time only).
 
 ## Commands
 
@@ -124,6 +125,7 @@ Domain rules (Zod validation, `withErrorHandler`, ISR/client split, image pipeli
 - ❌ Using `AWS_*` env var names — Amplify reserves that namespace. Use `APP_AWS_*`.
 - ❌ Forgetting to `await` `rateLimit()` — it's async (Upstash-backed). Missing `await` → spurious 429s.
 - ❌ Using `NEXT_PUBLIC_APP_URL` for public-facing URLs — resolves to localhost in dev. Hardcode `https://asakurayuta.dev/...` for share links, OG tags, etc.
+- ❌ Setting `tracesSampleRate: 1` in production Sentry config — use `0.1` (10 %) in production, `1` only in dev. The three Sentry config files already handle this via `process.env.NODE_ENV === "production"` guard.
 
 ## MCP Servers
 
@@ -133,6 +135,7 @@ Domain rules (Zod validation, `withErrorHandler`, ISR/client split, image pipeli
 - **prisma-local** — Migration status, schema management. Run `migrate-status` before `migrate dev`. NEVER run `migrate-reset` without user confirmation.
 - **playwright** — Browser automation for visual verification at `http://localhost:3000`.
 - **github** — GitHub API for PR/issue management, code search.
+- **sentry** (`mcp__sentry__*`) — Query Sentry errors, issues, and performance data from Claude Code. Added via `claude mcp add --transport http sentry https://mcp.sentry.dev/mcp`.
 
 ## Available Agents
 

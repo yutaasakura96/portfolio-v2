@@ -2,7 +2,7 @@
 
 Living document tracking planned features, improvements, and integrations for the portfolio project.
 
-Last updated: 2026-06-06 (feat/hero-3d-blob)
+Last updated: 2026-06-06 (feat/hero-3d-blob → Sentry integration)
 
 ---
 
@@ -51,8 +51,8 @@ Last updated: 2026-06-06 (feat/hero-3d-blob)
 
 ## 4. Observability & Monitoring
 
-- [ ] Sentry integration — error tracking and performance monitoring
-- [ ] Sentry MCP server — query errors from Claude Code
+- [x] Sentry integration — `@sentry/nextjs`; three runtime configs (`sentry.client.config.ts`, `sentry.server.config.ts`, `sentry.edge.config.ts`), `instrumentation.ts` hook, `withSentryConfig` wrapper in `next.config.ts`, `NEXT_PUBLIC_SENTRY_DSN` + `SENTRY_AUTH_TOKEN` env vars wired through `amplify.yml`
+- [x] Sentry MCP server — `mcp__sentry__*` added via `claude mcp add --transport http sentry https://mcp.sentry.dev/mcp`
 - [ ] Health check endpoint (`/api/health`) — ping DB, check S3/SES connectivity
 - [ ] CloudWatch Alarms — monitor Amplify build failures, error rates (free tier)
 - [ ] SNS notifications — alert on build failures or errors via email (first 1M free)
@@ -176,7 +176,7 @@ Last updated: 2026-06-06 (feat/hero-3d-blob)
 6. ~~**Blog enhancements** — social share buttons + reading time~~ (done)
 7. **SEO batch** — OG images, sitemap, JSON-LD, RSS, favicon
 8. **Blog features** — LinkedIn importer, table of contents
-9. **Sentry** — error tracking before adding more features
+9. ~~**Sentry** — error tracking before adding more features~~ (done)
 10. **Admin improvements** — audit log, certification categories
 11. **Observability** — CloudWatch, SNS, health check
 12. **Design & UX** — redesign iterations, micro-interactions, dark mode refinements

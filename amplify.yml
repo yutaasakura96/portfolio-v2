@@ -41,6 +41,9 @@ frontend:
           # Rate limiting (Upstash Redis)
           UPSTASH_REDIS_REST_URL=${UPSTASH_REDIS_REST_URL}
           UPSTASH_REDIS_REST_TOKEN=${UPSTASH_REDIS_REST_TOKEN}
+
+          # Sentry (SENTRY_AUTH_TOKEN is build-time only — injected by Amplify Console, not needed here)
+          NEXT_PUBLIC_SENTRY_DSN=${NEXT_PUBLIC_SENTRY_DSN}
           EOF
         - npm ci
         - npx prisma generate

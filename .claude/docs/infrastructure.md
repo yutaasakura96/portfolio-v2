@@ -109,6 +109,8 @@ All vars below are stored as **plain Amplify Console env vars** (not Console Sec
 | `S3_BUCKET_NAME`                | `portfolio-v2-images-1771574702`                                |                                                                                                     |
 | `S3_REGION`                     | `ap-southeast-1`                                                |                                                                                                     |
 | `SES_FROM_EMAIL`                | `noreply@asakurayuta.dev`                                       | Must match the SES condition in `portfolio-admin` policy                                            |
+| `NEXT_PUBLIC_SENTRY_DSN`        | Sentry project DSN                                              | Exposed to client; needed at build time + SSR runtime. Used by all three Sentry config files.       |
+| `SENTRY_AUTH_TOKEN`             | Sentry auth token for source map uploads                        | **REDACTED — secret.** Build-time only; NOT needed at runtime. Set in Amplify Console env vars.     |
 
 ---
 
@@ -297,23 +299,25 @@ The app sends as `noreply@asakurayuta.dev` (the only `FromAddress` allowed by th
 
 ### Mapping: env var → AWS resource
 
-| Var                                                   | AWS resource                                                                                       |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `S3_BUCKET_NAME`                                      | S3 bucket `portfolio-v2-images-1771574702`                                                         |
-| `CLOUDFRONT_DISTRIBUTION_ID`                          | CloudFront `E6T76ADR3JLQH`                                                                         |
-| `CLOUDFRONT_DOMAIN` / `NEXT_PUBLIC_CLOUDFRONT_URL`    | `d11brb6l7qspvw.cloudfront.net`                                                                    |
-| `COGNITO_USER_POOL_ID`                                | Cognito pool `ap-southeast-1_SgDbuA78J`                                                            |
-| `COGNITO_CLIENT_ID` / `NEXT_PUBLIC_COGNITO_CLIENT_ID` | App client `2iug05u34tocpscs29ajt1n1uo`                                                            |
-| `COGNITO_DOMAIN` / `NEXT_PUBLIC_COGNITO_DOMAIN`       | Cognito hosted UI `ap-southeast-1sgdbua78j`                                                        |
-| `COGNITO_CLIENT_SECRET`                               | App client secret on `2iug05u34tocpscs29ajt1n1uo`                                                  |
-| `APP_AWS_ACCESS_KEY_ID` / `APP_AWS_SECRET_ACCESS_KEY` | Access key `AKIA…BCT` on IAM user `portfolio-admin`                                                |
-| `SES_FROM_EMAIL`                                      | Must equal `noreply@asakurayuta.dev` (gated by IAM policy)                                         |
-| `DATABASE_URL` / `DIRECT_URL`                         | Neon Postgres (not AWS) — `ep-wandering-butterfly-a1v6y74z` in `ap-southeast-1`                    |
-| `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis (not AWS) — `winning-ocelot-85007.upstash.io` in `ap-southeast-1`, PAYG with $20 cap |
-| `NEON_API_KEY`                                        | Neon API key (local + GitHub Actions only — not in Amplify)                                        |
-| `NEON_PROJECT_ID`                                     | Neon project `polished-snow-20449343`                                                              |
-| `NEON_PROD_BRANCH_ID`                                 | Neon production branch `br-twilight-sky-a17ollvy`                                                  |
-| `NEON_DEV_BRANCH_ID`                                  | Neon dev branch `br-red-dawn-a12e2pyj`                                                             |
+| Var                                                   | AWS resource                                                                                           |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `S3_BUCKET_NAME`                                      | S3 bucket `portfolio-v2-images-1771574702`                                                             |
+| `CLOUDFRONT_DISTRIBUTION_ID`                          | CloudFront `E6T76ADR3JLQH`                                                                             |
+| `CLOUDFRONT_DOMAIN` / `NEXT_PUBLIC_CLOUDFRONT_URL`    | `d11brb6l7qspvw.cloudfront.net`                                                                        |
+| `COGNITO_USER_POOL_ID`                                | Cognito pool `ap-southeast-1_SgDbuA78J`                                                                |
+| `COGNITO_CLIENT_ID` / `NEXT_PUBLIC_COGNITO_CLIENT_ID` | App client `2iug05u34tocpscs29ajt1n1uo`                                                                |
+| `COGNITO_DOMAIN` / `NEXT_PUBLIC_COGNITO_DOMAIN`       | Cognito hosted UI `ap-southeast-1sgdbua78j`                                                            |
+| `COGNITO_CLIENT_SECRET`                               | App client secret on `2iug05u34tocpscs29ajt1n1uo`                                                      |
+| `APP_AWS_ACCESS_KEY_ID` / `APP_AWS_SECRET_ACCESS_KEY` | Access key `AKIA…BCT` on IAM user `portfolio-admin`                                                    |
+| `SES_FROM_EMAIL`                                      | Must equal `noreply@asakurayuta.dev` (gated by IAM policy)                                             |
+| `DATABASE_URL` / `DIRECT_URL`                         | Neon Postgres (not AWS) — `ep-wandering-butterfly-a1v6y74z` in `ap-southeast-1`                        |
+| `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis (not AWS) — `winning-ocelot-85007.upstash.io` in `ap-southeast-1`, PAYG with $20 cap     |
+| `NEON_API_KEY`                                        | Neon API key (local + GitHub Actions only — not in Amplify)                                            |
+| `NEON_PROJECT_ID`                                     | Neon project `polished-snow-20449343`                                                                  |
+| `NEON_PROD_BRANCH_ID`                                 | Neon production branch `br-twilight-sky-a17ollvy`                                                      |
+| `NEON_DEV_BRANCH_ID`                                  | Neon dev branch `br-red-dawn-a12e2pyj`                                                                 |
+| `NEXT_PUBLIC_SENTRY_DSN`                              | Sentry (not AWS) — DSN for `@sentry/nextjs` SDK init; read by all three Sentry config files            |
+| `SENTRY_AUTH_TOKEN`                                   | Sentry (not AWS) — build-time source map upload token; set in Amplify Console, not injected at runtime |
 
 ### Drift between `.env.example` and Amplify Console
 
