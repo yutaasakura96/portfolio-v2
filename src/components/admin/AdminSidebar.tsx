@@ -24,7 +24,7 @@ import React from "react";
 type NavItem = {
   href: string;
   label: string;
-  icon: React.ElementType;
+  icon: React.ComponentType<{ className?: string }>;
   exact?: boolean;
   badge?: React.ReactNode;
 };
