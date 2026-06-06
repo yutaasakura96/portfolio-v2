@@ -3,6 +3,7 @@ Pattern: src/components/\*_/_.tsx
 # Component Rules
 
 - File name = component name (`PascalCase.tsx`). One default-exported component per file. shadcn primitives in `src/components/ui/` keep the lowercase shadcn naming.
+- Components used in both public and admin layouts go in `src/components/shared/` (e.g. `ThemeToggle.tsx`). Do not duplicate them into both `public/` and `admin/`.
 - Add `"use client"` ONLY if the component uses hooks, event handlers, or browser APIs. Default to Server Components everywhere else.
 - Compose Tailwind classes with `cn()` from `@/lib/utils`. Never use template-literal class concatenation.
 - Components with multiple visual states use CVA (see `src/components/ui/button.tsx` as the reference pattern).

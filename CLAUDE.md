@@ -31,6 +31,7 @@ Tests use **Vitest** with **@testing-library/react**. See [.claude/rules/tests.m
 | [src/app/(admin)/admin/](<src/app/(admin)/admin/>) | Admin CMS — login + auth-guarded shell                         |
 | [src/app/api/auth.ts](src/app/api/auth.ts)         | `requireAuth` / `optionalAuth` (NOT `src/lib/auth`)            |
 | [src/proxy.ts](src/proxy.ts)                       | Next.js 16 middleware replacement — JWT guard for admin routes |
+| [src/components/shared/](src/components/shared/)   | Components shared across public + admin (e.g. `ThemeToggle`)   |
 | [src/components/ui/](src/components/ui/)           | shadcn primitives (use `npx shadcn add`, don't hand-edit)      |
 | [src/lib/data/](src/lib/data/)                     | Server-side query layer + canonical types                      |
 | [src/lib/validations/](src/lib/validations/)       | Zod schemas (one file per entity)                              |

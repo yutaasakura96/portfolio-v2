@@ -159,6 +159,7 @@ After any mutation that affects a public page, call `revalidatePath` for every a
 - **Public POST endpoints** (currently only contact): rate-limit, honeypot, no auth.
 - **All other mutations:** `requireAuth` first, then validate.
 - **Public GET endpoints:** no auth, but if any param can expose admin data (`?status=DRAFT`), gate that branch with `requireAuth`.
+- **`GET /api/admin/dashboard-stats`** — admin-only aggregate endpoint. Returns counts (projects, posts, messages, skills), published/draft breakdowns, certification expiry data, recent unread messages, merged recent activity (projects + posts sorted by `updatedAt`), and a content completeness checklist. Uses `requireAuth`, runs ~15 Prisma queries. Response shape: `{ data: DashboardStats }` (single resource envelope).
 
 ## Import/Export Routes
 

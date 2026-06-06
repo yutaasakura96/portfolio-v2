@@ -2,7 +2,7 @@
 
 Living document tracking planned features, improvements, and integrations for the portfolio project.
 
-Last updated: 2026-06-06
+Last updated: 2026-06-06 (feat/hero-3d-blob)
 
 ---
 
@@ -97,9 +97,9 @@ Last updated: 2026-06-06
 
 ## 8. Portfolio Design & UX
 
-- [ ] Admin theme toggle — add light/dark mode switcher to the admin layout (public site already has one)
+- [x] Admin theme toggle — `ThemeToggle` moved to `src/components/shared/ThemeToggle.tsx` and rendered in both the public `Header` and `AdminHeader`
 - admin pages doesnt look like public pages. admin should look like publc pages for consistency.
-- [ ] Admin dashboard — surface key metrics (page visits, countries from Google Analytics, errors from Sentry, and other important figures)
+- [x] Admin dashboard — expanded to full dashboard: 4 stat cards (projects, posts, messages, skills) with published/draft breakdowns, quick actions, certification expiry alerts, recent unread messages preview, merged recent activity timeline, and content completeness checklist. 6 sub-components in `src/components/admin/dashboard/`. New `src/lib/time-ago.ts` utility. Expanded `GET /api/admin/dashboard-stats` endpoint.
 - [ ] Categorize certifications — add category field, render with tab UI similar to skills or something unique (azure, aws, anthropic, language, etc.)
 - [x] Complete portfolio redesign — research best practices, iterate incrementally
   - UI skills are installed and ready: `shadcn` (component composition), `emil-design-eng` (design engineering + animations), `frontend-design` (visual design direction + distinctive aesthetics), `web-design-guidelines` (Vercel interface guidelines, pre-PR quality gate). Skills live in `.agents/skills/` with symlinks in `.claude/skills/`; `frontend-design` is installed as a plugin.
@@ -177,7 +177,7 @@ Last updated: 2026-06-06
 7. **SEO batch** — OG images, sitemap, JSON-LD, RSS, favicon
 8. **Blog features** — LinkedIn importer, table of contents
 9. **Sentry** — error tracking before adding more features
-10. **Admin improvements** — audit log, certification categories, admin theme toggle, dashboard
+10. **Admin improvements** — audit log, certification categories
 11. **Observability** — CloudWatch, SNS, health check
 12. **Design & UX** — redesign iterations, micro-interactions, dark mode refinements
 13. **Tooling** — new skills, Portfolio MCP, diagram generator

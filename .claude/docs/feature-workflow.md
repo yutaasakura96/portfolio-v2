@@ -175,6 +175,7 @@ Before running `migrate:dev`, ask the `prisma-local` MCP for `migrate-status` fi
 ```
 src/components/public/<PascalCase>.tsx     # Public-site components
 src/components/admin/<PascalCase>.tsx      # Admin-only components
+src/components/shared/<PascalCase>.tsx     # Components used in both public and admin (e.g. ThemeToggle)
 src/components/ui/<lowercase>.tsx          # shadcn primitives — do not hand-edit
 ```
 
