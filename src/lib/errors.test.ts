@@ -120,7 +120,6 @@ describe("withErrorHandler", () => {
       const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
       const wrapped = withErrorHandler(async () => {
-        // eslint-disable-next-line @typescript-eslint/only-throw-error
         throw "string error";
       });
 

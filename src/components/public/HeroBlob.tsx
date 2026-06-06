@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useMemo, useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
@@ -105,18 +105,15 @@ function Blob({ reducedMotion }: { reducedMotion: boolean }) {
   const hoverRef = useRef(0);
   const accumRef = useRef(0);
 
-  const uniforms = useMemo(
-    () => ({
-      uTime: { value: 0 },
-      uHover: { value: 0 },
-      uMouse: { value: new THREE.Vector2(0, 0) },
-      uOpacity: { value: 0.9 },
-      uColorA: { value: new THREE.Color("#3d2518") },
-      uColorB: { value: new THREE.Color("#c8723a") },
-      uColorC: { value: new THREE.Color("#e8c9a0") },
-    }),
-    []
-  );
+  const uniformsRef = useRef({
+    uTime: { value: 0 },
+    uHover: { value: 0 },
+    uMouse: { value: new THREE.Vector2(0, 0) },
+    uOpacity: { value: 0.9 },
+    uColorA: { value: new THREE.Color("#3d2518") },
+    uColorB: { value: new THREE.Color("#c8723a") },
+    uColorC: { value: new THREE.Color("#e8c9a0") },
+  });
 
   useFrame((state, delta) => {
     if (!meshRef.current) return;
@@ -127,7 +124,7 @@ function Blob({ reducedMotion }: { reducedMotion: boolean }) {
     accumRef.current = accumRef.current % FRAME_INTERVAL;
 
     if (!reducedMotion) {
-      uniforms.uTime.value += FRAME_INTERVAL;
+      uniformsRef.current.uTime.value += FRAME_INTERVAL;
       meshRef.current.rotation.y += FRAME_INTERVAL * 0.08;
       meshRef.current.rotation.x += FRAME_INTERVAL * 0.04;
     }
@@ -135,11 +132,11 @@ function Blob({ reducedMotion }: { reducedMotion: boolean }) {
     const pointer = state.pointer;
     mouseRef.current.x += (pointer.x * (viewport.width / 2) - mouseRef.current.x) * 0.05;
     mouseRef.current.y += (pointer.y * (viewport.height / 2) - mouseRef.current.y) * 0.05;
-    uniforms.uMouse.value.set(mouseRef.current.x, mouseRef.current.y);
+    uniformsRef.current.uMouse.value.set(mouseRef.current.x, mouseRef.current.y);
 
     const targetHover = pointer.x !== 0 || pointer.y !== 0 ? 1 : 0;
     hoverRef.current += (targetHover - hoverRef.current) * 0.03;
-    uniforms.uHover.value = hoverRef.current;
+    uniformsRef.current.uHover.value = hoverRef.current;
   });
 
   return (
@@ -148,7 +145,7 @@ function Blob({ reducedMotion }: { reducedMotion: boolean }) {
       <shaderMaterial
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}
-        uniforms={uniforms}
+        uniforms={uniformsRef.current}
         transparent
       />
     </mesh>
