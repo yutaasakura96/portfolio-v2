@@ -105,7 +105,7 @@ function Blob({ reducedMotion }: { reducedMotion: boolean }) {
   const hoverRef = useRef(0);
   const accumRef = useRef(0);
 
-  const uniformsRef = useRef({
+  const [uniforms] = useState(() => ({
     uTime: { value: 0 },
     uHover: { value: 0 },
     uMouse: { value: new THREE.Vector2(0, 0) },
@@ -113,7 +113,7 @@ function Blob({ reducedMotion }: { reducedMotion: boolean }) {
     uColorA: { value: new THREE.Color("#3d2518") },
     uColorB: { value: new THREE.Color("#c8723a") },
     uColorC: { value: new THREE.Color("#e8c9a0") },
-  });
+  }));
 
   useFrame((state, delta) => {
     if (!meshRef.current) return;
@@ -124,7 +124,7 @@ function Blob({ reducedMotion }: { reducedMotion: boolean }) {
     accumRef.current = accumRef.current % FRAME_INTERVAL;
 
     if (!reducedMotion) {
-      uniformsRef.current.uTime.value += FRAME_INTERVAL;
+      uniforms.uTime.value += FRAME_INTERVAL;
       meshRef.current.rotation.y += FRAME_INTERVAL * 0.08;
       meshRef.current.rotation.x += FRAME_INTERVAL * 0.04;
     }
@@ -132,11 +132,11 @@ function Blob({ reducedMotion }: { reducedMotion: boolean }) {
     const pointer = state.pointer;
     mouseRef.current.x += (pointer.x * (viewport.width / 2) - mouseRef.current.x) * 0.05;
     mouseRef.current.y += (pointer.y * (viewport.height / 2) - mouseRef.current.y) * 0.05;
-    uniformsRef.current.uMouse.value.set(mouseRef.current.x, mouseRef.current.y);
+    uniforms.uMouse.value.set(mouseRef.current.x, mouseRef.current.y);
 
     const targetHover = pointer.x !== 0 || pointer.y !== 0 ? 1 : 0;
     hoverRef.current += (targetHover - hoverRef.current) * 0.03;
-    uniformsRef.current.uHover.value = hoverRef.current;
+    uniforms.uHover.value = hoverRef.current;
   });
 
   return (
@@ -145,7 +145,7 @@ function Blob({ reducedMotion }: { reducedMotion: boolean }) {
       <shaderMaterial
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}
-        uniforms={uniformsRef.current}
+        uniforms={uniforms}
         transparent
       />
     </mesh>
