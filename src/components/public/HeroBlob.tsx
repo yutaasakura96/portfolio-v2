@@ -1,8 +1,19 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, Component } from "react";
+import type { ReactNode } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
+
+class WebGLErrorBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
+}
 
 const vertexShader = /* glsl */ `
   uniform float uTime;
@@ -171,14 +182,16 @@ export function HeroBlob() {
   return (
     <div ref={containerRef} className="size-full">
       {visible && (
-        <Canvas
-          camera={{ position: [0, 0, 6.5], fov: 45 }}
-          dpr={[1, 1.5]}
-          gl={{ antialias: true, alpha: true, powerPreference: "low-power" }}
-          style={{ pointerEvents: "auto" }}
-        >
-          <Blob reducedMotion={reducedMotion} />
-        </Canvas>
+        <WebGLErrorBoundary>
+          <Canvas
+            camera={{ position: [0, 0, 6.5], fov: 45 }}
+            dpr={[1, 1.5]}
+            gl={{ antialias: true, alpha: true, powerPreference: "low-power" }}
+            style={{ pointerEvents: "auto" }}
+          >
+            <Blob reducedMotion={reducedMotion} />
+          </Canvas>
+        </WebGLErrorBoundary>
       )}
     </div>
   );
