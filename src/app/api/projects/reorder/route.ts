@@ -1,12 +1,12 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prismaClient";
-import { requireAuth } from "@/app/api/auth";
+import { requireAuthOrApiKey } from "@/app/api/auth";
 import { withErrorHandler, ApiError, ErrorCodes } from "@/lib/errors";
 import { reorderSchema } from "@/lib/validations/shared";
 import { revalidatePath } from "next/cache";
 
 export const PUT = withErrorHandler(async (request: NextRequest) => {
-  await requireAuth();
+  await requireAuthOrApiKey(request);
 
   const body = await request.json();
   const parsed = reorderSchema.safeParse(body);

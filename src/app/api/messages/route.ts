@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Prisma, prisma } from "@/lib/prismaClient";
 import { withErrorHandler } from "@/lib/errors";
-import { requireAuth } from "@/app/api/auth";
+import { requireAuthOrApiKey } from "@/app/api/auth";
 
 export const GET = withErrorHandler(async (request: NextRequest) => {
-  await requireAuth();
+  await requireAuthOrApiKey(request);
 
   const { searchParams } = new URL(request.url);
 

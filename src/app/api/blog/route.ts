@@ -1,4 +1,4 @@
-import { requireAuth } from "@/app/api/auth";
+import { requireAuthOrApiKey } from "@/app/api/auth";
 import { ApiError, ErrorCodes, withErrorHandler } from "@/lib/errors";
 import { Prisma, prisma } from "@/lib/prismaClient";
 import { calculateReadingTime } from "@/lib/reading-time";
@@ -18,7 +18,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
 
   // Require auth to view all statuses (including drafts)
   if (status === "all") {
-    await requireAuth();
+    await requireAuthOrApiKey(request);
   }
 
   const where: Prisma.BlogPostWhereInput = {};
@@ -87,7 +87,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
 
 // POST /api/blog — create post
 export const POST = withErrorHandler(async (request: NextRequest) => {
-  await requireAuth();
+  await requireAuthOrApiKey(request);
 
   const body = await request.json();
   const parsed = blogPostCreateSchema.safeParse(body);

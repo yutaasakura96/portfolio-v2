@@ -1,4 +1,4 @@
-import { requireAuth } from "@/app/api/auth";
+import { requireAuthOrApiKey } from "@/app/api/auth";
 import { ApiError, ErrorCodes, withErrorHandler } from "@/lib/errors";
 import { Prisma, prisma } from "@/lib/prismaClient";
 import { heroUpdateSchema } from "@/lib/validations/hero";
@@ -16,7 +16,7 @@ export const GET = withErrorHandler(async () => {
 });
 
 export const PUT = withErrorHandler(async (request: NextRequest) => {
-  await requireAuth();
+  await requireAuthOrApiKey(request);
 
   const body = await request.json();
   const parsed = heroUpdateSchema.safeParse(body);

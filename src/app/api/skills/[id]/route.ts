@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prismaClient";
-import { requireAuth } from "@/app/api/auth";
+import { requireAuthOrApiKey } from "@/app/api/auth";
 import { withErrorHandler, ApiError, ErrorCodes } from "@/lib/errors";
 import { skillUpdateSchema } from "@/lib/validations/skill";
 import { deleteImageVariants } from "@/lib/aws/s3";
@@ -8,7 +8,7 @@ import { revalidatePath } from "next/cache";
 
 export const PUT = withErrorHandler(
   async (request: NextRequest, context?: { params: Promise<{ id: string }> }) => {
-    await requireAuth();
+    await requireAuthOrApiKey(request);
     const { id } = await context!.params;
 
     const existing = await prisma.skill.findUnique({ where: { id } });
@@ -46,7 +46,7 @@ export const PUT = withErrorHandler(
 
 export const DELETE = withErrorHandler(
   async (request: NextRequest, context?: { params: Promise<{ id: string }> }) => {
-    await requireAuth();
+    await requireAuthOrApiKey(request);
     const { id } = await context!.params;
 
     const existing = await prisma.skill.findUnique({ where: { id } });

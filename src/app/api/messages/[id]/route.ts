@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prismaClient";
 import { withErrorHandler, ApiError, ErrorCodes } from "@/lib/errors";
-import { requireAuth } from "@/app/api/auth";
+import { requireAuth, requireAuthOrApiKey } from "@/app/api/auth";
 import { messageUpdateSchema } from "@/lib/validations/message";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
-export const GET = withErrorHandler(async (_request: NextRequest, context?: RouteContext) => {
-  await requireAuth();
+export const GET = withErrorHandler(async (request: NextRequest, context?: RouteContext) => {
+  await requireAuthOrApiKey(request);
 
   const { id } = await context!.params;
 
@@ -29,7 +29,7 @@ export const GET = withErrorHandler(async (_request: NextRequest, context?: Rout
 });
 
 export const PUT = withErrorHandler(async (request: NextRequest, context?: RouteContext) => {
-  await requireAuth();
+  await requireAuthOrApiKey(request);
 
   const { id } = await context!.params;
 

@@ -1,4 +1,4 @@
-import { requireAuth } from "@/app/api/auth";
+import { requireAuthOrApiKey } from "@/app/api/auth";
 import { ApiError, ErrorCodes, withErrorHandler } from "@/lib/errors";
 import { deleteS3Folder } from "@/lib/aws/s3";
 import { prisma } from "@/lib/prismaClient";
@@ -20,7 +20,7 @@ export const GET = withErrorHandler(
 
     // Draft posts require auth
     if (post.status === "DRAFT") {
-      await requireAuth();
+      await requireAuthOrApiKey(request);
     }
 
     return Response.json({ data: post });
@@ -31,7 +31,7 @@ export const GET = withErrorHandler(
 export const PUT = withErrorHandler(
   async (request: NextRequest, context?: { params: Promise<{ id: string }> }) => {
     const { id } = await context!.params;
-    await requireAuth();
+    await requireAuthOrApiKey(request);
 
     const existing = await prisma.blogPost.findUnique({ where: { id } });
     if (!existing) {
@@ -98,7 +98,7 @@ export const PUT = withErrorHandler(
 export const DELETE = withErrorHandler(
   async (request: NextRequest, context?: { params: Promise<{ id: string }> }) => {
     const { id } = await context!.params;
-    await requireAuth();
+    await requireAuthOrApiKey(request);
 
     const post = await prisma.blogPost.findUnique({ where: { id } });
     if (!post) {
