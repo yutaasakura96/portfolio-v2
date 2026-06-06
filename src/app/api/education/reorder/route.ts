@@ -1,4 +1,4 @@
-import { requireAuth } from "@/app/api/auth";
+import { requireAuthOrApiKey } from "@/app/api/auth";
 import { ApiError, ErrorCodes, withErrorHandler } from "@/lib/errors";
 import { prisma } from "@/lib/prismaClient";
 import { reorderSchema } from "@/lib/validations/shared";
@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { NextRequest } from "next/server";
 
 export const PUT = withErrorHandler(async (request: NextRequest) => {
-  await requireAuth();
+  await requireAuthOrApiKey(request);
 
   const body = await request.json();
   const parsed = reorderSchema.safeParse(body);

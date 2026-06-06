@@ -1,6 +1,7 @@
-import { requireAuth } from "@/app/api/auth";
+import { requireAuthOrApiKey } from "@/app/api/auth";
 import { withErrorHandler } from "@/lib/errors";
 import { Prisma, prisma } from "@/lib/prismaClient";
+import { NextRequest } from "next/server";
 
 const recentItemSelect = {
   id: true,
@@ -27,8 +28,8 @@ const unreadMessagesWhere: Prisma.ContactMessageWhereInput = { read: false };
 
 const ninetyDaysFromNow = (): Date => new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
 
-export const GET = withErrorHandler(async () => {
-  await requireAuth();
+export const GET = withErrorHandler(async (request: NextRequest) => {
+  await requireAuthOrApiKey(request);
 
   const [
     projectCount,

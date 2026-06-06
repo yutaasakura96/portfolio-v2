@@ -1,4 +1,4 @@
-import { requireAuth } from "@/app/api/auth";
+import { requireAuthOrApiKey } from "@/app/api/auth";
 import { ApiError, ErrorCodes, withErrorHandler } from "@/lib/errors";
 import { Prisma, prisma } from "@/lib/prismaClient";
 import { educationCreateSchema } from "@/lib/validations/education";
@@ -12,7 +12,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   const where: Prisma.EducationWhereInput = {};
 
   if (visible === "all") {
-    await requireAuth();
+    await requireAuthOrApiKey(request);
   } else if (visible === "true") {
     where.visible = true;
   } else {
@@ -28,7 +28,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
 });
 
 export const POST = withErrorHandler(async (request: NextRequest) => {
-  await requireAuth();
+  await requireAuthOrApiKey(request);
 
   const body = await request.json();
   const parsed = educationCreateSchema.safeParse(body);

@@ -1,4 +1,4 @@
-import { requireAuth } from "@/app/api/auth";
+import { requireAuthOrApiKey } from "@/app/api/auth";
 import { ApiError, ErrorCodes, withErrorHandler } from "@/lib/errors";
 import { prisma } from "@/lib/prismaClient";
 import { experienceUpdateSchema } from "@/lib/validations/experience";
@@ -7,7 +7,7 @@ import { NextRequest } from "next/server";
 
 export const PUT = withErrorHandler(
   async (request: NextRequest, context?: { params: Promise<{ id: string }> }) => {
-    await requireAuth();
+    await requireAuthOrApiKey(request);
     const { id } = await context!.params;
 
     const existing = await prisma.experience.findUnique({ where: { id } });
@@ -40,7 +40,7 @@ export const PUT = withErrorHandler(
 
 export const DELETE = withErrorHandler(
   async (request: NextRequest, context?: { params: Promise<{ id: string }> }) => {
-    await requireAuth();
+    await requireAuthOrApiKey(request);
     const { id } = await context!.params;
 
     const existing = await prisma.experience.findUnique({ where: { id } });

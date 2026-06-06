@@ -1,5 +1,10 @@
 {
   "mcpServers": {
+    "portfolio": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["tsx", "--env-file=.env", "mcp/portfolio-server/src/index.ts"]
+    },
     "playwright": {
       "type": "stdio",
       "command": "npx",

@@ -1,4 +1,4 @@
-import { requireAuth } from "@/app/api/auth";
+import { requireAuthOrApiKey } from "@/app/api/auth";
 import { ApiError, ErrorCodes, withErrorHandler } from "@/lib/errors";
 import { Prisma, prisma } from "@/lib/prismaClient";
 import { certificationCreateSchema } from "@/lib/validations/certification";
@@ -12,7 +12,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   const where: Prisma.CertificationWhereInput = {};
 
   if (visible === "all") {
-    await requireAuth();
+    await requireAuthOrApiKey(request);
   } else if (visible === "true") {
     where.visible = true;
   } else {
@@ -31,7 +31,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
 });
 
 export const POST = withErrorHandler(async (request: NextRequest) => {
-  await requireAuth();
+  await requireAuthOrApiKey(request);
 
   const body = await request.json();
   const parsed = certificationCreateSchema.safeParse(body);

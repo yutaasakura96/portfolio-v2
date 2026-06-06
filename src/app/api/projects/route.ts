@@ -1,4 +1,4 @@
-import { requireAuth } from "@/app/api/auth";
+import { requireAuthOrApiKey } from "@/app/api/auth";
 import { ApiError, ErrorCodes, withErrorHandler } from "@/lib/errors";
 import { Prisma, ProjectStatus, prisma } from "@/lib/prismaClient";
 import { projectCreateSchema } from "@/lib/validations/project";
@@ -14,7 +14,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   const limit = parseInt(searchParams.get("limit") ?? "20");
 
   if (status === "all" || status === "DRAFT") {
-    await requireAuth();
+    await requireAuthOrApiKey(request);
   }
 
   const where: Prisma.ProjectWhereInput = {};
@@ -57,7 +57,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
 });
 
 export const POST = withErrorHandler(async (request: NextRequest) => {
-  await requireAuth();
+  await requireAuthOrApiKey(request);
 
   const body = await request.json();
   const parsed = projectCreateSchema.safeParse(body);
