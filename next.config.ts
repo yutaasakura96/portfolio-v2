@@ -74,5 +74,9 @@ export default withSentryConfig(withBundleAnalyzer(nextConfig), {
   project: "portfolio-v2",
   silent: !process.env.CI,
   widenClientFileUpload: true,
-  disableLogger: true,
+  webpack: {
+    treeshake: {
+      removeDebugLogging: true,
+    },
+  },
 });
