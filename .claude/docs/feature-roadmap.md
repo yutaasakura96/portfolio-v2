@@ -2,7 +2,7 @@
 
 Living document tracking planned features, improvements, and integrations for the portfolio project.
 
-Last updated: 2026-06-06 (feat/hero-3d-blob → Sentry integration)
+Last updated: 2026-06-06 (fix/hero-blob-webgl-error-boundary → Three.js pin, Sentry disableLogger fix, WebGL error boundary, React 19 icon types)
 
 ---
 
@@ -51,7 +51,7 @@ Last updated: 2026-06-06 (feat/hero-3d-blob → Sentry integration)
 
 ## 4. Observability & Monitoring
 
-- [x] Sentry integration — `@sentry/nextjs`; three runtime configs (`sentry.client.config.ts`, `sentry.server.config.ts`, `sentry.edge.config.ts`), `instrumentation.ts` hook, `withSentryConfig` wrapper in `next.config.ts`, `NEXT_PUBLIC_SENTRY_DSN` + `SENTRY_AUTH_TOKEN` env vars wired through `amplify.yml`
+- [x] Sentry integration — `@sentry/nextjs` `^10.56.0` (now properly declared in `package.json`); three runtime configs (`sentry.client.config.ts`, `sentry.server.config.ts`, `sentry.edge.config.ts`), `instrumentation.ts` hook, `withSentryConfig` wrapper in `next.config.ts` (uses `webpack: { treeshake: { removeDebugLogging: true } }` — deprecated `disableLogger: true` removed), `NEXT_PUBLIC_SENTRY_DSN` + `SENTRY_AUTH_TOKEN` env vars wired through `amplify.yml`
 - [x] Sentry MCP server — `mcp__sentry__*` added via `claude mcp add --transport http sentry https://mcp.sentry.dev/mcp`
 - [ ] Health check endpoint (`/api/health`) — ping DB, check S3/SES connectivity
 - [ ] CloudWatch Alarms — monitor Amplify build failures, error rates (free tier)
@@ -103,7 +103,7 @@ Last updated: 2026-06-06 (feat/hero-3d-blob → Sentry integration)
 - [ ] Categorize certifications — add category field, render with tab UI similar to skills or something unique (azure, aws, anthropic, language, etc.)
 - [x] Complete portfolio redesign — research best practices, iterate incrementally
   - UI skills are installed and ready: `shadcn` (component composition), `emil-design-eng` (design engineering + animations), `frontend-design` (visual design direction + distinctive aesthetics), `web-design-guidelines` (Vercel interface guidelines, pre-PR quality gate). Skills live in `.agents/skills/` with symlinks in `.claude/skills/`; `frontend-design` is installed as a plugin.
-- [x] Interactive 3D element on hero page (Three.js / React Three Fiber) — `HeroBlob.tsx` using `@react-three/fiber` + `three`; morphing GLSL shader blob with mouse/hover interaction
+- [x] Interactive 3D element on hero page (Three.js / React Three Fiber) — `HeroBlob.tsx` using `@react-three/fiber` + `three`; morphing GLSL shader blob with mouse/hover interaction. `three` pinned to `^0.182.0` (r183 deprecated `THREE.Clock` which r3f v9.6.1 still uses). `WebGLErrorBoundary` class component wraps `Canvas` to silently catch WebGL init failures on old browsers (Mobile Safari 13 / iOS 13) instead of crashing the page. Shader uniforms declared as a module-level constant to satisfy React Compiler ESLint rules.
 - [ ] Internationalization (i18n) — evaluate if multilingual audience justifies maintenance cost
 - [x] Dark mode refinements
 - [ ] Add micro-interactions and animation polish — use `emil-design-eng` skill for transitions, spring physics, and interaction choreography
