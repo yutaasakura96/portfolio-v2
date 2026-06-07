@@ -120,16 +120,16 @@ Last updated: 2026-06-06 (fix/hero-blob-webgl-error-boundary → Three.js pin, S
 
 ### Skills & Agents
 
-- [x] Documentation agent — standalone agent that reads codebase, diffs against docs, and updates CLAUDE.md files, roadmap, and rules
-- [x] Post-commit doc reminder hook — PostToolUse hook on `Bash` that detects significant commits and suggests running the documentation-agent
-- [x] Orchestrator auto-routing — implemented as a Request Routing decision-tree table in `CLAUDE.md`
+- [x] Documentation agent — standalone agent that reads codebase, diffs against docs, and updates CLAUDE.md files, roadmap, and rules → **merged into maintenance-agent (mode: docs)**
+- [x] Post-commit doc reminder hook — PostToolUse hook on `Bash` that detects significant commits and suggests running maintenance-agent (mode: docs)
+- [x] Orchestrator auto-routing → **replaced with 2-tier routing model** (main session handles directly or spawns single agent; no orchestrator layer)
 - [x] Pre-edit branch guard hook — PreToolUse hook on `Edit|Write` that blocks file edits on `main`/`develop`
 - [-] Prompt writer agent — deferred. Better to improve CLAUDE.md rules directly. Revisit if improvements aren't enough.
 - [x] Install UI skills — researched 7 candidates (Impeccable, UI UX Pro Max, Emil Kowalski, shadcn/ui, interaction-design, interface-design, web-design-guidelines); installed 3: `shadcn` (auto-triggers on component work), `emil-design-eng` (selective for animations/transitions), `web-design-guidelines` (pre-PR quality gate). Wired into `CLAUDE.md` UI Skills section and `.claude/rules/components.md`.
 - [~] Add new Claude Code skills — [10 must-have skills for Claude Code (2026)](https://medium.com/@unicodeveloper/10-must-have-skills-for-claude-and-any-coding-agent-in-2026-b5451b013051)
 - [~] New plugins/skills installed and evaluated:
   INSTALLED: - [x] `skill-creator@claude-plugins-official` — create, eval, improve, and benchmark skills (4 modes: Create, Eval, Improve, Benchmark) - [x] `context-mode@context-mode` (v1.0.162) — sandboxes tool output for ~98% context window savings, SQLite session tracking, 6 sandbox tools + lifecycle hooks - [x] `frontend-design@claude-plugins-official` — production-grade UI design with distinctive aesthetics (complements `emil-design-eng` for animation + `shadcn` for composition + `web-design-guidelines` for quality gate)
-  EVALUATED & SKIPPED: - [-] `superpowers@claude-plugins-official` — structured TDD/debug methodology. Skipped: overlaps with existing CLAUDE.md workflow, hooks, and orchestrator routing. - [-] `get-shit-done-cc` — meta-prompting + spec-driven dev. Skipped: installs its own CLAUDE.md/hooks, would conflict with existing setup. - [-] `claude-mem` (thedotmack) — persistent memory across sessions. Skipped: HIGH security risk (unauthenticated HTTP API on port 37777), and built-in `.claude/projects/` memory already covers this.
+  EVALUATED & SKIPPED: - [-] `superpowers@claude-plugins-official` — structured TDD/debug methodology. Skipped: overlaps with existing CLAUDE.md workflow, hooks, and 2-tier routing. - [-] `get-shit-done-cc` — meta-prompting + spec-driven dev. Skipped: installs its own CLAUDE.md/hooks, would conflict with existing setup. - [-] `claude-mem` (thedotmack) — persistent memory across sessions. Skipped: HIGH security risk (unauthenticated HTTP API on port 37777), and built-in `.claude/projects/` memory already covers this.
   ALREADY AVAILABLE (built-in): - [x] /review (fast) — built-in skill, no install needed - [x] /ultrareview — built-in cloud review (Pro/Max only, 3 runs/5-20 USD)
 
 - [x] Excalidraw diagram generator — visual architecture diagrams; installed to `.agents/skills/excalidraw-diagram`; generated `architecture.excalidraw` at repo root
@@ -143,6 +143,7 @@ Last updated: 2026-06-06 (fix/hero-blob-webgl-error-boundary → Three.js pin, S
 - [x] UI verification tool decision — Playwright MCP chosen as default for agents (headless, reliable, no external deps). Documented in CLAUDE.md § UI Verification and .claude/rules/components.md.
 - [x] Cache revalidation fix — unified import now revalidates detail pages (`/projects/[slug]`, `/blog/[slug]`) via `detailPathPrefix` in entity configs. Blog import also revalidates homepage.
 - [x] full audit agentic workflow findout token optimization needs — cleaned settings.local.json (64 → 24 entries), added frontmatter fields to all 7 agents (`maxTurns`, `memory`, `skills`, `mcpServers`), added `async: true` to post-commit hook, created 3 slash commands (`/check`, `/new-route`, `/pr-ready`)
+- [x] Agentic workflow redesign — 7 agents → 4 (deleted orchestrator, synthesizer, documentation-agent; merged refactor-agent + documentation-agent → maintenance-agent). 2-tier routing (main session direct or single agent spawn). All agents use context-mode `ctx_batch_execute` for doc reads (~98% context savings). maxTurns capped on all 4. Updated `agentic-workflow.excalidraw` diagram.
 - [x] Slash commands — `/check` (lint + type-check + test), `/new-route` (API route scaffold), `/pr-ready` (pre-PR quality gate + draft) created in `.claude/commands/`
 - use /excalidraw-diagram skill to to create a diagram of current agentic workflow/orchestration. skill to create a diagram of current agentic workflow/orchestration.
 - codebase full audit. check type safety, type system, warnings, bugs, errors in code and bad practices. use /ultrareview or whatever agent or skill that is best.

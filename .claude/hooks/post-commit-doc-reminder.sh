@@ -1,6 +1,6 @@
 #!/bin/bash
 # PostToolUse hook: after a git commit, check if significant areas changed
-# and suggest running the documentation-agent to keep docs in sync.
+# and suggest running the maintenance-agent (mode: docs) to keep docs in sync.
 # Reads tool input from stdin JSON, checks committed files against patterns.
 
 input=$(cat)
@@ -30,6 +30,6 @@ area_list=$(IFS=', '; echo "${areas[*]}")
 
 echo ""
 echo "This commit touched significant areas: ${area_list}."
-echo "Consider running the documentation-agent to update project docs."
+echo "Consider running the maintenance-agent (mode: docs) to update project docs."
 
 exit 0

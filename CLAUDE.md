@@ -43,18 +43,47 @@ Scoped instructions: [src/CLAUDE.md](src/CLAUDE.md), [src/app/api/CLAUDE.md](src
 
 ## Request Routing
 
-Before starting implementation, evaluate the scope of the request:
+Two-tier model. The main session coordinates directly — no orchestrator agent.
 
-| Signal                                                                        | Route to                                               |
-| ----------------------------------------------------------------------------- | ------------------------------------------------------ |
-| Request touches 3+ areas (schema + API + UI, or API + multiple pages + tests) | **orchestrator** agent — do NOT start editing directly |
-| User says "orchestrate", "multi-agent", or "full pipeline"                    | **orchestrator** agent                                 |
-| Single entity end-to-end (schema through UI)                                  | **feature-builder** agent directly                     |
-| Schema-only change (migration, new model, field change)                       | **db-agent** directly                                  |
-| Convention alignment of existing code                                         | **refactor-agent** directly                            |
-| Review or audit                                                               | **code-reviewer** directly                             |
-| Documentation update (docs out of sync, roadmap update)                       | **documentation-agent** directly                       |
-| Single-file edit, typo fix, quick lookup                                      | Handle directly in main session                        |
+### Tier 1 — main session handles directly (no agent spawn)
+
+| Signal                                         | Action                                  |
+| ---------------------------------------------- | --------------------------------------- |
+| Single-file edit, typo fix, quick lookup       | Edit directly                           |
+| 1-2 domain task where you already have context | Build directly                          |
+| Explore / search / "where is X"                | Use built-in `Explore` subagent (haiku) |
+
+### Tier 2 — single agent spawn
+
+| Signal                                                  | Agent                                  |
+| ------------------------------------------------------- | -------------------------------------- |
+| Schema-only change (migration, new model, field change) | **db-agent**                           |
+| Single entity end-to-end (schema through UI)            | **feature-builder**                    |
+| Convention alignment of existing code                   | **maintenance-agent** (mode: refactor) |
+| Documentation update (docs out of sync, roadmap update) | **maintenance-agent** (mode: docs)     |
+| Review or audit                                         | **code-reviewer**                      |
+
+### Tier 2 — parallel fan-out (multi-domain, 3+ areas)
+
+For requests touching 3+ domains (schema + API + UI), the main session coordinates directly. Pattern:
+
+1. Spawn **db-agent** for schema/migration work. Verify: `git diff --stat`, `npm run type-check`.
+2. Spawn **feature-builder** with the migration context. Verify: type-check + lint.
+3. Spawn **code-reviewer** with "include integration review" in the prompt.
+4. Report findings to user.
+
+Steps 1-2 are sequential (feature-builder depends on db-agent). Step 3 can begin immediately after step 2.
+If the user says "orchestrate" or "full pipeline", follow this pattern.
+
+### Model selection
+
+| Agent              | Default | Override to opus when                               |
+| ------------------ | ------- | --------------------------------------------------- |
+| db-agent           | sonnet  | Tricky migration (cross-table backfill, custom SQL) |
+| feature-builder    | sonnet  | High-stakes feature, one-pass quality matters       |
+| code-reviewer      | haiku   | Security-sensitive diff (auth, payment, PII)        |
+| maintenance-agent  | sonnet  | Bulk rewrite touching cross-cutting abstractions    |
+| Explore (built-in) | haiku   | Search requires synthesizing many unrelated files   |
 
 ## UI Skills
 
@@ -107,7 +136,7 @@ Three plugins extend Claude Code's core capabilities:
 | **context-mode** (mksglu, v1.0.162)           | Sandboxes tool output for ~98% context window savings. SQLite session tracking + lifecycle hooks. |
 | **frontend-design** (claude-plugins-official) | Production-grade UI design with distinctive aesthetics. Listed above under UI Skills.             |
 
-If uncertain whether the orchestrator is needed, ask the user: "This looks like it might span multiple domains. Should I use the orchestrator to coordinate, or handle it directly?"
+For multi-domain requests (3+ areas), follow the parallel fan-out pattern in Request Routing — no orchestrator agent needed.
 
 ## Critical Rules (universal — domain-specific rules live in [.claude/rules/](.claude/rules/))
 
@@ -142,9 +171,16 @@ Domain rules (Zod validation, `withErrorHandler`, ISR/client split, image pipeli
 
 ## Available Agents
 
-Agents: **orchestrator**, **feature-builder**, **db-agent**, **refactor-agent**, **code-reviewer**, **synthesizer**, **documentation-agent**. Definitions in [.claude/agents/](.claude/agents/). See Request Routing table above for when to use each.
+Four agents in [.claude/agents/](.claude/agents/):
 
-Defaults: `model: sonnet` (except `code-reviewer` → `haiku`). Override to `opus` only when complexity warrants.
+| Agent                 | Model  | Purpose                                               |
+| --------------------- | ------ | ----------------------------------------------------- |
+| **db-agent**          | sonnet | Schema, migrations, seed, Neon branching              |
+| **feature-builder**   | sonnet | End-to-end feature (model + migration + API + UI)     |
+| **code-reviewer**     | haiku  | Read-only review + cross-domain integration checks    |
+| **maintenance-agent** | sonnet | Refactoring (mode: refactor) or doc sync (mode: docs) |
+
+See Request Routing above for when to spawn each. Built-in subagents (`Explore`/haiku, `Plan`/sonnet) don't need definitions.
 
 ## Claude Hooks
 
@@ -167,6 +203,6 @@ When compacting, always preserve:
 
 - The full list of files modified in the current task
 - The current git branch name and any in-progress PR
-- Which agent workflow step we are on (if orchestrator is running)
+- Which agent workflow step we are on (if multi-agent fan-out is running)
 - Any user decisions or preferences stated in this session
 - Error messages from failed builds/tests that haven't been resolved yet
