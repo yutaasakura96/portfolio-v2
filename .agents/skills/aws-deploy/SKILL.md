@@ -1,11 +1,11 @@
 ---
 name: aws-deploy
-description: Use for AWS Amplify deployments, environment variable changes, S3/CloudFront/SES/Cognito operations, and post-deploy verification. References .Codex/docs/infrastructure.md for the live environment snapshot. Treats production as production — confirms before mutating shared state.
+description: Use for AWS Amplify deployments, environment variable changes, S3/CloudFront/SES/Cognito operations, and post-deploy verification. References .claude/docs/infrastructure.md for the live environment snapshot. Treats production as production — confirms before mutating shared state.
 ---
 
 # AWS Deploy Skill
 
-This project deploys to AWS Amplify Hosting Gen 1 (SSR Lambda) with a specific stack of supporting services. Read [.Codex/docs/infrastructure.md](../../docs/infrastructure.md) before any operation that mutates AWS state — it's the source of truth for IDs, ARNs, and current configuration.
+This project deploys to AWS Amplify Hosting Gen 1 (SSR Lambda) with a specific stack of supporting services. Read [.claude/docs/infrastructure.md](../../docs/infrastructure.md) before any operation that mutates AWS state — it's the source of truth for IDs, ARNs, and current configuration.
 
 ## When to use
 
@@ -100,7 +100,7 @@ aws amplify update-app --app-id d2v4laatjpx2hq --region ap-southeast-1 \
 
 Easier path: update via the Amplify Console UI to avoid replacing the map. After changing env vars, **trigger a new build** — the change isn't picked up until then.
 
-`.env.example` has known drift (uses `AWS_*` instead of `APP_AWS_*`, missing `COGNITO_REGION`, etc.). Treat [.Codex/docs/infrastructure.md](../../docs/infrastructure.md) as authoritative for which vars exist.
+`.env.example` has known drift (uses `AWS_*` instead of `APP_AWS_*`, missing `COGNITO_REGION`, etc.). Treat [.claude/docs/infrastructure.md](../../docs/infrastructure.md) as authoritative for which vars exist.
 
 ## IAM key rotation (`portfolio-admin`)
 
@@ -154,7 +154,7 @@ Charges apply per path after the free tier. Use targeted paths when possible.
 
 ## Reference
 
-- [.Codex/docs/infrastructure.md](../../docs/infrastructure.md) — full snapshot, including useful re-audit commands at the bottom.
+- [.claude/docs/infrastructure.md](../../docs/infrastructure.md) — full snapshot, including useful re-audit commands at the bottom.
 - [amplify.yml](../../../amplify.yml) — build spec.
 - [customHttp.yml](../../../customHttp.yml) — security headers + CSP.
 - [next.config.ts](../../../next.config.ts) — Next config including `images.remotePatterns`.

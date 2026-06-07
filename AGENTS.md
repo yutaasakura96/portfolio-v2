@@ -168,11 +168,11 @@ Domain rules (Zod validation, `withErrorHandler`, ISR/client split, image pipeli
 - **playwright** — Browser automation for visual verification at `http://localhost:3000`.
 - **github** — GitHub API for PR/issue management, code search.
 - **portfolio** — Project-local MCP server launched with `npx tsx --env-file=.env mcp/portfolio-server/src/index.ts`.
-- **sentry** (`mcp__sentry__*`) — Query Sentry errors, issues, and performance data from Codex. Added via `Codex mcp add --transport http sentry https://mcp.sentry.dev/mcp`.
+- **sentry** (`mcp__sentry__*`) — Query Sentry errors, issues, and performance data from Claude Code and backup-agent sessions. Added via `claude mcp add --transport http sentry https://mcp.sentry.dev/mcp`; mirrored in [.codex/config.toml](.codex/config.toml) for Codex backup sessions.
 
 ## Available Agents
 
-Four Codex agent configs in [.codex/agents/](.codex/agents/):
+Four primary Claude Code agents in [.claude/agents/](.claude/agents/), mirrored for Codex backup sessions in [.codex/agents/](.codex/agents/):
 
 | Agent                 | Model  | Purpose                                               |
 | --------------------- | ------ | ----------------------------------------------------- |

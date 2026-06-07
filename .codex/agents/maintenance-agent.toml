@@ -15,10 +15,10 @@ The `context-mode` plugin is installed. Use `ctx_batch_execute` to read referenc
 ctx_batch_execute(
   commands: [
     {label: "root AGENTS.md", command: "cat AGENTS.md"},
-    {label: "src AGENTS.md", command: "cat src/AGENTS.md"},
-    {label: "api AGENTS.md", command: "cat src/app/api/AGENTS.md"},
-    {label: "prisma AGENTS.md", command: "cat prisma/AGENTS.md"},
-    {label: "rule files", command: "cat .Codex/rules/*.md"}
+    {label: "src AGENTS.md", command: "cat src/CLAUDE.md"},
+    {label: "api AGENTS.md", command: "cat src/app/api/CLAUDE.md"},
+    {label: "prisma AGENTS.md", command: "cat prisma/CLAUDE.md"},
+    {label: "rule files", command: "cat .claude/rules/*.md"}
   ],
   queries: ["conventions for the file type I am working on"]
 )
@@ -30,9 +30,9 @@ Only use direct `Read` when you need exact line content for an `Edit` operation.
 
 ## Mode: refactor
 
-You improve existing source code to match the conventions defined in AGENTS.md files and `.Codex/rules/`.
+You improve existing source code to match the conventions defined in AGENTS.md files and `.claude/rules/`.
 
-> **Status:** The original post-audit refactor is complete (see archive). When invoked, start a fresh log file at `.Codex/docs/refactor-log-<YYYY-MM-DD>.md`.
+> **Status:** The original post-audit refactor is complete (see archive). When invoked, start a fresh log file at `.claude/docs/refactor-log-<YYYY-MM-DD>.md`.
 
 ### Working style
 
@@ -42,7 +42,7 @@ You improve existing source code to match the conventions defined in AGENTS.md f
   2. `npm run lint` (must pass — this also runs Prettier)
   3. `npm run build` only if the change touches build-time code (`next.config.ts`, `prisma.config.ts`, route segment configs)
 - If any check fails: revert the edit, note it in the log, and report back. Do NOT cascade further changes on top of a failing change.
-- Append a new entry to the current pass's `.Codex/docs/refactor-log-<date>.md` for every successful change. Create the log file if it doesn't exist.
+- Append a new entry to the current pass's `.claude/docs/refactor-log-<date>.md` for every successful change. Create the log file if it doesn't exist.
 
 ### High-risk operations — STOP and ask first
 
@@ -74,13 +74,13 @@ You keep this project's documentation in sync with the actual codebase. You read
 ### Managed files
 
 1. [AGENTS.md](../../AGENTS.md) (root)
-2. [src/AGENTS.md](../../src/AGENTS.md)
-3. [src/app/api/AGENTS.md](../../src/app/api/AGENTS.md)
-4. [prisma/AGENTS.md](../../prisma/AGENTS.md)
-5. All files in [.Codex/rules/](../rules/)
-6. [.Codex/docs/feature-roadmap.md](../docs/feature-roadmap.md)
-7. [.Codex/docs/feature-workflow.md](../docs/feature-workflow.md)
-8. [.Codex/docs/infrastructure.md](../docs/infrastructure.md)
+2. [src/CLAUDE.md](../../src/CLAUDE.md)
+3. [src/app/api/CLAUDE.md](../../src/app/api/CLAUDE.md)
+4. [prisma/CLAUDE.md](../../prisma/CLAUDE.md)
+5. All files in [.claude/rules/](../rules/)
+6. [.claude/docs/feature-roadmap.md](../docs/feature-roadmap.md)
+7. [.claude/docs/feature-workflow.md](../docs/feature-workflow.md)
+8. [.claude/docs/infrastructure.md](../docs/infrastructure.md)
 
 ### Workflow
 
@@ -94,7 +94,7 @@ You keep this project's documentation in sync with the actual codebase. You read
 - **No branch creation.** Work on the current branch.
 - **No mutating Bash.** No `git commit`, `git push`, `npm install`, `npm run build`, `prisma migrate`. Read-only commands only.
 - **No code file modifications.** Edit `.md` files only. Never touch `.ts`, `.tsx`, `.json`, `.css`.
-- **No settings changes.** Do not modify `.Codex/settings.json`.
+- **No settings changes.** Do not modify `.claude/settings.json or .codex/ config`.
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: prisma-neon
-description: Use for any Prisma + Neon Postgres operation in this project — migration creation, branch-based safe testing, query patterns specific to the Neon serverless adapter, seed updates. References the rules in prisma/AGENTS.md and .Codex/rules/prisma-schema.md.
+description: Use for any Prisma + Neon Postgres operation in this project — migration creation, branch-based safe testing, query patterns specific to the Neon serverless adapter, seed updates. References the rules in prisma/CLAUDE.md and .claude/rules/prisma-schema.md.
 ---
 
 # Prisma + Neon Skill
@@ -28,7 +28,7 @@ Locally, your `.env` should have BOTH. If only `DATABASE_URL` is set, `prisma mi
 
 ## Standard migration flow
 
-The canonical workflow lives in [prisma/AGENTS.md §Migration Workflow](../../../prisma/AGENTS.md) and the schema rules in [.Codex/rules/prisma-schema.md](../../rules/prisma-schema.md). Follow those for the create-format-migrate-generate-typecheck loop and the Zod/public-type updates that come after.
+The canonical workflow lives in [prisma/CLAUDE.md §Migration Workflow](../../../prisma/CLAUDE.md) and the schema rules in [.claude/rules/prisma-schema.md](../../rules/prisma-schema.md). Follow those for the create-format-migrate-generate-typecheck loop and the Zod/public-type updates that come after.
 
 Use the **prisma-local** MCP server (Phase 5) for `migrate-status` checks before running `migrate-dev` — it surfaces drift between `prisma/migrations/` and the database without a shell roundtrip.
 
@@ -150,7 +150,7 @@ Never string-concatenate values into raw SQL.
 - ❌ Running `prisma migrate reset` — drops all data. db-agent will block this without explicit confirmation.
 - ❌ Running `prisma db push` against shared DBs — bypasses migrations.
 - ❌ Editing a migration after it's been applied somewhere — create a follow-up instead.
-- ❌ Combining destructive change (drop column) with code change in one PR — split into two phases (see `prisma/AGENTS.md` "Destructive change rollout pattern").
+- ❌ Combining destructive change (drop column) with code change in one PR — split into two phases (see `prisma/CLAUDE.md` "Destructive change rollout pattern").
 - ❌ Forgetting to update `src/lib/validations/<entity>.ts` after a schema change — the Zod schema and Prisma model drift apart silently.
 - ❌ Forgetting to regenerate the Prisma client (`npm run prisma:generate`) — TypeScript will lie to you using the stale generated types.
 - ❌ Importing types from `generated/prisma/*` directly across the app — they're already re-exported from `@/lib/prismaClient`.

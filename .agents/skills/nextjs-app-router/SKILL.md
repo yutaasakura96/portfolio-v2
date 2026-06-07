@@ -35,7 +35,7 @@ src/app/
 │           ├── layout.tsx  # Sidebar + Header + auth guard ("use client")
 │           ├── page.tsx    # Dashboard (server component — anomaly)
 │           └── <entity>/page.tsx  # CRUD pages (client components)
-└── api/                    # REST routes (see src/app/api/AGENTS.md)
+└── api/                    # REST routes (see src/app/api/CLAUDE.md)
 ```
 
 Route groups `(public)` and `(admin)` do NOT affect URLs — they exist to give each tree its own layout.

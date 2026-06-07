@@ -1,9 +1,9 @@
 name = "code-reviewer"
-description = "Use to review code changes (a file, a diff, or a PR) against this project's conventions. Read-only — never edits. Reports issues by severity (critical/warning/suggestion) and cites the specific AGENTS.md or .Codex/rules/ rule each issue violates."
+description = "Use to review code changes (a file, a diff, or a PR) against this project's conventions. Read-only — never edits. Reports issues by severity (critical/warning/suggestion) and cites the specific AGENTS.md or .claude/rules/ rule each issue violates."
 developer_instructions = """
 # Code Reviewer
 
-You review code in this repository against the conventions defined in AGENTS.md files and `.Codex/rules/`. **Read-only.** Never use `Edit` or `Write`. Never run mutating commands. For security-sensitive diffs (auth, payment, PII), the caller should override with `model: opus`.
+You review code in this repository against the conventions defined in AGENTS.md files and `.claude/rules/`. **Read-only.** Never use `Edit` or `Write`. Never run mutating commands. For security-sensitive diffs (auth, payment, PII), the caller should override with `model: opus`.
 
 ## Inputs
 
@@ -18,10 +18,10 @@ The `context-mode` plugin is installed. Use `ctx_batch_execute` to read referenc
 ctx_batch_execute(
   commands: [
     {label: "root AGENTS.md", command: "cat AGENTS.md"},
-    {label: "src AGENTS.md", command: "cat src/AGENTS.md"},
-    {label: "api AGENTS.md", command: "cat src/app/api/AGENTS.md"},
-    {label: "prisma AGENTS.md", command: "cat prisma/AGENTS.md"},
-    {label: "rule files", command: "cat .Codex/rules/*.md"}
+    {label: "src AGENTS.md", command: "cat src/CLAUDE.md"},
+    {label: "api AGENTS.md", command: "cat src/app/api/CLAUDE.md"},
+    {label: "prisma AGENTS.md", command: "cat prisma/CLAUDE.md"},
+    {label: "rule files", command: "cat .claude/rules/*.md"}
   ],
   queries: ["critical rules", "common mistakes", "anti-patterns to check"]
 )

@@ -13,12 +13,12 @@ The `context-mode` plugin is installed. Use `ctx_batch_execute` to read referenc
 ctx_batch_execute(
   commands: [
     {label: "root AGENTS.md", command: "cat AGENTS.md"},
-    {label: "src AGENTS.md", command: "cat src/AGENTS.md"},
-    {label: "api AGENTS.md", command: "cat src/app/api/AGENTS.md"},
-    {label: "prisma AGENTS.md", command: "cat prisma/AGENTS.md"},
-    {label: "rule files", command: "cat .Codex/rules/*.md"},
-    {label: "feature workflow", command: "cat .Codex/docs/feature-workflow.md"},
-    {label: "feature templates", command: "cat .Codex/docs/feature-templates.md"}
+    {label: "src AGENTS.md", command: "cat src/CLAUDE.md"},
+    {label: "api AGENTS.md", command: "cat src/app/api/CLAUDE.md"},
+    {label: "prisma AGENTS.md", command: "cat prisma/CLAUDE.md"},
+    {label: "rule files", command: "cat .claude/rules/*.md"},
+    {label: "feature workflow", command: "cat .claude/docs/feature-workflow.md"},
+    {label: "feature templates", command: "cat .claude/docs/feature-templates.md"}
   ],
   queries: ["critical rules", "common mistakes", "API route skeleton", "component conventions"]
 )
@@ -32,11 +32,11 @@ For library API questions (Next.js 16, Prisma 7, TailwindCSS 4, AWS SDK v3), use
 
 Most features in this codebase touch a similar surface. Build them in this order so each step type-checks before the next:
 
-1. **Schema + migration** — see `db-agent` for the workflow. Add fields per [.Codex/rules/prisma-schema.md](../rules/prisma-schema.md).
+1. **Schema + migration** — see `db-agent` for the workflow. Add fields per [.claude/rules/prisma-schema.md](../rules/prisma-schema.md).
 2. **Validation schema** — `src/lib/validations/<entity>.ts`. Export schema + inferred type. Cover create + update.
 3. **Public type** — add or update entry in [src/lib/data/types.ts](../../src/lib/data/types.ts).
 4. **Public query (if public)** — add to [src/lib/data/public-queries.ts](../../src/lib/data/public-queries.ts).
-5. **API routes** — `src/app/api/<entity>/route.ts` (collection: GET + POST) and `src/app/api/<entity>/[id]/route.ts` (resource: GET/PUT/DELETE). Follow the skeleton in [src/app/api/AGENTS.md](../../src/app/api/AGENTS.md).
+5. **API routes** — `src/app/api/<entity>/route.ts` (collection: GET + POST) and `src/app/api/<entity>/[id]/route.ts` (resource: GET/PUT/DELETE). Follow the skeleton in [src/app/api/CLAUDE.md](../../src/app/api/CLAUDE.md).
 6. **Admin pages** — `src/app/(admin)/admin/(shell)/<entity>/page.tsx` (list) and `[id]/page.tsx` (edit). Client components, TanStack Query, react-hook-form.
 7. **Admin form component** — `src/components/admin/<Entity>Form.tsx`. Mirror [src/components/admin/ProjectForm.tsx](../../src/components/admin/ProjectForm.tsx).
 8. **Public pages (if public)** — `src/app/(public)/<entity>/page.tsx` (list with `revalidate = 3600`) and `[slug]/page.tsx` (detail with `generateStaticParams`).

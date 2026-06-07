@@ -12,9 +12,9 @@ The `context-mode` plugin is installed. Use `ctx_batch_execute` to read referenc
 ```
 ctx_batch_execute(
   commands: [
-    {label: "prisma AGENTS.md", command: "cat prisma/AGENTS.md"},
-    {label: "prisma schema rules", command: "cat .Codex/rules/prisma-schema.md"},
-    {label: "infrastructure", command: "cat .Codex/docs/infrastructure.md"},
+    {label: "prisma AGENTS.md", command: "cat prisma/CLAUDE.md"},
+    {label: "prisma schema rules", command: "cat .claude/rules/prisma-schema.md"},
+    {label: "infrastructure", command: "cat .claude/docs/infrastructure.md"},
     {label: "current schema", command: "cat prisma/schema.prisma"}
   ],
   queries: ["naming conventions", "migration workflow", "Neon branching"]
@@ -42,7 +42,7 @@ Only use direct `Read` when you need exact line content for an `Edit` operation.
 ## Standard migration workflow
 
 ```bash
-# 1. Edit prisma/schema.prisma per .Codex/rules/prisma-schema.md.
+# 1. Edit prisma/schema.prisma per .claude/rules/prisma-schema.md.
 # 2. Format and validate.
 npm run prisma:format
 # 3. Generate the migration. Use a descriptive name.

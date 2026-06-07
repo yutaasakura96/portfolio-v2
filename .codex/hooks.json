@@ -35,6 +35,18 @@
             "statusMessage": "Formatting..."
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "'/Users/yutaasakura/Documents/GitHub/portfolio-v2/.codex/hooks/post-commit-doc-reminder.sh'",
+            "timeout": 10,
+            "async": true,
+            "statusMessage": "Checking if docs need updating..."
+          }
+        ]
       }
     ]
   }

@@ -154,7 +154,7 @@ Last updated: 2026-06-07 (docs sync → Claude Code primary + Codex backup frami
 - [x] Google Chrome MCP — browser automation (already configured)
 - [x] AWS MCP — AWS documentation access (already configured)
 - [x] Codex backup setup — `.codex/agents/`, `.codex/hooks.json`, and `.codex/config.toml` mirror the main Claude Code workflow where possible. Claude Code remains the primary agent environment; Codex is configured as a backup.
-- [x] Portfolio MCP — configured for Codex backup in `.codex/config.toml`; local server in `mcp/portfolio-server` registers project, experience, education, skill, certification, message, blog, content, and dashboard tools. Add to Claude Code MCP separately before treating it as primary Claude tooling.
+- [x] Portfolio MCP — registered as the primary Claude Code MCP server in `.mcp.json` and mirrored for Codex backup in `.codex/config.toml`; local server in `mcp/portfolio-server` registers project, experience, education, skill, certification, message, blog, content, and dashboard tools.
 
 ### Documentation
 

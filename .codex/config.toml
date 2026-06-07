@@ -1,3 +1,7 @@
+# When AGENTS.md is absent in a subdirectory, fall back to CLAUDE.md
+# so Codex picks up scoped instructions (src/CLAUDE.md, prisma/CLAUDE.md, etc.)
+project_doc_fallback_filenames = ["CLAUDE.md"]
+
 [mcp_servers.aws-api]
 command = "uvx"
 args = ["awslabs.aws-api-mcp-server@latest"]
