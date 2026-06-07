@@ -91,6 +91,7 @@ Last updated: 2026-06-06 (fix/hero-blob-webgl-error-boundary → Three.js pin, S
 - [x] Social share buttons — one-click sharing to LinkedIn, Facebook, and X/Twitter via native share URLs (no third-party SDKs); copy-link button via clipboard API + Sonner toast
 - [x] Blog reading time estimate (also listed under SEO)
 - [ ] LinkedIn post importer — pull existing LinkedIn posts and convert them into blog entries, preserving the original publish date
+      LinkedIn lets you export your own data: Settings → Data Privacy → Get a copy of your data → Posts. You get a ZIP with a Shares.csv or Posts.csv that includes the post text and publish date. You could build a one-time import UI in the admin that accepts that CSV and converts rows to draft blog entries — original dates preserved via createdAt override.
 - [ ] Auto-generated table of contents (also listed under SEO)
 
 ---
