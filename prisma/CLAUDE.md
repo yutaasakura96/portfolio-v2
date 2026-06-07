@@ -87,12 +87,12 @@ If you do reach for raw SQL:
 
 ## Where to Put Queries
 
-| Caller                   | Location                                                                |
-| ------------------------ | ----------------------------------------------------------------------- |
-| Public Server Component  | [src/lib/data/public-queries.ts](src/lib/data/public-queries.ts)        |
-| API route (admin/public) | Inline in the route handler (`src/app/api/.../route.ts`)                |
-| Seed                     | [prisma/seed.ts](prisma/seed.ts)                                        |
-| Script (one-off)         | Create under `scripts/` (does not exist yet — coordinate before adding) |
+| Caller                   | Location                                                                                                                                 |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Public Server Component  | [src/lib/data/public-queries.ts](src/lib/data/public-queries.ts)                                                                         |
+| API route (admin/public) | Inline in the route handler (`src/app/api/.../route.ts`)                                                                                 |
+| Seed                     | [prisma/seed.ts](prisma/seed.ts)                                                                                                         |
+| Script (one-off)         | Create under `scripts/` only after checking existing scripts such as `mcp-setup.ts`, `neon-reset-dev.sh`, and `seed-skill-categories.ts` |
 
 Do **not** create a `src/lib/data/admin-queries.ts` mirror — admin reads go through API routes (TanStack Query on the client).
 

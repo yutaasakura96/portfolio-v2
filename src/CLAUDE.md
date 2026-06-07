@@ -6,7 +6,7 @@ Applies to everything under `src/` (components, hooks, app routes, libs).
 
 - **Files: `PascalCase.tsx`** for React components (e.g. `ProjectForm.tsx`, `Header.tsx`).
 - **Files: `kebab-case.ts`** for non-component modules (e.g. `api-client.ts`, `public-queries.ts`).
-- **Hooks: `use-kebab-case.ts`** in [src/hooks/](src/hooks/) (matching existing `use-auth.ts`, `use-messages.ts`, `use-dnd-reorder.ts`). Generic reusable hooks belong here — e.g. `use-dnd-reorder.ts` encapsulates dnd-kit draft state + TanStack Query save mutation for any entity with `displayOrder`.
+- **Hooks: `use-kebab-case.ts`** in [src/hooks/](src/hooks/) (matching existing `use-auth.ts`, `use-dashboard-stats.ts`, `use-messages.ts`, `use-dnd-reorder.ts`, `use-reveal.ts`, `use-settings.ts`). Generic reusable hooks belong here — e.g. `use-dnd-reorder.ts` encapsulates dnd-kit draft state + TanStack Query save mutation for any entity with `displayOrder`.
 - **shadcn primitives in [src/components/ui/](src/components/ui/) keep the shadcn lowercase convention** (`button.tsx`, `dialog.tsx`). Do not rename them.
 - One component per file. Default export is the component; named exports for variants/types.
 
@@ -55,7 +55,7 @@ This project uses **Tailwind v4 with `@tailwindcss/postcss`** — there is no `t
   ```
 - **Variants:** for components with multiple visual states use `class-variance-authority` (CVA), following the pattern in [src/components/ui/button.tsx](src/components/ui/button.tsx).
 - **Theme tokens:** reference CSS variables (`bg-background`, `text-foreground`) — these come from `@theme` in `globals.css`. Don't hardcode `#fff` or `gray-900`.
-- **Dark mode:** wired via `next-themes` (`<ThemeProvider attribute="class">` in [src/app/layout.tsx](src/app/layout.tsx); toggle in [src/components/shared/ThemeToggle.tsx](src/components/shared/ThemeToggle.tsx) mounted in both the public `Header` and `AdminHeader`). Prefer theme tokens (`bg-background`, `text-foreground`, `border-border`, `bg-muted`, `bg-accent`, etc.) which adapt to both modes. Use `dark:` variants only when the token system can't express the contrast (e.g., status banners that have no token equivalent).
+- **Dark mode:** wired via `next-themes` (`<ThemeProvider attribute="class">` in [src/components/providers/ThemeProvider.tsx](src/components/providers/ThemeProvider.tsx), mounted from [src/app/layout.tsx](src/app/layout.tsx); toggle in [src/components/shared/ThemeToggle.tsx](src/components/shared/ThemeToggle.tsx) mounted in both the public `Header` and `AdminHeader`). Prefer theme tokens (`bg-background`, `text-foreground`, `border-border`, `bg-muted`, `bg-accent`, etc.) which adapt to both modes. Use `dark:` variants only when the token system can't express the contrast (e.g., status banners that have no token equivalent).
 - **Signature accent color:** `--accent-signature` (defined in `globals.css` `@theme` block, orange — `oklch(0.75 0.15 55)` light / `oklch(0.65 0.1 55)` dark) is the brand orange used for active indicators: nav link underlines, tab active bars, mobile nav left-border highlight. Reference it as `var(--accent-signature)` (inline style or arbitrary Tailwind value). Do NOT hardcode the orange color — use the token.
 - **Animations:** use `tw-animate-css` utilities. Don't write custom keyframes inline.
 
@@ -83,5 +83,5 @@ Render markdown via [src/lib/markdown.ts](src/lib/markdown.ts) — it's the sani
 ## Images
 
 - Public images: `next/image` with `src` from `NEXT_PUBLIC_CLOUDFRONT_URL`.
-- Uploads go through [src/app/api/upload](src/app/api/upload) which converts to WebP via Sharp.
+- Uploads go through [src/app/api/upload/route.ts](src/app/api/upload/route.ts). Images are processed with Sharp into route-specific variants; resume and education PDFs are uploaded as PDFs.
 - Configure new external image hosts in [next.config.ts](next.config.ts) `images.remotePatterns`.

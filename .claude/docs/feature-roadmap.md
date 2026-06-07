@@ -2,7 +2,7 @@
 
 Living document tracking planned features, improvements, and integrations for the portfolio project.
 
-Last updated: 2026-06-06 (fix/hero-blob-webgl-error-boundary → Three.js pin, Sentry disableLogger fix, WebGL error boundary, React 19 icon types)
+Last updated: 2026-06-07 (docs sync → Claude Code primary + Codex backup framing, CI Node version, SEO implementation status, Portfolio MCP, markdown/data docs)
 
 ---
 
@@ -27,11 +27,11 @@ Last updated: 2026-06-06 (fix/hero-blob-webgl-error-boundary → Three.js pin, S
 
 - [x] GitHub MCP for agentic Github administration
 - [x] GitHub Actions CI pipeline (lint, type-check, build, test on every PR)
-- [x] Update GitHub Actions to Node.js 24 — `actions/checkout@v6`, `actions/setup-node@v6`, `github/codeql-action@v4` (all Node.js 24)
+- [x] Update GitHub Actions actions to current major versions — `actions/checkout@v6`, `actions/setup-node@v6`, `github/codeql-action@v4`; CI currently runs Node.js 22
 - [x] GitHub CodeQL — static security analysis (free for public repos)
 - [x] Dependabot — dependency vulnerability scanning
 - [x] Vitest — unit/integration test framework (5 test files covering errors, auth, validations, contact route)
-- [x] Playwright — E2E browser testing
+- [x] Playwright MCP — headless browser verification for agents
 - [x] Remove Zustand — removed from package.json, docs updated
 
 ---
@@ -126,9 +126,9 @@ Last updated: 2026-06-06 (fix/hero-blob-webgl-error-boundary → Three.js pin, S
 - [x] Pre-edit branch guard hook — PreToolUse hook on `Edit|Write` that blocks file edits on `main`/`develop`
 - [-] Prompt writer agent — deferred. Better to improve CLAUDE.md rules directly. Revisit if improvements aren't enough.
 - [x] Install UI skills — researched 7 candidates (Impeccable, UI UX Pro Max, Emil Kowalski, shadcn/ui, interaction-design, interface-design, web-design-guidelines); installed 3: `shadcn` (auto-triggers on component work), `emil-design-eng` (selective for animations/transitions), `web-design-guidelines` (pre-PR quality gate). Wired into `CLAUDE.md` UI Skills section and `.claude/rules/components.md`.
-- [~] Add new Claude Code skills — [10 must-have skills for Claude Code (2026)](https://medium.com/@unicodeveloper/10-must-have-skills-for-claude-and-any-coding-agent-in-2026-b5451b013051)
+- [~] Add new agent skills — [10 must-have skills for Claude Code (2026)](https://medium.com/@unicodeveloper/10-must-have-skills-for-claude-and-any-coding-agent-in-2026-b5451b013051)
 - [~] New plugins/skills installed and evaluated:
-  INSTALLED: - [x] `skill-creator@claude-plugins-official` — create, eval, improve, and benchmark skills (4 modes: Create, Eval, Improve, Benchmark) - [x] `context-mode@context-mode` (v1.0.162) — sandboxes tool output for ~98% context window savings, SQLite session tracking, 6 sandbox tools + lifecycle hooks - [x] `frontend-design@claude-plugins-official` — production-grade UI design with distinctive aesthetics (complements `emil-design-eng` for animation + `shadcn` for composition + `web-design-guidelines` for quality gate)
+  INSTALLED: - [x] `skill-creator` — create, eval, improve, and benchmark skills (4 modes: Create, Eval, Improve, Benchmark) - [x] `context-mode@context-mode` (v1.0.162) — sandboxes tool output for ~98% context window savings, SQLite session tracking, sandbox tools + lifecycle hooks - [x] `frontend-design` — production-grade UI design with distinctive aesthetics (complements `emil-design-eng` for animation + `shadcn` for composition + `web-design-guidelines` for quality gate)
   EVALUATED & SKIPPED: - [-] `superpowers@claude-plugins-official` — structured TDD/debug methodology. Skipped: overlaps with existing CLAUDE.md workflow, hooks, and 2-tier routing. - [-] `get-shit-done-cc` — meta-prompting + spec-driven dev. Skipped: installs its own CLAUDE.md/hooks, would conflict with existing setup. - [-] `claude-mem` (thedotmack) — persistent memory across sessions. Skipped: HIGH security risk (unauthenticated HTTP API on port 37777), and built-in `.claude/projects/` memory already covers this.
   ALREADY AVAILABLE (built-in): - [x] /review (fast) — built-in skill, no install needed - [x] /ultrareview — built-in cloud review (Pro/Max only, 3 runs/5-20 USD)
 
@@ -150,16 +150,17 @@ Last updated: 2026-06-06 (fix/hero-blob-webgl-error-boundary → Three.js pin, S
 
 ### MCP Servers
 
-- [x] GitHub MCP — PR/issue management from Claude Code
+- [x] GitHub MCP — PR/issue management from agent sessions
 - [x] Google Chrome MCP — browser automation (already configured)
 - [x] AWS MCP — AWS documentation access (already configured)
-- [ ] Portfolio MCP — automate content creation and editing from Claude Code
+- [x] Codex backup setup — `.codex/agents/`, `.codex/hooks.json`, and `.codex/config.toml` mirror the main Claude Code workflow where possible. Claude Code remains the primary agent environment; Codex is configured as a backup.
+- [x] Portfolio MCP — configured for Codex backup in `.codex/config.toml`; local server in `mcp/portfolio-server` registers project, experience, education, skill, certification, message, blog, content, and dashboard tools. Add to Claude Code MCP separately before treating it as primary Claude tooling.
 
 ### Documentation
 
 - [ ] GitHub wiki for project documentation
 - [x] Architecture diagram — `architecture.excalidraw` (app architecture) and `docs/aws-architecture.drawio` (AWS infrastructure) generated using installed diagram skills
-- [ ] Comprehensive project documentation — folder structure, features, API reference, tech stack, setup guide
+- [ ] Comprehensive project documentation or Hero doc — folder structure, features, API reference, tech stack, setup guide
 
 ### Media & Demo
 

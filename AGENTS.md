@@ -22,24 +22,24 @@ Personal portfolio + admin CMS. Public-facing Next.js site backed by an admin da
 
 All scripts are in @package.json. Key commands: `npm run dev`, `npm run build`, `npm run lint`, `npm run type-check`, `npm test`, `npm run prisma:generate`, `npm run prisma:migrate:dev`.
 
-Tests use **Vitest** with **@testing-library/react**. See [.Codex/rules/tests.md](.Codex/rules/tests.md) for conventions.
+Tests use **Vitest** with **@testing-library/react**. See [.claude/rules/tests.md](.claude/rules/tests.md) for conventions.
 
 ## Architecture
 
-| Path                                               | Purpose                                                        |
-| -------------------------------------------------- | -------------------------------------------------------------- |
-| [src/app/(public)/](<src/app/(public)/>)           | Public site (ISR, Server Components by default)                |
-| [src/app/(admin)/admin/](<src/app/(admin)/admin/>) | Admin CMS — login + auth-guarded shell                         |
-| [src/app/api/auth.ts](src/app/api/auth.ts)         | `requireAuth` / `optionalAuth` (NOT `src/lib/auth`)            |
-| [src/proxy.ts](src/proxy.ts)                       | Next.js 16 middleware replacement — JWT guard for admin routes |
-| [src/components/shared/](src/components/shared/)   | Components shared across public + admin (e.g. `ThemeToggle`)   |
-| [src/components/ui/](src/components/ui/)           | shadcn primitives (use `npx shadcn add`, don't hand-edit)      |
-| [src/lib/data/](src/lib/data/)                     | Server-side query layer + canonical types                      |
-| [src/lib/validations/](src/lib/validations/)       | Zod schemas (one file per entity)                              |
-| [src/lib/errors.ts](src/lib/errors.ts)             | `ApiError` + `withErrorHandler`                                |
-| [src/lib/prismaClient.ts](src/lib/prismaClient.ts) | Singleton Prisma client (Neon adapter)                         |
+| Path                                               | Purpose                                                                   |
+| -------------------------------------------------- | ------------------------------------------------------------------------- |
+| [src/app/(public)/](<src/app/(public)/>)           | Public site (ISR, Server Components by default)                           |
+| [src/app/(admin)/admin/](<src/app/(admin)/admin/>) | Admin CMS — login + auth-guarded shell                                    |
+| [src/app/api/auth.ts](src/app/api/auth.ts)         | `requireAuth`, `requireAuthOrApiKey`, `optionalAuth` (NOT `src/lib/auth`) |
+| [src/proxy.ts](src/proxy.ts)                       | Next.js 16 middleware replacement — JWT guard for admin routes            |
+| [src/components/shared/](src/components/shared/)   | Components shared across public + admin (e.g. `ThemeToggle`)              |
+| [src/components/ui/](src/components/ui/)           | shadcn primitives (use `npx shadcn add`, don't hand-edit)                 |
+| [src/lib/data/](src/lib/data/)                     | Server-side query layer + canonical types                                 |
+| [src/lib/validations/](src/lib/validations/)       | Zod schemas (one file per entity)                                         |
+| [src/lib/errors.ts](src/lib/errors.ts)             | `ApiError` + `withErrorHandler`                                           |
+| [src/lib/prismaClient.ts](src/lib/prismaClient.ts) | Singleton Prisma client (Neon adapter)                                    |
 
-Scoped instructions: [src/AGENTS.md](src/AGENTS.md), [src/app/api/AGENTS.md](src/app/api/AGENTS.md), [prisma/AGENTS.md](prisma/AGENTS.md).
+Scoped instructions currently live in [src/CLAUDE.md](src/CLAUDE.md), [src/app/api/CLAUDE.md](src/app/api/CLAUDE.md), and [prisma/CLAUDE.md](prisma/CLAUDE.md).
 
 ## Request Routing
 
@@ -124,28 +124,28 @@ After UI changes, agents must verify visually using **Playwright MCP** (`mcp__pl
 | 3    | `browser_take_screenshot`  | Visual verification             |
 | 4    | `browser_console_messages` | Check for runtime errors        |
 
-**Do not use Chrome MCP** (`mcp__Claude_in_Chrome__*`) for agent verification — Playwright MCP is headless, reliable, and requires no external browser window. Chrome MCP is available for manual user-driven sessions only.
+**Do not use Chrome MCP** for agent verification — Playwright MCP is headless, reliable, and requires no external browser window. Chrome MCP is available for manual user-driven sessions only.
 
 ## Plugins
 
-Three plugins extend Codex's core capabilities:
+Three plugins extend the backup Codex workflow and mirror the Claude Code tooling where possible:
 
-| Plugin                                        | Purpose                                                                                           |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Plugin                                       | Purpose                                                                                           |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------- |
 | **skill-creator** (Codex-plugins-official)   | Create, eval, improve, and benchmark skills. Use to iterate on existing project skills with data. |
-| **context-mode** (mksglu, v1.0.162)           | Sandboxes tool output for ~98% context window savings. SQLite session tracking + lifecycle hooks. |
+| **context-mode** (mksglu, v1.0.162)          | Sandboxes tool output for ~98% context window savings. SQLite session tracking + lifecycle hooks. |
 | **frontend-design** (Codex-plugins-official) | Production-grade UI design with distinctive aesthetics. Listed above under UI Skills.             |
 
 For multi-domain requests (3+ areas), follow the parallel fan-out pattern in Request Routing — no orchestrator agent needed.
 
-## Critical Rules (universal — domain-specific rules live in [.Codex/rules/](.Codex/rules/))
+## Critical Rules (universal — domain-specific rules live in [.claude/rules/](.claude/rules/))
 
-1. **Auth import is `@/app/api/auth`** — `requireAuth` for protected routes, `optionalAuth` when behavior differs by login state.
+1. **Auth import is `@/app/api/auth`** — `requireAuthOrApiKey(request)` for CMS/API-key routes, `requireAuth` for browser-admin-only routes, `optionalAuth` when behavior differs by login state.
 2. **Use the singleton Prisma client** from `@/lib/prismaClient`. Never instantiate `PrismaClient` directly.
 3. **Types come from [src/lib/data/types.ts](src/lib/data/types.ts).** Do NOT add new files under `src/types/` — that directory is being phased out.
 4. **Cookies are HTTP-only, Secure, SameSite=Lax.** Tokens never touch `localStorage`.
 
-Domain rules (Zod validation, `withErrorHandler`, ISR/client split, image pipeline, forms, data layer) are enforced by pattern-matched rule files in [.Codex/rules/](.Codex/rules/) — they load automatically when you touch matching files.
+Domain rules (Zod validation, `withErrorHandler`, ISR/client split, image pipeline, forms, data layer) are enforced by the rule files in [.claude/rules/](.claude/rules/). Read the matching rule file before editing those areas.
 
 ## Common Mistakes (this project specifically)
 
@@ -163,15 +163,16 @@ Domain rules (Zod validation, `withErrorHandler`, ISR/client split, image pipeli
 
 - **context7** — Live docs for Next.js 16, Prisma 7, TailwindCSS 4. IMPORTANT: always consult before assuming post-cutoff library APIs.
 - **aws-docs** — AWS service documentation. Use for Amplify, S3, SES, Cognito behavior questions before web search.
-- **aws-api** — AWS API access for deploy verification and infra state checks. See [.Codex/docs/infrastructure.md](.Codex/docs/infrastructure.md).
+- **aws-api** — AWS API access for deploy verification and infra state checks. See [.claude/docs/infrastructure.md](.claude/docs/infrastructure.md).
 - **prisma-local** — Migration status, schema management. Run `migrate-status` before `migrate dev`. NEVER run `migrate-reset` without user confirmation.
 - **playwright** — Browser automation for visual verification at `http://localhost:3000`.
 - **github** — GitHub API for PR/issue management, code search.
+- **portfolio** — Project-local MCP server launched with `npx tsx --env-file=.env mcp/portfolio-server/src/index.ts`.
 - **sentry** (`mcp__sentry__*`) — Query Sentry errors, issues, and performance data from Codex. Added via `Codex mcp add --transport http sentry https://mcp.sentry.dev/mcp`.
 
 ## Available Agents
 
-Four agents in [.Codex/agents/](.Codex/agents/):
+Four Codex agent configs in [.codex/agents/](.codex/agents/):
 
 | Agent                 | Model  | Purpose                                               |
 | --------------------- | ------ | ----------------------------------------------------- |
@@ -182,9 +183,9 @@ Four agents in [.Codex/agents/](.Codex/agents/):
 
 See Request Routing above for when to spawn each. Built-in subagents (`Explore`/haiku, `Plan`/sonnet) don't need definitions.
 
-## Codex Hooks
+## Codex Backup Hooks
 
-Hooks are configured in `.Codex/settings.json` — read it for current behavior. Key gates: branch guard blocks edits on `main`/`develop`, type-check gates commits, Prettier auto-formats after edits.
+Codex backup hooks are configured in [.codex/hooks.json](.codex/hooks.json) with scripts in [.codex/hooks/](.codex/hooks/). Claude Code remains the primary workflow and uses [.claude/settings.json](.claude/settings.json) with scripts in [.claude/hooks/](.claude/hooks/). Key gates: branch guard blocks edits on `main`/`develop`, type-check gates commits, Prettier auto-formats after edits.
 
 ## Git Commit Style
 
@@ -195,7 +196,7 @@ Hooks are configured in `.Codex/settings.json` — read it for current behavior.
 
 ## Environment Setup
 
-Local dev needs a `.env` (not `.env.example` — it has drift; see [.Codex/docs/infrastructure.md](.Codex/docs/infrastructure.md) §Environment Variables). Production env lives in Amplify Console and is materialized into `.env.production` at build time by [amplify.yml](amplify.yml).
+Local dev needs a `.env` (not `.env.example` — it has drift; see [.claude/docs/infrastructure.md](.claude/docs/infrastructure.md) §Environment Variables). Production env lives in Amplify Console and is materialized into `.env.production` at build time by [amplify.yml](amplify.yml).
 
 ## Compaction
 

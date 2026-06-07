@@ -26,20 +26,20 @@ Tests use **Vitest** with **@testing-library/react**. See [.claude/rules/tests.m
 
 ## Architecture
 
-| Path                                               | Purpose                                                        |
-| -------------------------------------------------- | -------------------------------------------------------------- |
-| [src/app/(public)/](<src/app/(public)/>)           | Public site (ISR, Server Components by default)                |
-| [src/app/(admin)/admin/](<src/app/(admin)/admin/>) | Admin CMS — login + auth-guarded shell                         |
-| [src/app/api/auth.ts](src/app/api/auth.ts)         | `requireAuth` / `optionalAuth` (NOT `src/lib/auth`)            |
-| [src/proxy.ts](src/proxy.ts)                       | Next.js 16 middleware replacement — JWT guard for admin routes |
-| [src/components/shared/](src/components/shared/)   | Components shared across public + admin (e.g. `ThemeToggle`)   |
-| [src/components/ui/](src/components/ui/)           | shadcn primitives (use `npx shadcn add`, don't hand-edit)      |
-| [src/lib/data/](src/lib/data/)                     | Server-side query layer + canonical types                      |
-| [src/lib/validations/](src/lib/validations/)       | Zod schemas (one file per entity)                              |
-| [src/lib/errors.ts](src/lib/errors.ts)             | `ApiError` + `withErrorHandler`                                |
-| [src/lib/prismaClient.ts](src/lib/prismaClient.ts) | Singleton Prisma client (Neon adapter)                         |
+| Path                                               | Purpose                                                                   |
+| -------------------------------------------------- | ------------------------------------------------------------------------- |
+| [src/app/(public)/](<src/app/(public)/>)           | Public site (ISR, Server Components by default)                           |
+| [src/app/(admin)/admin/](<src/app/(admin)/admin/>) | Admin CMS — login + auth-guarded shell                                    |
+| [src/app/api/auth.ts](src/app/api/auth.ts)         | `requireAuth`, `requireAuthOrApiKey`, `optionalAuth` (NOT `src/lib/auth`) |
+| [src/proxy.ts](src/proxy.ts)                       | Next.js 16 middleware replacement — JWT guard for admin routes            |
+| [src/components/shared/](src/components/shared/)   | Components shared across public + admin (e.g. `ThemeToggle`)              |
+| [src/components/ui/](src/components/ui/)           | shadcn primitives (use `npx shadcn add`, don't hand-edit)                 |
+| [src/lib/data/](src/lib/data/)                     | Server-side query layer + canonical types                                 |
+| [src/lib/validations/](src/lib/validations/)       | Zod schemas (one file per entity)                                         |
+| [src/lib/errors.ts](src/lib/errors.ts)             | `ApiError` + `withErrorHandler`                                           |
+| [src/lib/prismaClient.ts](src/lib/prismaClient.ts) | Singleton Prisma client (Neon adapter)                                    |
 
-Scoped instructions: [src/CLAUDE.md](src/CLAUDE.md), [src/app/api/CLAUDE.md](src/app/api/CLAUDE.md), [prisma/CLAUDE.md](prisma/CLAUDE.md).
+Scoped instructions: [src/CLAUDE.md](src/CLAUDE.md), [src/app/api/CLAUDE.md](src/app/api/CLAUDE.md), [prisma/CLAUDE.md](prisma/CLAUDE.md). [AGENTS.md](AGENTS.md) mirrors this guidance for Codex backup sessions.
 
 ## Request Routing
 
@@ -124,23 +124,23 @@ After UI changes, agents must verify visually using **Playwright MCP** (`mcp__pl
 | 3    | `browser_take_screenshot`  | Visual verification             |
 | 4    | `browser_console_messages` | Check for runtime errors        |
 
-**Do not use Chrome MCP** (`mcp__Claude_in_Chrome__*`) for agent verification — Playwright MCP is headless, reliable, and requires no external browser window. Chrome MCP is available for manual user-driven sessions only.
+**Do not use Chrome MCP** for agent verification — Playwright MCP is headless, reliable, and requires no external browser window. Chrome MCP is available for manual user-driven sessions only.
 
 ## Plugins
 
-Three plugins extend Claude Code's core capabilities:
+Three plugins extend the Claude Code and backup-agent tooling:
 
-| Plugin                                        | Purpose                                                                                           |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| **skill-creator** (claude-plugins-official)   | Create, eval, improve, and benchmark skills. Use to iterate on existing project skills with data. |
-| **context-mode** (mksglu, v1.0.162)           | Sandboxes tool output for ~98% context window savings. SQLite session tracking + lifecycle hooks. |
-| **frontend-design** (claude-plugins-official) | Production-grade UI design with distinctive aesthetics. Listed above under UI Skills.             |
+| Plugin                              | Purpose                                                                                           |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **skill-creator**                   | Create, eval, improve, and benchmark skills. Use to iterate on existing project skills with data. |
+| **context-mode** (mksglu, v1.0.162) | Sandboxes tool output for ~98% context window savings. SQLite session tracking + lifecycle hooks. |
+| **frontend-design**                 | Production-grade UI design with distinctive aesthetics. Listed above under UI Skills.             |
 
 For multi-domain requests (3+ areas), follow the parallel fan-out pattern in Request Routing — no orchestrator agent needed.
 
 ## Critical Rules (universal — domain-specific rules live in [.claude/rules/](.claude/rules/))
 
-1. **Auth import is `@/app/api/auth`** — `requireAuth` for protected routes, `optionalAuth` when behavior differs by login state.
+1. **Auth import is `@/app/api/auth`** — `requireAuthOrApiKey(request)` for CMS/API-key routes, `requireAuth` for browser-admin-only routes, `optionalAuth` when behavior differs by login state.
 2. **Use the singleton Prisma client** from `@/lib/prismaClient`. Never instantiate `PrismaClient` directly.
 3. **Types come from [src/lib/data/types.ts](src/lib/data/types.ts).** Do NOT add new files under `src/types/` — that directory is being phased out.
 4. **Cookies are HTTP-only, Secure, SameSite=Lax.** Tokens never touch `localStorage`.
@@ -167,11 +167,12 @@ Domain rules (Zod validation, `withErrorHandler`, ISR/client split, image pipeli
 - **prisma-local** — Migration status, schema management. Run `migrate-status` before `migrate dev`. NEVER run `migrate-reset` without user confirmation.
 - **playwright** — Browser automation for visual verification at `http://localhost:3000`.
 - **github** — GitHub API for PR/issue management, code search.
-- **sentry** (`mcp__sentry__*`) — Query Sentry errors, issues, and performance data from Claude Code. Added via `claude mcp add --transport http sentry https://mcp.sentry.dev/mcp`.
+- **portfolio** — Project-local MCP server launched with `npx tsx --env-file=.env mcp/portfolio-server/src/index.ts`.
+- **sentry** (`mcp__sentry__*`) — Query Sentry errors, issues, and performance data from Claude Code and backup-agent sessions. Added via `claude mcp add --transport http sentry https://mcp.sentry.dev/mcp`; Codex backup config also lists it in [.codex/config.toml](.codex/config.toml).
 
 ## Available Agents
 
-Four agents in [.claude/agents/](.claude/agents/):
+Four primary Claude Code agents in [.claude/agents/](.claude/agents/), mirrored for Codex backup sessions in [.codex/agents/](.codex/agents/):
 
 | Agent                 | Model  | Purpose                                               |
 | --------------------- | ------ | ----------------------------------------------------- |
@@ -182,15 +183,15 @@ Four agents in [.claude/agents/](.claude/agents/):
 
 See Request Routing above for when to spawn each. Built-in subagents (`Explore`/haiku, `Plan`/sonnet) don't need definitions.
 
-## Claude Hooks
+## Hooks
 
-Hooks are configured in `.claude/settings.json` — read it for current behavior. Key gates: branch guard blocks edits on `main`/`develop`, type-check gates commits, Prettier auto-formats after edits.
+Claude Code hooks are configured in [.claude/settings.json](.claude/settings.json) with scripts in [.claude/hooks/](.claude/hooks/). Codex backup hooks are mirrored in [.codex/hooks.json](.codex/hooks.json). Key gates: branch guard blocks edits on `main`/`develop`, type-check gates commits, and Prettier auto-formats after edits.
 
 ## Git Commit Style
 
 - **Subject line only.** Use `git commit -m "<subject>"` — no body, no extended description. The diff already shows what changed; the subject says why at a glance.
 - **No heredoc messages.** Don't write `git commit -m "$(cat <<'EOF' ... EOF)"`. Single-line `-m` only.
-- **No `Co-Authored-By` trailer.** Don't append `Co-Authored-By: Claude ...` or any other Claude attribution. The git author already records who ran the commit.
+- **No `Co-Authored-By` trailer.** Don't append `Co-Authored-By: Claude ...`, `Co-Authored-By: Codex ...`, or any other agent attribution. The git author already records who ran the commit.
 - Subject format: `<type>: <short imperative>` matching existing log style (`docs:`, `test:`, `setup:`, `fix:`, `feat:`).
 
 ## Environment Setup

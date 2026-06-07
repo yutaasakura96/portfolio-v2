@@ -6,7 +6,7 @@ This utility provides server-side markdown to HTML conversion with enhanced feat
 
 - ✅ **GitHub Flavored Markdown (GFM)**: Tables, strikethrough, task lists, autolinks
 - ✅ **Syntax Highlighting**: Automatic code block highlighting with `highlight.js`
-- ✅ **Auto-linked Headings**: Headings get IDs and clickable anchor links
+- ✅ **Heading IDs**: Headings get stable IDs via `rehype-slug`
 - ✅ **XSS Protection**: `allowDangerousHtml: false` prevents injection attacks
 - ✅ **Error Handling**: Graceful error handling with helpful messages
 
@@ -16,7 +16,7 @@ All required dependencies are already installed:
 
 ```bash
 npm install unified remark-parse remark-gfm remark-rehype
-npm install rehype-slug rehype-autolink-headings rehype-highlight rehype-stringify
+npm install rehype-sanitize rehype-slug rehype-highlight rehype-stringify
 npm install highlight.js
 ```
 
@@ -39,20 +39,27 @@ async function MyComponent() {
 
 ```typescript
 // src/app/api/projects/[id]/route.ts
+import { ApiError, ErrorCodes, withErrorHandler } from "@/lib/errors";
 import { markdownToHtml } from "@/lib/markdown";
+import { prisma } from "@/lib/prismaClient";
+import { NextRequest } from "next/server";
 
-export const GET = async (req, { params }) => {
-  const project = await prisma.project.findUnique({
-    where: { id: params.id },
-  });
+export const GET = withErrorHandler(
+  async (_request: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
+    const { id } = await params;
+    const project = await prisma.project.findUnique({
+      where: { id },
+    });
 
-  const descriptionHtml = await markdownToHtml(project.description);
+    if (!project) {
+      throw new ApiError("Project not found", 404, ErrorCodes.NOT_FOUND);
+    }
 
-  return Response.json({
-    ...project,
-    descriptionHtml,
-  });
-};
+    const descriptionHtml = await markdownToHtml(project.description ?? "");
+
+    return Response.json({ data: { ...project, descriptionHtml } });
+  }
+);
 ```
 
 ### In Server Components (Blog Posts)
@@ -61,8 +68,9 @@ export const GET = async (req, { params }) => {
 // src/app/blog/[slug]/page.tsx
 import { markdownToHtml } from '@/lib/markdown';
 
-export default async function BlogPost({ params }) {
-  const post = await getBlogPost(params.slug);
+export default async function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const post = await getBlogPost(slug);
   const contentHtml = await markdownToHtml(post.content);
 
   return (
@@ -111,7 +119,7 @@ https://example.com becomes a clickable link
 
 ### Syntax Highlighting Theme
 
-The app uses `github-dark` theme from highlight.js (imported in `src/app/layout.tsx`).
+The blog detail route imports `github-dark` from highlight.js in `src/app/(public)/blog/[slug]/page.tsx`. Project detail pages use the same `markdownToHtml` pipeline but rely on their local prose styling.
 
 To change the theme, replace the import:
 
@@ -144,8 +152,8 @@ try {
 
 ## Security
 
-- **XSS Protection**: `allowDangerousHtml: false` prevents malicious HTML injection
-- **Safe by Default**: All HTML is escaped except for markdown-generated elements
+- **XSS Protection**: `allowDangerousHtml: false` prevents raw HTML injection, and `rehype-sanitize` strips unsafe generated attributes while allowing highlight.js code/span classes
+- **Safe by Default**: Raw HTML is escaped; only sanitized markdown-generated HTML is emitted
 - **No Script Execution**: User-provided markdown cannot execute JavaScript
 
 ## Performance Considerations
@@ -166,13 +174,13 @@ try {
 
 ### Syntax highlighting not working?
 
-- Ensure `highlight.js` CSS is imported in root layout
-- Check that code blocks have language specified: \`\`\`typescript
+- Ensure the relevant route imports a `highlight.js` CSS theme
+- Check that code blocks have language specified, for example: \`\`\`typescript
 
 ### Headings not getting IDs?
 
 - `rehype-slug` automatically adds IDs based on heading text
-- Links are automatically wrapped around headings by `rehype-autolink-headings`
+- Heading anchor links are not currently injected; add `rehype-autolink-headings` deliberately if clickable heading links become a product requirement
 
 ### Performance issues?
 
