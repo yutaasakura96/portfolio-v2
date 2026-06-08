@@ -21,6 +21,8 @@ echo "$changed" | grep -qE '^src/app/api/.*/route\.ts$' && areas+=("API routes")
 echo "$changed" | grep -qE '^src/app/.*/page\.tsx$' && areas+=("pages")
 echo "$changed" | grep -qE '^\.claude/agents/' && areas+=("agents")
 echo "$changed" | grep -qE '^\.claude/rules/' && areas+=("rules")
+echo "$changed" | grep -qE '^\.codex/agents/' && areas+=("codex agents")
+echo "$changed" | grep -qE '^\.codex/config\.toml$' && areas+=("codex config")
 
 # If nothing significant, stay silent
 [ ${#areas[@]} -eq 0 ] && exit 0
