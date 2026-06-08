@@ -181,18 +181,17 @@ export function HeroBlob() {
 
   return (
     <div ref={containerRef} className="size-full">
-      {visible && (
-        <WebGLErrorBoundary>
-          <Canvas
-            camera={{ position: [0, 0, 6.5], fov: 45 }}
-            dpr={[1, 1.5]}
-            gl={{ antialias: true, alpha: true, powerPreference: "low-power" }}
-            style={{ pointerEvents: "auto" }}
-          >
-            <Blob reducedMotion={reducedMotion} />
-          </Canvas>
-        </WebGLErrorBoundary>
-      )}
+      <WebGLErrorBoundary>
+        <Canvas
+          camera={{ position: [0, 0, 6.5], fov: 45 }}
+          dpr={[1, 1.5]}
+          gl={{ antialias: true, alpha: true, powerPreference: "low-power" }}
+          frameloop={visible ? "always" : "never"}
+          style={{ pointerEvents: "auto" }}
+        >
+          <Blob reducedMotion={reducedMotion} />
+        </Canvas>
+      </WebGLErrorBoundary>
     </div>
   );
 }
