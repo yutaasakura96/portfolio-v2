@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
     root: __dirname,
   },
   // Required for sharp to work in Next.js 15+ serverless/Amplify environments
-  serverExternalPackages: ["sharp"],
+  serverExternalPackages: ["sharp", "@neondatabase/serverless", "@prisma/adapter-neon"],
   experimental: {
     staleTimes: {
       dynamic: 0,

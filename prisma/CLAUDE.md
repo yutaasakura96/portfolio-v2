@@ -1,6 +1,6 @@
 # Database Rules — `prisma/`
 
-Prisma 7.4.1 + Neon Postgres via `@prisma/adapter-neon`. Generated client output is `generated/prisma/`. Single schema file at [prisma/schema.prisma](prisma/schema.prisma).
+Prisma 7.4.1 + Neon Postgres via `@prisma/adapter-neon` (`PrismaNeonHttp` — HTTP mode, not WebSocket). Generated client output is `generated/prisma/`. Single schema file at [prisma/schema.prisma](prisma/schema.prisma). The adapter is configured with `fetchOptions: { priority: "high", keepalive: true }` in `src/lib/prismaClient.ts`. Both `@neondatabase/serverless` and `@prisma/adapter-neon` must stay in `serverExternalPackages` in `next.config.ts` to avoid Lambda bundling issues.
 
 ## Model Naming Conventions
 

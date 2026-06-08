@@ -10,7 +10,7 @@ Pattern: src/lib/data/\*_/_.ts
 - `types.ts` re-exports/derives from Prisma generated types (`generated/prisma/client`). Public-facing types should EXCLUDE admin fields (e.g., `DRAFT` posts) — narrow with TypeScript `Pick`/`Omit` or define a curated subset.
 - Naming: `getPublicProjects()`, `getProjectBySlug(slug)`, `getFeaturedProjects()` — prefix with `get`, return-shape implied by the entity name.
 - For list queries that take filters, accept a single options object with named keys, never positional args.
-- Wrap Prisma calls in `try/catch` and `console.error` on failure. Returning `null` is OK for SSR; throwing breaks ISR generation.
+- Wrap Prisma calls in `withRetry()` (from `@/lib/prismaClient`) inside a `try/catch`, and `console.error` on failure. Returning `null` is OK for SSR; throwing breaks ISR generation. `withRetry` handles transient Neon HTTP failures (fetch failed, connection terminated) with exponential backoff.
 - Do NOT export mutation functions from this layer — mutations belong in API routes (admin) or seed scripts. Keep this read-only.
 - When adding a new field to a public type:
   1. Update Prisma schema + migration (see `.claude/rules/prisma-schema.md`).
