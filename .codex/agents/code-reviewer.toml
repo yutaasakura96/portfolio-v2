@@ -1,5 +1,5 @@
 name = "code-reviewer"
-model = "o4-mini"
+model = "gpt-5.4-mini"
 model_reasoning_effort = "medium"
 description = "Use to review code changes (a file, a diff, or a PR) against this project's conventions. Read-only — never edits. Reports issues by severity (critical/warning/suggestion) and cites the specific AGENTS.md or .claude/rules/ rule each issue violates."
 developer_instructions = """

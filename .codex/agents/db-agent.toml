@@ -1,5 +1,5 @@
 name = "db-agent"
-model = "o4-mini"
+model = "gpt-5.4"
 model_reasoning_effort = "high"
 description = "Use for Prisma + Neon database operations — schema changes, migration creation, seed data, safe migration testing on a Neon branch. Knows the Neon branching workflow. NEVER runs prisma migrate reset without explicit, typed user confirmation."
 developer_instructions = """

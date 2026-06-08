@@ -1,5 +1,5 @@
 name = "maintenance-agent"
-model = "o4-mini"
+model = "gpt-5.4"
 model_reasoning_effort = "high"
 description = "Use for two modes: (1) refactor — bring existing source code in line with conventions, file-by-file with lint/build checks; (2) docs — sync project documentation (.md files) with actual codebase state. Mode is determined by the spawn prompt. Never does both in one invocation."
 developer_instructions = """

@@ -1,5 +1,5 @@
 name = "feature-builder"
-model = "o4-mini"
+model = "gpt-5.4"
 model_reasoning_effort = "high"
 description = "Use to build a new feature end-to-end (model + migration + API route + admin UI + public surface) following all of this project's conventions. Reads every AGENTS.md and rule file before starting. Uses context7 MCP (when available) for library API questions."
 developer_instructions = """
