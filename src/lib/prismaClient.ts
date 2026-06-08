@@ -1,8 +1,8 @@
-import { PrismaNeon } from "@prisma/adapter-neon";
+import { PrismaNeonHttp } from "@prisma/adapter-neon";
 import { PrismaClient, Prisma, ProjectStatus } from "../../generated/prisma/client";
 
-const adapter = new PrismaNeon({
-  connectionString: process.env.DATABASE_URL!,
+const adapter = new PrismaNeonHttp(process.env.DATABASE_URL!, {
+  fetchOptions: { cache: "no-store" },
 });
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
