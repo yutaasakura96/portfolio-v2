@@ -77,6 +77,8 @@ If the user says "orchestrate" or "full pipeline", follow this pattern.
 
 ### Model selection
 
+Claude Code uses Anthropic model families for its built-in agent routing. Codex custom agents do **not** use this table; they use the explicit OpenAI model IDs pinned in `.codex/agents/*.toml`.
+
 | Agent              | Default | Override to opus when                               |
 | ------------------ | ------- | --------------------------------------------------- |
 | db-agent           | sonnet  | Tricky migration (cross-table backfill, custom SQL) |
@@ -128,7 +130,7 @@ After UI changes, agents must verify visually using **Playwright MCP** (`mcp__pl
 
 ## Plugins
 
-Three plugins extend the Claude Code and backup-agent tooling:
+Three plugins extend the Claude Code and Codex backup tooling:
 
 | Plugin                              | Purpose                                                                                           |
 | ----------------------------------- | ------------------------------------------------------------------------------------------------- |
@@ -170,20 +172,20 @@ Domain rules (Zod validation, `withErrorHandler`, ISR/client split, image pipeli
 - **playwright** — Browser automation for visual verification at `http://localhost:3000`.
 - **github** — GitHub API for PR/issue management, code search.
 - **portfolio** (`mcp__portfolio__*`) — 43-tool MCP server for portfolio content management (projects, experience, education, skills, certifications, blog, messages, site content, dashboard). Stdio transport, API-key auth via Bearer token. Call `get-dashboard-stats` for overview; use `list-*` before `update-*`/`delete-*`. Messages are read/archive only (no delete). Setup: `npm run mcp:setup`. See [mcp/portfolio-server/README.md](mcp/portfolio-server/README.md).
-- **sentry** (`mcp__sentry__*`) — Query Sentry errors, issues, and performance data from Claude Code and backup-agent sessions. Added via `claude mcp add --transport http sentry https://mcp.sentry.dev/mcp`; Codex backup config also lists it in [.codex/config.toml](.codex/config.toml).
+- **sentry** (`mcp__sentry__*`) — Query Sentry errors, issues, and performance data from Claude Code and Codex backup sessions. Added via `claude mcp add --transport http sentry https://mcp.sentry.dev/mcp`; Codex backup config also lists it in [.codex/config.toml](.codex/config.toml).
 
 ## Available Agents
 
-Four primary Claude Code agents in [.claude/agents/](.claude/agents/), mirrored for Codex backup sessions in [.codex/agents/](.codex/agents/):
+Four primary Claude Code agents in [.claude/agents/](.claude/agents/), mirrored for Codex custom agents in [.codex/agents/](.codex/agents/):
 
-| Agent                 | Model  | Purpose                                               |
-| --------------------- | ------ | ----------------------------------------------------- |
-| **db-agent**          | sonnet | Schema, migrations, seed, Neon branching              |
-| **feature-builder**   | sonnet | End-to-end feature (model + migration + API + UI)     |
-| **code-reviewer**     | haiku  | Read-only review + cross-domain integration checks    |
-| **maintenance-agent** | sonnet | Refactoring (mode: refactor) or doc sync (mode: docs) |
+| Agent                 | Claude Code model | Codex model                                          | Purpose                                               |
+| --------------------- | ----------------- | ---------------------------------------------------- | ----------------------------------------------------- |
+| **db-agent**          | sonnet            | `gpt-5.4` (`model_reasoning_effort = "high"`)        | Schema, migrations, seed, Neon branching              |
+| **feature-builder**   | sonnet            | `gpt-5.4` (`model_reasoning_effort = "high"`)        | End-to-end feature (model + migration + API + UI)     |
+| **code-reviewer**     | haiku             | `gpt-5.4-mini` (`model_reasoning_effort = "medium"`) | Read-only review + cross-domain integration checks    |
+| **maintenance-agent** | sonnet            | `gpt-5.4` (`model_reasoning_effort = "high"`)        | Refactoring (mode: refactor) or doc sync (mode: docs) |
 
-See Request Routing above for when to spawn each. Built-in subagents (`Explore`/haiku, `Plan`/sonnet) don't need definitions.
+See Request Routing above for when to spawn each. The Claude-side `sonnet` / `haiku` labels do not apply inside Codex; Codex uses the TOML-pinned OpenAI models above. Built-in subagents (`Explore`/haiku, `Plan`/sonnet) are Claude Code-only.
 
 ## Hooks
 
