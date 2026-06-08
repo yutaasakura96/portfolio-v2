@@ -2,7 +2,7 @@
 
 The standard process for building new features. Paste [session-starter-template.md](./session-starter-template.md) at the start of every feature session.
 
-Code templates for pages, API routes, components, and validation schemas live in [feature-templates.md](./feature-templates.md). Agent orchestration patterns live in [the orchestrator agent](../agents/orchestrator.md).
+Code templates for pages, API routes, components, and validation schemas live in [feature-templates.md](./feature-templates.md). Agent orchestration patterns live in [CLAUDE.md](../../CLAUDE.md) Request Routing.
 
 ---
 
@@ -35,17 +35,7 @@ Trivial additive schema changes (new optional column on a small table) can skip 
 
 ### Available agents
 
-Spawn an agent when the task matches its description — not for every step.
-
-| Agent                 | When to use                                                                                                       |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `orchestrator`        | Requests touching 3+ domains (schema + API + UI) or when the user says "orchestrate" / "full pipeline".           |
-| `feature-builder`     | Net-new end-to-end feature (model + migration + API route + admin UI + public surface).                           |
-| `db-agent`            | Schema changes, migrations, seed updates. Knows the Neon branching workflow.                                      |
-| `synthesizer`         | Cross-domain integration check after multi-agent builds. Spawned by orchestrator in Patterns C/D.                 |
-| `code-reviewer`       | Read-only review before opening the PR. Cites the specific rule each issue violates.                              |
-| `refactor-agent`      | Bringing existing code in line with conventions. File-by-file. Logs to `refactor-log.md`.                         |
-| `documentation-agent` | Update project docs (CLAUDE.md, roadmap, rules) after significant changes. Run when post-commit hook suggests it. |
+See [CLAUDE.md](../../CLAUDE.md) Request Routing for the full agent roster, spawn criteria, and model selection. Spawn an agent when the task matches its description — not for every step.
 
 ### Skills
 
@@ -283,38 +273,10 @@ Then:
 
 ---
 
-## Agent & Subagent Orchestration
+## Agent Orchestration
 
-See [the orchestrator agent](../agents/orchestrator.md) for the full playbook (patterns A/B/C/D, spawn rules, model selection). Key points:
+See [CLAUDE.md](../../CLAUDE.md) Request Routing for agent roster, model selection, and the parallel fan-out pattern for multi-domain tasks. Key points:
 
-### Built-in subagents
-
-| Subagent          | When to use                                                                               |
-| ----------------- | ----------------------------------------------------------------------------------------- |
-| `Explore`         | Read-only codebase search. Cheap; spawn 2-3 in parallel. Default model: `haiku`.          |
-| `Plan`            | Designing a non-trivial change before edits. Default model: `sonnet`.                     |
-| `general-purpose` | Multi-step research or execution when no specialized agent fits. Default model: `sonnet`. |
-
-### Models
-
-| Agent / subagent  | Default model | Override to `opus` when                                         |
-| ----------------- | ------------- | --------------------------------------------------------------- |
-| `orchestrator`    | `sonnet`      | Novel architectural decisions across many domains.              |
-| `feature-builder` | `sonnet`      | High-stakes feature where one-pass quality matters.             |
-| `db-agent`        | `sonnet`      | Unusually tricky migration (cross-table backfill, custom SQL).  |
-| `code-reviewer`   | `haiku`       | Security-sensitive diff (auth, payment, PII handling).          |
-| `refactor-agent`  | `sonnet`      | Bulk rewrite touching cross-cutting abstractions.               |
-| `Explore`         | `haiku`       | Search query requires synthesizing across many unrelated files. |
-| `Plan`            | `sonnet`      | Plan needs to weigh several architectural alternatives.         |
-| `general-purpose` | `sonnet`      | Multi-step task with unusual reasoning load.                    |
-
-### When NOT to spawn
-
-- Single-file edits where you already know what to change.
-- Tasks already in progress in the main session.
-- Tasks small enough that cold-context briefing costs more than the work.
-- "Just to be safe" reviews of trivial diffs.
-
-### Verify, don't trust
-
-An agent's summary describes what it _intended_ to do. Check the actual diff before reporting work as done.
+- **Built-in subagents**: `Explore` (haiku, read-only search), `Plan` (sonnet, design), `general-purpose` (sonnet, multi-step).
+- **When NOT to spawn**: single-file edits, tasks already in progress, tasks where cold-context briefing costs more than the work.
+- **Verify, don't trust**: an agent's summary describes what it _intended_ to do. Check the actual diff before reporting work as done.

@@ -1,4 +1,4 @@
-import { requireAuth } from "@/app/api/auth";
+import { requireAuthOrApiKey } from "@/app/api/auth";
 import { withErrorHandler } from "@/lib/errors";
 import { prisma } from "@/lib/prismaClient";
 import { siteSettingsUpdateSchema } from "@/lib/validations/settings";
@@ -31,7 +31,7 @@ export const GET = withErrorHandler(async () => {
 
 // PUT /api/settings — Auth required
 export const PUT = withErrorHandler(async (request: NextRequest) => {
-  await requireAuth();
+  await requireAuthOrApiKey(request);
 
   const body = await request.json();
   const parsed = siteSettingsUpdateSchema.safeParse(body);

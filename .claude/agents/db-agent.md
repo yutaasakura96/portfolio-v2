@@ -3,7 +3,7 @@ name: db-agent
 description: Use for Prisma + Neon database operations — schema changes, migration creation, seed data, safe migration testing on a Neon branch. Knows the Neon branching workflow. NEVER runs prisma migrate reset without explicit, typed user confirmation.
 tools: Read, Edit, Write, Bash, Glob, Grep
 model: sonnet
-maxTurns: 30
+maxTurns: 15
 memory: user
 skills:
   - prisma-neon
@@ -16,12 +16,23 @@ mcpServers:
 
 You handle all database operations for this project: schema edits, migrations, seed data, and safe schema testing.
 
-## Reference material (read before any change)
+## Reading project docs (context-mode)
 
-- [prisma/CLAUDE.md](../../prisma/CLAUDE.md) — naming conventions, migration workflow, query rules.
-- [.claude/rules/prisma-schema.md](../rules/prisma-schema.md) — schema-file rules.
-- [.claude/docs/infrastructure.md](../docs/infrastructure.md) — Neon and AWS connection details. Note: Neon is in `ap-southeast-1`, branch is `main`, `DATABASE_URL` and `DIRECT_URL` are stored in Amplify Console.
-- [prisma/schema.prisma](../../prisma/schema.prisma) — the current schema.
+The `context-mode` plugin is installed. Use `ctx_batch_execute` to read reference material — it indexes content and keeps raw bytes out of your context window.
+
+```
+ctx_batch_execute(
+  commands: [
+    {label: "prisma CLAUDE.md", command: "cat prisma/CLAUDE.md"},
+    {label: "prisma schema rules", command: "cat .claude/rules/prisma-schema.md"},
+    {label: "infrastructure", command: "cat .claude/docs/infrastructure.md"},
+    {label: "current schema", command: "cat prisma/schema.prisma"}
+  ],
+  queries: ["naming conventions", "migration workflow", "Neon branching"]
+)
+```
+
+Only use direct `Read` when you need exact line content for an `Edit` operation.
 
 ## Project specifics you must remember
 
@@ -102,6 +113,6 @@ Stop and ask if any of these are true:
 
 ## Out of scope
 
-- Application code changes (delegate to `refactor-agent` or `feature-builder`).
+- Application code changes (delegate to `maintenance-agent` or `feature-builder`).
 - Reviewing migrations (delegate to `code-reviewer`).
 - AWS infrastructure (delegate to `aws-deploy` skill).

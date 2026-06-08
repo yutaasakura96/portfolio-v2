@@ -1,0 +1,53 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "'/Users/yutaasakura/Documents/GitHub/portfolio-v2/.codex/hooks/pre-edit-branch-guard.sh'",
+            "timeout": 5,
+            "statusMessage": "Checking branch..."
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "'/Users/yutaasakura/Documents/GitHub/portfolio-v2/.codex/hooks/pre-commit-gate.sh'",
+            "timeout": 30,
+            "statusMessage": "Running type-check before commit..."
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "'/Users/yutaasakura/Documents/GitHub/portfolio-v2/.codex/hooks/post-edit-format.sh'",
+            "timeout": 15,
+            "statusMessage": "Formatting..."
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "'/Users/yutaasakura/Documents/GitHub/portfolio-v2/.codex/hooks/post-commit-doc-reminder.sh'",
+            "timeout": 10,
+            "async": true,
+            "statusMessage": "Checking if docs need updating..."
+          }
+        ]
+      }
+    ]
+  }
+}

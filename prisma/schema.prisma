@@ -200,3 +200,14 @@ model SiteSettings {
   googleAnalyticsId String?  @db.VarChar(50)
   updatedAt         DateTime @updatedAt
 }
+
+// ═══ API KEY ═══
+model ApiKey {
+  id          String    @id @default(cuid())
+  keyHash     String    @unique @db.VarChar(64)
+  description String    @db.VarChar(200)
+  createdAt   DateTime  @default(now())
+  lastUsedAt  DateTime?
+
+  @@index([keyHash])
+}

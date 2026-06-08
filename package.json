@@ -16,7 +16,8 @@
     "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
     "prisma:format": "prisma format",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "mcp:setup": "tsx --env-file=.env scripts/mcp-setup.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

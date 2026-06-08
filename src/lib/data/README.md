@@ -4,7 +4,7 @@ Centralized data access layer for the portfolio application using Prisma ORM.
 
 ## Overview
 
-This module provides type-safe, server-side data fetching functions for all content types in the portfolio. All queries use Prisma directly (no API hop) and are optimized for server components and static site generation.
+This module provides type-safe, server-side data fetching functions for public portfolio content. All queries use Prisma directly (no API hop) and are optimized for server components, ISR, and static parameter generation.
 
 ## Architecture
 
@@ -21,7 +21,7 @@ src/lib/data/
 - ✅ **Type-Safe**: Full TypeScript support with Prisma-generated types
 - ✅ **Error Handling**: Graceful fallbacks for all queries
 - ✅ **Performance**: Field selection to minimize data transfer
-- ✅ **Security**: Only fetches published/visible content
+- ✅ **Security**: Only fetches published/visible content for public surfaces
 - ✅ **Server-Side**: Designed for React Server Components
 - ✅ **SSG Ready**: Functions for `generateStaticParams`
 
@@ -67,8 +67,9 @@ export async function generateStaticParams() {
   return projects.map((p) => ({ slug: p.slug }));
 }
 
-export default async function ProjectPage({ params }: { params: { slug: string } }) {
-  const project = await getProjectBySlug(params.slug);
+export default async function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const project = await getProjectBySlug(slug);
 
   if (!project) {
     notFound();
@@ -84,8 +85,9 @@ export default async function ProjectPage({ params }: { params: { slug: string }
 // app/projects/[slug]/page.tsx
 import { getProjectWithAdjacent } from "@/lib/data";
 
-export default async function ProjectPage({ params }: { params: { slug: string } }) {
-  const { project, prev, next } = await getProjectWithAdjacent(params.slug);
+export default async function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const { project, prev, next } = await getProjectWithAdjacent(slug);
 
   if (!project) {
     notFound();
@@ -310,6 +312,18 @@ const reactPosts = await getPostsByTag("react");
 
 ### About Page Content
 
+#### `getAboutPageIntro()`
+
+Fetches the about page intro singleton; public pages fall back to hardcoded copy if it returns `null`.
+
+**Returns:** `Promise<AboutPage | null>`
+
+**Example:**
+
+```typescript
+const intro = await getAboutPageIntro();
+```
+
 #### `getSkills()`
 
 Fetches all visible skills, ordered by display order.
@@ -333,6 +347,18 @@ Fetches skills grouped by category.
 ```typescript
 const skillGroups = await getSkillsByCategory();
 // { 'Frontend': [...], 'Backend': [...], 'DevOps': [...] }
+```
+
+#### `getSkillCategories()`
+
+Fetches skill category names, ordered by display order.
+
+**Returns:** `Promise<string[]>`
+
+**Example:**
+
+```typescript
+const categories = await getSkillCategories();
 ```
 
 #### `getExperiences()`
@@ -407,6 +433,11 @@ All functions include error handling and return safe defaults:
 - Functions returning objects return `null` on error
 - All errors are logged to console for debugging
 
+## Notes
+
+- Admin pages read through API routes and TanStack Query; do not add an admin query mirror under this directory.
+- Shared model and enum types are re-exported from `types.ts`, including `ProjectStatus`, `PostStatus`, and `ProficiencyLevel` from the generated Prisma client.
+
 **Example with null handling:**
 
 ```typescript
@@ -454,16 +485,13 @@ const [hero, projects, posts] = await Promise.all([
 
 ### Next.js Caching
 
-Leverage Next.js cache and revalidation:
+Public pages use ISR and route-level revalidation; prefer `revalidatePath(...)` from API mutations over adding ad-hoc cached wrappers around these helpers.
 
 ```typescript
-import { unstable_cache } from "next/cache";
+import { revalidatePath } from "next/cache";
 
-export const getCachedHero = unstable_cache(
-  async () => getHero(),
-  ["hero"],
-  { revalidate: 3600 } // 1 hour
-);
+revalidatePath("/");
+revalidatePath("/projects");
 ```
 
 ## Type Definitions

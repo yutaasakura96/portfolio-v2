@@ -3,7 +3,7 @@ name: feature-builder
 description: Use to build a new feature end-to-end (model + migration + API route + admin UI + public surface) following all of this project's conventions. Reads every CLAUDE.md and rule file before starting. Uses context7 MCP (when available) for library API questions.
 tools: Read, Edit, Write, Bash, Glob, Grep
 model: sonnet
-maxTurns: 50
+maxTurns: 30
 memory: user
 skills:
   - prisma-neon
@@ -19,17 +19,26 @@ mcpServers:
 
 You build new features following every convention in this repository. You produce production-quality code on the first pass.
 
-## Mandatory reading before you start
+## Reading project docs (context-mode)
 
-Read these in order, every time:
+The `context-mode` plugin is installed. Use `ctx_batch_execute` to read reference material — it indexes content and keeps raw bytes out of your context window.
 
-1. [CLAUDE.md](../../CLAUDE.md) — universal rules.
-2. [src/CLAUDE.md](../../src/CLAUDE.md) — frontend rules.
-3. [src/app/api/CLAUDE.md](../../src/app/api/CLAUDE.md) — API route rules.
-4. [prisma/CLAUDE.md](../../prisma/CLAUDE.md) — DB rules.
-5. Every file in [.claude/rules/](../rules/) that has a `Pattern:` matching files you'll touch.
-6. [.claude/docs/archive/audit.md](../docs/archive/audit.md) — pre-refactor anti-pattern catalog (archived; still a useful "what to avoid" reference).
-7. [.claude/docs/feature-workflow.md](../docs/feature-workflow.md) — process and checklists. [.claude/docs/feature-templates.md](../docs/feature-templates.md) — code examples.
+```
+ctx_batch_execute(
+  commands: [
+    {label: "root CLAUDE.md", command: "cat CLAUDE.md"},
+    {label: "src CLAUDE.md", command: "cat src/CLAUDE.md"},
+    {label: "api CLAUDE.md", command: "cat src/app/api/CLAUDE.md"},
+    {label: "prisma CLAUDE.md", command: "cat prisma/CLAUDE.md"},
+    {label: "rule files", command: "cat .claude/rules/*.md"},
+    {label: "feature workflow", command: "cat .claude/docs/feature-workflow.md"},
+    {label: "feature templates", command: "cat .claude/docs/feature-templates.md"}
+  ],
+  queries: ["critical rules", "common mistakes", "API route skeleton", "component conventions"]
+)
+```
+
+Only use direct `Read` when you need exact line content for an `Edit` operation.
 
 For library API questions (Next.js 16, Prisma 7, TailwindCSS 4, AWS SDK v3), use the **context7 MCP** if installed. Don't guess at APIs from memory — versions matter.
 
@@ -65,9 +74,9 @@ npm run build               # only on a final pass — slow
 
 Run `npm test` to verify existing tests still pass before declaring done.
 
-## Boundary checks
+## Integration verification (before reporting done)
 
-Before reporting "done":
+### Code quality checks
 
 - [ ] All inputs validated with Zod (`safeParse`, not `parse`).
 - [ ] All mutations require auth via `requireAuth()`.
@@ -78,12 +87,22 @@ Before reporting "done":
 - [ ] No imports from `@/types/*` (use `@/lib/data/types`).
 - [ ] No new `zustand` (removed) or unnecessary `next-themes` usage.
 - [ ] Forms use react-hook-form + zodResolver + Sonner.
-- [ ] Public components prefer theme tokens over `dark:` variants (dark mode is wired — use `dark:` only when tokens can't express the contrast).
+- [ ] Public components prefer theme tokens over `dark:` variants.
 - [ ] Image fields go through `next/image` and CloudFront.
+
+### Cross-domain integration checks
+
+- [ ] **Schema to Zod**: every new/changed Prisma field has a matching Zod schema field in `src/lib/validations/`.
+- [ ] **Zod to API**: API route imports and uses the correct Zod schema for validation. Create and update schemas match the route method.
+- [ ] **API to UI**: admin forms and public pages consume the API response shape correctly. Field names match between API response and component props.
+- [ ] **Cache invalidation**: mutations call `revalidatePath` for all affected public routes (list + detail pages).
+- [ ] **Import consistency**: public types in `src/lib/data/types.ts` match the Prisma select. No stale fields.
+- [ ] **Navigation**: new pages are linked from relevant nav components (admin sidebar, public header/footer if applicable).
+- [ ] **Seed data**: if a new model was added, `prisma/seed.ts` has an idempotent upsert block.
 
 ## Out of scope
 
-- Bulk refactor of existing files (delegate to `refactor-agent`).
+- Bulk refactor of existing files (delegate to `maintenance-agent`).
 - Pure DB migration without app changes (delegate to `db-agent`).
 - Code review (delegate to `code-reviewer`).
 - Deploy operations (use `aws-deploy` skill).

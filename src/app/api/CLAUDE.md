@@ -21,6 +21,9 @@ type ApiCollection<T> = {
   };
 };
 
+// Small unpaginated collections may return { data: T[]; meta: { total: number } }
+// when the route has no page/limit contract (for example skill categories).
+
 // Error (set automatically by withErrorHandler)
 type ApiErrorResponse = {
   error: {
@@ -39,12 +42,12 @@ Every route handler must:
 
 1. Be wrapped in `withErrorHandler`.
 2. Validate input with Zod via `safeParse` and throw `ApiError(..., 400, ErrorCodes.VALIDATION_ERROR, parsed.error.flatten())` on failure.
-3. Use `requireAuth()` for any mutation (POST/PUT/PATCH/DELETE) and for reads of non-public data.
+3. Use `requireAuth()` or `requireAuthOrApiKey(request)` for any mutation (POST/PUT/PATCH/DELETE) and for reads of non-public data.
 4. Return `Response.json({ data, meta? }, { status })`.
 5. Call `revalidatePath(...)` after mutations that affect public pages.
 
 ```ts
-import { requireAuth } from "@/app/api/auth";
+import { requireAuthOrApiKey } from "@/app/api/auth";
 import { ApiError, ErrorCodes, withErrorHandler } from "@/lib/errors";
 import { prisma } from "@/lib/prismaClient";
 import { someSchema } from "@/lib/validations/something";
@@ -52,7 +55,7 @@ import { revalidatePath } from "next/cache";
 import { NextRequest } from "next/server";
 
 export const POST = withErrorHandler(async (request: NextRequest) => {
-  await requireAuth();
+  await requireAuthOrApiKey(request);
 
   const body = await request.json();
   const parsed = someSchema.safeParse(body);
@@ -74,14 +77,15 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
 
 ## Authentication
 
-| Helper           | When                                                                                                                               |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `requireAuth()`  | Mutations and admin reads. Throws 401 if unauthenticated.                                                                          |
-| `optionalAuth()` | Endpoints that behave differently for logged-in vs anonymous (e.g. GET that exposes drafts to admins). Returns `AuthUser \| null`. |
+| Helper                     | When                                                                                                                               |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `requireAuth()`            | Browser-admin only reads/mutations where API keys are not accepted. Throws 401 if unauthenticated.                                 |
+| `requireAuthOrApiKey(req)` | Admin/API-key reads and mutations. Current entity CMS routes generally use this helper.                                            |
+| `optionalAuth()`           | Endpoints that behave differently for logged-in vs anonymous (e.g. GET that exposes drafts to admins). Returns `AuthUser \| null`. |
 
 Import from `@/app/api/auth`. Never re-implement JWT verification — it lives in [src/lib/aws/cognito.ts](src/lib/aws/cognito.ts).
 
-For routes that conditionally require auth based on query params (like `?status=DRAFT`), check the param first and call `requireAuth` only when needed (see [src/app/api/projects/route.ts:16-18](src/app/api/projects/route.ts#L16)).
+For routes that conditionally require auth based on query params (like `?status=DRAFT` or `visible=all`), check the param first and call `requireAuthOrApiKey(request)` only when needed.
 
 ## Input Validation
 
@@ -115,7 +119,7 @@ return Response.json({
 
 ## Query Param Parsing — Standard
 
-Use `request.nextUrl.searchParams`. Do not write `new URL(request.url).searchParams` (the blog route does, but `nextUrl` is the standard).
+Use `request.nextUrl.searchParams`. Do not write `new URL(request.url).searchParams`.
 
 ## Where-Clause Typing
 
@@ -152,14 +156,17 @@ After any mutation that affects a public page, call `revalidatePath` for every a
 
 ## Rate Limiting
 
-[src/lib/rate-limit.ts](src/lib/rate-limit.ts) is Upstash-backed (sliding window via `@upstash/ratelimit` on `@upstash/redis`). Public API: `rateLimit(key, limit, windowMs)` (async — `await` it) and `getClientIp(request)`. Returns `{ success, remaining, resetTime }`. Limiter instances are cached per `(limit, windowMs)` tuple, so calling from a hot path is fine. Fails open on Upstash errors (logs and allows the request) so a brief Redis outage can't take down public endpoints. Requires `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` (set in `.env` locally and wired through [amplify.yml](amplify.yml) for production). Used today by contact (5 req / 15 min per IP), upload (20 req / 1 min per IP), import (10 req / 1 min per IP), and export (30 req / 1 min per IP).
+[src/lib/rate-limit.ts](src/lib/rate-limit.ts) is Upstash-backed (sliding window via `@upstash/ratelimit` on `@upstash/redis`). Public API: `rateLimit(key, limit, windowMs)` (async — `await` it) and `getClientIp(request)`. Returns `{ success, remaining, resetTime }`. Limiter instances are cached per `(limit, windowMs)` tuple, so calling from a hot path is fine. Fails open on Upstash errors (logs and allows the request) so a brief Redis outage can't take down public endpoints. Requires `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` (set in `.env` locally and wired through [amplify.yml](amplify.yml) for production). Used today by contact (5 req / 15 min per IP), upload (20 req / 1 min per IP), per-entity import (10 req / 1 min per IP), unified import (5 req / 1 min per IP), and export (30 req / 1 min per IP).
 
 ## Public vs Admin Endpoints
 
 - **Public POST endpoints** (currently only contact): rate-limit, honeypot, no auth.
-- **All other mutations:** `requireAuth` first, then validate.
-- **Public GET endpoints:** no auth, but if any param can expose admin data (`?status=DRAFT`), gate that branch with `requireAuth`.
-- **`GET /api/admin/dashboard-stats`** — admin-only aggregate endpoint. Returns counts (projects, posts, messages, skills), published/draft breakdowns, certification expiry data, recent unread messages, merged recent activity (projects + posts sorted by `updatedAt`), and a content completeness checklist. Uses `requireAuth`, runs ~15 Prisma queries. Response shape: `{ data: DashboardStats }` (single resource envelope).
+- **All other mutations:** `requireAuth` or `requireAuthOrApiKey(request)` first, then validate.
+- **Public GET endpoints:** no auth, but if any param can expose admin data (`?status=DRAFT`, `visible=all`), gate that branch with `requireAuthOrApiKey(request)`.
+- **`GET /api/admin/dashboard-stats`** — admin-only aggregate endpoint. Returns counts (projects, posts, messages, skills), published/draft breakdowns, certification expiry data, recent unread messages, merged recent activity (projects + posts sorted by `updatedAt`), and a content completeness checklist. Uses `requireAuthOrApiKey`, runs ~15 Prisma queries. Response shape: `{ data: DashboardStats }` (single resource envelope).
+- **`/api/skills` and `/api/skill-categories`** — skills support `visible` filtering plus grouped responses; skill categories are a separate reorderable resource.
+- **`/api/upload`** — authenticated multipart upload endpoint for projects, blog, profile, logos, certifications, resume PDFs, and education documents. Images are processed by `src/lib/image-processor.ts`; files are stored in S3 and returned as CloudFront URLs.
+- **`/api/resume/download`** — public resume download endpoint.
 
 ## Import/Export Routes
 

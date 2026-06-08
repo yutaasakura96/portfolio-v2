@@ -26,35 +26,64 @@ Tests use **Vitest** with **@testing-library/react**. See [.claude/rules/tests.m
 
 ## Architecture
 
-| Path                                               | Purpose                                                        |
-| -------------------------------------------------- | -------------------------------------------------------------- |
-| [src/app/(public)/](<src/app/(public)/>)           | Public site (ISR, Server Components by default)                |
-| [src/app/(admin)/admin/](<src/app/(admin)/admin/>) | Admin CMS — login + auth-guarded shell                         |
-| [src/app/api/auth.ts](src/app/api/auth.ts)         | `requireAuth` / `optionalAuth` (NOT `src/lib/auth`)            |
-| [src/proxy.ts](src/proxy.ts)                       | Next.js 16 middleware replacement — JWT guard for admin routes |
-| [src/components/shared/](src/components/shared/)   | Components shared across public + admin (e.g. `ThemeToggle`)   |
-| [src/components/ui/](src/components/ui/)           | shadcn primitives (use `npx shadcn add`, don't hand-edit)      |
-| [src/lib/data/](src/lib/data/)                     | Server-side query layer + canonical types                      |
-| [src/lib/validations/](src/lib/validations/)       | Zod schemas (one file per entity)                              |
-| [src/lib/errors.ts](src/lib/errors.ts)             | `ApiError` + `withErrorHandler`                                |
-| [src/lib/prismaClient.ts](src/lib/prismaClient.ts) | Singleton Prisma client (Neon adapter)                         |
+| Path                                               | Purpose                                                                   |
+| -------------------------------------------------- | ------------------------------------------------------------------------- |
+| [src/app/(public)/](<src/app/(public)/>)           | Public site (ISR, Server Components by default)                           |
+| [src/app/(admin)/admin/](<src/app/(admin)/admin/>) | Admin CMS — login + auth-guarded shell                                    |
+| [src/app/api/auth.ts](src/app/api/auth.ts)         | `requireAuth`, `requireAuthOrApiKey`, `optionalAuth` (NOT `src/lib/auth`) |
+| [src/proxy.ts](src/proxy.ts)                       | Next.js 16 middleware replacement — JWT guard for admin routes            |
+| [src/components/shared/](src/components/shared/)   | Components shared across public + admin (e.g. `ThemeToggle`)              |
+| [src/components/ui/](src/components/ui/)           | shadcn primitives (use `npx shadcn add`, don't hand-edit)                 |
+| [src/lib/data/](src/lib/data/)                     | Server-side query layer + canonical types                                 |
+| [src/lib/validations/](src/lib/validations/)       | Zod schemas (one file per entity)                                         |
+| [src/lib/errors.ts](src/lib/errors.ts)             | `ApiError` + `withErrorHandler`                                           |
+| [src/lib/prismaClient.ts](src/lib/prismaClient.ts) | Singleton Prisma client (Neon adapter)                                    |
 
-Scoped instructions: [src/CLAUDE.md](src/CLAUDE.md), [src/app/api/CLAUDE.md](src/app/api/CLAUDE.md), [prisma/CLAUDE.md](prisma/CLAUDE.md).
+Scoped instructions: [src/CLAUDE.md](src/CLAUDE.md), [src/app/api/CLAUDE.md](src/app/api/CLAUDE.md), [prisma/CLAUDE.md](prisma/CLAUDE.md). [AGENTS.md](AGENTS.md) mirrors this guidance for Codex backup sessions.
 
 ## Request Routing
 
-Before starting implementation, evaluate the scope of the request:
+Two-tier model. The main session coordinates directly — no orchestrator agent.
 
-| Signal                                                                        | Route to                                               |
-| ----------------------------------------------------------------------------- | ------------------------------------------------------ |
-| Request touches 3+ areas (schema + API + UI, or API + multiple pages + tests) | **orchestrator** agent — do NOT start editing directly |
-| User says "orchestrate", "multi-agent", or "full pipeline"                    | **orchestrator** agent                                 |
-| Single entity end-to-end (schema through UI)                                  | **feature-builder** agent directly                     |
-| Schema-only change (migration, new model, field change)                       | **db-agent** directly                                  |
-| Convention alignment of existing code                                         | **refactor-agent** directly                            |
-| Review or audit                                                               | **code-reviewer** directly                             |
-| Documentation update (docs out of sync, roadmap update)                       | **documentation-agent** directly                       |
-| Single-file edit, typo fix, quick lookup                                      | Handle directly in main session                        |
+### Tier 1 — main session handles directly (no agent spawn)
+
+| Signal                                         | Action                                  |
+| ---------------------------------------------- | --------------------------------------- |
+| Single-file edit, typo fix, quick lookup       | Edit directly                           |
+| 1-2 domain task where you already have context | Build directly                          |
+| Explore / search / "where is X"                | Use built-in `Explore` subagent (haiku) |
+
+### Tier 2 — single agent spawn
+
+| Signal                                                  | Agent                                  |
+| ------------------------------------------------------- | -------------------------------------- |
+| Schema-only change (migration, new model, field change) | **db-agent**                           |
+| Single entity end-to-end (schema through UI)            | **feature-builder**                    |
+| Convention alignment of existing code                   | **maintenance-agent** (mode: refactor) |
+| Documentation update (docs out of sync, roadmap update) | **maintenance-agent** (mode: docs)     |
+| Review or audit                                         | **code-reviewer**                      |
+
+### Tier 2 — parallel fan-out (multi-domain, 3+ areas)
+
+For requests touching 3+ domains (schema + API + UI), the main session coordinates directly. Pattern:
+
+1. Spawn **db-agent** for schema/migration work. Verify: `git diff --stat`, `npm run type-check`.
+2. Spawn **feature-builder** with the migration context. Verify: type-check + lint.
+3. Spawn **code-reviewer** with "include integration review" in the prompt.
+4. Report findings to user.
+
+Steps 1-2 are sequential (feature-builder depends on db-agent). Step 3 can begin immediately after step 2.
+If the user says "orchestrate" or "full pipeline", follow this pattern.
+
+### Model selection
+
+| Agent              | Default | Override to opus when                               |
+| ------------------ | ------- | --------------------------------------------------- |
+| db-agent           | sonnet  | Tricky migration (cross-table backfill, custom SQL) |
+| feature-builder    | sonnet  | High-stakes feature, one-pass quality matters       |
+| code-reviewer      | haiku   | Security-sensitive diff (auth, payment, PII)        |
+| maintenance-agent  | sonnet  | Bulk rewrite touching cross-cutting abstractions    |
+| Explore (built-in) | haiku   | Search requires synthesizing many unrelated files   |
 
 ## UI Skills
 
@@ -95,23 +124,23 @@ After UI changes, agents must verify visually using **Playwright MCP** (`mcp__pl
 | 3    | `browser_take_screenshot`  | Visual verification             |
 | 4    | `browser_console_messages` | Check for runtime errors        |
 
-**Do not use Chrome MCP** (`mcp__Claude_in_Chrome__*`) for agent verification — Playwright MCP is headless, reliable, and requires no external browser window. Chrome MCP is available for manual user-driven sessions only.
+**Do not use Chrome MCP** for agent verification — Playwright MCP is headless, reliable, and requires no external browser window. Chrome MCP is available for manual user-driven sessions only.
 
 ## Plugins
 
-Three plugins extend Claude Code's core capabilities:
+Three plugins extend the Claude Code and backup-agent tooling:
 
-| Plugin                                        | Purpose                                                                                           |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| **skill-creator** (claude-plugins-official)   | Create, eval, improve, and benchmark skills. Use to iterate on existing project skills with data. |
-| **context-mode** (mksglu, v1.0.162)           | Sandboxes tool output for ~98% context window savings. SQLite session tracking + lifecycle hooks. |
-| **frontend-design** (claude-plugins-official) | Production-grade UI design with distinctive aesthetics. Listed above under UI Skills.             |
+| Plugin                              | Purpose                                                                                           |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **skill-creator**                   | Create, eval, improve, and benchmark skills. Use to iterate on existing project skills with data. |
+| **context-mode** (mksglu, v1.0.162) | Sandboxes tool output for ~98% context window savings. SQLite session tracking + lifecycle hooks. |
+| **frontend-design**                 | Production-grade UI design with distinctive aesthetics. Listed above under UI Skills.             |
 
-If uncertain whether the orchestrator is needed, ask the user: "This looks like it might span multiple domains. Should I use the orchestrator to coordinate, or handle it directly?"
+For multi-domain requests (3+ areas), follow the parallel fan-out pattern in Request Routing — no orchestrator agent needed.
 
 ## Critical Rules (universal — domain-specific rules live in [.claude/rules/](.claude/rules/))
 
-1. **Auth import is `@/app/api/auth`** — `requireAuth` for protected routes, `optionalAuth` when behavior differs by login state.
+1. **Auth import is `@/app/api/auth`** — `requireAuthOrApiKey(request)` for CMS/API-key routes, `requireAuth` for browser-admin-only routes, `optionalAuth` when behavior differs by login state.
 2. **Use the singleton Prisma client** from `@/lib/prismaClient`. Never instantiate `PrismaClient` directly.
 3. **Types come from [src/lib/data/types.ts](src/lib/data/types.ts).** Do NOT add new files under `src/types/` — that directory is being phased out.
 4. **Cookies are HTTP-only, Secure, SameSite=Lax.** Tokens never touch `localStorage`.
@@ -138,23 +167,31 @@ Domain rules (Zod validation, `withErrorHandler`, ISR/client split, image pipeli
 - **prisma-local** — Migration status, schema management. Run `migrate-status` before `migrate dev`. NEVER run `migrate-reset` without user confirmation.
 - **playwright** — Browser automation for visual verification at `http://localhost:3000`.
 - **github** — GitHub API for PR/issue management, code search.
-- **sentry** (`mcp__sentry__*`) — Query Sentry errors, issues, and performance data from Claude Code. Added via `claude mcp add --transport http sentry https://mcp.sentry.dev/mcp`.
+- **portfolio** — Project-local MCP server launched with `npx tsx --env-file=.env mcp/portfolio-server/src/index.ts`.
+- **sentry** (`mcp__sentry__*`) — Query Sentry errors, issues, and performance data from Claude Code and backup-agent sessions. Added via `claude mcp add --transport http sentry https://mcp.sentry.dev/mcp`; Codex backup config also lists it in [.codex/config.toml](.codex/config.toml).
 
 ## Available Agents
 
-Agents: **orchestrator**, **feature-builder**, **db-agent**, **refactor-agent**, **code-reviewer**, **synthesizer**, **documentation-agent**. Definitions in [.claude/agents/](.claude/agents/). See Request Routing table above for when to use each.
+Four primary Claude Code agents in [.claude/agents/](.claude/agents/), mirrored for Codex backup sessions in [.codex/agents/](.codex/agents/):
 
-Defaults: `model: sonnet` (except `code-reviewer` → `haiku`). Override to `opus` only when complexity warrants.
+| Agent                 | Model  | Purpose                                               |
+| --------------------- | ------ | ----------------------------------------------------- |
+| **db-agent**          | sonnet | Schema, migrations, seed, Neon branching              |
+| **feature-builder**   | sonnet | End-to-end feature (model + migration + API + UI)     |
+| **code-reviewer**     | haiku  | Read-only review + cross-domain integration checks    |
+| **maintenance-agent** | sonnet | Refactoring (mode: refactor) or doc sync (mode: docs) |
 
-## Claude Hooks
+See Request Routing above for when to spawn each. Built-in subagents (`Explore`/haiku, `Plan`/sonnet) don't need definitions.
 
-Hooks are configured in `.claude/settings.json` — read it for current behavior. Key gates: branch guard blocks edits on `main`/`develop`, type-check gates commits, Prettier auto-formats after edits.
+## Hooks
+
+Claude Code hooks are configured in [.claude/settings.json](.claude/settings.json) with scripts in [.claude/hooks/](.claude/hooks/). Codex backup hooks are mirrored in [.codex/hooks.json](.codex/hooks.json). Key gates: branch guard blocks edits on `main`/`develop`, type-check gates commits, and Prettier auto-formats after edits.
 
 ## Git Commit Style
 
 - **Subject line only.** Use `git commit -m "<subject>"` — no body, no extended description. The diff already shows what changed; the subject says why at a glance.
 - **No heredoc messages.** Don't write `git commit -m "$(cat <<'EOF' ... EOF)"`. Single-line `-m` only.
-- **No `Co-Authored-By` trailer.** Don't append `Co-Authored-By: Claude ...` or any other Claude attribution. The git author already records who ran the commit.
+- **No `Co-Authored-By` trailer.** Don't append `Co-Authored-By: Claude ...`, `Co-Authored-By: Codex ...`, or any other agent attribution. The git author already records who ran the commit.
 - Subject format: `<type>: <short imperative>` matching existing log style (`docs:`, `test:`, `setup:`, `fix:`, `feat:`).
 
 ## Environment Setup
@@ -167,6 +204,6 @@ When compacting, always preserve:
 
 - The full list of files modified in the current task
 - The current git branch name and any in-progress PR
-- Which agent workflow step we are on (if orchestrator is running)
+- Which agent workflow step we are on (if multi-agent fan-out is running)
 - Any user decisions or preferences stated in this session
 - Error messages from failed builds/tests that haven't been resolved yet
