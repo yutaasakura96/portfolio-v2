@@ -87,6 +87,8 @@ Import from `@/app/api/auth`. Never re-implement JWT verification — it lives i
 
 For routes that conditionally require auth based on query params (like `?status=DRAFT` or `visible=all`), check the param first and call `requireAuthOrApiKey(request)` only when needed.
 
+> **MCP server boundary:** All entity CMS routes use `requireAuthOrApiKey(request)` so the portfolio MCP server can access them with an API key. Exception: `DELETE /api/messages/[id]` uses `requireAuth()` only (browser cookie) — the MCP server intentionally has no delete capability for messages. API key management routes (`/api/admin/api-keys`) also use `requireAuth()` to prevent a bootstrap loop.
+
 ## Input Validation
 
 - Schemas live in [src/lib/validations/](src/lib/validations/), one file per entity.

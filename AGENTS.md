@@ -167,7 +167,7 @@ Domain rules (Zod validation, `withErrorHandler`, ISR/client split, image pipeli
 - **prisma-local** — Migration status, schema management. Run `migrate-status` before `migrate dev`. NEVER run `migrate-reset` without user confirmation.
 - **playwright** — Browser automation for visual verification at `http://localhost:3000`.
 - **github** — GitHub API for PR/issue management, code search.
-- **portfolio** — Project-local MCP server launched with `npx tsx --env-file=.env mcp/portfolio-server/src/index.ts`.
+- **portfolio** (`mcp__portfolio__*`) — 43-tool MCP server for portfolio content management (projects, experience, education, skills, certifications, blog, messages, site content, dashboard). Stdio transport, API-key auth via Bearer token. Call `get-dashboard-stats` for overview; use `list-*` before `update-*`/`delete-*`. Messages are read/archive only (no delete). Setup: `npm run mcp:setup`. See [mcp/portfolio-server/README.md](mcp/portfolio-server/README.md).
 - **sentry** (`mcp__sentry__*`) — Query Sentry errors, issues, and performance data from Claude Code and backup-agent sessions. Added via `claude mcp add --transport http sentry https://mcp.sentry.dev/mcp`; mirrored in [.codex/config.toml](.codex/config.toml) for Codex backup sessions.
 
 ## Available Agents
