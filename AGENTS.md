@@ -167,7 +167,7 @@ Domain rules (Zod validation, `withErrorHandler`, ISR/client split, image pipeli
 - **prisma-local** — Migration status, schema management. Run `migrate-status` before `migrate dev`. NEVER run `migrate-reset` without user confirmation.
 - **playwright** — Browser automation for visual verification at `http://localhost:3000`.
 - **github** — GitHub API for PR/issue management, code search.
-- **portfolio** — Project-local MCP server launched with `npx tsx --env-file=.env mcp/portfolio-server/src/index.ts`.
+- **portfolio** (`mcp__portfolio__*`) — 43-tool MCP server for portfolio content management (projects, experience, education, skills, certifications, blog, messages, site content, dashboard). Stdio transport, API-key auth via Bearer token. Call `get-dashboard-stats` for overview; use `list-*` before `update-*`/`delete-*`. Messages are read/archive only (no delete). Setup: `npm run mcp:setup`. See [mcp/portfolio-server/README.md](mcp/portfolio-server/README.md).
 - **sentry** (`mcp__sentry__*`) — Query Sentry errors, issues, and performance data from Claude Code and backup-agent sessions. Added via `claude mcp add --transport http sentry https://mcp.sentry.dev/mcp`; mirrored in [.codex/config.toml](.codex/config.toml) for Codex backup sessions.
 
 ## Available Agents
@@ -186,6 +186,74 @@ See Request Routing above for when to spawn each. Built-in subagents (`Explore`/
 ## Codex Backup Hooks
 
 Codex backup hooks are configured in [.codex/hooks.json](.codex/hooks.json) with scripts in [.codex/hooks/](.codex/hooks/). Claude Code remains the primary workflow and uses [.claude/settings.json](.claude/settings.json) with scripts in [.claude/hooks/](.claude/hooks/). Key gates: branch guard blocks edits on `main`/`develop`, type-check gates commits, Prettier auto-formats after edits.
+
+## Codex Operating Protocol
+
+This section applies **only when running under OpenAI Codex**. Claude Code ignores it.
+
+### Project trust
+
+The `.codex/config.toml` file (MCP servers, hooks, doc settings) only loads when the project is trusted. On first clone, run `codex --trust-project` or approve the trust prompt. Without trust, Codex falls back to user-level config and none of the project-specific MCP servers, hooks, or doc settings apply.
+
+### Reading scoped docs before editing
+
+Codex does not auto-load `.claude/rules/*.md` by file-pattern match (that is a Claude Code feature). Before editing domain-specific code, **always read the relevant scoped docs first**:
+
+| Area you are editing                 | Read these files before starting                       |
+| ------------------------------------ | ------------------------------------------------------ |
+| Anything under `src/`                | `src/CLAUDE.md`                                        |
+| API routes (`src/app/api/`)          | `src/app/api/CLAUDE.md`, `.claude/rules/api-routes.md` |
+| Components (`src/components/`)       | `.claude/rules/components.md`                          |
+| Data layer (`src/lib/data/`)         | `.claude/rules/data-layer.md`                          |
+| Validations (`src/lib/validations/`) | `.claude/rules/validations.md`                         |
+| Prisma schema or migrations          | `prisma/CLAUDE.md`, `.claude/rules/prisma-schema.md`   |
+| Tests (`*.test.ts`, `*.test.tsx`)    | `.claude/rules/tests.md`                               |
+
+Use `cat <file>` to read each before making changes. These files contain critical project-specific rules that override general knowledge.
+
+### Agent routing
+
+Codex custom agents are defined in `.codex/agents/*.toml`. Unlike Claude Code, Codex does **not** automatically spawn agents based on the Request Routing table. Agents must be explicitly invoked by the user.
+
+**Trigger phrases** that indicate the user wants agent delegation:
+
+- "orchestrate" or "full pipeline" → follow the parallel fan-out pattern (db-agent → feature-builder → code-reviewer)
+- "delegate to db-agent" or "use db-agent" → spawn db-agent
+- "spawn feature-builder" → spawn feature-builder
+- "review with code-reviewer" → spawn code-reviewer
+- "run maintenance-agent (mode: docs)" or "run maintenance-agent (mode: refactor)" → spawn maintenance-agent
+
+**Fallback:** If Codex cannot spawn the requested agent (tool unavailable, threading limits, etc.), the main session should:
+
+1. State that the agent could not be spawned.
+2. Read that agent's `.codex/agents/<name>.toml` to load its `developer_instructions`.
+3. Follow those instructions manually within the main session.
+
+### Features not available in Codex
+
+These Claude Code features have no direct Codex equivalent:
+
+| Claude Code feature                                    | Codex alternative                                                         |
+| ------------------------------------------------------ | ------------------------------------------------------------------------- |
+| `Explore` / `Plan` built-in subagents                  | Use Bash search commands (`grep`, `find`, `git log`) directly             |
+| Slash commands (`/check`, `/new-route`, `/pr-ready`)   | Run equivalent steps manually (see `.claude/commands/*.md` for the steps) |
+| Plugin auto-triggering (shadcn, frontend-design, etc.) | Read the skill instructions manually if needed                            |
+| `${CLAUDE_PROJECT_DIR}` env var                        | Use `$(git rev-parse --show-toplevel)`                                    |
+| Pattern-matched `.claude/rules/*.md` loading           | Read relevant rule files explicitly (see table above)                     |
+
+### context-mode dependency
+
+All four agent TOML files reference `ctx_batch_execute` from the context-mode plugin. If context-mode is not installed in your Codex environment, agents should fall back to reading files directly with `cat` via Bash. The instructions still apply — only the reading mechanism changes.
+
+### Verification workflow
+
+After any code change, verify the same way Claude Code does:
+
+1. **Type safety:** `npm run type-check`
+2. **Lint:** `npm run lint`
+3. **Tests:** `npm test` (if touching tested code)
+4. **UI changes:** Use Playwright MCP (`browser_navigate` → `browser_snapshot` → `browser_take_screenshot` → `browser_console_messages`) against `http://localhost:3000`
+5. **Build:** `npm run build` before final PR
 
 ## Git Commit Style
 

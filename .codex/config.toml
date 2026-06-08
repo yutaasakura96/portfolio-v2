@@ -2,6 +2,9 @@
 # so Codex picks up scoped instructions (src/CLAUDE.md, prisma/CLAUDE.md, etc.)
 project_doc_fallback_filenames = ["CLAUDE.md"]
 
+# Combined AGENTS.md + fallback CLAUDE.md files are large; prevent truncation
+project_doc_max_bytes = 131072
+
 [mcp_servers.aws-api]
 command = "uvx"
 args = ["awslabs.aws-api-mcp-server@latest"]
@@ -14,35 +17,26 @@ args = ["awslabs.aws-documentation-mcp-server@latest"]
 command = "uvx"
 args = ["awslabs.aws-iac-mcp-server@latest"]
 
+[mcp_servers.context7]
+command = "npx"
+args = ["-y", "@upstash/context7-mcp"]
+
 [mcp_servers.github]
 command = "npx"
 args = ["@modelcontextprotocol/server-github"]
-
-[mcp_servers.github.env]
-GITHUB_PERSONAL_ACCESS_TOKEN = ""
+env_vars = ["GITHUB_PERSONAL_ACCESS_TOKEN"]
 
 [mcp_servers.playwright]
 command = "npx"
-args = [
-    "@playwright/mcp@latest",
-    "--headless",
-]
+args = ["@playwright/mcp@latest", "--headless"]
 
 [mcp_servers.portfolio]
 command = "npx"
-args = [
-    "tsx",
-    "--env-file=.env",
-    "mcp/portfolio-server/src/index.ts",
-]
+args = ["tsx", "--env-file=.env", "mcp/portfolio-server/src/index.ts"]
 
 [mcp_servers.prisma-local]
 command = "npx"
-args = [
-    "-y",
-    "prisma",
-    "mcp",
-]
+args = ["-y", "prisma", "mcp"]
 
 [mcp_servers.sentry]
 url = "https://mcp.sentry.dev/mcp"
