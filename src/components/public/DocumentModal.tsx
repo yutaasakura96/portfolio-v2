@@ -20,6 +20,7 @@ export function DocumentModal({ open, onClose, documentUrl }: DocumentModalProps
           "flex flex-col gap-0 p-0 overflow-hidden",
           isPdf ? "w-[90vw] max-w-4xl h-[80vh]" : "w-auto max-w-3xl"
         )}
+        aria-describedby={undefined}
       >
         <DialogHeader className="px-6 py-4 border-b shrink-0">
           <DialogTitle>Credentials</DialogTitle>

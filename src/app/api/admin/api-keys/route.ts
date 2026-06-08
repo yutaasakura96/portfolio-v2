@@ -10,7 +10,7 @@ const apiKeyCreateSchema = z.object({
   description: z.string().min(1, "Description required").max(200),
 });
 
-export const GET = withErrorHandler(async (_request: NextRequest) => {
+export const GET = withErrorHandler(async () => {
   await requireAuth();
 
   const keys = await prisma.apiKey.findMany({

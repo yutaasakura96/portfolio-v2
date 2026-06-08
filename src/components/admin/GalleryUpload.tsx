@@ -83,7 +83,7 @@ function SortableImageRow({ img, gi, ii, disabled, onUpdateAlt, onRemove }: Sort
             </div>
           </button>
         </DialogTrigger>
-        <DialogContent className="max-w-5xl p-2">
+        <DialogContent className="max-w-5xl p-2" aria-describedby={undefined}>
           <DialogTitle className="sr-only">Image preview</DialogTitle>
           <div className="relative w-full h-[80vh]">
             <Image

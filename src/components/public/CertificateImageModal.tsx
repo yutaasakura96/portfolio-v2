@@ -18,7 +18,10 @@ export function CertificateImageModal({
 }: CertificateImageModalProps) {
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="w-[95vw] max-w-5xl p-0 overflow-hidden">
+      <DialogContent
+        className="w-[95vw] max-w-5xl p-0 overflow-hidden"
+        aria-describedby={undefined}
+      >
         <DialogHeader className="px-6 py-4 border-b">
           <DialogTitle>{certName}</DialogTitle>
         </DialogHeader>

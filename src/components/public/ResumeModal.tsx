@@ -12,7 +12,10 @@ interface ResumeModalProps {
 export function ResumeModal({ open, onClose, resumeUrl }: ResumeModalProps) {
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="w-[90vw] max-w-5xl sm:max-w-5xl h-[85vh] flex flex-col gap-0 p-0 overflow-hidden">
+      <DialogContent
+        className="w-[90vw] max-w-5xl sm:max-w-5xl h-[85vh] flex flex-col gap-0 p-0 overflow-hidden"
+        aria-describedby={undefined}
+      >
         <DialogHeader className="flex flex-row items-center justify-between px-6 py-4 border-b shrink-0 pr-14">
           <DialogTitle>Resume</DialogTitle>
           <a
