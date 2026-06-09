@@ -5,7 +5,7 @@ Personal portfolio + admin CMS. Public-facing Next.js site backed by an admin da
 ## Tech Stack
 
 - **Framework:** Next.js (App Router, `proxy.ts` middleware), React, TypeScript (strict) — see @package.json for exact versions
-- **Database:** Prisma + Neon Postgres via `@prisma/adapter-neon` (`PrismaNeonHttp`) + `@neondatabase/serverless`. Both packages are in `serverExternalPackages` to avoid Lambda bundling issues. The adapter is configured with `fetchOptions: { priority: "high", keepalive: true }`. All public queries use `withRetry()` from `prismaClient.ts` for transient Neon failure recovery.
+- **Database:** Prisma + Neon Postgres via `@prisma/adapter-neon` (`PrismaNeonHttp`) + `@neondatabase/serverless`. Both packages are in `serverExternalPackages` to avoid Lambda bundling issues. The adapter is configured with `fetchOptions: { priority: "high" }` and a custom `neonConfig.fetchFunction` that adds `Connection: close` headers (prevents Node 22 undici stale socket reuse on Lambda — see `nodejs/undici#3133`) plus a 10s AbortController timeout. All public queries use `withRetry()` from `prismaClient.ts` for transient Neon failure recovery.
 - **Styling:** TailwindCSS 4 + `@tailwindcss/postcss`, shadcn (Radix UI primitives), CVA + clsx + `tailwind-merge`
 - **Forms:** react-hook-form + `@hookform/resolvers` + Zod 4
 - **Server state:** TanStack React Query 5 (no Zustand — do not add)
@@ -162,6 +162,8 @@ Domain rules (Zod validation, `withErrorHandler`, ISR/client split, image pipeli
 - ❌ Typing icon props as `icon: React.ElementType` in React 19 — `ElementType` was narrowed in React 19 types such that passing `className` resolves to `never`. Use `icon: React.ComponentType<{ className?: string }>` instead (see `AdminSidebar.tsx`).
 - ❌ Calling `prisma.*` directly in `public-queries.ts` without `withRetry()` — transient Neon HTTP failures return empty data to users. Wrap every query: `await withRetry(() => prisma.thing.findMany(...))`.
 - ❌ Removing `@neondatabase/serverless` or `@prisma/adapter-neon` from `serverExternalPackages` in `next.config.ts` — bundling these into the Lambda causes fetch polyfill conflicts and intermittent "fetch failed" errors.
+- ❌ Adding `keepalive: true` to Neon `fetchOptions` — per the WHATWG Fetch spec, `keepalive` imposes a **64KB body limit**. Queries whose POST body exceeds this silently fail. This is a browser concept (`sendBeacon`) with no benefit in Node.js.
+- ❌ Removing the `Connection: close` header from `neonConfig.fetchFunction` — Node 22's native fetch (undici) reuses keep-alive sockets. Between Lambda invocations AWS kills idle connections, causing "TypeError: fetch failed" on the next request (`nodejs/undici#3133`).
 
 ## MCP Servers
 
