@@ -37,7 +37,7 @@ Tests use **Vitest** with **@testing-library/react**. See [.claude/rules/tests.m
 | [src/lib/data/](src/lib/data/)                     | Server-side query layer + canonical types                                 |
 | [src/lib/validations/](src/lib/validations/)       | Zod schemas (one file per entity)                                         |
 | [src/lib/errors.ts](src/lib/errors.ts)             | `ApiError` + `withErrorHandler`                                           |
-| [src/lib/prismaClient.ts](src/lib/prismaClient.ts) | Singleton Prisma client (Neon HTTP adapter) + `withRetry()` utility       |
+| [src/lib/prismaClient.ts](src/lib/prismaClient.ts) | Singleton Prisma client (Neon WebSocket adapter)                          |
 
 Scoped instructions currently live in [src/CLAUDE.md](src/CLAUDE.md), [src/app/api/CLAUDE.md](src/app/api/CLAUDE.md), and [prisma/CLAUDE.md](prisma/CLAUDE.md).
 
