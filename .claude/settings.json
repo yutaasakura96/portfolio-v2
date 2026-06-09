@@ -24,7 +24,6 @@
       "Bash(head:*)",
       "Bash(tail:*)",
       "Bash(cat:*)",
-      "Bash(gh pr:*)",
       "Bash(gh issue:*)",
       "Bash(curl -sI:*)",
       "Bash(curl -s:*)",
