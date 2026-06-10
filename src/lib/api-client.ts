@@ -377,6 +377,10 @@ class ApiClient {
     return this.request<ApiResponse<T>>("/admin/dashboard-stats");
   }
 
+  getTranslationPlan<TOutput = unknown>() {
+    return this.request<ApiResponse<TOutput>>("/admin/translate");
+  }
+
   translateContent<TInput extends Record<string, unknown>, TOutput = unknown>(data: TInput) {
     return this.request<ApiResponse<TOutput>>("/admin/translate", {
       method: "POST",

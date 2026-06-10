@@ -10,17 +10,26 @@ const TRANSLATION_TARGETS = [
   "hero",
   "about",
   "settings",
-  "projects",
-  "blog",
+  "project",
+  "blogPost",
   "experience",
   "education",
 ] as const;
 
 type TranslationTarget = (typeof TRANSLATION_TARGETS)[number];
-type TranslationCounts = Record<TranslationTarget, number>;
+type TranslationCountKey =
+  | "hero"
+  | "about"
+  | "settings"
+  | "projects"
+  | "blog"
+  | "experience"
+  | "education";
+type TranslationCounts = Record<TranslationCountKey, number>;
 
 const translationRequestSchema = z.object({
   target: z.enum(TRANSLATION_TARGETS),
+  id: z.string().optional(),
 });
 
 const SYSTEM_PROMPT = `You are translating a personal portfolio website from English to Japanese.
@@ -54,6 +63,11 @@ type AnthropicResponse = {
     type: string;
     text?: string;
   }>;
+};
+
+type TranslationPlan = {
+  projectIds: string[];
+  blogPostIds: string[];
 };
 
 function emptyCounts(): TranslationCounts {
@@ -100,7 +114,40 @@ async function callHaiku(apiKey: string, input: unknown, maxTokens = 4096): Prom
   if (!text) throw new Error("No text in Anthropic response");
 
   const cleaned = text.replace(/^```(?:json)?\s*|\s*```$/g, "").trim();
-  return JSON.parse(cleaned);
+  try {
+    return JSON.parse(cleaned);
+  } catch (error) {
+    const firstJsonChar = cleaned.search(/[\[{]/);
+    const lastObjectChar = cleaned.lastIndexOf("}");
+    const lastArrayChar = cleaned.lastIndexOf("]");
+    const lastJsonChar = Math.max(lastObjectChar, lastArrayChar);
+
+    if (firstJsonChar >= 0 && lastJsonChar > firstJsonChar) {
+      return JSON.parse(cleaned.slice(firstJsonChar, lastJsonChar + 1));
+    }
+
+    throw error;
+  }
+}
+
+async function getTranslationPlan(): Promise<TranslationPlan> {
+  const [projects, posts] = await Promise.all([
+    prisma.project.findMany({
+      where: { status: "PUBLISHED" },
+      orderBy: [{ displayOrder: "asc" }, { updatedAt: "desc" }],
+      select: { id: true },
+    }),
+    prisma.blogPost.findMany({
+      where: { status: "PUBLISHED" },
+      orderBy: [{ publishedAt: "desc" }, { updatedAt: "desc" }],
+      select: { id: true },
+    }),
+  ]);
+
+  return {
+    projectIds: projects.map((project) => project.id),
+    blogPostIds: posts.map((post) => post.id),
+  };
 }
 
 async function translateHero(apiKey: string): Promise<number> {
@@ -195,76 +242,68 @@ async function translateSettings(apiKey: string): Promise<number> {
   return 0;
 }
 
-async function translateProjects(apiKey: string): Promise<number> {
-  const projects = await prisma.project.findMany({ where: { status: "PUBLISHED" } });
-  if (projects.length > 0) {
-    try {
-      const input = projects.map((p) => ({
-        id: p.id,
-        title: p.title,
-        shortDescription: p.shortDescription,
-        description: p.description ?? "",
-        problem: p.problem ?? "",
-        solution: p.solution ?? "",
-        role: p.role ?? "",
-      }));
+async function translateProject(apiKey: string, id: string): Promise<number> {
+  const project = await prisma.project.findFirst({ where: { id, status: "PUBLISHED" } });
+  if (!project) return 0;
 
-      const translated = (await callHaiku(apiKey, input, 8192)) as Array<Record<string, string>>;
+  try {
+    const translated = (await callHaiku(apiKey, {
+      title: project.title,
+      shortDescription: project.shortDescription,
+      description: project.description ?? "",
+      problem: project.problem ?? "",
+      solution: project.solution ?? "",
+      role: project.role ?? "",
+    })) as Record<string, string>;
 
-      for (const item of translated) {
-        if (!item.id) continue;
-        await prisma.project.update({
-          where: { id: item.id },
-          data: {
-            titleJa: item.title,
-            shortDescriptionJa: item.shortDescription,
-            descriptionJa: item.description || null,
-            problemJa: item.problem || null,
-            solutionJa: item.solution || null,
-            roleJa: item.role || null,
-          },
-        });
-      }
-      return translated.filter((item) => item.id).length;
-    } catch (e) {
-      console.error("Failed to translate projects:", e);
-    }
+    await prisma.project.update({
+      where: { id: project.id },
+      data: {
+        titleJa: translated.title,
+        shortDescriptionJa: translated.shortDescription,
+        descriptionJa: translated.description || null,
+        problemJa: translated.problem || null,
+        solutionJa: translated.solution || null,
+        roleJa: translated.role || null,
+      },
+    });
+    return 1;
+  } catch (e) {
+    console.error(`Failed to translate project ${project.slug}:`, e);
   }
 
   return 0;
 }
 
-async function translateBlog(apiKey: string): Promise<number> {
-  const posts = await prisma.blogPost.findMany({ where: { status: "PUBLISHED" } });
-  let count = 0;
+async function translateBlogPost(apiKey: string, id: string): Promise<number> {
+  const post = await prisma.blogPost.findFirst({ where: { id, status: "PUBLISHED" } });
+  if (!post) return 0;
 
-  for (const post of posts) {
-    try {
-      const translated = (await callHaiku(
-        apiKey,
-        {
-          title: post.title,
-          content: post.content,
-          excerpt: post.excerpt,
-        },
-        post.content.length > 3000 ? 8192 : 4096
-      )) as Record<string, string>;
+  try {
+    const translated = (await callHaiku(
+      apiKey,
+      {
+        title: post.title,
+        content: post.content,
+        excerpt: post.excerpt,
+      },
+      post.content.length > 3000 ? 8192 : 4096
+    )) as Record<string, string>;
 
-      await prisma.blogPost.update({
-        where: { id: post.id },
-        data: {
-          titleJa: translated.title,
-          contentJa: translated.content,
-          excerptJa: translated.excerpt,
-        },
-      });
-      count++;
-    } catch (e) {
-      console.error(`Failed to translate blog post ${post.slug}:`, e);
-    }
+    await prisma.blogPost.update({
+      where: { id: post.id },
+      data: {
+        titleJa: translated.title,
+        contentJa: translated.content,
+        excerptJa: translated.excerpt,
+      },
+    });
+    return 1;
+  } catch (e) {
+    console.error(`Failed to translate blog post ${post.slug}:`, e);
   }
 
-  return count;
+  return 0;
 }
 
 async function translateExperience(apiKey: string): Promise<number> {
@@ -342,7 +381,8 @@ async function translateEducation(apiKey: string): Promise<number> {
 
 async function translateTarget(
   apiKey: string,
-  target: TranslationTarget
+  target: TranslationTarget,
+  id?: string
 ): Promise<TranslationCounts> {
   const counts = emptyCounts();
 
@@ -356,11 +396,17 @@ async function translateTarget(
     case "settings":
       counts.settings = await translateSettings(apiKey);
       break;
-    case "projects":
-      counts.projects = await translateProjects(apiKey);
+    case "project":
+      if (!id) {
+        throw new ApiError("Project id is required", 400, ErrorCodes.VALIDATION_ERROR);
+      }
+      counts.projects = await translateProject(apiKey, id);
       break;
-    case "blog":
-      counts.blog = await translateBlog(apiKey);
+    case "blogPost":
+      if (!id) {
+        throw new ApiError("Blog post id is required", 400, ErrorCodes.VALIDATION_ERROR);
+      }
+      counts.blog = await translateBlogPost(apiKey, id);
       break;
     case "experience":
       counts.experience = await translateExperience(apiKey);
@@ -372,6 +418,14 @@ async function translateTarget(
 
   return counts;
 }
+
+export const GET = withErrorHandler(async () => {
+  await requireAuth();
+
+  const plan = await getTranslationPlan();
+
+  return Response.json({ data: plan });
+});
 
 export const POST = withErrorHandler(async (request: NextRequest) => {
   await requireAuth();
@@ -388,7 +442,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   }
 
   const ip = getClientIp(request);
-  const rlResult = await rateLimit(`translate:${ip}`, 10, 60 * 1000);
+  const rlResult = await rateLimit(`translate:${ip}`, 60, 60 * 1000);
   if (!rlResult.success) {
     throw new ApiError("Please wait before translating again", 429, ErrorCodes.RATE_LIMIT_EXCEEDED);
   }
@@ -402,7 +456,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
     );
   }
 
-  const counts = await translateTarget(apiKey, parsed.data.target);
+  const counts = await translateTarget(apiKey, parsed.data.target, parsed.data.id);
 
   revalidatePath("/", "layout");
 

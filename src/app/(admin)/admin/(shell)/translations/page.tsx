@@ -18,6 +18,24 @@ type TranslateResult = {
 };
 
 type TranslationTarget = keyof TranslateResult;
+type TranslationApiTarget =
+  | "hero"
+  | "about"
+  | "settings"
+  | "project"
+  | "blogPost"
+  | "experience"
+  | "education";
+type TranslationPlan = {
+  projectIds: string[];
+  blogPostIds: string[];
+};
+type TranslationStep = {
+  countKey: TranslationTarget;
+  id?: string;
+  label: string;
+  target: TranslationApiTarget;
+};
 
 const ENTITY_LABELS: Record<string, string> = {
   hero: "Hero",
@@ -38,6 +56,13 @@ const ENTITY_ORDER: TranslationTarget[] = [
   "experience",
   "education",
 ];
+const DEFAULT_STEPS: TranslationStep[] = [
+  { countKey: "hero", label: "Hero", target: "hero" },
+  { countKey: "about", label: "About", target: "about" },
+  { countKey: "settings", label: "Settings", target: "settings" },
+  { countKey: "experience", label: "Experience", target: "experience" },
+  { countKey: "education", label: "Education", target: "education" },
+];
 
 const STORAGE_KEY = "translations-last-updated";
 
@@ -55,8 +80,9 @@ function emptyResult(): TranslateResult {
 
 export default function TranslationsPage() {
   const [result, setResult] = useState<TranslateResult | null>(null);
-  const [activeTarget, setActiveTarget] = useState<TranslationTarget | null>(null);
-  const [completedTargets, setCompletedTargets] = useState<TranslationTarget[]>([]);
+  const [activeLabel, setActiveLabel] = useState<string | null>(null);
+  const [completedSteps, setCompletedSteps] = useState(0);
+  const [totalSteps, setTotalSteps] = useState(ENTITY_ORDER.length);
   const [lastUpdated, setLastUpdated] = useState<string | null>(() => {
     if (typeof window === "undefined") return null;
     return localStorage.getItem(STORAGE_KEY);
@@ -65,30 +91,53 @@ export default function TranslationsPage() {
   const translateMutation = useMutation({
     mutationFn: async () => {
       const totals = emptyResult();
-      setResult(null);
-      setCompletedTargets([]);
+      const planResponse = await apiClient.getTranslationPlan<TranslationPlan>();
+      const plan = planResponse.data;
+      const steps: TranslationStep[] = [
+        DEFAULT_STEPS[0],
+        DEFAULT_STEPS[1],
+        DEFAULT_STEPS[2],
+        ...plan.projectIds.map((id, index) => ({
+          countKey: "projects" as const,
+          id,
+          label: `Project ${index + 1} of ${plan.projectIds.length}`,
+          target: "project" as const,
+        })),
+        ...plan.blogPostIds.map((id, index) => ({
+          countKey: "blog" as const,
+          id,
+          label: `Blog post ${index + 1} of ${plan.blogPostIds.length}`,
+          target: "blogPost" as const,
+        })),
+        DEFAULT_STEPS[3],
+        DEFAULT_STEPS[4],
+      ];
 
-      for (const target of ENTITY_ORDER) {
-        setActiveTarget(target);
+      setResult(null);
+      setCompletedSteps(0);
+      setTotalSteps(steps.length);
+
+      for (const step of steps) {
+        setActiveLabel(step.label);
         const response = await apiClient.translateContent<
-          { target: TranslationTarget },
+          { id?: string; target: TranslationApiTarget },
           TranslateResult
-        >({ target });
+        >({ target: step.target, ...(step.id ? { id: step.id } : {}) });
 
         for (const entity of ENTITY_ORDER) {
           totals[entity] += response.data[entity];
         }
 
         setResult({ ...totals });
-        setCompletedTargets((current) => [...current, target]);
+        setCompletedSteps((current) => current + 1);
       }
 
-      setActiveTarget(null);
+      setActiveLabel(null);
       return totals;
     },
     onSuccess: (data) => {
       setResult(data);
-      setActiveTarget(null);
+      setActiveLabel(null);
       const now = new Date().toISOString();
       localStorage.setItem(STORAGE_KEY, now);
       setLastUpdated(now);
@@ -96,13 +145,13 @@ export default function TranslationsPage() {
       toast.success(`Translated ${total} items to Japanese`);
     },
     onError: (error: Error) => {
-      setActiveTarget(null);
+      setActiveLabel(null);
       toast.error(error.message || "Translation failed");
     },
   });
 
   const progress = translateMutation.isPending
-    ? Math.round((completedTargets.length / ENTITY_ORDER.length) * 100)
+    ? Math.round((completedSteps / totalSteps) * 100)
     : result
       ? 100
       : 0;
@@ -162,9 +211,7 @@ export default function TranslationsPage() {
               />
             </div>
             <p className="text-sm text-muted-foreground">
-              {activeTarget
-                ? `Translating ${ENTITY_LABELS[activeTarget] ?? activeTarget}...`
-                : "Preparing translations..."}
+              {activeLabel ? `Translating ${activeLabel}...` : "Preparing translations..."}
             </p>
           </div>
         )}
