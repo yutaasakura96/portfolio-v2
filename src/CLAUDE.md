@@ -112,7 +112,7 @@ This project supports EN (default) and JA locales. Only two locales — do not a
 2. Add the new field to the `select` in `src/lib/data/public-queries.ts`.
 3. Update `src/lib/data/types.ts` to include the `*Ja` field.
 4. Wrap the field in `t()` / `tArray()` / `tJson()` at the call site, passing both EN and JA values plus the locale.
-5. Trigger translation via the admin translations page (`/admin/translations`) or the `POST /api/admin/translate` endpoint.
+5. Trigger translation via the admin translations page (`/admin/translations`) or the translation API. `GET /api/admin/translate` returns the project/blog translation plan; `POST /api/admin/translate` translates one target at a time (`hero`, `about`, `settings`, `project`, `blogPost`, `experience`, `education`).
 
 ### Adding new static UI strings
 
