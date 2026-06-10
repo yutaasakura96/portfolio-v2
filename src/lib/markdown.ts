@@ -1,3 +1,4 @@
+import GithubSlugger from "github-slugger";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
@@ -17,6 +18,35 @@ const sanitizeSchema = {
     span: [...(defaultSchema.attributes?.span ?? []), "className"],
   },
 };
+
+export type TocItem = {
+  id: string;
+  text: string;
+  level: number;
+};
+
+export function extractHeadings(markdown: string): TocItem[] {
+  if (!markdown) return [];
+
+  const slugger = new GithubSlugger();
+  const headingRegex = /^(#{2,4})\s+(.+)$/gm;
+  const items: TocItem[] = [];
+  let match;
+
+  while ((match = headingRegex.exec(markdown)) !== null) {
+    const text = match[2]
+      .replace(/\*\*(.+?)\*\*/g, "$1")
+      .replace(/`(.+?)`/g, "$1")
+      .trim();
+    items.push({
+      id: slugger.slug(text),
+      text,
+      level: match[1].length,
+    });
+  }
+
+  return items;
+}
 
 /**
  * Convert Markdown string to sanitized HTML.
