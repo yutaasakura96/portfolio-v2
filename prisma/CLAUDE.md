@@ -96,6 +96,19 @@ If you do reach for raw SQL:
 
 Do **not** create a `src/lib/data/admin-queries.ts` mirror — admin reads go through API routes (TanStack Query on the client).
 
+## i18n Column Convention
+
+Japanese translation columns follow a strict naming pattern — `<fieldName>Ja` — and are always nullable (the app falls back to the English value when null).
+
+- Short text: `titleJa String? @db.VarChar(N)` (same length cap as the English column)
+- Long text: `descriptionJa String? @db.Text`
+- String arrays: `highlightsJa String[]` (empty array `[]` is the null-equivalent — check `.length` before using)
+- JSON: `ctaButtonsJa Json?`
+
+Models with `*Ja` columns as of migration `20260610060522_add_japanese_translations`: `Hero`, `AboutPage`, `SiteSettings`, `Project`, `BlogPost`, `Experience`, `Education`.
+
+When adding a new translatable field to any of these models, add the corresponding `*Ja` column in the same migration. Do not add `*Ja` columns to `Skill`, `Certification`, or `SkillCategory` — those content types stay English (technical terms). Section headings for those models are handled via `UI_STRINGS` in `src/lib/i18n.ts`, not DB columns.
+
 ## Seed Data
 
 [prisma/seed.ts](prisma/seed.ts) is the single seed entrypoint, run via `npx prisma db seed` (configured in `package.json` under `"prisma.seed"`).

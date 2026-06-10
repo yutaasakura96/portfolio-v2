@@ -194,6 +194,17 @@ Shared utilities live in [src/lib/import-export/](src/lib/import-export/):
 
 When adding a new entity, add its config to `entityConfigs` in `entity-configs.ts` and create the corresponding `export/route.ts` and `import/route.ts` following the existing patterns.
 
+## Translation Endpoint
+
+`POST /api/admin/translate` — translates all content entities to Japanese using Claude Haiku (`claude-haiku-4-5-20251001`). Requires `ANTHROPIC_API_KEY` env var.
+
+- Auth: `requireAuth()` (browser-admin only — not accessible via API key).
+- No request body needed — the endpoint reads all translatable entities from the DB and writes `*Ja` fields back.
+- Returns `{ data: { updated: number } }` on success.
+- Has a detailed system prompt that includes name kanji mappings (朝倉優太) and company name overrides to ensure consistent proper-noun handling.
+- Called from the admin translations page (`/admin/translations`) which shows a progress bar and last-updated timestamp.
+- Rate limit: treat as a heavy operation — do not call in a loop; the endpoint itself translates all entities in a single pass.
+
 ## What Not to Do
 
 - ❌ Don't `try/catch` inside the handler — let `withErrorHandler` catch. Only wrap when you need to convert a specific error to an `ApiError`.

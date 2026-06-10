@@ -2,7 +2,7 @@
 
 Living document tracking planned features, improvements, and integrations for the portfolio project.
 
-Last updated: 2026-06-10 (SEO batch: sitemap, OG images, JSON-LD, meta tags marked done — already implemented)
+Last updated: 2026-06-10 (i18n EN/JA marked done; SEO batch previously marked done)
 
 ---
 
@@ -101,7 +101,7 @@ Last updated: 2026-06-10 (SEO batch: sitemap, OG images, JSON-LD, meta tags mark
 - [x] Complete portfolio redesign — research best practices, iterate incrementally
   - UI skills are installed and ready: `shadcn` (component composition), `emil-design-eng` (design engineering + animations), `frontend-design` (visual design direction + distinctive aesthetics), `web-design-guidelines` (Vercel interface guidelines, pre-PR quality gate). Skills live in `.agents/skills/` with symlinks in `.claude/skills/`; `frontend-design` is installed as a plugin.
 - [x] Interactive 3D element on hero page (Three.js / React Three Fiber) — `HeroBlob.tsx` using `@react-three/fiber` + `three`; morphing GLSL shader blob with mouse/hover interaction. `three` pinned to `^0.182.0` (r183 deprecated `THREE.Clock` which r3f v9.6.1 still uses). `WebGLErrorBoundary` class component wraps `Canvas` to silently catch WebGL init failures on old browsers (Mobile Safari 13 / iOS 13) instead of crashing the page. Shader uniforms declared as a module-level constant to satisfy React Compiler ESLint rules.
-- [ ] Internationalization (i18n) — evaluate if multilingual audience justifies maintenance cost
+- [x] Internationalization (i18n) — DB-driven EN/JA bilingual support. `*Ja` nullable columns on Hero, AboutPage, SiteSettings, Project, BlogPost, Experience, Education. Translation helpers in `src/lib/i18n.ts` (`t()`, `tArray()`, `tJson()`, `ui()`, `UI_STRINGS`). `LocaleProvider` + `useLocale` hook + `LanguageToggle`. `POST /api/admin/translate` via Claude Haiku. Admin translations page at `/admin/translations`. ISR-compatible (server passes both EN+JA data; client picks based on locale).
 - [x] Dark mode refinements
 - [ ] Add micro-interactions and animation polish — use `emil-design-eng` skill for transitions, spring physics, and interaction choreography
 - [x] Improve UI/UX quality — use `shadcn` skill for component composition patterns and `web-design-guidelines` skill as a pre-PR quality gate

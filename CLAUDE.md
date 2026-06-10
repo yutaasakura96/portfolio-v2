@@ -15,6 +15,7 @@ Personal portfolio + admin CMS. Public-facing Next.js site backed by an admin da
 - **3D / WebGL:** `@react-three/fiber` + `@react-three/drei` + `three` — `HeroBlob.tsx` renders a morphing GLSL shader blob in the hero section with mouse interaction. `three` is pinned to `^0.182.0` (not `^0.184.x`) because r183 deprecated `THREE.Clock` but r3f v9.6.1 still uses it internally — upgrade only when r3f ships a Timer-based update. `HeroBlob` wraps the `Canvas` in a `WebGLErrorBoundary` class component to silently catch WebGL initialization failures on old browsers (Mobile Safari 13 / iOS 13) instead of crashing the page.
 - **Markdown:** remark + rehype (`remark-gfm`, `rehype-sanitize`, `rehype-slug`, `rehype-highlight`). `src/lib/markdown.ts` also exports `extractHeadings(markdown)` → `TocItem[]` (uses `github-slugger` to match `rehype-slug` IDs). Blog post pages render a `TableOfContents` client component (sticky desktop sidebar + collapsible mobile) when 2+ headings exist.
 - **Import/Export:** papaparse (CSV), unified JSON export/import (`/api/admin/export/unified`, `/api/admin/import/unified`) for full-site backup/restore
+- **i18n:** DB-driven bilingual support (EN + JA). `src/lib/locale.ts` defines `Locale = "en" | "ja"`. `src/lib/i18n.ts` exports `t()` (string fields), `tArray()` (string arrays), `tJson()` (JSON fields), `ui()` (static UI strings via `UI_STRINGS` map), and `localizeSkillCategory()`. `LocaleProvider` (`src/components/providers/LocaleProvider.tsx`) is a React Context with `localStorage` persistence (mirrors next-themes pattern). `useLocale` hook in `src/hooks/use-locale.ts`. `LanguageToggle` in `src/components/shared/LanguageToggle.tsx` (EN/JA toggle in the public Header). `LocalizedContent` components (`LocalizedText`, `LocalizedHtml`, `LocalizedUi`) in `src/components/public/LocalizedContent.tsx` for use inside Server Component pages. Translation API at `POST /api/admin/translate` uses Claude Haiku (`claude-haiku-4-5-20251001`) to translate all content entities. Admin UI at `/admin/translations`. Only 2 locales — do not add more without discussion. Skills and Certifications content stays English (technical terms); section headings are translated.
 - **Toasts:** Sonner. **Icons:** lucide-react. **Fonts:** Geist.
 - **Error tracking:** `@sentry/nextjs` `^10.56.0` — three config files (`sentry.client.config.ts`, `sentry.server.config.ts`, `sentry.edge.config.ts`) + `instrumentation.ts` (Next.js hook; exports `onRequestError = Sentry.captureRequestError`). `next.config.ts` is wrapped with `withSentryConfig`. DSN read from `NEXT_PUBLIC_SENTRY_DSN`; source-map uploads use `SENTRY_AUTH_TOKEN` (build-time only). The deprecated `disableLogger: true` option is replaced by `webpack: { treeshake: { removeDebugLogging: true } }` in `withSentryConfig`.
 
@@ -26,18 +27,26 @@ Tests use **Vitest** with **@testing-library/react**. See [.claude/rules/tests.m
 
 ## Architecture
 
-| Path                                               | Purpose                                                                   |
-| -------------------------------------------------- | ------------------------------------------------------------------------- |
-| [src/app/(public)/](<src/app/(public)/>)           | Public site (ISR, Server Components by default)                           |
-| [src/app/(admin)/admin/](<src/app/(admin)/admin/>) | Admin CMS — login + auth-guarded shell                                    |
-| [src/app/api/auth.ts](src/app/api/auth.ts)         | `requireAuth`, `requireAuthOrApiKey`, `optionalAuth` (NOT `src/lib/auth`) |
-| [src/proxy.ts](src/proxy.ts)                       | Next.js 16 middleware replacement — JWT guard for admin routes            |
-| [src/components/shared/](src/components/shared/)   | Components shared across public + admin (e.g. `ThemeToggle`)              |
-| [src/components/ui/](src/components/ui/)           | shadcn primitives (use `npx shadcn add`, don't hand-edit)                 |
-| [src/lib/data/](src/lib/data/)                     | Server-side query layer + canonical types                                 |
-| [src/lib/validations/](src/lib/validations/)       | Zod schemas (one file per entity)                                         |
-| [src/lib/errors.ts](src/lib/errors.ts)             | `ApiError` + `withErrorHandler`                                           |
-| [src/lib/prismaClient.ts](src/lib/prismaClient.ts) | Singleton Prisma client (Neon WebSocket adapter)                          |
+| Path                                                                                         | Purpose                                                                       |
+| -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| [src/app/(public)/](<src/app/(public)/>)                                                     | Public site (ISR, Server Components by default)                               |
+| [src/app/(admin)/admin/](<src/app/(admin)/admin/>)                                           | Admin CMS — login + auth-guarded shell                                        |
+| [src/app/api/auth.ts](src/app/api/auth.ts)                                                   | `requireAuth`, `requireAuthOrApiKey`, `optionalAuth` (NOT `src/lib/auth`)     |
+| [src/proxy.ts](src/proxy.ts)                                                                 | Next.js 16 middleware replacement — JWT guard for admin routes                |
+| [src/components/shared/](src/components/shared/)                                             | Components shared across public + admin (e.g. `ThemeToggle`)                  |
+| [src/components/ui/](src/components/ui/)                                                     | shadcn primitives (use `npx shadcn add`, don't hand-edit)                     |
+| [src/lib/data/](src/lib/data/)                                                               | Server-side query layer + canonical types                                     |
+| [src/lib/validations/](src/lib/validations/)                                                 | Zod schemas (one file per entity)                                             |
+| [src/lib/errors.ts](src/lib/errors.ts)                                                       | `ApiError` + `withErrorHandler`                                               |
+| [src/lib/prismaClient.ts](src/lib/prismaClient.ts)                                           | Singleton Prisma client (Neon WebSocket adapter)                              |
+| [src/lib/locale.ts](src/lib/locale.ts)                                                       | `Locale` type (`"en" \| "ja"`) + locale helpers                               |
+| [src/lib/i18n.ts](src/lib/i18n.ts)                                                           | `t()`, `tArray()`, `tJson()`, `ui()`, `UI_STRINGS`, `localizeSkillCategory()` |
+| [src/hooks/use-locale.ts](src/hooks/use-locale.ts)                                           | `useLocale()` hook — reads/sets locale from `LocaleProvider`                  |
+| [src/components/providers/LocaleProvider.tsx](src/components/providers/LocaleProvider.tsx)   | Locale React Context with `localStorage` persistence                          |
+| [src/components/shared/LanguageToggle.tsx](src/components/shared/LanguageToggle.tsx)         | EN/JA toggle button (rendered in public `Header`)                             |
+| [src/components/public/LocalizedContent.tsx](src/components/public/LocalizedContent.tsx)     | `LocalizedText`, `LocalizedHtml`, `LocalizedUi` client components             |
+| [src/app/api/admin/translate/route.ts](src/app/api/admin/translate/route.ts)                 | POST — translates all content entities to Japanese via Claude Haiku           |
+| [src/app/(admin)/admin/(shell)/translations/](<src/app/(admin)/admin/(shell)/translations/>) | Admin translations page ("Update Japanese" button + progress)                 |
 
 Scoped instructions: [src/CLAUDE.md](src/CLAUDE.md), [src/app/api/CLAUDE.md](src/app/api/CLAUDE.md), [prisma/CLAUDE.md](prisma/CLAUDE.md). [AGENTS.md](AGENTS.md) mirrors this guidance for Codex backup sessions.
 
@@ -162,6 +171,8 @@ Domain rules (Zod validation, `withErrorHandler`, ISR/client split, image pipeli
 - ❌ Typing icon props as `icon: React.ElementType` in React 19 — `ElementType` was narrowed in React 19 types such that passing `className` resolves to `never`. Use `icon: React.ComponentType<{ className?: string }>` instead (see `AdminSidebar.tsx`).
 - ❌ Removing `@neondatabase/serverless` or `@prisma/adapter-neon` from `serverExternalPackages` in `next.config.ts` — bundling these into the Lambda causes fetch polyfill conflicts and intermittent "fetch failed" errors.
 - ❌ Switching from `PrismaNeon` (WebSocket) to `PrismaNeonHttp` (HTTP) adapter — the HTTP adapter caused persistent `NeonDbError: fetch failed` and `AbortError` on Lambda cold starts. The WebSocket adapter (`PrismaNeon`) is proven stable in production.
+- ❌ Adding new static UI text directly in components — put it in the `UI_STRINGS` object in `src/lib/i18n.ts` under both `en` and `ja` keys, then access via `ui(locale, "key")`. Hard-coded English strings bypass translation entirely.
+- ❌ Calling `t()` / `tArray()` / `tJson()` on a field that has no `*Ja` column — add the column to the Prisma schema first (follow the `*Ja` nullable column convention) and select it in `public-queries.ts` before wiring the translation helper.
 
 ## MCP Servers
 

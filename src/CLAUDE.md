@@ -85,3 +85,43 @@ Render markdown via [src/lib/markdown.ts](src/lib/markdown.ts) — it's the sani
 - Public images: `next/image` with `src` from `NEXT_PUBLIC_CLOUDFRONT_URL`.
 - Uploads go through [src/app/api/upload/route.ts](src/app/api/upload/route.ts). Images are processed with Sharp into route-specific variants; resume and education PDFs are uploaded as PDFs.
 - Configure new external image hosts in [next.config.ts](next.config.ts) `images.remotePatterns`.
+
+## Internationalization (i18n)
+
+This project supports EN (default) and JA locales. Only two locales — do not add more without discussion.
+
+### How locale flows
+
+1. `LocaleProvider` (`src/components/providers/LocaleProvider.tsx`) wraps the public layout. It persists the selected locale to `localStorage` (mirrors next-themes pattern). Renders `"en"` on the server and hydrates from `localStorage` on the client to avoid mismatch.
+2. `useLocale()` (`src/hooks/use-locale.ts`) reads/sets locale from context in Client Components.
+3. `LanguageToggle` (`src/components/shared/LanguageToggle.tsx`) is a `"use client"` toggle button rendered in the public `Header`.
+
+### Server-side translation helpers (`src/lib/i18n.ts`)
+
+| Helper                                | Use                                                                                                          |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `t(enValue, jaValue, locale)`         | Single string field — returns `jaValue` when locale is `"ja"` and `jaValue` is non-null, otherwise `enValue` |
+| `tArray(enArr, jaArr, locale)`        | String arrays (e.g. `highlights`)                                                                            |
+| `tJson(enJson, jaJson, locale)`       | JSON fields (e.g. `ctaButtons`)                                                                              |
+| `ui(locale, key)`                     | Static UI strings — reads from `UI_STRINGS[locale][key]`. All keys must exist in both `en` and `ja` objects. |
+| `localizeSkillCategory(name, locale)` | Translates freeform skill category names                                                                     |
+
+### Adding new translatable content
+
+1. Add `*Ja` nullable columns to the Prisma model (e.g. `titleJa String? @db.VarChar(200)`). Run `prisma:migrate:dev`.
+2. Add the new field to the `select` in `src/lib/data/public-queries.ts`.
+3. Update `src/lib/data/types.ts` to include the `*Ja` field.
+4. Wrap the field in `t()` / `tArray()` / `tJson()` at the call site, passing both EN and JA values plus the locale.
+5. Trigger translation via the admin translations page (`/admin/translations`) or the `POST /api/admin/translate` endpoint.
+
+### Adding new static UI strings
+
+Add entries to both `en` and `ja` keys in the `UI_STRINGS` map in `src/lib/i18n.ts`. Access via `ui(locale, "yourKey")`. Never hard-code English text in components that are i18n-aware.
+
+### ISR compatibility
+
+Public pages are Server Components with ISR (`revalidate = 60`). They pass **both** EN and JA data down to `LocalizedText` / `LocalizedHtml` / `LocalizedUi` client components (`src/components/public/LocalizedContent.tsx`), which pick the correct value based on the client-side locale. The server never needs to know the user's locale — all switching is client-side.
+
+### What stays English
+
+Skills and Certifications **content** (names, descriptions) stays English — these are technical terms. Section headings and UI chrome for those sections are translated via `UI_STRINGS`.
