@@ -2,7 +2,7 @@
 
 Living document tracking planned features, improvements, and integrations for the portfolio project.
 
-Last updated: 2026-06-10 (favicon/apple-icon, health check endpoint, blog table of contents marked done)
+Last updated: 2026-06-10 (SEO batch: sitemap, OG images, JSON-LD, meta tags marked done — already implemented)
 
 ---
 
@@ -40,10 +40,10 @@ Last updated: 2026-06-10 (favicon/apple-icon, health check endpoint, blog table 
 ## 3. SEO & Discoverability
 
 - [x] Blog reading time estimate
-- [ ] Improve SEO — meta tags, structured data, performance
-- [ ] Custom Open Graph images — dynamic OG images per page/post
-- [ ] Sitemap.xml generation
-- [ ] JSON-LD structured data (Person, Article, Project schemas)
+- [x] Improve SEO — meta tags, structured data, performance (`generateMetadata` on all 7 public pages, `robots.ts`, `metadataBase`, Twitter cards)
+- [x] Custom Open Graph images — dynamic OG images per page/post (root `opengraph-image.tsx` + per-slug routes for blog and projects)
+- [x] Sitemap.xml generation (`src/app/sitemap.ts` — static pages + all published projects/blog posts)
+- [x] JSON-LD structured data (Person + WebSite on homepage, Article on blog, CreativeWork on projects, BreadcrumbList on detail pages)
 - [ ] RSS feed for blog posts
 - [x] Custom logo/favicon on navbar and browser tabs
 - [x] Auto-generated table of contents for blog posts
@@ -178,7 +178,7 @@ Last updated: 2026-06-10 (favicon/apple-icon, health check endpoint, blog table 
 4. ~~**Content import/export** — JSON+CSV bulk import/export for all entities~~ (done)
 5. ~~**Admin dark mode** — theme token pass across all admin files~~ (done)
 6. ~~**Blog enhancements** — social share buttons + reading time~~ (done)
-7. **SEO batch** — OG images, sitemap, JSON-LD, RSS
+7. ~~**SEO batch** — OG images, sitemap, JSON-LD~~ (done) — RSS feed still pending
 8. **Blog features** — LinkedIn importer
 9. ~~**Sentry** — error tracking before adding more features~~ (done)
 10. **Admin improvements** — audit log, certification categories
