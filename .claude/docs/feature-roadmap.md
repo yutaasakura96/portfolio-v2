@@ -109,7 +109,7 @@ Last updated: 2026-06-10 (SEO batch: sitemap, OG images, JSON-LD, meta tags mark
 - [ ] Internationalization (i18n) — evaluate if multilingual audience justifies maintenance cost
 - [x] Dark mode refinements
 - [ ] Add micro-interactions and animation polish — use `emil-design-eng` skill for transitions, spring physics, and interaction choreography
-- [ ] Improve UI/UX quality — use `shadcn` skill for component composition patterns and `web-design-guidelines` skill as a pre-PR quality gate
+- [x] Improve UI/UX quality — use `shadcn` skill for component composition patterns and `web-design-guidelines` skill as a pre-PR quality gate
 - Drag and drop functionality for certificates that will auto populate form.
 - [x] Hamburger menu drop down design — active item now uses orange left-border accent (`border-l-2 border-l-[var(--accent-signature)]`) with subtle background tint, matching the public nav design language. Inactive items have a transparent left border for layout stability.
 - [x] Skills section tabs micro-interactions — active tab indicator changed from black (`after:bg-foreground`) to orange (`after:bg-[var(--accent-signature)]`), using width-based expansion from center (matching the `.nav-link::after` pattern). Hover preview underline added. Tab content transitions use `animate-in fade-in-0 duration-200`.
