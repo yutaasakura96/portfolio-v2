@@ -280,8 +280,11 @@ export function ui(key: UIStringKey, locale: Locale): string {
 
 const SKILL_CATEGORY_MAP: Record<string, string> = {
   Languages: "言語",
+  Frontend: "フロントエンド",
+  Backend: "バックエンド",
   Frameworks: "フレームワーク",
   "Cloud & DevOps": "クラウド & DevOps",
+  "AWS Services": "AWSサービス",
   Databases: "データベース",
   Tools: "ツール",
   Other: "その他",

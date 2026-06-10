@@ -1,9 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 import { useLocale } from "@/hooks/use-locale";
 import { cn } from "@/lib/utils";
+
+const subscribe = () => () => {};
+const getSnapshot = () => true;
+const getServerSnapshot = () => false;
 
 interface LanguageToggleProps {
   className?: string;
@@ -11,11 +15,7 @@ interface LanguageToggleProps {
 
 export function LanguageToggle({ className }: LanguageToggleProps) {
   const { locale, setLocale } = useLocale();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   return (
     <button
