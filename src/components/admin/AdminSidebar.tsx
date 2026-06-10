@@ -64,10 +64,28 @@ export function AdminSidebar({ isOpen = false, onClose }: AdminSidebarProps) {
       <div className="p-6 border-b border-border flex items-center justify-between">
         <Link
           href="/admin"
-          className="text-lg font-bold text-foreground pressable transition-[color,transform] duration-200 hover:text-muted-foreground"
+          className="flex items-center gap-2 text-lg font-bold text-foreground pressable transition-[color,transform] duration-200 hover:text-muted-foreground"
+          aria-label="Admin Dashboard"
         >
-          YA<span className="text-[var(--accent-signature)]">.</span>
-          <span className="ml-2 text-sm font-normal text-muted-foreground">Admin</span>
+          <svg viewBox="0 0 32 32" className="h-7 w-7" aria-hidden="true">
+            <rect width="32" height="32" rx="6" fill="currentColor" className="text-foreground" />
+            <text
+              x="3"
+              y="24"
+              fontFamily="system-ui,-apple-system,sans-serif"
+              fontWeight="700"
+              fontSize="20"
+              fill="currentColor"
+              className="text-background"
+            >
+              YA
+            </text>
+            <circle cx="26" cy="23" r="3" fill="var(--accent-signature)" />
+          </svg>
+          <span>
+            YA<span className="text-[var(--accent-signature)]">.</span>
+          </span>
+          <span className="text-sm font-normal text-muted-foreground">Admin</span>
         </Link>
         <button
           className="md:hidden p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"

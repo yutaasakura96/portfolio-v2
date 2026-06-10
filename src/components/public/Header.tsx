@@ -51,9 +51,27 @@ export function Header() {
       <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
         <Link
           href="/"
-          className="text-lg font-bold tracking-tight text-foreground transition-[color,transform] duration-200 hover:text-muted-foreground pressable"
+          className="flex items-center gap-2 text-lg font-bold tracking-tight text-foreground transition-[color,transform] duration-200 hover:text-muted-foreground pressable"
+          aria-label="Yuta Asakura — Home"
         >
-          YA<span className="text-[var(--accent-signature)]">.</span>
+          <svg viewBox="0 0 32 32" className="h-7 w-7" aria-hidden="true">
+            <rect width="32" height="32" rx="6" fill="currentColor" className="text-foreground" />
+            <text
+              x="3"
+              y="24"
+              fontFamily="system-ui,-apple-system,sans-serif"
+              fontWeight="700"
+              fontSize="20"
+              fill="currentColor"
+              className="text-background"
+            >
+              YA
+            </text>
+            <circle cx="26" cy="23" r="3" fill="var(--accent-signature)" />
+          </svg>
+          <span className="sr-only sm:not-sr-only">
+            YA<span className="text-[var(--accent-signature)]">.</span>
+          </span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">
