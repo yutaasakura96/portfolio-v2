@@ -55,8 +55,6 @@ Last updated: 2026-06-10 (SEO batch: sitemap, OG images, JSON-LD, meta tags mark
 - [x] Sentry integration — `@sentry/nextjs` `^10.56.0` (now properly declared in `package.json`); three runtime configs (`sentry.client.config.ts`, `sentry.server.config.ts`, `sentry.edge.config.ts`), `instrumentation.ts` hook, `withSentryConfig` wrapper in `next.config.ts` (uses `webpack: { treeshake: { removeDebugLogging: true } }` — deprecated `disableLogger: true` removed), `NEXT_PUBLIC_SENTRY_DSN` + `SENTRY_AUTH_TOKEN` env vars wired through `amplify.yml`
 - [x] Sentry MCP server — `mcp__sentry__*` added via `claude mcp add --transport http sentry https://mcp.sentry.dev/mcp`
 - [x] Health check endpoint (`/api/health`) — public GET, pings DB with `prisma.$queryRaw\`SELECT 1\``, returns `{ data: { status, timestamp, database } }` (200 ok / 503 degraded)
-- [ ] CloudWatch Alarms — monitor Amplify build failures, error rates (free tier)
-- [ ] SNS notifications — alert on build failures or errors via email (first 1M free)
 - [ ] Privacy-friendly analytics (Plausible or Umami self-hosted, no cookie banners)
 
 ---
@@ -65,14 +63,11 @@ Last updated: 2026-06-10 (SEO batch: sitemap, OG images, JSON-LD, meta tags mark
 
 - [x] S3 (images), CloudFront (CDN), SES (email), Cognito (auth) — already in use
 - [x] AWS MCP for documentation — already configured
-- [ ] CloudWatch Alarms — basic monitoring (free tier)
-- [ ] SNS — notification delivery for alerts (first 1M free)
 - [ ] SSM Parameter Store — free standard parameters, better secret management
   - Previously attempted but difficult with Amplify's env var setup. Only pursue if a safe migration path exists that doesn't risk the current working configuration.
 - [ ] EventBridge — scheduled tasks
   - Primary use case: trigger LinkedIn-to-blog import on a schedule. Open to other use cases if they emerge.
 - [ ] CloudFront Functions — lightweight edge compute (free tier included)
-- [ ] Explore other free-tier services as needs arise
 
 ---
 
@@ -182,6 +177,5 @@ Last updated: 2026-06-10 (SEO batch: sitemap, OG images, JSON-LD, meta tags mark
 8. **Blog features** — LinkedIn importer
 9. ~~**Sentry** — error tracking before adding more features~~ (done)
 10. **Admin improvements** — audit log, certification categories
-11. **Observability** — CloudWatch, SNS
-12. **Design & UX** — redesign iterations, micro-interactions, dark mode refinements
-13. **Tooling** — new skills, Portfolio MCP, diagram generator
+11. **Design & UX** — redesign iterations, micro-interactions, dark mode refinements
+12. **Tooling** — new skills, Portfolio MCP, diagram generator
