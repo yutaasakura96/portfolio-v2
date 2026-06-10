@@ -14,6 +14,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Non-project files that happen to live in the repo
+    ".agents/**",
+    "coverage/**",
+    "generated/**",
   ]),
 ]);
 

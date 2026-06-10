@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useEffect, useState } from "react";
+import { createContext, useCallback, useEffect, useSyncExternalStore } from "react";
 
 import type { Locale } from "@/lib/locale";
 import { DEFAULT_LOCALE } from "@/lib/locale";
@@ -17,31 +17,35 @@ export const LocaleContext = createContext<LocaleContextValue>({
 
 const STORAGE_KEY = "locale";
 
+let listeners: Array<() => void> = [];
+
+function subscribe(cb: () => void): () => void {
+  listeners = [...listeners, cb];
+  return () => {
+    listeners = listeners.filter((l) => l !== cb);
+  };
+}
+
+function getSnapshot(): Locale {
+  const v = localStorage.getItem(STORAGE_KEY);
+  return v === "ja" || v === "en" ? v : DEFAULT_LOCALE;
+}
+
+function getServerSnapshot(): Locale {
+  return DEFAULT_LOCALE;
+}
+
 export function LocaleProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>(DEFAULT_LOCALE);
-  const [mounted, setMounted] = useState(false);
+  const locale = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === "ja" || stored === "en") {
-      setLocaleState(stored);
-    }
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!mounted) return;
     document.documentElement.lang = locale;
-    localStorage.setItem(STORAGE_KEY, locale);
-  }, [locale, mounted]);
+  }, [locale]);
 
   const setLocale = useCallback((next: Locale) => {
-    setLocaleState(next);
+    localStorage.setItem(STORAGE_KEY, next);
+    listeners.forEach((l) => l());
   }, []);
 
-  return (
-    <LocaleContext value={{ locale: mounted ? locale : DEFAULT_LOCALE, setLocale }}>
-      {children}
-    </LocaleContext>
-  );
+  return <LocaleContext value={{ locale, setLocale }}>{children}</LocaleContext>;
 }
