@@ -33,6 +33,7 @@ Last updated: 2026-06-10 (favicon/apple-icon, health check endpoint, blog table 
 - [x] Vitest — unit/integration test framework (5 test files covering errors, auth, validations, contact route)
 - [x] Playwright MCP — headless browser verification for agents
 - [x] Remove Zustand — removed from package.json, docs updated
+- [ ] Vitest - Additional tests before final audit.
 
 ---
 
