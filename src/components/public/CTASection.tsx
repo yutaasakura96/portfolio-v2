@@ -1,11 +1,14 @@
 "use client";
 
+import { useLocale } from "@/hooks/use-locale";
 import { useReveal } from "@/hooks/use-reveal";
+import { ui } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 export function CTASection() {
+  const { locale } = useLocale();
   const { ref, visible } = useReveal();
 
   return (
@@ -26,20 +29,19 @@ export function CTASection() {
 
           <div className="relative max-w-xl">
             <p className="text-sm font-medium text-[var(--accent-signature)] mb-2">
-              Let&apos;s connect
+              {ui("getInTouch", locale)}
             </p>
             <h2 className="font-display text-2xl font-bold text-foreground sm:text-3xl">
-              Interested in working together?
+              {ui("getInTouchDescription", locale)}
             </h2>
             <p className="mt-4 text-muted-foreground leading-relaxed">
-              I&apos;m always open to discussing new projects, creative ideas, or opportunities to
-              be part of your vision.
+              {ui("contactDescription", locale)}
             </p>
             <Link
               href="/contact"
               className="pressable focus-signature arrow-link mt-8 inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors"
             >
-              Get In Touch
+              {ui("contactMe", locale)}
               <ArrowRight className="h-4 w-4 arrow-icon" />
             </Link>
           </div>

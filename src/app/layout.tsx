@@ -1,3 +1,4 @@
+import { LocaleProvider } from "@/components/providers/LocaleProvider";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import type { Metadata } from "next";
@@ -87,7 +88,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <QueryProvider>{children}</QueryProvider>
+          <LocaleProvider>
+            <QueryProvider>{children}</QueryProvider>
+          </LocaleProvider>
         </ThemeProvider>
       </body>
     </html>

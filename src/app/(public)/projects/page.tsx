@@ -1,3 +1,4 @@
+import { LocalizedUi } from "@/components/public/LocalizedContent";
 import { ProjectBrowser } from "@/components/public/ProjectBrowser";
 import { getPublishedProjects } from "@/lib/data/public-queries";
 import { Metadata } from "next";
@@ -17,10 +18,16 @@ export default async function ProjectsPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 py-12">
       <div className="mb-10">
-        <h1 className="text-3xl font-bold text-foreground sm:text-4xl">Projects</h1>
-        <p className="mt-3 text-muted-foreground max-w-lg">
-          A collection of projects I&apos;ve built, from full-stack applications to developer tools.
-        </p>
+        <LocalizedUi
+          k="projects"
+          as="h1"
+          className="text-3xl font-bold text-foreground sm:text-4xl"
+        />
+        <LocalizedUi
+          k="projectsPageDescription"
+          as="p"
+          className="mt-3 text-muted-foreground max-w-lg"
+        />
       </div>
       {/* Temporary fallback for suspense */}
       <Suspense fallback={<div className="h-64 animate-pulse rounded-lg bg-muted" />}>

@@ -1,6 +1,8 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useLocale } from "@/hooks/use-locale";
+import { localizeSkillCategory, ui } from "@/lib/i18n";
 import { Wrench } from "lucide-react";
 import type { Skill } from "../../../../generated/prisma/client";
 
@@ -38,6 +40,8 @@ function SkillCard({ skill }: { skill: Skill }) {
 }
 
 export function SkillsSection({ skills, categoryOrder }: SkillsSectionProps) {
+  const { locale } = useLocale();
+
   const grouped = skills.reduce<Record<string, Skill[]>>((acc, skill) => {
     const category = skill.category;
     if (!acc[category]) acc[category] = [];
@@ -58,7 +62,7 @@ export function SkillsSection({ skills, categoryOrder }: SkillsSectionProps) {
 
   return (
     <section className="mb-16">
-      <h2 className="text-2xl font-bold text-foreground mb-6">Skills</h2>
+      <h2 className="text-2xl font-bold text-foreground mb-6">{ui("skills", locale)}</h2>
       <Tabs defaultValue={defaultTab}>
         <div className="overflow-x-auto">
           <TabsList
@@ -71,7 +75,7 @@ export function SkillsSection({ skills, categoryOrder }: SkillsSectionProps) {
                 value={category}
                 className="shrink-0 whitespace-nowrap px-3 py-2 text-sm"
               >
-                {category}
+                {localizeSkillCategory(category, locale)}
               </TabsTrigger>
             ))}
           </TabsList>

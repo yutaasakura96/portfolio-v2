@@ -1,6 +1,8 @@
 import { BreadcrumbJsonLd } from "@/components/public/BreadcrumbJsonLd";
 import { ImageGallery } from "@/components/public/ImageGallery";
 import { JsonLd } from "@/components/public/JsonLd";
+import { LocalizedHtml, LocalizedText, LocalizedUi } from "@/components/public/LocalizedContent";
+import { ProjectDetailNav } from "@/components/public/ProjectDetailNav";
 import {
   getAdjacentProjects,
   getProjectBySlug,
@@ -9,7 +11,7 @@ import {
 import { markdownToHtml } from "@/lib/markdown";
 import { normalizeImagesToGroups } from "@/lib/validations/project";
 import { format } from "date-fns";
-import { ArrowLeft, ArrowRight, ExternalLink, Github } from "lucide-react";
+import { ArrowLeft, ExternalLink, Github } from "lucide-react";
 import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -58,18 +60,30 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
   }
 
   let descriptionHtml = "";
+  let descriptionHtmlJa: string | null = null;
   let problemHtml: string | null = null;
+  let problemHtmlJa: string | null = null;
   let solutionHtml: string | null = null;
+  let solutionHtmlJa: string | null = null;
 
   try {
     if (project.description) {
       descriptionHtml = await markdownToHtml(project.description);
     }
+    if (project.descriptionJa) {
+      descriptionHtmlJa = await markdownToHtml(project.descriptionJa);
+    }
     if (project.problem) {
       problemHtml = await markdownToHtml(project.problem);
     }
+    if (project.problemJa) {
+      problemHtmlJa = await markdownToHtml(project.problemJa);
+    }
     if (project.solution) {
       solutionHtml = await markdownToHtml(project.solution);
+    }
+    if (project.solutionJa) {
+      solutionHtmlJa = await markdownToHtml(project.solutionJa);
     }
   } catch (error) {
     console.error("Error processing markdown:", error);
@@ -110,17 +124,32 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors"
       >
         <ArrowLeft className="h-4 w-4" />
-        All Projects
+        <LocalizedUi k="allProjects" />
       </Link>
 
       {/* Header */}
       <header className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground sm:text-4xl">{project.title}</h1>
-        <p className="mt-3 text-lg text-muted-foreground">{project.shortDescription}</p>
+        <LocalizedText
+          en={project.title}
+          ja={project.titleJa}
+          as="h1"
+          className="text-3xl font-bold text-foreground sm:text-4xl"
+        />
+        <LocalizedText
+          en={project.shortDescription}
+          ja={project.shortDescriptionJa}
+          as="p"
+          className="mt-3 text-lg text-muted-foreground"
+        />
 
         {/* Meta */}
         <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-          {project.role && <span>Role: {project.role}</span>}
+          {project.role && (
+            <LocalizedText
+              en={`Role: ${project.role}`}
+              ja={project.roleJa ? `役割: ${project.roleJa}` : null}
+            />
+          )}
           {project.startDate && (
             <span>
               {format(new Date(project.startDate), "MMM yyyy")}
@@ -141,7 +170,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
             >
               <ExternalLink className="h-4 w-4" />
-              Live Demo
+              <LocalizedUi k="liveDemo" />
             </a>
           )}
           {project.repoUrl && (
@@ -152,7 +181,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border text-foreground text-sm font-medium hover:bg-accent transition-colors"
             >
               <Github className="h-4 w-4" />
-              Source Code
+              <LocalizedUi k="sourceCode" />
             </a>
           )}
         </div>
@@ -175,9 +204,11 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
       {/* Tech Stack */}
       <div className="mb-8">
-        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-          Tech Stack
-        </h2>
+        <LocalizedUi
+          k="techStack"
+          as="h2"
+          className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3"
+        />
         <div className="flex flex-wrap gap-2">
           {project.techTags.map((tag) => (
             <span
@@ -195,23 +226,29 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {problemHtml && (
             <div className="p-5 rounded-xl bg-red-50 border border-red-100 dark:bg-red-950/40 dark:border-red-900/60">
-              <h2 className="text-sm font-semibold text-red-800 uppercase tracking-wider mb-2 dark:text-red-300">
-                The Problem
-              </h2>
-              <div
+              <LocalizedUi
+                k="theProblem"
+                as="h2"
+                className="text-sm font-semibold text-red-800 uppercase tracking-wider mb-2 dark:text-red-300"
+              />
+              <LocalizedHtml
+                enHtml={problemHtml}
+                jaHtml={problemHtmlJa}
                 className="prose prose-sm prose-red max-w-none dark:prose-invert"
-                dangerouslySetInnerHTML={{ __html: problemHtml }}
               />
             </div>
           )}
           {solutionHtml && (
             <div className="p-5 rounded-xl bg-green-50 border border-green-100 dark:bg-green-950/40 dark:border-green-900/60">
-              <h2 className="text-sm font-semibold text-green-800 uppercase tracking-wider mb-2 dark:text-green-300">
-                The Solution
-              </h2>
-              <div
+              <LocalizedUi
+                k="theSolution"
+                as="h2"
+                className="text-sm font-semibold text-green-800 uppercase tracking-wider mb-2 dark:text-green-300"
+              />
+              <LocalizedHtml
+                enHtml={solutionHtml}
+                jaHtml={solutionHtmlJa}
                 className="prose prose-sm prose-green max-w-none dark:prose-invert"
-                dangerouslySetInnerHTML={{ __html: solutionHtml }}
               />
             </div>
           )}
@@ -220,9 +257,10 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
       {/* Full Description */}
       {descriptionHtml && (
-        <div
+        <LocalizedHtml
+          enHtml={descriptionHtml}
+          jaHtml={descriptionHtmlJa}
           className="prose prose-gray max-w-none mb-8 dark:prose-invert"
-          dangerouslySetInnerHTML={{ __html: descriptionHtml }}
         />
       )}
 
@@ -232,36 +270,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
       )}
 
       {/* Next / Previous Navigation */}
-      <nav className="mt-12 pt-8 border-t border-border flex justify-between">
-        {prev ? (
-          <Link
-            href={`/projects/${prev.slug}`}
-            className="group flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
-            <div>
-              <div className="text-xs text-muted-foreground">Previous</div>
-              <div className="font-medium">{prev.title}</div>
-            </div>
-          </Link>
-        ) : (
-          <div />
-        )}
-        {next ? (
-          <Link
-            href={`/projects/${next.slug}`}
-            className="group flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors text-right"
-          >
-            <div>
-              <div className="text-xs text-muted-foreground">Next</div>
-              <div className="font-medium">{next.title}</div>
-            </div>
-            <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
-          </Link>
-        ) : (
-          <div />
-        )}
-      </nav>
+      <ProjectDetailNav prev={prev} next={next} />
     </article>
   );
 }

@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { CertificateImageModal } from "@/components/public/CertificateImageModal";
+import { useLocale } from "@/hooks/use-locale";
+import { ui } from "@/lib/i18n";
 import { formatDate } from "@/lib/utils/date-format";
 import { Award, ExternalLink, ImageIcon } from "lucide-react";
 import Image from "next/image";
@@ -12,11 +14,12 @@ interface CertificationsSectionProps {
 }
 
 export function CertificationsSection({ certifications }: CertificationsSectionProps) {
+  const { locale } = useLocale();
   const [certModal, setCertModal] = useState({ open: false, url: "", name: "" });
 
   return (
     <section className="mb-16">
-      <h2 className="text-2xl font-bold text-foreground mb-6">Certifications</h2>
+      <h2 className="text-2xl font-bold text-foreground mb-6">{ui("certifications", locale)}</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {certifications.map((cert) => (
           <div
@@ -50,8 +53,9 @@ export function CertificationsSection({ certifications }: CertificationsSectionP
               )}
 
               <p className="text-xs text-muted-foreground mt-1">
-                Earned {formatDate(cert.dateEarned, "MMM yyyy")}
-                {cert.expirationDate && ` · Expires ${formatDate(cert.expirationDate, "MMM yyyy")}`}
+                {ui("earned", locale)} {formatDate(cert.dateEarned, "MMM yyyy")}
+                {cert.expirationDate &&
+                  ` · ${ui("expires", locale)} ${formatDate(cert.expirationDate, "MMM yyyy")}`}
               </p>
 
               {(cert.credentialUrl || cert.certificateImage) && (
@@ -63,7 +67,7 @@ export function CertificationsSection({ certifications }: CertificationsSectionP
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground hover:underline focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded"
                     >
-                      View Credential
+                      {ui("viewCredential", locale)}
                       <ExternalLink className="h-3 w-3" />
                     </a>
                   )}
@@ -76,7 +80,7 @@ export function CertificationsSection({ certifications }: CertificationsSectionP
                       }
                       className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground hover:underline focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded cursor-pointer"
                     >
-                      View Certificate
+                      {ui("viewCertificate", locale)}
                       <ImageIcon className="h-3 w-3" />
                     </button>
                   )}

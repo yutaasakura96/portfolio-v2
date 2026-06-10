@@ -39,6 +39,8 @@ export type PublicProject = Pick<
   | "endDate"
   | "liveUrl"
   | "repoUrl"
+  | "titleJa"
+  | "shortDescriptionJa"
 >;
 
 export type FeaturedProject = Pick<
@@ -51,6 +53,8 @@ export type FeaturedProject = Pick<
   | "thumbnailImage"
   | "liveUrl"
   | "repoUrl"
+  | "titleJa"
+  | "shortDescriptionJa"
 >;
 
 export type ProjectSummary = Pick<
@@ -64,7 +68,16 @@ export type ProjectSummary = Pick<
 
 export type PublicBlogPost = Pick<
   BlogPost,
-  "id" | "slug" | "title" | "excerpt" | "featuredImage" | "tags" | "readTime" | "publishedAt"
+  | "id"
+  | "slug"
+  | "title"
+  | "excerpt"
+  | "featuredImage"
+  | "tags"
+  | "readTime"
+  | "publishedAt"
+  | "titleJa"
+  | "excerptJa"
 >;
 
 export type BlogPostSummary = Pick<
@@ -77,14 +90,14 @@ export type BlogPostSummary = Pick<
 // ═══════════════════════════════════════════════════════════════════════════
 
 export type AdjacentProjects = {
-  prev: { slug: string; title: string } | null;
-  next: { slug: string; title: string } | null;
+  prev: { slug: string; title: string; titleJa: string | null } | null;
+  next: { slug: string; title: string; titleJa: string | null } | null;
 };
 
 export type ProjectWithAdjacent = {
   project: Project | null;
-  prev: { slug: string; title: string } | null;
-  next: { slug: string; title: string } | null;
+  prev: { slug: string; title: string; titleJa: string | null } | null;
+  next: { slug: string; title: string; titleJa: string | null } | null;
 };
 
 // ═══════════════════════════════════════════════════════════════════════════

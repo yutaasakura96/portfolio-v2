@@ -1,5 +1,7 @@
 "use client";
 
+import { useLocale } from "@/hooks/use-locale";
+import { t, tArray, ui } from "@/lib/i18n";
 import { formatDateRange } from "@/lib/utils/date-format";
 import Image from "next/image";
 import { useState } from "react";
@@ -10,7 +12,7 @@ interface ExperienceSectionProps {
 }
 
 export function ExperienceSection({ experiences }: ExperienceSectionProps) {
-  // Track failed image loads to hide them gracefully
+  const { locale } = useLocale();
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
   const handleImageError = (expId: string) => {
@@ -19,7 +21,7 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
 
   return (
     <section className="mb-16">
-      <h2 className="text-2xl font-bold text-foreground mb-6">Experience</h2>
+      <h2 className="text-2xl font-bold text-foreground mb-6">{ui("experience", locale)}</h2>
       <div className="space-y-0">
         {experiences.map((exp, index) => {
           const shouldShowImage = exp.logoUrl && !failedImages.has(exp.id);
@@ -58,7 +60,9 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
                       )}
                     </h3>
 
-                    <p className="text-sm font-medium text-foreground mt-0.5">{exp.role}</p>
+                    <p className="text-sm font-medium text-foreground mt-0.5">
+                      {t(exp, "role", locale)}
+                    </p>
 
                     {exp.location && (
                       <p className="text-sm text-muted-foreground mt-0.5">{exp.location}</p>
@@ -68,16 +72,16 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
                       {formatDateRange(exp.startDate, exp.endDate)}
                     </p>
 
-                    {exp.description && (
+                    {t(exp, "description", locale) && (
                       <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-                        {exp.description}
+                        {t(exp, "description", locale)}
                       </p>
                     )}
 
                     {/* Highlights */}
-                    {exp.highlights && exp.highlights.length > 0 && (
+                    {tArray(exp, "highlights", locale).length > 0 && (
                       <ul className="mt-3 space-y-1.5" role="list">
-                        {exp.highlights.map((highlight, i) => (
+                        {tArray(exp, "highlights", locale).map((highlight, i) => (
                           <li
                             key={i}
                             className="flex items-start gap-2 text-sm text-muted-foreground"

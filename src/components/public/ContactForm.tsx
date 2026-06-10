@@ -1,5 +1,7 @@
 "use client";
 
+import { useLocale } from "@/hooks/use-locale";
+import { ui } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { contactMessageSchema, type ContactMessageInput } from "@/lib/validations/contact";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,6 +12,7 @@ import { useForm } from "react-hook-form";
 type FormStatus = "idle" | "submitting" | "success" | "error";
 
 export function ContactForm() {
+  const { locale } = useLocale();
   const [status, setStatus] = useState<FormStatus>("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -42,7 +45,7 @@ export function ContactForm() {
 
       if (response.status === 429) {
         setStatus("error");
-        setErrorMessage("Too many messages sent. Please try again in a few minutes.");
+        setErrorMessage(ui("tooManyMessages", locale));
         return;
       }
 
@@ -57,11 +60,10 @@ export function ContactForm() {
       reset();
     } catch {
       setStatus("error");
-      setErrorMessage("Network error. Please check your connection and try again.");
+      setErrorMessage(ui("networkError", locale));
     }
   };
 
-  // ── Success State ──────────────────────────────────
   if (status === "success") {
     return (
       <div className="rounded-xl border border-green-200 bg-green-50 p-10 text-center dark:border-green-900 dark:bg-green-950">
@@ -73,15 +75,17 @@ export function ContactForm() {
         >
           <CheckCircle className="h-7 w-7 text-green-500" />
         </div>
-        <h3 className="text-lg font-semibold text-green-900 dark:text-green-100">Message sent!</h3>
+        <h3 className="text-lg font-semibold text-green-900 dark:text-green-100">
+          {ui("messageSent", locale)}
+        </h3>
         <p className="mt-2 text-sm text-green-700 dark:text-green-300">
-          Thank you for reaching out. I&apos;ll get back to you as soon as possible.
+          {ui("messageSentDescription", locale)}
         </p>
         <button
           onClick={() => setStatus("idle")}
           className="pressable mt-6 text-sm font-medium text-green-700 underline hover:text-green-900 dark:text-green-300 dark:hover:text-green-100"
         >
-          Send another message
+          {ui("sendAnother", locale)}
         </button>
       </div>
     );
@@ -90,7 +94,6 @@ export function ContactForm() {
   const inputBase =
     "mt-1.5 block w-full rounded-lg border bg-background px-4 py-2.5 text-sm text-foreground transition-[border-color,box-shadow] duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--accent-signature)]/30 focus:border-[var(--accent-signature)]";
 
-  // ── Form ───────────────────────────────────────────
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
       {/* Honeypot — hidden from users, visible to bots */}
@@ -119,14 +122,14 @@ export function ContactForm() {
         {/* Name */}
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-foreground">
-            Name <span className="text-[var(--accent-signature)]">*</span>
+            {ui("name", locale)} <span className="text-[var(--accent-signature)]">*</span>
           </label>
           <input
             id="name"
             type="text"
             {...register("name")}
             className={cn(inputBase, errors.name ? "border-destructive/50" : "border-input")}
-            placeholder="Your name"
+            placeholder={ui("yourName", locale)}
             disabled={status === "submitting"}
           />
           {errors.name && <p className="mt-1 text-sm text-destructive">{errors.name.message}</p>}
@@ -135,14 +138,14 @@ export function ContactForm() {
         {/* Email */}
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-foreground">
-            Email <span className="text-[var(--accent-signature)]">*</span>
+            {ui("email", locale)} <span className="text-[var(--accent-signature)]">*</span>
           </label>
           <input
             id="email"
             type="email"
             {...register("email")}
             className={cn(inputBase, errors.email ? "border-destructive/50" : "border-input")}
-            placeholder="your@email.com"
+            placeholder={ui("yourEmail", locale)}
             disabled={status === "submitting"}
           />
           {errors.email && <p className="mt-1 text-sm text-destructive">{errors.email.message}</p>}
@@ -152,14 +155,14 @@ export function ContactForm() {
       {/* Subject */}
       <div>
         <label htmlFor="subject" className="block text-sm font-medium text-foreground">
-          Subject
+          {ui("subject", locale)}
         </label>
         <input
           id="subject"
           type="text"
           {...register("subject")}
           className={cn(inputBase, errors.subject ? "border-destructive/50" : "border-input")}
-          placeholder="What is this about?"
+          placeholder={ui("subjectPlaceholder", locale)}
           disabled={status === "submitting"}
         />
         {errors.subject && (
@@ -170,7 +173,7 @@ export function ContactForm() {
       {/* Message */}
       <div>
         <label htmlFor="message" className="block text-sm font-medium text-foreground">
-          Message <span className="text-[var(--accent-signature)]">*</span>
+          {ui("message", locale)} <span className="text-[var(--accent-signature)]">*</span>
         </label>
         <textarea
           id="message"
@@ -181,7 +184,7 @@ export function ContactForm() {
             "resize-y",
             errors.message ? "border-destructive/50" : "border-input"
           )}
-          placeholder="Your message..."
+          placeholder={ui("messagePlaceholder", locale)}
           disabled={status === "submitting"}
         />
         {errors.message && (
@@ -198,12 +201,12 @@ export function ContactForm() {
         {status === "submitting" ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" />
-            Sending...
+            {ui("sending", locale)}
           </>
         ) : (
           <>
             <Send className="h-4 w-4 arrow-icon" />
-            Send Message
+            {ui("send", locale)}
           </>
         )}
       </button>

@@ -1,3 +1,7 @@
+"use client";
+
+import { useLocale } from "@/hooks/use-locale";
+import { t, ui } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { ExternalLink, Github } from "lucide-react";
 import Image from "next/image";
@@ -12,6 +16,8 @@ interface ProjectCardProps {
     thumbnailImage: string;
     liveUrl?: string | null;
     repoUrl?: string | null;
+    titleJa?: string | null;
+    shortDescriptionJa?: string | null;
   };
   priority?: boolean;
   index?: number;
@@ -24,6 +30,8 @@ export function ProjectCard({
   index = 0,
   featured = false,
 }: ProjectCardProps) {
+  const { locale } = useLocale();
+
   return (
     <article
       className={cn(
@@ -62,12 +70,12 @@ export function ProjectCard({
       <div className={cn("p-5", featured && "sm:flex sm:flex-col sm:justify-center sm:p-8")}>
         <Link href={`/projects/${project.slug}`}>
           <h3 className="text-lg font-semibold text-foreground group-hover:text-[var(--accent-signature)] transition-colors duration-200">
-            {project.title}
+            {t(project, "title", locale)}
           </h3>
         </Link>
 
         <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
-          {project.shortDescription}
+          {t(project, "shortDescription", locale)}
         </p>
 
         {/* Tech Tags */}
@@ -97,7 +105,7 @@ export function ProjectCard({
               className="arrow-link inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               <ExternalLink className="h-3.5 w-3.5 arrow-icon" />
-              Live Demo
+              {ui("liveDemo", locale)}
             </a>
           )}
           {project.repoUrl && (
@@ -108,7 +116,7 @@ export function ProjectCard({
               className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               <Github className="h-3.5 w-3.5" />
-              Code
+              {ui("sourceCode", locale)}
             </a>
           )}
         </div>

@@ -1,3 +1,4 @@
+import { LocalizedUi } from "@/components/public/LocalizedContent";
 import { getSiteSettings } from "@/lib/data/public-queries";
 import { Github, Linkedin, Mail, Twitter } from "lucide-react";
 
@@ -19,7 +20,6 @@ export async function Footer() {
   }
 
   const currentYear = new Date().getFullYear();
-  const siteName = settings?.siteName ?? "Yuta Asakura";
   const email = settings?.email;
 
   return (
@@ -32,7 +32,7 @@ export async function Footer() {
               <span className="text-[var(--accent-signature)]">.</span>
             </span>
             <span className="text-xs">
-              &copy; {currentYear} {siteName}
+              &copy; {currentYear} <LocalizedUi k="copyright" />
             </span>
           </div>
 

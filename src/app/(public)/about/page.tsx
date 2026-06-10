@@ -1,3 +1,4 @@
+import { AboutPageHeading } from "@/components/public/about/AboutPageHeading";
 import { AboutProfileSection } from "@/components/public/about/AboutProfileSection";
 import { CertificationsSection } from "@/components/public/about/CertificationsSection";
 import { EducationSection } from "@/components/public/about/EducationSection";
@@ -22,9 +23,6 @@ export const metadata: Metadata = {
 
 // Revalidate daily (86400 seconds = 24 hours)
 export const revalidate = 60;
-
-const DEFAULT_HEADING = "About Me";
-const DEFAULT_SUBHEADING = "My skills, professional experience, education, and certifications.";
 
 type SocialLinks = {
   github?: string;
@@ -57,14 +55,7 @@ export default async function AboutPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 py-12">
-      <div className="mb-12">
-        <h1 className="text-3xl font-bold text-foreground sm:text-4xl">
-          {intro?.heading ?? DEFAULT_HEADING}
-        </h1>
-        <p className="mt-3 text-muted-foreground max-w-lg">
-          {intro?.subheading ?? DEFAULT_SUBHEADING}
-        </p>
-      </div>
+      <AboutPageHeading intro={intro} />
 
       {hasProfileSection && (
         <AboutProfileSection

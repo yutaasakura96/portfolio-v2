@@ -1,3 +1,7 @@
+"use client";
+
+import { useLocale } from "@/hooks/use-locale";
+import { t } from "@/lib/i18n";
 import type { AboutPage } from "@/lib/data/types";
 import { Github, Linkedin, Mail } from "lucide-react";
 import Image from "next/image";
@@ -20,9 +24,12 @@ export function AboutProfileSection({
   email,
   socialLinks,
 }: AboutProfileSectionProps) {
-  const paragraphs = intro.introBio?.split(/\n\n+/).filter(Boolean) ?? [];
+  const { locale } = useLocale();
+  const bioText = t(intro, "introBio", locale);
+  const paragraphs = bioText?.split(/\n\n+/).filter(Boolean) ?? [];
   const hasProfileCard = intro.profileName || profileImage;
-  const hasIntroContent = intro.introHeadline || paragraphs.length > 0;
+  const introHeadline = t(intro, "introHeadline", locale);
+  const hasIntroContent = introHeadline || paragraphs.length > 0;
 
   if (!hasProfileCard && !hasIntroContent) return null;
 
@@ -51,8 +58,8 @@ export function AboutProfileSection({
         {intro.profileName && (
           <h2 className="text-xl font-bold text-foreground">{intro.profileName}</h2>
         )}
-        {intro.profileTitle && (
-          <p className="mt-1 text-sm text-muted-foreground">{intro.profileTitle}</p>
+        {t(intro, "profileTitle", locale) && (
+          <p className="mt-1 text-sm text-muted-foreground">{t(intro, "profileTitle", locale)}</p>
         )}
         {intro.profileCompany && (
           <p className="mt-0.5 text-sm text-muted-foreground">{intro.profileCompany}</p>
@@ -97,8 +104,8 @@ export function AboutProfileSection({
 
       {/* Right: Introduction Content */}
       <div>
-        {intro.introHeadline && (
-          <h2 className="text-2xl font-bold text-foreground mb-6">{intro.introHeadline}</h2>
+        {introHeadline && (
+          <h2 className="text-2xl font-bold text-foreground mb-6">{introHeadline}</h2>
         )}
         {paragraphs.length > 0 && (
           <div className="space-y-4 max-w-2xl">

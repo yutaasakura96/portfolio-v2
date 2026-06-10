@@ -1,5 +1,7 @@
 "use client";
 
+import { useLocale } from "@/hooks/use-locale";
+import { t, tJson, ui } from "@/lib/i18n";
 import type { Hero } from "@/lib/data/types";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -28,7 +30,8 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ hero }: HeroSectionProps) {
-  const ctaButtons = (hero.ctaButtons as unknown as CtaButton[]) ?? [];
+  const { locale } = useLocale();
+  const ctaButtons = tJson<typeof hero, CtaButton[]>(hero, "ctaButtons", locale) ?? [];
   const [resumeOpen, setResumeOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -61,7 +64,7 @@ export function HeroSection({ hero }: HeroSectionProps) {
                 transition: "opacity 500ms var(--ease-out), transform 500ms var(--ease-out)",
               }}
             >
-              Hello, I&apos;m
+              {ui("hello", locale)}
             </p>
 
             {/* Main headline with stagger */}
@@ -74,11 +77,11 @@ export function HeroSection({ hero }: HeroSectionProps) {
                   "opacity 600ms var(--ease-out) 100ms, transform 600ms var(--ease-out) 100ms",
               }}
             >
-              {hero.headline}
+              {t(hero, "headline", locale)}
               <span className="text-[var(--accent-signature)]">.</span>
             </h1>
 
-            {hero.subheadline && (
+            {t(hero, "subheadline", locale) && (
               <p
                 className="mt-4 text-lg sm:text-xl text-muted-foreground"
                 style={{
@@ -88,7 +91,7 @@ export function HeroSection({ hero }: HeroSectionProps) {
                     "opacity 600ms var(--ease-out) 200ms, transform 600ms var(--ease-out) 200ms",
                 }}
               >
-                {hero.subheadline}
+                {t(hero, "subheadline", locale)}
               </p>
             )}
 
@@ -101,7 +104,7 @@ export function HeroSection({ hero }: HeroSectionProps) {
                   "opacity 600ms var(--ease-out) 300ms, transform 600ms var(--ease-out) 300ms",
               }}
             >
-              {hero.bio}
+              {t(hero, "bio", locale)}
             </p>
 
             {/* CTA Buttons */}
@@ -146,7 +149,9 @@ export function HeroSection({ hero }: HeroSectionProps) {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
               </span>
-              <span className="text-xs text-muted-foreground">Available for new opportunities</span>
+              <span className="text-xs text-muted-foreground">
+                {ui("availableForOpportunities", locale)}
+              </span>
             </div>
           </div>
 

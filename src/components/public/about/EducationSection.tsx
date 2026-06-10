@@ -1,6 +1,8 @@
 "use client";
 
 import { DocumentModal } from "@/components/public/DocumentModal";
+import { useLocale } from "@/hooks/use-locale";
+import { t, ui } from "@/lib/i18n";
 import { formatDateRange } from "@/lib/utils/date-format";
 import { FileText, GraduationCap } from "lucide-react";
 import Image from "next/image";
@@ -12,6 +14,7 @@ interface EducationSectionProps {
 }
 
 export function EducationSection({ education }: EducationSectionProps) {
+  const { locale } = useLocale();
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
   const [openDocumentId, setOpenDocumentId] = useState<string | null>(null);
 
@@ -23,7 +26,7 @@ export function EducationSection({ education }: EducationSectionProps) {
 
   return (
     <section className="mb-16">
-      <h2 className="text-2xl font-bold text-foreground mb-6">Education</h2>
+      <h2 className="text-2xl font-bold text-foreground mb-6">{ui("education", locale)}</h2>
       <div className="space-y-4">
         {education.map((edu) => {
           const shouldShowImage = edu.logoUrl && !failedImages.has(edu.id);
@@ -49,7 +52,7 @@ export function EducationSection({ education }: EducationSectionProps) {
                   )}
                 </h3>
 
-                <p className="text-sm text-muted-foreground">{edu.degree}</p>
+                <p className="text-sm text-muted-foreground">{t(edu, "degree", locale)}</p>
 
                 {edu.field && <p className="text-sm text-muted-foreground">{edu.field}</p>}
 
@@ -57,9 +60,9 @@ export function EducationSection({ education }: EducationSectionProps) {
                   {formatDateRange(edu.startDate, edu.endDate, "yyyy")}
                 </p>
 
-                {edu.achievements && (
+                {t(edu, "achievements", locale) && (
                   <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                    {edu.achievements}
+                    {t(edu, "achievements", locale)}
                   </p>
                 )}
 

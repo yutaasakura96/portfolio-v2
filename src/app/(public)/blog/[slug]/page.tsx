@@ -1,6 +1,7 @@
 import "highlight.js/styles/github-dark.css";
 import { BreadcrumbJsonLd } from "@/components/public/BreadcrumbJsonLd";
 import { JsonLd } from "@/components/public/JsonLd";
+import { LocalizedHtml, LocalizedText, LocalizedUi } from "@/components/public/LocalizedContent";
 import { getPostBySlug, getPublishedPostSlugs } from "@/lib/data/public-queries";
 import { TableOfContents } from "@/components/public/TableOfContents";
 import { extractHeadings, markdownToHtml } from "@/lib/markdown";
@@ -59,6 +60,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   }
 
   const contentHtml = await markdownToHtml(post.content);
+  const contentHtmlJa = post.contentJa ? await markdownToHtml(post.contentJa) : null;
   const headings = extractHeadings(post.content);
   const showToc = headings.length >= 2;
 
@@ -94,7 +96,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            All Posts
+            <LocalizedUi k="allPosts" />
           </Link>
 
           {/* Header */}
@@ -113,7 +115,12 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               </div>
             )}
 
-            <h1 className="text-3xl font-bold text-foreground sm:text-4xl">{post.title}</h1>
+            <LocalizedText
+              en={post.title}
+              ja={post.titleJa}
+              as="h1"
+              className="text-3xl font-bold text-foreground sm:text-4xl"
+            />
 
             {/* Meta */}
             <div className="mt-4 flex items-center gap-4 text-sm text-muted-foreground">
@@ -150,9 +157,10 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           {showToc && <TableOfContents headings={headings} variant="mobile" />}
 
           {/* Content */}
-          <div
+          <LocalizedHtml
+            enHtml={contentHtml}
+            jaHtml={contentHtmlJa}
             className="prose prose-gray prose-lg max-w-none dark:prose-invert prose-headings:scroll-mt-20 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline dark:prose-a:text-blue-400 prose-code:before:content-none prose-code:after:content-none prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-normal prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-img:rounded-lg prose-img:shadow-md"
-            dangerouslySetInnerHTML={{ __html: contentHtml }}
           />
 
           {/* Bottom CTA */}
@@ -162,11 +170,11 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               title={post.title}
             />
             <p className="text-muted-foreground">
-              Enjoyed this post?{" "}
+              <LocalizedUi k="enjoyedPost" />{" "}
               <Link href="/contact" className="text-foreground font-medium hover:underline">
-                Get in touch
+                <LocalizedUi k="getInTouch" />
               </Link>{" "}
-              — I&apos;d love to hear your thoughts.
+              <LocalizedUi k="getLoveToHear" />
             </p>
           </div>
         </article>

@@ -1,5 +1,7 @@
 "use client";
 
+import { useLocale } from "@/hooks/use-locale";
+import { ui } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { Facebook, Link, Linkedin, Twitter } from "lucide-react";
 import { toast } from "sonner";
@@ -32,18 +34,20 @@ const platforms = [
 ] as const;
 
 export default function SocialShareButtons({ url, title, className }: SocialShareButtonsProps) {
+  const { locale } = useLocale();
+
   async function copyLink() {
     try {
       await navigator.clipboard.writeText(url);
-      toast.success("Link copied to clipboard");
+      toast.success(ui("linkCopied", locale));
     } catch {
-      toast.error("Failed to copy link");
+      toast.error(ui("copyFailed", locale));
     }
   }
 
   return (
     <div className={cn("flex items-center gap-1", className)}>
-      <span className="mr-2 text-sm text-muted-foreground">Share</span>
+      <span className="mr-2 text-sm text-muted-foreground">{ui("share", locale)}</span>
       {platforms.map((platform) => (
         <a
           key={platform.name}

@@ -1,5 +1,7 @@
 "use client";
 
+import { useLocale } from "@/hooks/use-locale";
+import { ui } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -19,6 +21,8 @@ interface Project {
   endDate: Date | null;
   liveUrl: string | null;
   repoUrl: string | null;
+  titleJa?: string | null;
+  shortDescriptionJa?: string | null;
 }
 
 interface ProjectBrowserProps {
@@ -28,6 +32,7 @@ interface ProjectBrowserProps {
 type SortOption = "order" | "newest" | "oldest" | "title";
 
 export function ProjectBrowser({ projects }: ProjectBrowserProps) {
+  const { locale } = useLocale();
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -144,7 +149,7 @@ export function ProjectBrowser({ projects }: ProjectBrowserProps) {
             type="text"
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
-            placeholder="Search projects..."
+            placeholder={ui("searchProjects", locale)}
             className="w-full pl-10 pr-4 py-2 rounded-lg border border-input bg-background text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           />
         </div>
@@ -157,10 +162,10 @@ export function ProjectBrowser({ projects }: ProjectBrowserProps) {
             onChange={(e) => handleSortChange(e.target.value as SortOption)}
             className="rounded-lg border border-input text-sm py-2 px-3 bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           >
-            <option value="order">Default Order</option>
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-            <option value="title">A → Z</option>
+            <option value="order">{ui("defaultOrder", locale)}</option>
+            <option value="newest">{ui("newestFirst", locale)}</option>
+            <option value="oldest">{ui("oldestFirst", locale)}</option>
+            <option value="title">{ui("aToZ", locale)}</option>
           </select>
         </div>
 
@@ -171,7 +176,7 @@ export function ProjectBrowser({ projects }: ProjectBrowserProps) {
             className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground px-3 py-2 rounded-lg border border-input hover:bg-accent transition-colors"
           >
             <X className="h-3.5 w-3.5" />
-            Clear
+            {ui("clear", locale)}
           </button>
         )}
       </div>
@@ -200,8 +205,10 @@ export function ProjectBrowser({ projects }: ProjectBrowserProps) {
       {filteredProjects.length > 0 ? (
         <>
           <p className="text-sm text-muted-foreground mb-4">
-            {filteredProjects.length} project{filteredProjects.length !== 1 ? "s" : ""}
-            {hasActiveFilters ? " found" : ""}
+            {filteredProjects.length}{" "}
+            {locale === "ja"
+              ? `${ui("projects", locale)}${hasActiveFilters ? ui("projectsFound", locale) : ""}`
+              : `project${filteredProjects.length !== 1 ? "s" : ""}${hasActiveFilters ? ` ${ui("projectsFound", locale)}` : ""}`}
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {filteredProjects.map((project, i) => (
@@ -211,12 +218,12 @@ export function ProjectBrowser({ projects }: ProjectBrowserProps) {
         </>
       ) : (
         <div className="text-center py-12">
-          <p className="text-muted-foreground">No projects found matching your criteria.</p>
+          <p className="text-muted-foreground">{ui("noProjectsFound", locale)}</p>
           <button
             onClick={clearFilters}
             className="mt-3 text-sm text-muted-foreground underline hover:text-foreground"
           >
-            Clear filters
+            {ui("clearFilters", locale)}
           </button>
         </div>
       )}

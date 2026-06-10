@@ -1,9 +1,12 @@
+"use client";
+
+import { useLocale } from "@/hooks/use-locale";
+import { t } from "@/lib/i18n";
+import { formatReadingTime } from "@/lib/reading-time";
 import { format } from "date-fns";
 import { Calendar, Clock } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-
-import { formatReadingTime } from "@/lib/reading-time";
 
 interface BlogPostCardProps {
   post: {
@@ -14,11 +17,15 @@ interface BlogPostCardProps {
     tags: string[];
     readTime: number | null;
     publishedAt: Date | null;
+    titleJa?: string | null;
+    excerptJa?: string | null;
   };
   index?: number;
 }
 
 export function BlogPostCard({ post, index = 0 }: BlogPostCardProps) {
+  const { locale } = useLocale();
+
   return (
     <article
       className="card-interactive group rounded-xl border border-border bg-card overflow-hidden stagger-item"
@@ -59,12 +66,14 @@ export function BlogPostCard({ post, index = 0 }: BlogPostCardProps) {
         {/* Title */}
         <Link href={`/blog/${post.slug}`}>
           <h3 className="text-lg font-semibold text-foreground group-hover:text-[var(--accent-signature)] transition-colors duration-200 line-clamp-2">
-            {post.title}
+            {t(post, "title", locale)}
           </h3>
         </Link>
 
         {/* Excerpt */}
-        <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{post.excerpt}</p>
+        <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+          {t(post, "excerpt", locale)}
+        </p>
 
         {/* Meta */}
         <div className="mt-4 flex items-center gap-4 text-xs text-muted-foreground">

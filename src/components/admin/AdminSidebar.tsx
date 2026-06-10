@@ -8,6 +8,7 @@ import {
   Briefcase,
   FileText,
   FolderKanban,
+  Globe,
   GraduationCap,
   Home,
   LayoutDashboard,
@@ -42,6 +43,7 @@ const navItems: NavItem[] = [
   { href: "/admin/certifications", label: "Certifications", icon: Award },
   { href: "/admin/settings", label: "Settings", icon: Settings },
   { href: "/admin/import", label: "Import / Export", icon: ArrowUpDown },
+  { href: "/admin/translations", label: "Translations", icon: Globe },
 ];
 
 interface AdminSidebarProps {

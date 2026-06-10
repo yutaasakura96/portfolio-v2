@@ -1,7 +1,9 @@
 "use client";
 
 import { BlogPostCard } from "@/components/public/BlogPostCard";
+import { useLocale } from "@/hooks/use-locale";
 import { useReveal } from "@/hooks/use-reveal";
+import { ui } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
@@ -15,6 +17,8 @@ interface RecentPost {
   tags: string[];
   readTime: number | null;
   publishedAt: Date | null;
+  titleJa?: string | null;
+  excerptJa?: string | null;
 }
 
 interface RecentPostsProps {
@@ -22,6 +26,7 @@ interface RecentPostsProps {
 }
 
 export function RecentPosts({ posts }: RecentPostsProps) {
+  const { locale } = useLocale();
   const { ref, visible } = useReveal();
 
   return (
@@ -32,16 +37,18 @@ export function RecentPosts({ posts }: RecentPostsProps) {
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
         <div className="flex items-end justify-between mb-8">
           <div>
-            <p className="text-sm font-medium text-[var(--accent-signature)] mb-1">Blog</p>
+            <p className="text-sm font-medium text-[var(--accent-signature)] mb-1">
+              {ui("blog", locale)}
+            </p>
             <h2 className="font-display text-2xl font-bold text-foreground sm:text-3xl">
-              Recent Posts
+              {ui("recentPosts", locale)}
             </h2>
           </div>
           <Link
             href="/blog"
             className="arrow-link inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2.5 -my-2.5"
           >
-            View all
+            {ui("viewAll", locale)}
             <ArrowRight className="h-4 w-4 arrow-icon" />
           </Link>
         </div>

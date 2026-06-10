@@ -1,24 +1,34 @@
 "use client";
 
+import { LanguageToggle } from "@/components/shared/LanguageToggle";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
+import { useLocale } from "@/hooks/use-locale";
+import { ui } from "@/lib/i18n";
+import type { UIStringKey } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-const navItems = [
-  { href: "/", label: "Home" },
-  { href: "/projects", label: "Projects" },
-  { href: "/blog", label: "Blog" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
+const navKeys: Array<{ href: string; key: UIStringKey }> = [
+  { href: "/", key: "home" },
+  { href: "/projects", key: "projects" },
+  { href: "/blog", key: "blog" },
+  { href: "/about", key: "about" },
+  { href: "/contact", key: "contact" },
 ];
 
 export function Header() {
   const pathname = usePathname();
+  const { locale } = useLocale();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  const navItems = useMemo(
+    () => navKeys.map((n) => ({ href: n.href, label: ui(n.key, locale) })),
+    [locale]
+  );
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -74,10 +84,12 @@ export function Header() {
               </Link>
             );
           })}
-          <ThemeToggle className="ml-2" />
+          <LanguageToggle className="ml-1" />
+          <ThemeToggle className="ml-1" />
         </nav>
 
         <div className="flex items-center gap-1 md:hidden">
+          <LanguageToggle />
           <ThemeToggle />
           <button
             type="button"

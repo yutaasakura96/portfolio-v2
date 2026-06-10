@@ -69,6 +69,8 @@ export async function getPublishedProjects(): Promise<PublicProject[]> {
         endDate: true,
         liveUrl: true,
         repoUrl: true,
+        titleJa: true,
+        shortDescriptionJa: true,
       },
     });
   } catch (error) {
@@ -93,6 +95,8 @@ export async function getFeaturedProjects(limit = 4): Promise<FeaturedProject[]>
         thumbnailImage: true,
         liveUrl: true,
         repoUrl: true,
+        titleJa: true,
+        shortDescriptionJa: true,
       },
     });
   } catch (error) {
@@ -133,12 +137,12 @@ export async function getAdjacentProjects(currentOrder: number): Promise<Adjacen
       prisma.project.findFirst({
         where: { status: "PUBLISHED", displayOrder: { lt: currentOrder } },
         orderBy: { displayOrder: "desc" },
-        select: { slug: true, title: true },
+        select: { slug: true, title: true, titleJa: true },
       }),
       prisma.project.findFirst({
         where: { status: "PUBLISHED", displayOrder: { gt: currentOrder } },
         orderBy: { displayOrder: "asc" },
-        select: { slug: true, title: true },
+        select: { slug: true, title: true, titleJa: true },
       }),
     ]);
     return { prev, next };
@@ -184,6 +188,8 @@ export async function getPublishedPosts(limit?: number): Promise<PublicBlogPost[
         tags: true,
         readTime: true,
         publishedAt: true,
+        titleJa: true,
+        excerptJa: true,
       },
     });
   } catch (error) {
@@ -256,6 +262,8 @@ export async function getPostsByTag(tag: string): Promise<PublicBlogPost[]> {
         tags: true,
         readTime: true,
         publishedAt: true,
+        titleJa: true,
+        excerptJa: true,
       },
     });
   } catch (error) {
