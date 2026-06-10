@@ -21,6 +21,7 @@ import {
 import type { Certification } from "@/lib/data/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Loader2, Sparkles } from "lucide-react";
 import { useEffect } from "react";
 import { useForm, useWatch, type Resolver } from "react-hook-form";
 import { toast } from "sonner";
@@ -116,6 +117,36 @@ export function CertificationFormDialog({
       toast.error(message);
     },
   });
+
+  const extractMutation = useMutation({
+    mutationFn: (imageUrl: string) => apiClient.extractCertification(imageUrl),
+    onSuccess: ({ data }) => {
+      const current = form.getValues();
+      if (data.name && !current.name) form.setValue("name", data.name, { shouldDirty: true });
+      if (data.issuer && !current.issuer)
+        form.setValue("issuer", data.issuer, { shouldDirty: true });
+      if (data.dateEarned && !current.dateEarned)
+        form.setValue("dateEarned", data.dateEarned as unknown as Date, { shouldDirty: true });
+      if (data.expirationDate && !current.expirationDate)
+        form.setValue("expirationDate", data.expirationDate as unknown as Date, {
+          shouldDirty: true,
+        });
+      if (data.credentialId && !current.credentialId)
+        form.setValue("credentialId", data.credentialId, { shouldDirty: true });
+      if (data.credentialUrl && !current.credentialUrl)
+        form.setValue("credentialUrl", data.credentialUrl, { shouldDirty: true });
+      toast.success("Fields auto-filled from certificate");
+    },
+    onError: () => {
+      toast.error("Could not extract details — fill manually");
+    },
+  });
+
+  const handleCertificateImageUpload = (r: { urls: Record<string, string> }) => {
+    const imageUrl = r.urls.display || r.urls.original;
+    form.setValue("certificateImage", imageUrl, { shouldDirty: true });
+    extractMutation.mutate(imageUrl);
+  };
 
   const handleSubmit = (values: CertificationCreateInput) => {
     mutation.mutate(values);
@@ -318,7 +349,7 @@ export function CertificationFormDialog({
           <div className="space-y-2">
             <Label>Certificate Image</Label>
             <p className="text-xs text-muted-foreground">
-              Upload a scan or photo of the certificate
+              Upload a scan or photo of the certificate — fields will auto-fill
             </p>
             <div className="max-w-sm">
               <ImageUpload
@@ -326,16 +357,19 @@ export function CertificationFormDialog({
                 folder="certifications"
                 entityId={initialData?.id || "new"}
                 aspectRatio="aspect-video"
-                placeholder="Upload certificate image"
+                placeholder="Drop certificate image to auto-fill form"
                 extraFields={{ variant: "certificate" }}
-                onUpload={(r) =>
-                  form.setValue("certificateImage", r.urls.display || r.urls.original, {
-                    shouldDirty: true,
-                  })
-                }
+                onUpload={handleCertificateImageUpload}
                 onRemove={() => form.setValue("certificateImage", "", { shouldDirty: true })}
               />
             </div>
+            {extractMutation.isPending && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="size-4 animate-spin" />
+                <Sparkles className="size-4" />
+                <span>Extracting certification details...</span>
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-2 pt-2">

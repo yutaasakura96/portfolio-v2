@@ -294,6 +294,22 @@ class ApiClient {
     });
   }
 
+  extractCertification(imageUrl: string) {
+    return this.request<
+      ApiResponse<{
+        name?: string;
+        issuer?: string;
+        dateEarned?: string;
+        expirationDate?: string;
+        credentialId?: string;
+        credentialUrl?: string;
+      }>
+    >("/admin/certifications/extract", {
+      method: "POST",
+      body: JSON.stringify({ imageUrl }),
+    });
+  }
+
   // ── Blog ──────────────────────────────────────────
   getBlogPosts<T = unknown, M = unknown>(params?: QueryParams) {
     const query = params ? "?" + new URLSearchParams(params).toString() : "";

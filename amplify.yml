@@ -44,6 +44,9 @@ frontend:
 
           # Sentry (SENTRY_AUTH_TOKEN is build-time only — injected by Amplify Console, not needed here)
           NEXT_PUBLIC_SENTRY_DSN=${NEXT_PUBLIC_SENTRY_DSN}
+
+          # Anthropic (certificate extraction — optional, feature degrades gracefully if unset)
+          ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
           EOF
         - npm ci
         - npx prisma generate
