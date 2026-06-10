@@ -169,6 +169,7 @@ After any mutation that affects a public page, call `revalidatePath` for every a
 - **`/api/skills` and `/api/skill-categories`** — skills support `visible` filtering plus grouped responses; skill categories are a separate reorderable resource.
 - **`/api/upload`** — authenticated multipart upload endpoint for projects, blog, profile, logos, certifications, resume PDFs, and education documents. Images are processed by `src/lib/image-processor.ts`; files are stored in S3 and returned as CloudFront URLs.
 - **`/api/resume/download`** — public resume download endpoint.
+- **`GET /api/health`** — public health check endpoint. No auth, no rate limiting. Pings DB with `prisma.$queryRaw\`SELECT 1\``. Returns `{ data: { status: "ok"|"degraded", timestamp, database: "connected"|"disconnected" } }`with HTTP 200 (ok) or 503 (degraded). Wrapped in`withErrorHandler`.
 
 ## Import/Export Routes
 
