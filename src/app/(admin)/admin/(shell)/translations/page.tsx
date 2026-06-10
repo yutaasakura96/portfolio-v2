@@ -2,8 +2,10 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { Globe, Loader2, CheckCircle2 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
+
+import { apiClient } from "@/lib/api-client";
 
 type TranslateResult = {
   hero: number;
@@ -15,6 +17,8 @@ type TranslateResult = {
   education: number;
 };
 
+type TranslationTarget = keyof TranslateResult;
+
 const ENTITY_LABELS: Record<string, string> = {
   hero: "Hero",
   about: "About",
@@ -25,46 +29,34 @@ const ENTITY_LABELS: Record<string, string> = {
   education: "Education",
 };
 
-const ENTITY_ORDER = ["hero", "about", "settings", "projects", "blog", "experience", "education"];
+const ENTITY_ORDER: TranslationTarget[] = [
+  "hero",
+  "about",
+  "settings",
+  "projects",
+  "blog",
+  "experience",
+  "education",
+];
 
 const STORAGE_KEY = "translations-last-updated";
 
-function useProgress(isPending: boolean) {
-  const [progress, setProgress] = useState(0);
-  const wasPending = useRef(false);
-
-  useEffect(() => {
-    if (isPending) {
-      wasPending.current = true;
-      const steps = [
-        { at: 0, val: 5 },
-        { at: 800, val: 15 },
-        { at: 3000, val: 25 },
-        { at: 8000, val: 40 },
-        { at: 15000, val: 55 },
-        { at: 25000, val: 70 },
-        { at: 35000, val: 80 },
-        { at: 50000, val: 88 },
-      ];
-      const timers = steps.map(({ at, val }) => setTimeout(() => setProgress(val), at));
-      return () => timers.forEach(clearTimeout);
-    }
-    if (wasPending.current) {
-      wasPending.current = false;
-      const t1 = setTimeout(() => setProgress(100), 0);
-      const t2 = setTimeout(() => setProgress(0), 1500);
-      return () => {
-        clearTimeout(t1);
-        clearTimeout(t2);
-      };
-    }
-  }, [isPending]);
-
-  return progress;
+function emptyResult(): TranslateResult {
+  return {
+    hero: 0,
+    about: 0,
+    settings: 0,
+    projects: 0,
+    blog: 0,
+    experience: 0,
+    education: 0,
+  };
 }
 
 export default function TranslationsPage() {
   const [result, setResult] = useState<TranslateResult | null>(null);
+  const [activeTarget, setActiveTarget] = useState<TranslationTarget | null>(null);
+  const [completedTargets, setCompletedTargets] = useState<TranslationTarget[]>([]);
   const [lastUpdated, setLastUpdated] = useState<string | null>(() => {
     if (typeof window === "undefined") return null;
     return localStorage.getItem(STORAGE_KEY);
@@ -72,20 +64,31 @@ export default function TranslationsPage() {
 
   const translateMutation = useMutation({
     mutationFn: async () => {
-      const res = await fetch("/api/admin/translate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
-      });
-      if (!res.ok) {
-        const body = await res.json().catch(() => null);
-        throw new Error(body?.error?.message || "Translation failed");
+      const totals = emptyResult();
+      setResult(null);
+      setCompletedTargets([]);
+
+      for (const target of ENTITY_ORDER) {
+        setActiveTarget(target);
+        const response = await apiClient.translateContent<
+          { target: TranslationTarget },
+          TranslateResult
+        >({ target });
+
+        for (const entity of ENTITY_ORDER) {
+          totals[entity] += response.data[entity];
+        }
+
+        setResult({ ...totals });
+        setCompletedTargets((current) => [...current, target]);
       }
-      const json = (await res.json()) as { data: TranslateResult };
-      return json.data;
+
+      setActiveTarget(null);
+      return totals;
     },
     onSuccess: (data) => {
       setResult(data);
+      setActiveTarget(null);
       const now = new Date().toISOString();
       localStorage.setItem(STORAGE_KEY, now);
       setLastUpdated(now);
@@ -93,11 +96,16 @@ export default function TranslationsPage() {
       toast.success(`Translated ${total} items to Japanese`);
     },
     onError: (error: Error) => {
+      setActiveTarget(null);
       toast.error(error.message || "Translation failed");
     },
   });
 
-  const progress = useProgress(translateMutation.isPending);
+  const progress = translateMutation.isPending
+    ? Math.round((completedTargets.length / ENTITY_ORDER.length) * 100)
+    : result
+      ? 100
+      : 0;
 
   return (
     <div className="space-y-8">
@@ -154,7 +162,9 @@ export default function TranslationsPage() {
               />
             </div>
             <p className="text-sm text-muted-foreground">
-              Translating content with AI... This may take 30–60 seconds.
+              {activeTarget
+                ? `Translating ${ENTITY_LABELS[activeTarget] ?? activeTarget}...`
+                : "Preparing translations..."}
             </p>
           </div>
         )}
@@ -174,7 +184,7 @@ export default function TranslationsPage() {
           </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {ENTITY_ORDER.map((entity) => {
-              const count = result[entity as keyof TranslateResult];
+              const count = result[entity];
               return (
                 <div
                   key={entity}
