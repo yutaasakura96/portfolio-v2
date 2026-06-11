@@ -34,6 +34,10 @@ args = ["@playwright/mcp@latest", "--headless"]
 command = "npx"
 args = ["tsx", "--env-file=.env", "mcp/portfolio-server/src/index.ts"]
 
+[mcp_servers.portfolio-prod]
+command = "env"
+args = ["PORTFOLIO_BASE_URL=https://asakurayuta.dev", "npx", "tsx", "--env-file=.env", "mcp/portfolio-server/src/index.ts"]
+
 [mcp_servers.prisma-local]
 command = "npx"
 args = ["-y", "prisma", "mcp"]

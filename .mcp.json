@@ -5,6 +5,14 @@
       "command": "npx",
       "args": ["tsx", "--env-file=.env", "mcp/portfolio-server/src/index.ts"]
     },
+    "portfolio-prod": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["tsx", "--env-file=.env", "mcp/portfolio-server/src/index.ts"],
+      "env": {
+        "PORTFOLIO_BASE_URL": "https://asakurayuta.dev"
+      }
+    },
     "playwright": {
       "type": "stdio",
       "command": "npx",

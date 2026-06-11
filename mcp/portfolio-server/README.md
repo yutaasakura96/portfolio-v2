@@ -152,7 +152,7 @@ This prompts for a description, generates the key, stores the hash in the databa
 
 ### Configuration
 
-The server is registered in two config files:
+Two server instances are registered — one for dev, one for production:
 
 **Claude Code** (`.mcp.json`):
 
@@ -162,6 +162,14 @@ The server is registered in two config files:
     "type": "stdio",
     "command": "npx",
     "args": ["tsx", "--env-file=.env", "mcp/portfolio-server/src/index.ts"]
+  },
+  "portfolio-prod": {
+    "type": "stdio",
+    "command": "npx",
+    "args": ["tsx", "--env-file=.env", "mcp/portfolio-server/src/index.ts"],
+    "env": {
+      "PORTFOLIO_BASE_URL": "https://asakurayuta.dev"
+    }
   }
 }
 ```
@@ -172,7 +180,13 @@ The server is registered in two config files:
 [mcp_servers.portfolio]
 command = "npx"
 args = ["tsx", "--env-file=.env", "mcp/portfolio-server/src/index.ts"]
+
+[mcp_servers.portfolio-prod]
+command = "env"
+args = ["PORTFOLIO_BASE_URL=https://asakurayuta.dev", "npx", "tsx", "--env-file=.env", "mcp/portfolio-server/src/index.ts"]
 ```
+
+`portfolio` targets dev (`localhost:3000`), `portfolio-prod` targets production (`asakurayuta.dev`). Both read `PORTFOLIO_API_KEY` from `.env`.
 
 ### Environment Variables
 
@@ -185,17 +199,14 @@ args = ["tsx", "--env-file=.env", "mcp/portfolio-server/src/index.ts"]
 
 This project uses **two Neon Postgres branches** with completely separate data:
 
-| Environment | Neon endpoint            | `DATABASE_URL` source   | Access via MCP                                                                      |
-| ----------- | ------------------------ | ----------------------- | ----------------------------------------------------------------------------------- |
-| Dev         | `ep-royal-resonance`     | `.env` (default)        | Default — `localhost:3000`                                                          |
-| Production  | `ep-wandering-butterfly` | Amplify Console env var | Must set `PORTFOLIO_BASE_URL` or use direct HTTP calls to `https://asakurayuta.dev` |
+| Environment | Neon endpoint            | `DATABASE_URL` source   | Access via MCP                               |
+| ----------- | ------------------------ | ----------------------- | -------------------------------------------- |
+| Dev         | `ep-royal-resonance`     | `.env` (default)        | Default — `localhost:3000`                   |
+| Production  | `ep-wandering-butterfly` | Amplify Console env var | `portfolio-prod` MCP server (pre-configured) |
 
-**The MCP server defaults to `localhost:3000`, which connects to the dev database.** Content created or updated via MCP tools does NOT appear on the production site at `asakurayuta.dev`.
+The `portfolio` MCP server targets dev (`localhost:3000`). Content changes via `mcp__portfolio__*` tools do NOT appear on the production site.
 
-To modify production data, either:
-
-1. Hit the production API directly: `https://asakurayuta.dev/api/blog/{id}` with `Authorization: Bearer <key>`
-2. Temporarily set `PORTFOLIO_BASE_URL=https://asakurayuta.dev` before starting the MCP server
+To modify production data, use the `portfolio-prod` MCP server (`mcp__portfolio-prod__*` tools), which targets `https://asakurayuta.dev` directly.
 
 ## Extending
 
