@@ -47,6 +47,9 @@ frontend:
 
           # Anthropic (certificate extraction — optional, feature degrades gracefully if unset)
           ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+
+          # Portfolio MCP server API key
+          PORTFOLIO_API_KEY=${PORTFOLIO_API_KEY}
           EOF
         - npm ci
         - npx prisma generate
