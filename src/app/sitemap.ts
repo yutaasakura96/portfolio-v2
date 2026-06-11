@@ -39,29 +39,38 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  const projects = await prisma.project.findMany({
-    where: { status: "PUBLISHED" },
-    select: { slug: true, updatedAt: true },
-  });
+  let projectPages: MetadataRoute.Sitemap = [];
+  let postPages: MetadataRoute.Sitemap = [];
 
-  const projectPages: MetadataRoute.Sitemap = projects.map((project) => ({
-    url: `${baseUrl}/projects/${project.slug}`,
-    lastModified: project.updatedAt,
-    changeFrequency: "monthly" as const,
-    priority: 0.7,
-  }));
+  try {
+    const projects = await prisma.project.findMany({
+      where: { status: "PUBLISHED" },
+      select: { slug: true, updatedAt: true },
+    });
+    projectPages = projects.map((project) => ({
+      url: `${baseUrl}/projects/${project.slug}`,
+      lastModified: project.updatedAt,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    }));
+  } catch (error) {
+    console.error("Failed to fetch projects for sitemap:", error);
+  }
 
-  const posts = await prisma.blogPost.findMany({
-    where: { status: "PUBLISHED" },
-    select: { slug: true, updatedAt: true },
-  });
-
-  const postPages: MetadataRoute.Sitemap = posts.map((post) => ({
-    url: `${baseUrl}/blog/${post.slug}`,
-    lastModified: post.updatedAt,
-    changeFrequency: "monthly" as const,
-    priority: 0.7,
-  }));
+  try {
+    const posts = await prisma.blogPost.findMany({
+      where: { status: "PUBLISHED" },
+      select: { slug: true, updatedAt: true },
+    });
+    postPages = posts.map((post) => ({
+      url: `${baseUrl}/blog/${post.slug}`,
+      lastModified: post.updatedAt,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    }));
+  } catch (error) {
+    console.error("Failed to fetch blog posts for sitemap:", error);
+  }
 
   return [...staticPages, ...projectPages, ...postPages];
 }

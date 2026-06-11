@@ -5,10 +5,15 @@ import { prisma } from "@/lib/prismaClient";
 import { Toaster } from "sonner";
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
-  const settings = await prisma.siteSettings.findUnique({
-    where: { id: "default" },
-    select: { googleAnalyticsId: true },
-  });
+  let settings: { googleAnalyticsId: string | null } | null = null;
+  try {
+    settings = await prisma.siteSettings.findUnique({
+      where: { id: "default" },
+      select: { googleAnalyticsId: true },
+    });
+  } catch (error) {
+    console.error("Failed to fetch site settings:", error);
+  }
 
   return (
     <>
