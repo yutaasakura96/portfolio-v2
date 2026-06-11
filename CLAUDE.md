@@ -200,7 +200,7 @@ See Request Routing above for when to spawn each. The Claude-side `sonnet` / `ha
 
 ## Hooks
 
-Claude Code hooks are configured in [.claude/settings.json](.claude/settings.json) with scripts in [.claude/hooks/](.claude/hooks/). Codex backup hooks are mirrored in [.codex/hooks.json](.codex/hooks.json). Key gates: branch guard blocks edits on `main`/`develop`, type-check gates commits, and Prettier auto-formats after edits.
+Claude Code hooks are configured in [.claude/settings.json](.claude/settings.json) with scripts in [.claude/hooks/](.claude/hooks/). Codex backup hooks are mirrored in [.codex/hooks.json](.codex/hooks.json). Key gates: branch guard blocks edits on `main`/`develop`, full build + tests gate commits, and Prettier auto-formats after edits.
 
 ## Git Commit Style
 

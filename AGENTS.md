@@ -196,7 +196,7 @@ See Request Routing above for when to spawn each. The Claude-side `sonnet` / `ha
 
 ## Codex Backup Hooks
 
-Codex backup hooks are configured in [.codex/hooks.json](.codex/hooks.json) with scripts in [.codex/hooks/](.codex/hooks/). Claude Code remains the primary workflow and uses [.claude/settings.json](.claude/settings.json) with scripts in [.claude/hooks/](.claude/hooks/). Key gates: branch guard blocks edits on `main`/`develop`, type-check gates commits, Prettier auto-formats after edits.
+Codex backup hooks are configured in [.codex/hooks.json](.codex/hooks.json) with scripts in [.codex/hooks/](.codex/hooks/). Claude Code remains the primary workflow and uses [.claude/settings.json](.claude/settings.json) with scripts in [.claude/hooks/](.claude/hooks/). Key gates: branch guard blocks edits on `main`/`develop`, full build + tests gate commits, Prettier auto-formats after edits.
 
 ## Codex Operating Protocol
 
