@@ -1,7 +1,8 @@
-import { BlogPostCard } from "@/components/public/BlogPostCard";
+import { BlogBrowser } from "@/components/public/BlogBrowser";
 import { LocalizedUi } from "@/components/public/LocalizedContent";
 import { getPublishedPosts } from "@/lib/data/public-queries";
 import { Metadata } from "next";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -25,19 +26,9 @@ export default async function BlogPage() {
         />
       </div>
 
-      {posts.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {posts.map((post, i) => (
-            <BlogPostCard key={post.id} post={post} index={i} />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-16">
-          <p className="text-muted-foreground">
-            <LocalizedUi k="noBlogPosts" />
-          </p>
-        </div>
-      )}
+      <Suspense fallback={<div className="h-64 animate-pulse rounded-lg bg-muted" />}>
+        <BlogBrowser posts={posts} />
+      </Suspense>
     </div>
   );
 }
