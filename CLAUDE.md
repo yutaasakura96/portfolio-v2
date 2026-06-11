@@ -5,7 +5,7 @@ Personal portfolio + admin CMS. Public-facing Next.js site backed by an admin da
 ## Tech Stack
 
 - **Framework:** Next.js (App Router, `proxy.ts` middleware), React, TypeScript (strict) — see @package.json for exact versions
-- **Database:** Prisma + Neon Postgres via `@prisma/adapter-neon` (`PrismaNeon` WebSocket adapter) + `@neondatabase/serverless`. Both packages are in `serverExternalPackages` to avoid Lambda bundling issues.
+- **Database:** Prisma + Neon Postgres via `@prisma/adapter-neon` (`PrismaNeon` WebSocket adapter) + `@neondatabase/serverless`. Both packages are in `serverExternalPackages` to avoid Lambda bundling issues. **Two Neon branches with separate data:** `production` (`ep-wandering-butterfly`) used by Amplify/production, and `dev` (`ep-royal-resonance`) used by `localhost:3000`. The `.env` `DATABASE_URL` points at the dev branch — production credentials live in Amplify Console env vars. Content changes made via localhost or the MCP server only affect the dev database, not production.
 - **Styling:** TailwindCSS 4 + `@tailwindcss/postcss`, shadcn (Radix UI primitives), CVA + clsx + `tailwind-merge`
 - **Forms:** react-hook-form + `@hookform/resolvers` + Zod 4
 - **Server state:** TanStack React Query 5 (no Zustand — do not add)
@@ -173,6 +173,7 @@ Domain rules (Zod validation, `withErrorHandler`, ISR/client split, image pipeli
 - ❌ Switching from `PrismaNeon` (WebSocket) to `PrismaNeonHttp` (HTTP) adapter — the HTTP adapter caused persistent `NeonDbError: fetch failed` and `AbortError` on Lambda cold starts. The WebSocket adapter (`PrismaNeon`) is proven stable in production.
 - ❌ Adding new static UI text directly in components — put it in the `UI_STRINGS` object in `src/lib/i18n.ts` under both `en` and `ja` keys, then access via `ui(locale, "key")`. Hard-coded English strings bypass translation entirely.
 - ❌ Calling `t()` / `tArray()` / `tJson()` on a field that has no `*Ja` column — add the column to the Prisma schema first (follow the `*Ja` nullable column convention) and select it in `public-queries.ts` before wiring the translation helper.
+- ❌ Assuming MCP portfolio server changes affect production — the MCP server hits `localhost:3000` (dev Neon branch) by default. Production (`asakurayuta.dev`) uses a separate Neon branch with separate data. When the user asks to update content "on production" or "on the live site", you must hit the production API directly (`https://asakurayuta.dev/api/...`), not use the MCP tools. Always confirm which environment the user intends.
 
 ## MCP Servers
 
@@ -182,7 +183,7 @@ Domain rules (Zod validation, `withErrorHandler`, ISR/client split, image pipeli
 - **prisma-local** — Migration status, schema management. Run `migrate-status` before `migrate dev`. NEVER run `migrate-reset` without user confirmation.
 - **playwright** — Browser automation for visual verification at `http://localhost:3000`.
 - **github** — GitHub API for PR/issue management, code search.
-- **portfolio** (`mcp__portfolio__*`) — 43-tool MCP server for portfolio content management (projects, experience, education, skills, certifications, blog, messages, site content, dashboard). Stdio transport, API-key auth via Bearer token. Call `get-dashboard-stats` for overview; use `list-*` before `update-*`/`delete-*`. Messages are read/archive only (no delete). Setup: `npm run mcp:setup`. See [mcp/portfolio-server/README.md](mcp/portfolio-server/README.md).
+- **portfolio** (`mcp__portfolio__*`) — 43-tool MCP server for portfolio content management (projects, experience, education, skills, certifications, blog, messages, site content, dashboard). Stdio transport, API-key auth via Bearer token. Call `get-dashboard-stats` for overview; use `list-*` before `update-*`/`delete-*`. Messages are read/archive only (no delete). Setup: `npm run mcp:setup`. See [mcp/portfolio-server/README.md](mcp/portfolio-server/README.md). **IMPORTANT: The MCP server defaults to `http://localhost:3000` (`PORTFOLIO_BASE_URL`), which hits the dev Neon branch — NOT production.** To update production data, you must either: (1) hit the production API directly at `https://asakurayuta.dev/api/...` with the same Bearer token, or (2) set `PORTFOLIO_BASE_URL=https://asakurayuta.dev` temporarily. Always ask the user which environment they want to modify — never assume dev changes propagate to production.
 - **sentry** (`mcp__sentry__*`) — Query Sentry errors, issues, and performance data from Claude Code and Codex backup sessions. Added via `claude mcp add --transport http sentry https://mcp.sentry.dev/mcp`; Codex backup config also lists it in [.codex/config.toml](.codex/config.toml).
 
 ## Available Agents

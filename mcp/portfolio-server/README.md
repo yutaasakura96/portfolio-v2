@@ -181,6 +181,22 @@ args = ["tsx", "--env-file=.env", "mcp/portfolio-server/src/index.ts"]
 | `PORTFOLIO_API_KEY`  | Yes      | —                       | Raw API key (from `mcp:setup`) |
 | `PORTFOLIO_BASE_URL` | No       | `http://localhost:3000` | Next.js server URL             |
 
+### Dev vs Production — Separate Databases
+
+This project uses **two Neon Postgres branches** with completely separate data:
+
+| Environment | Neon endpoint            | `DATABASE_URL` source   | Access via MCP                                                                      |
+| ----------- | ------------------------ | ----------------------- | ----------------------------------------------------------------------------------- |
+| Dev         | `ep-royal-resonance`     | `.env` (default)        | Default — `localhost:3000`                                                          |
+| Production  | `ep-wandering-butterfly` | Amplify Console env var | Must set `PORTFOLIO_BASE_URL` or use direct HTTP calls to `https://asakurayuta.dev` |
+
+**The MCP server defaults to `localhost:3000`, which connects to the dev database.** Content created or updated via MCP tools does NOT appear on the production site at `asakurayuta.dev`.
+
+To modify production data, either:
+
+1. Hit the production API directly: `https://asakurayuta.dev/api/blog/{id}` with `Authorization: Bearer <key>`
+2. Temporarily set `PORTFOLIO_BASE_URL=https://asakurayuta.dev` before starting the MCP server
+
 ## Extending
 
 To add tools for a new domain:
