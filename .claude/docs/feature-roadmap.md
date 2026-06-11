@@ -77,7 +77,6 @@ Last updated: 2026-06-10 (i18n EN/JA marked done; SEO batch previously marked do
 - [x] Content import/export from admin (JSON/CSV) — JSON+CSV export for all entities, JSON+CSV import with preview/validation for all except messages. Two import modes (create-only, upsert). Rate-limited, CSV injection-safe, date-validated.
 - [x] Admin dark mode theming pass — replaced hardcoded colors with theme tokens across ~38 admin files
 - [x] Drag-and-drop reordering for certifications (and other entities with `displayOrder`) — `use-dnd-reorder.ts` generic hook + `CertificationsManagerSection` Edit Order mode
-- [ ] Admin audit log — track who changed what, when (simple table)
 - [x] Unified JSON import/export — export all entities to a single JSON file and import them back; admin "Import / Export" page at `/admin/import`
 
 ---
@@ -179,3 +178,8 @@ Last updated: 2026-06-10 (i18n EN/JA marked done; SEO batch previously marked do
 10. **Admin improvements** — audit log, certification categories
 11. **Design & UX** — redesign iterations, micro-interactions, dark mode refinements
 12. **Tooling** — new skills, Portfolio MCP, diagram generator
+
+Investigate:
+claude api setup
+https://platform.claude.com/docs/en/build-with-claude/batch-processing
+https://platform.claude.com/docs/en/build-with-claude/prompt-caching
