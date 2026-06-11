@@ -34,6 +34,7 @@ Last updated: 2026-06-10 (i18n EN/JA marked done; SEO batch previously marked do
 - [x] Playwright MCP — headless browser verification for agents
 - [x] Remove Zustand — removed from package.json, docs updated
 - [ ] Vitest - Additional tests before final audit.
+- [ ] Final Audit - Final audit using /ultrareview
 
 ---
 
