@@ -131,6 +131,8 @@ Dev is a copy-on-write child of production. To refresh dev with current prod dat
 
 All three call `POST /projects/{project_id}/branches/{branch_id}/restore` with `{"source_branch_id": "<prod_branch_id>"}`.
 
+> **MCP server targeting:** The portfolio MCP server (`mcp/portfolio-server`) defaults to `http://localhost:3000` via `PORTFOLIO_BASE_URL`, which hits the **dev** Neon branch only. To mutate production content, hit `https://asakurayuta.dev/api/...` directly — MCP tool calls will NOT reach production unless `PORTFOLIO_BASE_URL` is overridden.
+
 ### Connection URL pattern
 
 - **Pooled (app queries):** `postgresql://neondb_owner:<pass>@<endpoint>-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require`
