@@ -1,5 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { ENV_LABEL, ENV_TAG } from "./client.js";
 import { registerProjectTools } from "./tools/projects.js";
 import { registerExperienceTools } from "./tools/experience.js";
 import { registerEducationTools } from "./tools/education.js";
@@ -11,7 +12,9 @@ import { registerContentTools } from "./tools/content.js";
 import { registerDashboardTools } from "./tools/dashboard.js";
 
 const instructions = [
-  "Portfolio content management server. 43 tools for full CRUD on projects, experience, education, skills, certifications, and blog posts, plus read/update for site content (hero, about, settings) and a dashboard overview.",
+  `Portfolio content management server. ${ENV_TAG}`,
+  "",
+  `IMPORTANT — ENVIRONMENT: This server is targeting **${ENV_LABEL}**. All reads and writes go to the ${ENV_LABEL} database only. Dev (localhost:3000) and production (asakurayuta.dev) use separate Neon Postgres branches with separate data. Changes here do NOT propagate to the other environment. If the user asks to update production content and this server is targeting DEV, you must hit the production API directly (https://asakurayuta.dev/api/...) instead of using these tools.`,
   "",
   "Auth: all tools require a valid API key (Bearer token). The server proxies requests through the Next.js API layer — it never accesses the database directly.",
   "",

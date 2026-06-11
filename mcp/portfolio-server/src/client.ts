@@ -8,6 +8,10 @@ if (!API_KEY) {
   );
 }
 
+const isProduction = BASE_URL.includes("asakurayuta.dev");
+export const ENV_LABEL = isProduction ? "PRODUCTION" : "DEV";
+export const ENV_TAG = `[env: ${ENV_LABEL} — ${BASE_URL}]`;
+
 const authHeaders = {
   "Content-Type": "application/json",
   Authorization: `Bearer ${API_KEY}`,

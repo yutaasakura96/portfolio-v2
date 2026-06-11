@@ -14,14 +14,18 @@ export type ToolResult = {
   isError?: boolean;
 };
 
+import { ENV_TAG } from "./client.js";
+
 export function ok(data: unknown): ToolResult {
-  return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+  return {
+    content: [{ type: "text", text: `${ENV_TAG}\n${JSON.stringify(data, null, 2)}` }],
+  };
 }
 
 export function err(error: unknown): ToolResult {
   const message = error instanceof Error ? error.message : String(error);
   return {
-    content: [{ type: "text", text: `Error: ${message}` }],
+    content: [{ type: "text", text: `${ENV_TAG}\nError: ${message}` }],
     isError: true,
   };
 }
