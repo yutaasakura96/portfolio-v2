@@ -28,6 +28,71 @@ const unreadMessagesWhere: Prisma.ContactMessageWhereInput = { read: false };
 
 const ninetyDaysFromNow = (): Date => new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
 
+async function getTranslationStats(): Promise<{
+  hero: boolean;
+  about: boolean;
+  settings: boolean;
+  projects: number;
+  blogPosts: number;
+  experience: number;
+  education: number;
+  lastUpdated: string | null;
+}> {
+  const [
+    translatedProjects,
+    translatedPosts,
+    translatedExperience,
+    translatedEducation,
+    heroJa,
+    aboutJa,
+    settingsJa,
+    latestProject,
+    latestPost,
+  ] = await Promise.all([
+    prisma.project.count({ where: { status: "PUBLISHED", titleJa: { not: null } } }),
+    prisma.blogPost.count({ where: { status: "PUBLISHED", titleJa: { not: null } } }),
+    prisma.experience.count({ where: { roleJa: { not: null } } }),
+    prisma.education.count({ where: { degreeJa: { not: null } } }),
+    prisma.hero.findFirst({ where: { headlineJa: { not: null } }, select: { updatedAt: true } }),
+    prisma.aboutPage.findFirst({
+      where: { headingJa: { not: null } },
+      select: { updatedAt: true },
+    }),
+    prisma.siteSettings.findFirst({
+      where: { siteDescriptionJa: { not: null } },
+      select: { updatedAt: true },
+    }),
+    prisma.project.findFirst({
+      where: { titleJa: { not: null } },
+      orderBy: { updatedAt: "desc" },
+      select: { updatedAt: true },
+    }),
+    prisma.blogPost.findFirst({
+      where: { titleJa: { not: null } },
+      orderBy: { updatedAt: "desc" },
+      select: { updatedAt: true },
+    }),
+  ]);
+
+  const dates = [heroJa, aboutJa, settingsJa, latestProject, latestPost]
+    .filter((r): r is { updatedAt: Date } => r !== null)
+    .map((r) => r.updatedAt);
+
+  const lastUpdated =
+    dates.length > 0 ? new Date(Math.max(...dates.map((d) => d.getTime()))).toISOString() : null;
+
+  return {
+    hero: heroJa !== null,
+    about: aboutJa !== null,
+    settings: settingsJa !== null,
+    projects: translatedProjects,
+    blogPosts: translatedPosts,
+    experience: translatedExperience,
+    education: translatedEducation,
+    lastUpdated,
+  };
+}
+
 export const GET = withErrorHandler(async (request: NextRequest) => {
   await requireAuthOrApiKey(request);
 
@@ -52,6 +117,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     lastPublishedPost,
     heroCount,
     aboutCount,
+    translationStats,
   ] = await Promise.all([
     prisma.project.count(),
     prisma.blogPost.count(),
@@ -95,6 +161,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     }),
     prisma.hero.count(),
     prisma.aboutPage.count(),
+    getTranslationStats(),
   ]);
 
   return Response.json({
@@ -119,6 +186,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
       lastPublishedPost,
       hasHero: heroCount > 0,
       hasAbout: aboutCount > 0,
+      translationStats,
     },
   });
 });

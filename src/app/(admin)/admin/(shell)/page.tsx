@@ -2,10 +2,12 @@
 
 import { CertificationAlerts } from "@/components/admin/dashboard/CertificationAlerts";
 import { ContentCompleteness } from "@/components/admin/dashboard/ContentCompleteness";
+import { ExternalServices } from "@/components/admin/dashboard/ExternalServices";
 import { QuickActions } from "@/components/admin/dashboard/QuickActions";
 import { RecentActivity } from "@/components/admin/dashboard/RecentActivity";
 import { RecentMessages } from "@/components/admin/dashboard/RecentMessages";
 import { StatsCards } from "@/components/admin/dashboard/StatsCards";
+import { TranslationStatus } from "@/components/admin/dashboard/TranslationStatus";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDashboardStats } from "@/hooks/use-dashboard-stats";
 import { AlertCircle } from "lucide-react";
@@ -60,6 +62,16 @@ export default function AdminDashboard() {
         <RecentMessages messages={data.recentMessages} totalUnread={data.messageCount} />
         <RecentActivity projects={data.recentProjects} posts={data.recentPosts} />
       </div>
+      <TranslationStatus
+        stats={data.translationStats}
+        totals={{
+          projects: data.publishedProjectCount,
+          blogPosts: data.publishedPostCount,
+          experience: data.experienceCount,
+          education: data.educationCount,
+        }}
+      />
+      <ExternalServices />
       <ContentCompleteness data={data} />
     </div>
   );

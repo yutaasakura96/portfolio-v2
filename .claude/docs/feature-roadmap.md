@@ -2,7 +2,7 @@
 
 Living document tracking planned features, improvements, and integrations for the portfolio project.
 
-Last updated: 2026-06-10 (i18n EN/JA marked done; SEO batch previously marked done)
+Last updated: 2026-06-12 (dashboard-upgrade: external services panel + translation status widget marked done)
 
 ---
 
@@ -97,6 +97,8 @@ Last updated: 2026-06-10 (i18n EN/JA marked done; SEO batch previously marked do
 - [x] Admin theme toggle — `ThemeToggle` moved to `src/components/shared/ThemeToggle.tsx` and rendered in both the public `Header` and `AdminHeader`
 - admin pages doesnt look like public pages. admin should look like publc pages for consistency.
 - [x] Admin dashboard — expanded to full dashboard: 4 stat cards (projects, posts, messages, skills) with published/draft breakdowns, quick actions, certification expiry alerts, recent unread messages preview, merged recent activity timeline, and content completeness checklist. 6 sub-components in `src/components/admin/dashboard/`. New `src/lib/time-ago.ts` utility. Expanded `GET /api/admin/dashboard-stats` endpoint.
+- [x] Dashboard external services panel — new `GET /api/admin/dashboard-external` endpoint + `ExternalServices.tsx` widget. Shows live status for: Sentry (unresolved issue count + linked issue list), AWS Amplify (recent builds with status, commit message, duration), site health (production ping with response time + DB status via `/api/health`), and Google Analytics (config check with link to GA dashboard). All four sources degrade gracefully when env vars are absent (`{ configured: false }`). Uses `AbortSignal.timeout()` for all external HTTP calls.
+- [x] Dashboard translation status widget — `TranslationStatus.tsx` reads `translationStats` from the existing `dashboard-stats` endpoint and shows per-entity JA coverage (projects, blog posts, experience, education) with last-updated timestamps and a link to `/admin/translations`.
 - [ ] Categorize certifications — add category field, render with tab UI similar to skills or something unique (azure, aws, anthropic, language, etc.)
 - [x] Complete portfolio redesign — research best practices, iterate incrementally
   - UI skills are installed and ready: `shadcn` (component composition), `emil-design-eng` (design engineering + animations), `frontend-design` (visual design direction + distinctive aesthetics), `web-design-guidelines` (Vercel interface guidelines, pre-PR quality gate). Skills live in `.agents/skills/` with symlinks in `.claude/skills/`; `frontend-design` is installed as a plugin.

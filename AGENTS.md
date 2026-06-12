@@ -10,7 +10,7 @@ Personal portfolio + admin CMS. Public-facing Next.js site backed by an admin da
 - **Forms:** react-hook-form + `@hookform/resolvers` + Zod 4
 - **Server state:** TanStack React Query 5 (no Zustand — do not add)
 - **Auth:** AWS Cognito (Hosted UI, OAuth code flow) + jose for JWT verification, HTTP-only cookies
-- **AWS runtime:** Amplify Hosting Gen 1 (SSR), S3 (images), CloudFront (assets CDN), SES (email)
+- **AWS runtime:** Amplify Hosting Gen 1 (SSR), S3 (images), CloudFront (assets CDN), SES (email), `@aws-sdk/client-amplify` (dashboard build-status polling, dynamically imported)
 - **Images:** Sharp → WebP, served via CloudFront
 - **3D / WebGL:** `@react-three/fiber` + `@react-three/drei` + `three` — `HeroBlob.tsx` renders a morphing GLSL shader blob in the hero section with mouse interaction. `three` is pinned to `^0.182.0` (not `^0.184.x`) because r183 deprecated `THREE.Clock` but r3f v9.6.1 still uses it internally — upgrade only when r3f ships a Timer-based update. `HeroBlob` wraps the `Canvas` in a `WebGLErrorBoundary` class component to silently catch WebGL initialization failures on old browsers (Mobile Safari 13 / iOS 13) instead of crashing the page.
 - **Markdown:** remark + rehype (`remark-gfm`, `rehype-sanitize`, `rehype-slug`, `rehype-highlight`)
@@ -27,26 +27,30 @@ Tests use **Vitest** with **@testing-library/react**. See [.claude/rules/tests.m
 
 ## Architecture
 
-| Path                                                                                         | Purpose                                                                       |
-| -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| [src/app/(public)/](<src/app/(public)/>)                                                     | Public site (ISR, Server Components by default)                               |
-| [src/app/(admin)/admin/](<src/app/(admin)/admin/>)                                           | Admin CMS — login + auth-guarded shell                                        |
-| [src/app/api/auth.ts](src/app/api/auth.ts)                                                   | `requireAuth`, `requireAuthOrApiKey`, `optionalAuth` (NOT `src/lib/auth`)     |
-| [src/proxy.ts](src/proxy.ts)                                                                 | Next.js 16 middleware replacement — JWT guard for admin routes                |
-| [src/components/shared/](src/components/shared/)                                             | Components shared across public + admin (e.g. `ThemeToggle`)                  |
-| [src/components/ui/](src/components/ui/)                                                     | shadcn primitives (use `npx shadcn add`, don't hand-edit)                     |
-| [src/lib/data/](src/lib/data/)                                                               | Server-side query layer + canonical types                                     |
-| [src/lib/validations/](src/lib/validations/)                                                 | Zod schemas (one file per entity)                                             |
-| [src/lib/errors.ts](src/lib/errors.ts)                                                       | `ApiError` + `withErrorHandler`                                               |
-| [src/lib/prismaClient.ts](src/lib/prismaClient.ts)                                           | Singleton Prisma client (Neon WebSocket adapter)                              |
-| [src/lib/locale.ts](src/lib/locale.ts)                                                       | `Locale` type (`"en" \| "ja"`) + locale helpers                               |
-| [src/lib/i18n.ts](src/lib/i18n.ts)                                                           | `t()`, `tArray()`, `tJson()`, `ui()`, `UI_STRINGS`, `localizeSkillCategory()` |
-| [src/hooks/use-locale.ts](src/hooks/use-locale.ts)                                           | `useLocale()` hook — reads/sets locale from `LocaleProvider`                  |
-| [src/components/providers/LocaleProvider.tsx](src/components/providers/LocaleProvider.tsx)   | Locale React Context with `localStorage` persistence                          |
-| [src/components/shared/LanguageToggle.tsx](src/components/shared/LanguageToggle.tsx)         | EN/JA toggle button (rendered in public `Header`)                             |
-| [src/components/public/LocalizedContent.tsx](src/components/public/LocalizedContent.tsx)     | `LocalizedText`, `LocalizedHtml`, `LocalizedUi` client components             |
-| [src/app/api/admin/translate/route.ts](src/app/api/admin/translate/route.ts)                 | GET plan + POST target — translates content to Japanese via Claude Haiku      |
-| [src/app/(admin)/admin/(shell)/translations/](<src/app/(admin)/admin/(shell)/translations/>) | Admin translations page ("Update Japanese" button + progress)                 |
+| Path                                                                                                         | Purpose                                                                                                               |
+| ------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| [src/app/(public)/](<src/app/(public)/>)                                                                     | Public site (ISR, Server Components by default)                                                                       |
+| [src/app/(admin)/admin/](<src/app/(admin)/admin/>)                                                           | Admin CMS — login + auth-guarded shell                                                                                |
+| [src/app/api/auth.ts](src/app/api/auth.ts)                                                                   | `requireAuth`, `requireAuthOrApiKey`, `optionalAuth` (NOT `src/lib/auth`)                                             |
+| [src/proxy.ts](src/proxy.ts)                                                                                 | Next.js 16 middleware replacement — JWT guard for admin routes                                                        |
+| [src/components/shared/](src/components/shared/)                                                             | Components shared across public + admin (e.g. `ThemeToggle`)                                                          |
+| [src/components/ui/](src/components/ui/)                                                                     | shadcn primitives (use `npx shadcn add`, don't hand-edit)                                                             |
+| [src/lib/data/](src/lib/data/)                                                                               | Server-side query layer + canonical types                                                                             |
+| [src/lib/validations/](src/lib/validations/)                                                                 | Zod schemas (one file per entity)                                                                                     |
+| [src/lib/errors.ts](src/lib/errors.ts)                                                                       | `ApiError` + `withErrorHandler`                                                                                       |
+| [src/lib/prismaClient.ts](src/lib/prismaClient.ts)                                                           | Singleton Prisma client (Neon WebSocket adapter)                                                                      |
+| [src/lib/locale.ts](src/lib/locale.ts)                                                                       | `Locale` type (`"en" \| "ja"`) + locale helpers                                                                       |
+| [src/lib/i18n.ts](src/lib/i18n.ts)                                                                           | `t()`, `tArray()`, `tJson()`, `ui()`, `UI_STRINGS`, `localizeSkillCategory()`                                         |
+| [src/hooks/use-locale.ts](src/hooks/use-locale.ts)                                                           | `useLocale()` hook — reads/sets locale from `LocaleProvider`                                                          |
+| [src/components/providers/LocaleProvider.tsx](src/components/providers/LocaleProvider.tsx)                   | Locale React Context with `localStorage` persistence                                                                  |
+| [src/components/shared/LanguageToggle.tsx](src/components/shared/LanguageToggle.tsx)                         | EN/JA toggle button (rendered in public `Header`)                                                                     |
+| [src/components/public/LocalizedContent.tsx](src/components/public/LocalizedContent.tsx)                     | `LocalizedText`, `LocalizedHtml`, `LocalizedUi` client components                                                     |
+| [src/app/api/admin/translate/route.ts](src/app/api/admin/translate/route.ts)                                 | GET plan + POST target — translates content to Japanese via Claude Haiku                                              |
+| [src/app/(admin)/admin/(shell)/translations/](<src/app/(admin)/admin/(shell)/translations/>)                 | Admin translations page ("Update Japanese" button + progress)                                                         |
+| [src/app/api/admin/dashboard-external/route.ts](src/app/api/admin/dashboard-external/route.ts)               | Parallel-fetches Sentry issues, Amplify build status, site health, GA config; degrades gracefully on missing env vars |
+| [src/components/admin/dashboard/ExternalServices.tsx](src/components/admin/dashboard/ExternalServices.tsx)   | 4 service cards (Sentry, Amplify, Site Health, GA) on the admin dashboard                                             |
+| [src/components/admin/dashboard/TranslationStatus.tsx](src/components/admin/dashboard/TranslationStatus.tsx) | Per-entity JA translation coverage widget on the admin dashboard                                                      |
+| [src/hooks/use-dashboard-external.ts](src/hooks/use-dashboard-external.ts)                                   | TanStack Query hook for external services data (`/api/admin/dashboard-external`)                                      |
 
 Scoped instructions currently live in [src/CLAUDE.md](src/CLAUDE.md), [src/app/api/CLAUDE.md](src/app/api/CLAUDE.md), and [prisma/CLAUDE.md](prisma/CLAUDE.md).
 
@@ -278,6 +282,12 @@ After any code change, verify the same way Claude Code does:
 ## Environment Setup
 
 Local dev needs a `.env` (not `.env.example` — it has drift; see [.claude/docs/infrastructure.md](.claude/docs/infrastructure.md) §Environment Variables). Production env lives in Amplify Console and is materialized into `.env.production` at build time by [amplify.yml](amplify.yml).
+
+Dashboard external services require four additional env vars (optional — the route degrades gracefully when absent):
+
+- `SENTRY_ORG_SLUG`, `SENTRY_PROJECT_SLUG` — Sentry issues panel on the admin dashboard
+- `AMPLIFY_APP_ID` — Amplify build-status card on the admin dashboard
+- `GA_PROPERTY_ID` — Google Analytics link card on the admin dashboard
 
 ## Compaction
 

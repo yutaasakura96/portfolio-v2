@@ -23,6 +23,7 @@
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-amplify": "^3.1067.0",
     "@aws-sdk/client-s3": "^3.994.0",
     "@aws-sdk/client-ses": "^3.994.0",
     "@aws-sdk/s3-request-presigner": "^3.994.0",

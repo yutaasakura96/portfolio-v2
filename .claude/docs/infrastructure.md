@@ -25,6 +25,7 @@ Properly scoped least-privilege:
 - `s3:PutObject`, `s3:GetObject`, `s3:DeleteObject` on `arn:aws:s3:::portfolio-v2-images-1771574702/*`
 - `s3:ListBucket` on the bucket
 - `ses:SendEmail`, `ses:SendRawEmail` on `*` with condition `ses:FromAddress = noreply@asakurayuta.dev`
+- `amplify:ListJobs`, `amplify:GetApp` on `arn:aws:amplify:ap-southeast-1:757278011198:apps/d2v4laatjpx2hq/*` — added for dashboard build-status fetching (Statement ID: `AmplifyReadAccess`)
 
 ### Roles
 
@@ -111,6 +112,10 @@ All vars below are stored as **plain Amplify Console env vars** (not Console Sec
 | `SES_FROM_EMAIL`                | `noreply@asakurayuta.dev`                                       | Must match the SES condition in `portfolio-admin` policy                                            |
 | `NEXT_PUBLIC_SENTRY_DSN`        | Sentry project DSN                                              | Exposed to client; needed at build time + SSR runtime. Used by all three Sentry config files.       |
 | `SENTRY_AUTH_TOKEN`             | Sentry auth token for source map uploads                        | **REDACTED — secret.** Build-time only; NOT needed at runtime. Set in Amplify Console env vars.     |
+| `SENTRY_ORG_SLUG`               | Sentry organization slug                                        | Used by `GET /api/admin/dashboard-external` to fetch recent Sentry issues for the admin dashboard.  |
+| `SENTRY_PROJECT_SLUG`           | Sentry project slug                                             | Used alongside `SENTRY_ORG_SLUG` to scope dashboard issue queries to this project.                  |
+| `AMPLIFY_APP_ID`                | `d2v4laatjpx2hq`                                                | Used by `GET /api/admin/dashboard-external` to fetch build status via `@aws-sdk/client-amplify`.    |
+| `GA_PROPERTY_ID`                | Google Analytics GA4 property ID                                | Used by the admin dashboard to surface a direct link to the GA4 property metrics page.              |
 
 ---
 
@@ -320,6 +325,9 @@ The app sends as `noreply@asakurayuta.dev` (the only `FromAddress` allowed by th
 | `NEON_DEV_BRANCH_ID`                                  | Neon dev branch `br-red-dawn-a12e2pyj`                                                                                                                                                                                                                                                                          |
 | `NEXT_PUBLIC_SENTRY_DSN`                              | Sentry (not AWS) — DSN for `@sentry/nextjs` SDK init; read by all three Sentry config files                                                                                                                                                                                                                     |
 | `SENTRY_AUTH_TOKEN`                                   | Sentry (not AWS) — build-time source map upload token; set in Amplify Console, not injected at runtime                                                                                                                                                                                                          |
+| `SENTRY_ORG_SLUG` / `SENTRY_PROJECT_SLUG`             | Sentry (not AWS) — org + project slugs used by `/api/admin/dashboard-external` to fetch recent issues for the admin dashboard                                                                                                                                                                                   |
+| `AMPLIFY_APP_ID`                                      | Amplify app `d2v4laatjpx2hq` — used by `/api/admin/dashboard-external` (via `@aws-sdk/client-amplify`) to fetch recent build status for the admin dashboard; requires the `AmplifyReadAccess` IAM statement on `portfolio-admin`                                                                                |
+| `GA_PROPERTY_ID`                                      | Google Analytics GA4 property ID (not AWS) — used by the admin dashboard to surface a direct link to the GA4 property metrics page                                                                                                                                                                              |
 | `ANTHROPIC_API_KEY`                                   | Anthropic API key for Claude Haiku — used by `/api/admin/translate` for EN→JA content translation and `/api/admin/certifications/extract` to auto-fill form fields from certificate images. Translation is configured via Amplify Console + `amplify.yml`; certificate extraction degrades gracefully if unset. |
 
 ### Drift between `.env.example` and Amplify Console

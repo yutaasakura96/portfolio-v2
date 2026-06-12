@@ -44,6 +44,14 @@ frontend:
 
           # Sentry (SENTRY_AUTH_TOKEN is build-time only — injected by Amplify Console, not needed here)
           NEXT_PUBLIC_SENTRY_DSN=${NEXT_PUBLIC_SENTRY_DSN}
+          SENTRY_ORG_SLUG=${SENTRY_ORG_SLUG}
+          SENTRY_PROJECT_SLUG=${SENTRY_PROJECT_SLUG}
+
+          # Amplify dashboard (build status)
+          AMPLIFY_APP_ID=${AMPLIFY_APP_ID}
+
+          # Google Analytics (dashboard metrics — optional)
+          GA_PROPERTY_ID=${GA_PROPERTY_ID}
 
           # Anthropic (certificate extraction — optional, feature degrades gracefully if unset)
           ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}

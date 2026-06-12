@@ -377,6 +377,10 @@ class ApiClient {
     return this.request<ApiResponse<T>>("/admin/dashboard-stats");
   }
 
+  getDashboardExternal<T = unknown>() {
+    return this.request<ApiResponse<T>>("/admin/dashboard-external");
+  }
+
   getTranslationPlan<TOutput = unknown>() {
     return this.request<ApiResponse<TOutput>>("/admin/translate");
   }

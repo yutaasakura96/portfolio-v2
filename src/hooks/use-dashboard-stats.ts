@@ -45,6 +45,16 @@ export type DashboardStats = {
   lastPublishedPost: { publishedAt: string; title: string } | null;
   hasHero: boolean;
   hasAbout: boolean;
+  translationStats: {
+    hero: boolean;
+    about: boolean;
+    settings: boolean;
+    projects: number;
+    blogPosts: number;
+    experience: number;
+    education: number;
+    lastUpdated: string | null;
+  };
 };
 
 const DASHBOARD_STATS_KEY = ["admin", "dashboard-stats"] as const;
