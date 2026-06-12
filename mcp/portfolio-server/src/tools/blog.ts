@@ -3,16 +3,22 @@ import { z } from "zod";
 import { apiDelete, apiGet, apiPost, apiPut } from "../client.js";
 import { ok, err } from "../types.js";
 
-const blogPostInput = {
+const blogPostFields = {
   title: z.string().min(1).max(200),
   slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be lowercase kebab-case"),
   content: z.string().min(1),
   excerpt: z.string().max(500).optional(),
   featuredImage: z.string().optional(),
-  tags: z.array(z.string()).default([]),
-  status: z.enum(["DRAFT", "PUBLISHED"]).default("DRAFT"),
+  tags: z.array(z.string()),
+  status: z.enum(["DRAFT", "PUBLISHED"]),
   publishedAt: z.string().optional(),
   readTime: z.number().int().optional(),
+};
+
+const blogPostCreateInput = {
+  ...blogPostFields,
+  tags: blogPostFields.tags.default([]),
+  status: blogPostFields.status.default("DRAFT"),
 };
 
 export function registerBlogTools(server: McpServer): void {
@@ -57,7 +63,7 @@ export function registerBlogTools(server: McpServer): void {
   server.tool(
     "create-blog-post",
     "Create a new blog post. Status defaults to DRAFT. Use Markdown for content. Slug must be unique lowercase kebab-case.",
-    blogPostInput,
+    blogPostCreateInput,
     async (input) => {
       try {
         const data = await apiPost("/api/blog", input);
@@ -73,7 +79,7 @@ export function registerBlogTools(server: McpServer): void {
     "Update a blog post by ID. Only provided fields are changed.",
     {
       id: z.string(),
-      ...Object.fromEntries(Object.entries(blogPostInput).map(([k, v]) => [k, v.optional()])),
+      ...Object.fromEntries(Object.entries(blogPostFields).map(([k, v]) => [k, v.optional()])),
     },
     async ({ id, ...fields }) => {
       try {

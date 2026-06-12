@@ -183,6 +183,17 @@ describe("projectUpdateSchema", () => {
     const parsed = projectUpdateSchema.safeParse({ slug: "INVALID SLUG" });
     expect(parsed.success).toBe(false);
   });
+
+  it("should NOT fill defaults for omitted fields (status, featured, displayOrder, images)", () => {
+    const parsed = projectUpdateSchema.safeParse({ title: "Updated" });
+    expect(parsed.success).toBe(true);
+    if (parsed.success) {
+      expect(parsed.data).not.toHaveProperty("status");
+      expect(parsed.data).not.toHaveProperty("featured");
+      expect(parsed.data).not.toHaveProperty("displayOrder");
+      expect(parsed.data).not.toHaveProperty("images");
+    }
+  });
 });
 
 describe("normalizeImagesToGroups", () => {

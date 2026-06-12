@@ -3,7 +3,7 @@ import { z } from "zod";
 import { apiDelete, apiGet, apiPost, apiPut } from "../client.js";
 import { ok, err } from "../types.js";
 
-const projectInput = {
+const projectFields = {
   title: z.string().min(1).max(200),
   slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be lowercase kebab-case"),
   shortDescription: z.string().min(1).max(300),
@@ -15,11 +15,18 @@ const projectInput = {
   thumbnailImage: z.string().optional(),
   liveUrl: z.string().optional(),
   repoUrl: z.string().optional(),
-  featured: z.boolean().default(false),
-  displayOrder: z.number().int().default(0),
-  status: z.enum(["DRAFT", "PUBLISHED"]).default("DRAFT"),
+  featured: z.boolean(),
+  displayOrder: z.number().int(),
+  status: z.enum(["DRAFT", "PUBLISHED"]),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
+};
+
+const projectCreateInput = {
+  ...projectFields,
+  featured: projectFields.featured.default(false),
+  displayOrder: projectFields.displayOrder.default(0),
+  status: projectFields.status.default("DRAFT"),
 };
 
 export function registerProjectTools(server: McpServer): void {
@@ -61,7 +68,7 @@ export function registerProjectTools(server: McpServer): void {
   server.tool(
     "create-project",
     "Create a new portfolio project. Slug must be unique lowercase kebab-case. Status defaults to DRAFT.",
-    projectInput,
+    projectCreateInput,
     async (input) => {
       try {
         const data = await apiPost("/api/projects", input);
@@ -77,7 +84,7 @@ export function registerProjectTools(server: McpServer): void {
     "Update an existing project by ID. Only provided fields are changed.",
     {
       id: z.string(),
-      ...Object.fromEntries(Object.entries(projectInput).map(([k, v]) => [k, v.optional()])),
+      ...Object.fromEntries(Object.entries(projectFields).map(([k, v]) => [k, v.optional()])),
     },
     async ({ id, ...fields }) => {
       try {

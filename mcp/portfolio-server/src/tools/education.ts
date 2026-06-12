@@ -3,19 +3,26 @@ import { z } from "zod";
 import { apiDelete, apiGet, apiPost, apiPut } from "../client.js";
 import { ok, err } from "../types.js";
 
-const educationInput = {
+const educationFields = {
   institution: z.string().min(1).max(200),
   degree: z.string().min(1).max(200),
   field: z.string().optional(),
   startDate: z.string().optional(),
   endDate: z.string().nullable().optional(),
   description: z.string().optional(),
-  achievements: z.array(z.string()).default([]),
+  achievements: z.array(z.string()),
   logoUrl: z.string().optional(),
   institutionUrl: z.string().optional(),
   documentUrl: z.string().optional(),
-  displayOrder: z.number().int().default(0),
-  visible: z.boolean().default(true),
+  displayOrder: z.number().int(),
+  visible: z.boolean(),
+};
+
+const educationCreateInput = {
+  ...educationFields,
+  achievements: educationFields.achievements.default([]),
+  displayOrder: educationFields.displayOrder.default(0),
+  visible: educationFields.visible.default(true),
 };
 
 export function registerEducationTools(server: McpServer): void {
@@ -36,7 +43,7 @@ export function registerEducationTools(server: McpServer): void {
   server.tool(
     "create-education",
     "Create a new education entry.",
-    educationInput,
+    educationCreateInput,
     async (input) => {
       try {
         const data = await apiPost("/api/education", input);
@@ -52,7 +59,7 @@ export function registerEducationTools(server: McpServer): void {
     "Update an education entry by ID. Only provided fields are changed.",
     {
       id: z.string(),
-      ...Object.fromEntries(Object.entries(educationInput).map(([k, v]) => [k, v.optional()])),
+      ...Object.fromEntries(Object.entries(educationFields).map(([k, v]) => [k, v.optional()])),
     },
     async ({ id, ...fields }) => {
       try {

@@ -3,19 +3,27 @@ import { z } from "zod";
 import { apiDelete, apiGet, apiPost, apiPut } from "../client.js";
 import { ok, err } from "../types.js";
 
-const experienceInput = {
+const experienceFields = {
   company: z.string().min(1).max(200),
   role: z.string().min(1).max(200),
   location: z.string().optional(),
   startDate: z.string(),
   endDate: z.string().nullable().optional(),
   description: z.string().min(1),
-  highlights: z.array(z.string()).default([]),
-  techTags: z.array(z.string()).default([]),
+  highlights: z.array(z.string()),
+  techTags: z.array(z.string()),
   logoUrl: z.string().optional(),
   companyUrl: z.string().optional(),
-  displayOrder: z.number().int().default(0),
-  visible: z.boolean().default(true),
+  displayOrder: z.number().int(),
+  visible: z.boolean(),
+};
+
+const experienceCreateInput = {
+  ...experienceFields,
+  highlights: experienceFields.highlights.default([]),
+  techTags: experienceFields.techTags.default([]),
+  displayOrder: experienceFields.displayOrder.default(0),
+  visible: experienceFields.visible.default(true),
 };
 
 export function registerExperienceTools(server: McpServer): void {
@@ -36,7 +44,7 @@ export function registerExperienceTools(server: McpServer): void {
   server.tool(
     "create-experience",
     "Create a new work experience entry.",
-    experienceInput,
+    experienceCreateInput,
     async (input) => {
       try {
         const data = await apiPost("/api/experience", input);
@@ -52,7 +60,7 @@ export function registerExperienceTools(server: McpServer): void {
     "Update a work experience entry by ID. Only provided fields are changed.",
     {
       id: z.string(),
-      ...Object.fromEntries(Object.entries(experienceInput).map(([k, v]) => [k, v.optional()])),
+      ...Object.fromEntries(Object.entries(experienceFields).map(([k, v]) => [k, v.optional()])),
     },
     async ({ id, ...fields }) => {
       try {

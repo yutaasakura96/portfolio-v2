@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const skillCreateSchema = z.object({
+const skillFields = {
   name: z.string().min(1).max(100),
   category: z.string().min(1).max(100),
   icon: z.string().max(100).optional().or(z.literal("")),
@@ -9,11 +9,17 @@ export const skillCreateSchema = z.object({
     .enum(["BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"])
     .optional()
     .nullable(),
-  displayOrder: z.number().int().default(0),
-  visible: z.boolean().default(true),
+  displayOrder: z.number().int(),
+  visible: z.boolean(),
+};
+
+export const skillCreateSchema = z.object({
+  ...skillFields,
+  displayOrder: skillFields.displayOrder.default(0),
+  visible: skillFields.visible.default(true),
 });
 
-export const skillUpdateSchema = skillCreateSchema.partial();
+export const skillUpdateSchema = z.object(skillFields).partial();
 
 export type SkillCreateInput = z.infer<typeof skillCreateSchema>;
 export type SkillUpdateInput = z.infer<typeof skillUpdateSchema>;

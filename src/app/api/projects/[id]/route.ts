@@ -45,9 +45,13 @@ export const PUT = withErrorHandler(
       );
     }
 
-    if (parsed.data.slug && parsed.data.slug !== existing.slug) {
+    const data = Object.fromEntries(
+      Object.entries(parsed.data).filter(([, v]) => v !== undefined)
+    ) as typeof parsed.data;
+
+    if (data.slug && data.slug !== existing.slug) {
       const slugConflict = await prisma.project.findUnique({
-        where: { slug: parsed.data.slug },
+        where: { slug: data.slug },
       });
       if (slugConflict) {
         throw new ApiError("A project with this slug already exists", 409, ErrorCodes.CONFLICT);
@@ -56,7 +60,7 @@ export const PUT = withErrorHandler(
 
     const project = await prisma.project.update({
       where: { id },
-      data: parsed.data,
+      data,
     });
 
     revalidatePath("/projects");

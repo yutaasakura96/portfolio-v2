@@ -28,7 +28,9 @@ export const PUT = withErrorHandler(
       );
     }
 
-    const skill = await prisma.skill.update({ where: { id }, data: parsed.data });
+    const data = Object.fromEntries(Object.entries(parsed.data).filter(([, v]) => v !== undefined));
+
+    const skill = await prisma.skill.update({ where: { id }, data });
 
     if (parsed.data.category) {
       await prisma.skillCategory.upsert({

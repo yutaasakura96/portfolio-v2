@@ -50,7 +50,9 @@ export const PUT = withErrorHandler(
       );
     }
 
-    const data = parsed.data;
+    const data = Object.fromEntries(
+      Object.entries(parsed.data).filter(([, v]) => v !== undefined)
+    ) as typeof parsed.data;
 
     // Check slug uniqueness if changed
     if (data.slug && data.slug !== existing.slug) {

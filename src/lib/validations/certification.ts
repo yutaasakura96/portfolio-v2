@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const certificationCreateSchema = z.object({
+const certificationFields = {
   name: z.string().min(1).max(200),
   issuer: z.string().min(1).max(200),
   dateEarned: z.coerce.date(),
@@ -14,11 +14,17 @@ export const certificationCreateSchema = z.object({
   credentialUrl: z.url().or(z.literal("")).optional(),
   badgeImage: z.url().or(z.literal("")).optional(),
   certificateImage: z.url().or(z.literal("")).optional(),
-  displayOrder: z.number().int().default(0),
-  visible: z.boolean().default(true),
+  displayOrder: z.number().int(),
+  visible: z.boolean(),
+};
+
+export const certificationCreateSchema = z.object({
+  ...certificationFields,
+  displayOrder: certificationFields.displayOrder.default(0),
+  visible: certificationFields.visible.default(true),
 });
 
-export const certificationUpdateSchema = certificationCreateSchema.partial();
+export const certificationUpdateSchema = z.object(certificationFields).partial();
 
 export type CertificationCreateInput = z.infer<typeof certificationCreateSchema>;
 export type CertificationUpdateInput = z.infer<typeof certificationUpdateSchema>;

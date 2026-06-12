@@ -3,7 +3,7 @@ import { z } from "zod";
 import { apiDelete, apiGet, apiPost, apiPut } from "../client.js";
 import { ok, err } from "../types.js";
 
-const skillInput = {
+const skillFields = {
   name: z.string().min(1).max(100),
   category: z.string().min(1).max(100),
   icon: z.string().max(100).optional(),
@@ -12,8 +12,14 @@ const skillInput = {
     .enum(["BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"])
     .nullable()
     .optional(),
-  displayOrder: z.number().int().default(0),
-  visible: z.boolean().default(true),
+  displayOrder: z.number().int(),
+  visible: z.boolean(),
+};
+
+const skillCreateInput = {
+  ...skillFields,
+  displayOrder: skillFields.displayOrder.default(0),
+  visible: skillFields.visible.default(true),
 };
 
 export function registerSkillTools(server: McpServer): void {
@@ -37,7 +43,7 @@ export function registerSkillTools(server: McpServer): void {
     }
   );
 
-  server.tool("create-skill", "Create a new skill entry.", skillInput, async (input) => {
+  server.tool("create-skill", "Create a new skill entry.", skillCreateInput, async (input) => {
     try {
       const data = await apiPost("/api/skills", input);
       return ok(data);
@@ -51,7 +57,7 @@ export function registerSkillTools(server: McpServer): void {
     "Update a skill by ID. Only provided fields are changed.",
     {
       id: z.string(),
-      ...Object.fromEntries(Object.entries(skillInput).map(([k, v]) => [k, v.optional()])),
+      ...Object.fromEntries(Object.entries(skillFields).map(([k, v]) => [k, v.optional()])),
     },
     async ({ id, ...fields }) => {
       try {

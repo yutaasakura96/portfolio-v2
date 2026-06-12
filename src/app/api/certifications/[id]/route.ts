@@ -27,9 +27,11 @@ export const PUT = withErrorHandler(
       );
     }
 
+    const data = Object.fromEntries(Object.entries(parsed.data).filter(([, v]) => v !== undefined));
+
     const certification = await prisma.certification.update({
       where: { id },
-      data: parsed.data,
+      data,
     });
 
     revalidatePath("/about");

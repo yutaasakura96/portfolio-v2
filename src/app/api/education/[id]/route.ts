@@ -27,9 +27,11 @@ export const PUT = withErrorHandler(
       );
     }
 
+    const data = Object.fromEntries(Object.entries(parsed.data).filter(([, v]) => v !== undefined));
+
     const education = await prisma.education.update({
       where: { id },
-      data: parsed.data,
+      data,
     });
 
     revalidatePath("/about");

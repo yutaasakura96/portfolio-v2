@@ -3,7 +3,7 @@ import { z } from "zod";
 import { apiDelete, apiGet, apiPost, apiPut } from "../client.js";
 import { ok, err } from "../types.js";
 
-const certificationInput = {
+const certificationFields = {
   name: z.string().min(1).max(200),
   issuer: z.string().min(1).max(200),
   dateEarned: z.string(),
@@ -12,8 +12,14 @@ const certificationInput = {
   credentialUrl: z.string().optional(),
   badgeImage: z.string().optional(),
   certificateImage: z.string().optional(),
-  displayOrder: z.number().int().default(0),
-  visible: z.boolean().default(true),
+  displayOrder: z.number().int(),
+  visible: z.boolean(),
+};
+
+const certificationCreateInput = {
+  ...certificationFields,
+  displayOrder: certificationFields.displayOrder.default(0),
+  visible: certificationFields.visible.default(true),
 };
 
 export function registerCertificationTools(server: McpServer): void {
@@ -34,7 +40,7 @@ export function registerCertificationTools(server: McpServer): void {
   server.tool(
     "create-certification",
     "Create a new certification entry.",
-    certificationInput,
+    certificationCreateInput,
     async (input) => {
       try {
         const data = await apiPost("/api/certifications", input);
@@ -50,7 +56,7 @@ export function registerCertificationTools(server: McpServer): void {
     "Update a certification by ID. Only provided fields are changed.",
     {
       id: z.string(),
-      ...Object.fromEntries(Object.entries(certificationInput).map(([k, v]) => [k, v.optional()])),
+      ...Object.fromEntries(Object.entries(certificationFields).map(([k, v]) => [k, v.optional()])),
     },
     async ({ id, ...fields }) => {
       try {
