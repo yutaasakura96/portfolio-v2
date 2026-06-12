@@ -107,7 +107,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                 {post.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-blue-50 text-xs font-medium text-blue-700 dark:bg-blue-950 dark:text-blue-300"
+                    className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-muted text-xs font-medium text-muted-foreground"
                   >
                     {tag}
                   </span>
