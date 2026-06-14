@@ -1,15 +1,13 @@
+import { ApiError, ErrorCodes, withErrorHandler } from "@/lib/errors";
 import { verifyJwt } from "@/lib/aws/cognito";
 import { cookies } from "next/headers";
 
-export async function GET() {
+export const GET = withErrorHandler(async () => {
   const cookieStore = await cookies();
   const token = cookieStore.get("access_token")?.value;
 
   if (!token) {
-    return Response.json(
-      { error: { message: "Not authenticated", code: "UNAUTHORIZED" } },
-      { status: 401 }
-    );
+    throw new ApiError("Not authenticated", 401, ErrorCodes.UNAUTHORIZED);
   }
 
   try {
@@ -21,9 +19,6 @@ export async function GET() {
       },
     });
   } catch {
-    return Response.json(
-      { error: { message: "Invalid or expired token", code: "UNAUTHORIZED" } },
-      { status: 401 }
-    );
+    throw new ApiError("Invalid or expired token", 401, ErrorCodes.UNAUTHORIZED);
   }
-}
+});

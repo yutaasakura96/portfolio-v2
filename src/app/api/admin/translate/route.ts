@@ -160,28 +160,34 @@ async function translateHero(apiKey: string): Promise<number> {
   const hero = await prisma.hero.findFirst();
   if (hero) {
     try {
-      const translated = (await callHaiku(apiKey, {
+      const raw = await callHaiku(apiKey, {
         headline: hero.headline,
         subheadline: hero.subheadline ?? "",
         bio: hero.bio,
-      })) as Record<string, string>;
+      });
+      const translated = validateTranslatedRecord(raw, ["headline", "subheadline", "bio"]);
+      if (!translated) return 0;
 
       let ctaButtonsJa: Prisma.InputJsonValue | typeof Prisma.JsonNull = Prisma.JsonNull;
       if (Array.isArray(hero.ctaButtons)) {
         const labels = (hero.ctaButtons as Array<{ label: string }>).map((b) => b.label);
-        const translatedLabels = (await callHaiku(apiKey, {
-          labels,
-        })) as { labels: string[] };
+        const rawLabels = await callHaiku(apiKey, { labels });
+        const translatedLabels =
+          rawLabels &&
+          typeof rawLabels === "object" &&
+          Array.isArray((rawLabels as { labels?: unknown }).labels)
+            ? (rawLabels as { labels: string[] }).labels
+            : [];
         ctaButtonsJa = (hero.ctaButtons as Array<Record<string, unknown>>).map((b, i) => ({
           ...b,
-          label: translatedLabels.labels?.[i] ?? b.label,
+          label: translatedLabels[i] ?? b.label,
         })) as unknown as Prisma.InputJsonValue;
       }
 
       await prisma.hero.update({
         where: { id: hero.id },
         data: {
-          headlineJa: "朝倉優太です!",
+          headlineJa: "朝倉優太です！",
           subheadlineJa: translated.subheadline || null,
           bioJa: translated.bio,
           ctaButtonsJa,
@@ -200,13 +206,16 @@ async function translateAbout(apiKey: string): Promise<number> {
   const about = await prisma.aboutPage.findUnique({ where: { id: "default" } });
   if (about) {
     try {
-      const translated = (await callHaiku(apiKey, {
+      const keys = ["heading", "subheading", "profileTitle", "introHeadline", "introBio"];
+      const raw = await callHaiku(apiKey, {
         heading: about.heading,
         subheading: about.subheading,
         profileTitle: about.profileTitle ?? "",
         introHeadline: about.introHeadline ?? "",
         introBio: about.introBio ?? "",
-      })) as Record<string, string>;
+      });
+      const translated = validateTranslatedRecord(raw, keys);
+      if (!translated) return 0;
 
       await prisma.aboutPage.update({
         where: { id: "default" },
@@ -231,9 +240,11 @@ async function translateSettings(apiKey: string): Promise<number> {
   const settings = await prisma.siteSettings.findUnique({ where: { id: "default" } });
   if (settings?.siteDescription) {
     try {
-      const translated = (await callHaiku(apiKey, {
+      const raw = await callHaiku(apiKey, {
         siteDescription: settings.siteDescription,
-      })) as Record<string, string>;
+      });
+      const translated = validateTranslatedRecord(raw, ["siteDescription"]);
+      if (!translated?.siteDescription) return 0;
 
       await prisma.siteSettings.update({
         where: { id: "default" },
@@ -248,19 +259,55 @@ async function translateSettings(apiKey: string): Promise<number> {
   return 0;
 }
 
+function validateTranslatedRecord(
+  raw: unknown,
+  expectedKeys: string[]
+): Record<string, string> | null {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+  const result: Record<string, string> = {};
+  for (const key of expectedKeys) {
+    const val = (raw as Record<string, unknown>)[key];
+    if (typeof val === "string" && val.length <= 10000) {
+      result[key] = val;
+    }
+  }
+  return Object.keys(result).length > 0 ? result : null;
+}
+
+function validateTranslatedArray<T extends { id: string }>(
+  raw: unknown,
+  validIds: Set<string>,
+  expectedKeys: string[]
+): T[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.filter((item): item is T => {
+    if (!item || typeof item !== "object") return false;
+    const rec = item as Record<string, unknown>;
+    if (typeof rec.id !== "string" || !validIds.has(rec.id)) return false;
+    for (const key of expectedKeys) {
+      const val = rec[key];
+      if (val !== undefined && typeof val !== "string" && !Array.isArray(val)) return false;
+    }
+    return true;
+  });
+}
+
 async function translateProject(apiKey: string, id: string): Promise<number> {
   const project = await prisma.project.findFirst({ where: { id, status: "PUBLISHED" } });
   if (!project) return 0;
 
   try {
-    const translated = (await callHaiku(apiKey, {
+    const keys = ["title", "shortDescription", "description", "problem", "solution", "role"];
+    const raw = await callHaiku(apiKey, {
       title: project.title,
       shortDescription: project.shortDescription,
       description: project.description ?? "",
       problem: project.problem ?? "",
       solution: project.solution ?? "",
       role: project.role ?? "",
-    })) as Record<string, string>;
+    });
+    const translated = validateTranslatedRecord(raw, keys);
+    if (!translated) return 0;
 
     await prisma.project.update({
       where: { id: project.id },
@@ -286,7 +333,8 @@ async function translateBlogPost(apiKey: string, id: string): Promise<number> {
   if (!post) return 0;
 
   try {
-    const translated = (await callHaiku(
+    const keys = ["title", "content", "excerpt"];
+    const raw = await callHaiku(
       apiKey,
       {
         title: post.title,
@@ -294,7 +342,9 @@ async function translateBlogPost(apiKey: string, id: string): Promise<number> {
         excerpt: post.excerpt,
       },
       post.content.length > 3000 ? 8192 : 4096
-    )) as Record<string, string>;
+    );
+    const translated = validateTranslatedRecord(raw, keys);
+    if (!translated) return 0;
 
     await prisma.blogPost.update({
       where: { id: post.id },
@@ -316,6 +366,7 @@ async function translateExperience(apiKey: string): Promise<number> {
   const experiences = await prisma.experience.findMany({ where: { visible: true } });
   if (experiences.length > 0) {
     try {
+      const validIds = new Set(experiences.map((exp) => exp.id));
       const input = experiences.map((exp) => ({
         id: exp.id,
         role: exp.role,
@@ -323,25 +374,25 @@ async function translateExperience(apiKey: string): Promise<number> {
         highlights: exp.highlights,
       }));
 
-      const translated = (await callHaiku(apiKey, input, 8192)) as Array<{
+      const raw = await callHaiku(apiKey, input, 8192);
+      const translated = validateTranslatedArray<{
         id: string;
         role: string;
         description: string;
         highlights: string[];
-      }>;
+      }>(raw, validIds, ["role", "description", "highlights"]);
 
       for (const item of translated) {
-        if (!item.id) continue;
         await prisma.experience.update({
           where: { id: item.id },
           data: {
-            roleJa: item.role,
-            descriptionJa: item.description,
+            roleJa: typeof item.role === "string" ? item.role : undefined,
+            descriptionJa: typeof item.description === "string" ? item.description : undefined,
             highlightsJa: Array.isArray(item.highlights) ? item.highlights : [],
           },
         });
       }
-      return translated.filter((item) => item.id).length;
+      return translated.length;
     } catch (e) {
       console.error("Failed to translate experience:", e);
     }
@@ -354,29 +405,31 @@ async function translateEducation(apiKey: string): Promise<number> {
   const educations = await prisma.education.findMany({ where: { visible: true } });
   if (educations.length > 0) {
     try {
+      const validIds = new Set(educations.map((edu) => edu.id));
       const input = educations.map((edu) => ({
         id: edu.id,
         degree: edu.degree,
         achievements: edu.achievements ?? "",
       }));
 
-      const translated = (await callHaiku(apiKey, input)) as Array<{
+      const raw = await callHaiku(apiKey, input);
+      const translated = validateTranslatedArray<{
         id: string;
         degree: string;
         achievements: string;
-      }>;
+      }>(raw, validIds, ["degree", "achievements"]);
 
       for (const item of translated) {
-        if (!item.id) continue;
         await prisma.education.update({
           where: { id: item.id },
           data: {
-            degreeJa: item.degree,
-            achievementsJa: item.achievements || null,
+            degreeJa: typeof item.degree === "string" ? item.degree : undefined,
+            achievementsJa:
+              typeof item.achievements === "string" ? item.achievements || null : null,
           },
         });
       }
-      return translated.filter((item) => item.id).length;
+      return translated.length;
     } catch (e) {
       console.error("Failed to translate education:", e);
     }

@@ -1,8 +1,8 @@
+import { withErrorHandler } from "@/lib/errors";
 import { exchangeCodeForTokens, verifyJwt } from "@/lib/aws/cognito";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(request: NextRequest) {
-  // Determine the correct public-facing URL using forwarded headers
+export const GET = withErrorHandler(async (request: NextRequest) => {
   const protocol = request.headers.get("x-forwarded-proto") || "https";
   const host =
     request.headers.get("x-forwarded-host") || request.headers.get("host") || request.nextUrl.host;
@@ -12,7 +12,6 @@ export async function GET(request: NextRequest) {
   const code = searchParams.get("code");
   const error = searchParams.get("error");
 
-  // Handle Cognito errors (e.g., user cancelled login)
   if (error) {
     return NextResponse.redirect(new URL(`/admin/login?error=${error}`, baseUrl));
   }
@@ -23,17 +22,10 @@ export async function GET(request: NextRequest) {
 
   try {
     const redirectUri = `${baseUrl}/api/auth/callback`;
-
-    // Exchange authorization code for tokens
     const tokens = await exchangeCodeForTokens(code, redirectUri);
-
-    // Verify the ID token to extract user info
     await verifyJwt(tokens.id_token);
 
-    // Create response with redirect to admin dashboard
     const response = NextResponse.redirect(new URL("/admin", baseUrl));
-
-    // Set HTTP-only cookies
     const isProduction = process.env.NODE_ENV === "production";
 
     response.cookies.set("access_token", tokens.access_token, {
@@ -41,7 +33,7 @@ export async function GET(request: NextRequest) {
       secure: isProduction,
       sameSite: "lax",
       path: "/",
-      maxAge: tokens.expires_in, // typically 3600 (1 hour)
+      maxAge: tokens.expires_in,
     });
 
     response.cookies.set("id_token", tokens.id_token, {
@@ -57,12 +49,11 @@ export async function GET(request: NextRequest) {
       secure: isProduction,
       sameSite: "lax",
       path: "/api/auth",
-      maxAge: 30 * 24 * 60 * 60, // 30 days
+      maxAge: 30 * 24 * 60 * 60,
     });
 
     return response;
-  } catch (err) {
-    console.error("Auth callback error:", err);
+  } catch {
     return NextResponse.redirect(new URL("/admin/login?error=auth_failed", baseUrl));
   }
-}
+});

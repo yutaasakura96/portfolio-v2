@@ -1,9 +1,9 @@
+import { withErrorHandler } from "@/lib/errors";
 import { revokeToken } from "@/lib/aws/cognito";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-export async function POST() {
-  // Revoke the refresh token server-side so it cannot be reused after sign-out
+export const POST = withErrorHandler(async () => {
   try {
     const cookieStore = await cookies();
     const refreshToken = cookieStore.get("refresh_token")?.value;
@@ -15,11 +15,11 @@ export async function POST() {
   }
 
   const response = new NextResponse(null, { status: 204 });
+  const isProduction = process.env.NODE_ENV === "production";
 
-  // Clear all auth cookies
   response.cookies.set("access_token", "", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: isProduction,
     sameSite: "lax",
     path: "/",
     maxAge: 0,
@@ -27,7 +27,7 @@ export async function POST() {
 
   response.cookies.set("id_token", "", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: isProduction,
     sameSite: "lax",
     path: "/",
     maxAge: 0,
@@ -35,11 +35,11 @@ export async function POST() {
 
   response.cookies.set("refresh_token", "", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: isProduction,
     sameSite: "lax",
     path: "/api/auth",
     maxAge: 0,
   });
 
   return response;
-}
+});

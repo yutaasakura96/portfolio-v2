@@ -1,5 +1,6 @@
 "use client";
 
+import DOMPurify from "isomorphic-dompurify";
 import { useLocale } from "@/hooks/use-locale";
 import { ui } from "@/lib/i18n";
 import type { UIStringKey } from "@/lib/i18n";
@@ -26,7 +27,8 @@ interface LocalizedHtmlProps {
 export function LocalizedHtml({ enHtml, jaHtml, className }: LocalizedHtmlProps) {
   const { locale } = useLocale();
   const html = locale === "ja" && jaHtml?.trim() ? jaHtml : enHtml;
-  return <div className={className} dangerouslySetInnerHTML={{ __html: html }} />;
+  const sanitized = DOMPurify.sanitize(html);
+  return <div className={className} dangerouslySetInnerHTML={{ __html: sanitized }} />;
 }
 
 interface LocalizedUiProps {
