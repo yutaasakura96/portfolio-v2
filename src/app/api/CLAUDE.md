@@ -203,7 +203,7 @@ When adding a new entity, add its config to `entityConfigs` in `entity-configs.t
 - `GET` returns `{ data: { projectIds: string[]; blogPostIds: string[] } }` so the admin UI can build a translation plan.
 - `POST` requires `{ target }`, where `target` is one of `hero`, `about`, `settings`, `experience`, or `education`; for item targets use `{ target: "project", id }` or `{ target: "blogPost", id }`.
 - `POST` returns count buckets: `{ data: { hero, about, settings, projects, blog, experience, education } }`.
-- Has a detailed system prompt that includes name kanji mappings (朝倉優太) and company name overrides to ensure consistent proper-noun handling.
+- Has a detailed system prompt that includes name kanji mappings (朝倉優太) and company name overrides to ensure consistent proper-noun handling. The system prompt uses prompt caching (`cache_control: {type: "ephemeral"}`) — the first call in a translation run writes the cache, and subsequent calls within 5 minutes read from cache at ~90% input token discount.
 - Called from the admin translations page (`/admin/translations`) which shows a progress bar and last-updated timestamp.
 - Production constraint: Amplify Hosting SSR times out long requests at roughly 28-30 seconds. Keep the translation workflow item-by-item; do not collapse projects/blog posts back into collection-sized Anthropic calls.
 - Rate limit: treat as a heavy operation. The admin page intentionally makes several small sequential `POST` calls for one button click; do not call it from a tight loop.
