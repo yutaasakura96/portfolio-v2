@@ -9,8 +9,8 @@ import { NextRequest } from "next/server";
 
 // GET /api/blog/[id] — get single post (includes content)
 export const GET = withErrorHandler(
-  async (request: NextRequest, context?: { params: Promise<{ id: string }> }) => {
-    const { id } = await context!.params;
+  async (request: NextRequest, context: { params: Promise<{ id: string }> }) => {
+    const { id } = await context.params;
 
     const post = await prisma.blogPost.findUnique({ where: { id } });
 
@@ -29,8 +29,8 @@ export const GET = withErrorHandler(
 
 // PUT /api/blog/[id] — update post
 export const PUT = withErrorHandler(
-  async (request: NextRequest, context?: { params: Promise<{ id: string }> }) => {
-    const { id } = await context!.params;
+  async (request: NextRequest, context: { params: Promise<{ id: string }> }) => {
+    const { id } = await context.params;
     await requireAuthOrApiKey(request);
 
     const existing = await prisma.blogPost.findUnique({ where: { id } });
@@ -98,8 +98,8 @@ export const PUT = withErrorHandler(
 
 // DELETE /api/blog/[id] — delete post
 export const DELETE = withErrorHandler(
-  async (request: NextRequest, context?: { params: Promise<{ id: string }> }) => {
-    const { id } = await context!.params;
+  async (request: NextRequest, context: { params: Promise<{ id: string }> }) => {
+    const { id } = await context.params;
     await requireAuthOrApiKey(request);
 
     const post = await prisma.blogPost.findUnique({ where: { id } });

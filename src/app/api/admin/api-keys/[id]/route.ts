@@ -4,10 +4,10 @@ import { prisma } from "@/lib/prismaClient";
 import { NextRequest } from "next/server";
 
 export const DELETE = withErrorHandler(
-  async (_request: NextRequest, context?: { params: Promise<{ id: string }> }) => {
+  async (_request: NextRequest, context: { params: Promise<{ id: string }> }) => {
     await requireAuth();
 
-    const { id } = await context!.params;
+    const { id } = await context.params;
 
     const existing = await prisma.apiKey.findUnique({ where: { id } });
     if (!existing) {

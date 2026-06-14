@@ -49,9 +49,8 @@ export async function rateLimit(
       resetTime: result.reset,
     };
   } catch (error) {
-    // fail-open: log and allow on Upstash error
-    console.error("rateLimit: Upstash error, failing open", error);
-    return { success: true, remaining: 0, resetTime: Date.now() + windowMs };
+    console.error("rateLimit: Upstash error, failing closed", error);
+    return { success: false, remaining: 0, resetTime: Date.now() + windowMs };
   }
 }
 

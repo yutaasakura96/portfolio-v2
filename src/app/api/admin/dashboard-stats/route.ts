@@ -97,17 +97,11 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   await requireAuthOrApiKey(request);
 
   const [
-    projectCount,
-    postCount,
-    messageCount,
+    projectsByStatus,
+    postsByStatus,
+    messageCounts,
     recentProjects,
     recentPosts,
-    publishedProjectCount,
-    draftProjectCount,
-    publishedPostCount,
-    draftPostCount,
-    totalMessageCount,
-    archivedMessageCount,
     recentMessages,
     skillCount,
     experienceCount,
@@ -119,9 +113,9 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     aboutCount,
     translationStats,
   ] = await Promise.all([
-    prisma.project.count(),
-    prisma.blogPost.count(),
-    prisma.contactMessage.count({ where: unreadMessagesWhere }),
+    prisma.project.groupBy({ by: ["status"], _count: true }),
+    prisma.blogPost.groupBy({ by: ["status"], _count: true }),
+    prisma.contactMessage.groupBy({ by: ["read", "archived"], _count: true }),
     prisma.project.findMany({
       orderBy: { updatedAt: "desc" },
       take: 5,
@@ -132,12 +126,6 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
       take: 5,
       select: recentItemSelect,
     }),
-    prisma.project.count({ where: { status: "PUBLISHED" } }),
-    prisma.project.count({ where: { status: "DRAFT" } }),
-    prisma.blogPost.count({ where: { status: "PUBLISHED" } }),
-    prisma.blogPost.count({ where: { status: "DRAFT" } }),
-    prisma.contactMessage.count(),
-    prisma.contactMessage.count({ where: { archived: true } }),
     prisma.contactMessage.findMany({
       where: unreadMessagesWhere,
       orderBy: { createdAt: "desc" },
@@ -163,6 +151,20 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     prisma.aboutPage.count(),
     getTranslationStats(),
   ]);
+
+  const publishedProjectCount = projectsByStatus.find((g) => g.status === "PUBLISHED")?._count ?? 0;
+  const draftProjectCount = projectsByStatus.find((g) => g.status === "DRAFT")?._count ?? 0;
+  const projectCount = projectsByStatus.reduce((sum, g) => sum + g._count, 0);
+
+  const publishedPostCount = postsByStatus.find((g) => g.status === "PUBLISHED")?._count ?? 0;
+  const draftPostCount = postsByStatus.find((g) => g.status === "DRAFT")?._count ?? 0;
+  const postCount = postsByStatus.reduce((sum, g) => sum + g._count, 0);
+
+  const totalMessageCount = messageCounts.reduce((sum, g) => sum + g._count, 0);
+  const archivedMessageCount = messageCounts
+    .filter((g) => g.archived)
+    .reduce((sum, g) => sum + g._count, 0);
+  const messageCount = messageCounts.filter((g) => !g.read).reduce((sum, g) => sum + g._count, 0);
 
   return Response.json({
     data: {

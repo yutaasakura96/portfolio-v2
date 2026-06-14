@@ -24,7 +24,11 @@ import {
 } from "lucide-react";
 
 function formatTimeAgo(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime();
+  if (!iso) return "—";
+  const ts = new Date(iso).getTime();
+  if (Number.isNaN(ts)) return "—";
+  const diff = Date.now() - ts;
+  if (diff < 60_000) return "just now";
   const minutes = Math.floor(diff / 60_000);
   if (minutes < 60) return `${minutes}m ago`;
   const hours = Math.floor(minutes / 60);

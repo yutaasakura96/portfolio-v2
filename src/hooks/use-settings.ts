@@ -2,6 +2,7 @@
 
 import { apiClient } from "@/lib/api-client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import type { SiteSettingsUpdateInput } from "@/lib/validations/settings";
 
 export type SiteSettings = {
@@ -31,6 +32,9 @@ export function useUpdateSettings() {
       apiClient.updateSettings<SiteSettingsUpdateInput, SiteSettings>(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SETTINGS_KEY });
+    },
+    onError: () => {
+      toast.error("Failed to update settings");
     },
   });
 }

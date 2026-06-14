@@ -6,10 +6,10 @@ import { messageUpdateSchema } from "@/lib/validations/message";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
-export const GET = withErrorHandler(async (request: NextRequest, context?: RouteContext) => {
+export const GET = withErrorHandler(async (request: NextRequest, context: RouteContext) => {
   await requireAuthOrApiKey(request);
 
-  const { id } = await context!.params;
+  const { id } = await context.params;
 
   const message = await prisma.contactMessage.findUnique({ where: { id } });
 
@@ -28,10 +28,10 @@ export const GET = withErrorHandler(async (request: NextRequest, context?: Route
   return NextResponse.json({ data: { ...message, read: true } });
 });
 
-export const PUT = withErrorHandler(async (request: NextRequest, context?: RouteContext) => {
+export const PUT = withErrorHandler(async (request: NextRequest, context: RouteContext) => {
   await requireAuthOrApiKey(request);
 
-  const { id } = await context!.params;
+  const { id } = await context.params;
 
   const body = await request.json();
   const parsed = messageUpdateSchema.safeParse(body);
@@ -58,10 +58,10 @@ export const PUT = withErrorHandler(async (request: NextRequest, context?: Route
   return NextResponse.json({ data: updated });
 });
 
-export const DELETE = withErrorHandler(async (_request: NextRequest, context?: RouteContext) => {
+export const DELETE = withErrorHandler(async (_request: NextRequest, context: RouteContext) => {
   await requireAuth();
 
-  const { id } = await context!.params;
+  const { id } = await context.params;
 
   const existing = await prisma.contactMessage.findUnique({ where: { id } });
   if (!existing) {

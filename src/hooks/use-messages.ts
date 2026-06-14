@@ -2,6 +2,7 @@
 
 import { apiClient } from "@/lib/api-client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export type Message = {
   id: string;
@@ -71,6 +72,9 @@ export function useUpdateMessage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: MESSAGES_KEY });
     },
+    onError: () => {
+      toast.error("Failed to update message");
+    },
   });
 }
 
@@ -80,6 +84,9 @@ export function useDeleteMessage() {
     mutationFn: (id: string) => apiClient.deleteMessage(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: MESSAGES_KEY });
+    },
+    onError: () => {
+      toast.error("Failed to delete message");
     },
   });
 }
@@ -94,6 +101,9 @@ export function useBulkUpdateMessages() {
       >(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: MESSAGES_KEY });
+    },
+    onError: () => {
+      toast.error("Failed to update messages");
     },
   });
 }

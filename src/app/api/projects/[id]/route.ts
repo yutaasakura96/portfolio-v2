@@ -6,8 +6,8 @@ import { revalidatePath } from "next/cache";
 import { NextRequest } from "next/server";
 
 export const GET = withErrorHandler(
-  async (request: NextRequest, context?: { params: Promise<{ id: string }> }) => {
-    const { id } = await context!.params;
+  async (request: NextRequest, context: { params: Promise<{ id: string }> }) => {
+    const { id } = await context.params;
 
     const project = await prisma.project.findUnique({ where: { id } });
 
@@ -24,9 +24,9 @@ export const GET = withErrorHandler(
 );
 
 export const PUT = withErrorHandler(
-  async (request: NextRequest, context?: { params: Promise<{ id: string }> }) => {
+  async (request: NextRequest, context: { params: Promise<{ id: string }> }) => {
     await requireAuthOrApiKey(request);
-    const { id } = await context!.params;
+    const { id } = await context.params;
 
     const existing = await prisma.project.findUnique({ where: { id } });
     if (!existing) {
@@ -74,9 +74,9 @@ export const PUT = withErrorHandler(
 );
 
 export const DELETE = withErrorHandler(
-  async (request: NextRequest, context?: { params: Promise<{ id: string }> }) => {
+  async (request: NextRequest, context: { params: Promise<{ id: string }> }) => {
     await requireAuthOrApiKey(request);
-    const { id } = await context!.params;
+    const { id } = await context.params;
 
     const existing = await prisma.project.findUnique({ where: { id } });
     if (!existing) {

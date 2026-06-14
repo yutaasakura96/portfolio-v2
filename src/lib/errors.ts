@@ -25,10 +25,16 @@ export class ApiError extends Error {
 }
 
 /** Wraps an API route handler so thrown `ApiError`s become structured responses and unknown errors become 500s. */
-export function withErrorHandler<TContext = unknown>(
-  handler: (request: NextRequest, context?: TContext) => Promise<Response>
+export function withErrorHandler(
+  handler: (request: NextRequest) => Promise<Response>
+): (request: NextRequest) => Promise<Response>;
+export function withErrorHandler<TContext>(
+  handler: (request: NextRequest, context: TContext) => Promise<Response>
+): (request: NextRequest, context: TContext) => Promise<Response>;
+export function withErrorHandler(
+  handler: (request: NextRequest, context?: unknown) => Promise<Response>
 ) {
-  return async (request: NextRequest, context?: TContext): Promise<Response> => {
+  return async (request: NextRequest, context?: unknown): Promise<Response> => {
     try {
       return await handler(request, context);
     } catch (error) {
