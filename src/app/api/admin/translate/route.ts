@@ -93,7 +93,13 @@ async function callHaiku(apiKey: string, input: unknown, maxTokens = 4096): Prom
     body: JSON.stringify({
       model: "claude-haiku-4-5-20251001",
       max_tokens: maxTokens,
-      system: SYSTEM_PROMPT,
+      system: [
+        {
+          type: "text",
+          text: SYSTEM_PROMPT,
+          cache_control: { type: "ephemeral" },
+        },
+      ],
       messages: [
         {
           role: "user",
