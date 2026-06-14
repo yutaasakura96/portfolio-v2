@@ -64,6 +64,7 @@ frontend:
     build:
       commands:
         - npx prisma migrate deploy || echo "Migration skipped - database not reachable"
+        - rm -rf docs/screenshots
         - npm run build
   artifacts:
     baseDirectory: .next
