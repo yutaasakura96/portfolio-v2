@@ -11,7 +11,7 @@ import {
 } from "@/lib/image-processor";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { nanoid } from "nanoid";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { z } from "zod";
 
 const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
@@ -76,7 +76,7 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
     const buffer = Buffer.from(await file.arrayBuffer());
     const url = await uploadToS3(buffer, "resume/resume_latest.pdf", "application/pdf");
 
-    return NextResponse.json({
+    return Response.json({
       data: {
         urls: { original: url },
         key: "resume/resume_latest.pdf",
@@ -108,7 +108,7 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
       key = `education/${entityId}/doc_${fileId}.pdf`;
       url = await uploadToS3(rawBuffer, key, "application/pdf");
 
-      return NextResponse.json({
+      return Response.json({
         data: {
           urls: { original: url },
           key,
@@ -121,7 +121,7 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
         uploadToS3(result.original.buffer, result.original.key, result.original.contentType),
       ]);
 
-      return NextResponse.json({
+      return Response.json({
         data: {
           urls: { display: displayUrl, original: origUrl },
           key: result.display.key,
@@ -242,7 +242,7 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
     }
   }
 
-  return NextResponse.json({
+  return Response.json({
     data: { urls, key: primaryKey },
   });
 });
@@ -274,5 +274,5 @@ export const DELETE = withErrorHandler(async (req: NextRequest) => {
 
   await deleteImageVariants(key);
 
-  return new NextResponse(null, { status: 204 });
+  return new Response(null, { status: 204 });
 });

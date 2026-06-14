@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prismaClient";
 import { withErrorHandler, ApiError, ErrorCodes } from "@/lib/errors";
 import { requireAuthOrApiKey } from "@/app/api/auth";
@@ -26,5 +26,5 @@ export const PUT = withErrorHandler(async (request: NextRequest) => {
     data: update,
   });
 
-  return NextResponse.json({ data: { count: result.count } });
+  return Response.json({ data: { count: result.count } });
 });

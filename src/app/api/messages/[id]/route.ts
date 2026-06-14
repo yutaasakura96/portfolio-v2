@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prismaClient";
 import { withErrorHandler, ApiError, ErrorCodes } from "@/lib/errors";
 import { requireAuth, requireAuthOrApiKey } from "@/app/api/auth";
@@ -25,7 +25,7 @@ export const GET = withErrorHandler(async (request: NextRequest, context: RouteC
     });
   }
 
-  return NextResponse.json({ data: { ...message, read: true } });
+  return Response.json({ data: { ...message, read: true } });
 });
 
 export const PUT = withErrorHandler(async (request: NextRequest, context: RouteContext) => {
@@ -55,7 +55,7 @@ export const PUT = withErrorHandler(async (request: NextRequest, context: RouteC
     data: parsed.data,
   });
 
-  return NextResponse.json({ data: updated });
+  return Response.json({ data: updated });
 });
 
 export const DELETE = withErrorHandler(async (_request: NextRequest, context: RouteContext) => {
@@ -70,5 +70,5 @@ export const DELETE = withErrorHandler(async (_request: NextRequest, context: Ro
 
   await prisma.contactMessage.delete({ where: { id } });
 
-  return new NextResponse(null, { status: 204 });
+  return new Response(null, { status: 204 });
 });

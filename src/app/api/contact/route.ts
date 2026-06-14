@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prismaClient";
 import { contactMessageSchema } from "@/lib/validations/contact";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
@@ -10,7 +10,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
 
   // 1. Honeypot check — silently succeed to fool bots
   if (body.honeypot && body.honeypot.length > 0) {
-    return NextResponse.json(
+    return Response.json(
       { data: { message: "Your message has been sent successfully." } },
       { status: 200 }
     );
@@ -62,7 +62,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   });
 
   // 6. Return success
-  return NextResponse.json(
+  return Response.json(
     { data: { message: "Your message has been sent successfully." } },
     { status: 200 }
   );

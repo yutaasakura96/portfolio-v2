@@ -1,9 +1,9 @@
 import { requireAuthOrApiKey } from "@/app/api/auth";
-import { withErrorHandler } from "@/lib/errors";
+import { ApiError, ErrorCodes, withErrorHandler } from "@/lib/errors";
 import { prisma } from "@/lib/prismaClient";
 import { siteSettingsUpdateSchema } from "@/lib/validations/settings";
 import { revalidatePath } from "next/cache";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { Prisma } from "../../../../generated/prisma/client";
 
 // GET /api/settings — Public (used for site metadata)
@@ -13,7 +13,7 @@ export const GET = withErrorHandler(async () => {
   });
 
   if (!settings) {
-    return NextResponse.json({
+    return Response.json({
       data: {
         id: "default",
         siteName: "Portfolio",
@@ -26,7 +26,7 @@ export const GET = withErrorHandler(async () => {
     });
   }
 
-  return NextResponse.json({ data: settings });
+  return Response.json({ data: settings });
 });
 
 // PUT /api/settings — Auth required
@@ -37,15 +37,11 @@ export const PUT = withErrorHandler(async (request: NextRequest) => {
   const parsed = siteSettingsUpdateSchema.safeParse(body);
 
   if (!parsed.success) {
-    return NextResponse.json(
-      {
-        error: {
-          message: "Validation failed",
-          code: "VALIDATION_ERROR",
-          details: parsed.error.flatten().fieldErrors,
-        },
-      },
-      { status: 400 }
+    throw new ApiError(
+      "Validation failed",
+      400,
+      ErrorCodes.VALIDATION_ERROR,
+      parsed.error.flatten().fieldErrors
     );
   }
 
@@ -72,5 +68,5 @@ export const PUT = withErrorHandler(async (request: NextRequest) => {
   revalidatePath("/");
   revalidatePath("/contact");
 
-  return NextResponse.json({ data: settings });
+  return Response.json({ data: settings });
 });

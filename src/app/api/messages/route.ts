@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { Prisma, prisma } from "@/lib/prismaClient";
 import { withErrorHandler } from "@/lib/errors";
 import { requireAuthOrApiKey } from "@/app/api/auth";
@@ -46,7 +46,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     }),
   ]);
 
-  return NextResponse.json({
+  return Response.json({
     data: messages,
     meta: {
       total,
