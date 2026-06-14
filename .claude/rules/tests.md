@@ -31,10 +31,13 @@ The project uses **Vitest 4.x** with **@testing-library/react** and **@testing-l
 Priority order (items marked ✅ already have tests):
 
 1. ✅ `src/lib/errors.ts` `withErrorHandler` — `src/lib/errors.test.ts`
-2. ✅ `src/app/api/auth.ts` `requireAuth` / `optionalAuth` — `src/app/api/auth.test.ts`
-3. ✅ `src/lib/validations/*.ts` — `contact.test.ts`, `project.test.ts`
-4. ~ Critical API routes: contact ✅ (`src/app/api/contact/route.test.ts`), upload (image processing) ❌, projects POST (slug conflict) ❌.
-5. E2E: admin login flow, create project flow.
+2. ✅ `src/app/api/auth.ts` `requireAuth` / `optionalAuth` / `requireAuthOrApiKey` — `src/app/api/auth.test.ts`
+3. ✅ `src/lib/validations/*.ts` — `contact.test.ts`, `project.test.ts`, `blog.test.ts`
+4. ✅ `src/lib/i18n.ts` `t()` / `tArray()` / `tJson()` / `ui()` / `localizeSkillCategory()` — `src/lib/i18n.test.ts`
+5. ✅ `src/lib/markdown.ts` `extractHeadings()` / `markdownToHtml()` — `src/lib/markdown.test.ts`
+6. ✅ `src/lib/import-export/csv-utils.ts` `flattenForCsv()` / `unflattenFromCsv()` — `src/lib/import-export/csv-utils.test.ts`
+7. ~ Critical API routes: contact ✅ (`src/app/api/contact/route.test.ts`), upload (image processing) ❌, projects POST (slug conflict) ❌.
+8. E2E: admin login flow, create project flow.
 
 ## What NOT to Test
 
