@@ -96,6 +96,9 @@ export default withSentryConfig(withBundleAnalyzer(nextConfig), {
   project: "portfolio-v2",
   silent: !process.env.CI,
   widenClientFileUpload: true,
+  sourcemaps: {
+    deleteSourcemapsAfterUpload: true,
+  },
   webpack: {
     treeshake: {
       removeDebugLogging: true,

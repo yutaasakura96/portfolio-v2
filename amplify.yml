@@ -64,8 +64,13 @@ frontend:
     build:
       commands:
         - npx prisma migrate deploy || echo "Migration skipped - database not reachable"
-        - rm -rf docs/screenshots
+        - rm -rf docs/screenshots .agents mcp .codex .claude/docs .claude/hooks .claude/agents
         - npm run build
+        - find .next -name '*.js.map' -delete
+    postBuild:
+      commands:
+        - echo "Build output size (bytes):"
+        - du -sb .next | cut -f1
   artifacts:
     baseDirectory: .next
     files:

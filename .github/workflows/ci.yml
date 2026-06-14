@@ -43,5 +43,16 @@ jobs:
       - name: Build
         run: npx next build
 
+      - name: Check build output size
+        run: |
+          SIZE=$(du -sb .next | cut -f1)
+          LIMIT=220000000
+          echo "Build output: $(( SIZE / 1048576 ))MB ($SIZE bytes)"
+          echo "Amplify limit: $(( LIMIT / 1048576 ))MB"
+          if [ "$SIZE" -gt "$LIMIT" ]; then
+            echo "::error::Build output ($SIZE bytes) exceeds Amplify deployment limit ($LIMIT bytes)"
+            exit 1
+          fi
+
       - name: Test
         run: npm run test:ci
