@@ -2,7 +2,7 @@
 
 Living document tracking planned features, improvements, and integrations for the portfolio project.
 
-Last updated: 2026-06-14 (screenshots: automated documentation screenshots captured and committed)
+Last updated: 2026-06-14 (full codebase audit: HIGH/MEDIUM/LOW findings fixed, API routes standardized)
 
 ---
 
@@ -33,8 +33,8 @@ Last updated: 2026-06-14 (screenshots: automated documentation screenshots captu
 - [x] Vitest — unit/integration test framework (5 test files covering errors, auth, validations, contact route)
 - [x] Playwright MCP — headless browser verification for agents
 - [x] Remove Zustand — removed from package.json, docs updated
-- [ ] Vitest - Additional tests before final audit.
-- [ ] Final Audit - Final audit using /ultrareview
+- [x] Vitest — expanded to 224 tests across 11 files (auth, validations, i18n, markdown, csv-utils, translate route)
+- [x] Full codebase audit — 6-phase audit (security, code quality, diff review, performance, test coverage, consolidation). 25 findings: 4 HIGH (security headers, XSS sanitization, auth error handling, LLM output validation), 8 MEDIUM (rate limiter fail-closed, type safety, mutation error toasts, query optimization), 8 LOW (Response.json standardization, ApiError consistency), 5 INFO (test coverage gaps). All HIGH/MEDIUM/LOW fixed.
 
 ---
 
@@ -144,7 +144,6 @@ Last updated: 2026-06-14 (screenshots: automated documentation screenshots captu
 - [x] Agentic workflow redesign — 7 agents → 4 (deleted orchestrator, synthesizer, documentation-agent; merged refactor-agent + documentation-agent → maintenance-agent). 2-tier routing (main session direct or single agent spawn). All agents use context-mode `ctx_batch_execute` for doc reads (~98% context savings). maxTurns capped on all 4. Updated `agentic-workflow.excalidraw` diagram.
 - [x] Slash commands — `/check` (lint + type-check + test), `/new-route` (API route scaffold), `/pr-ready` (pre-PR quality gate + draft) created in `.claude/commands/`
 - use /excalidraw-diagram skill to to create a diagram of current agentic workflow/orchestration. skill to create a diagram of current agentic workflow/orchestration.
-- codebase full audit. check type safety, type system, warnings, bugs, errors in code and bad practices. use /ultrareview or whatever agent or skill that is best.
 
 ### MCP Servers
 
