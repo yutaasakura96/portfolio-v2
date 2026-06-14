@@ -2,7 +2,7 @@
 
 Living document tracking planned features, improvements, and integrations for the portfolio project.
 
-Last updated: 2026-06-12 (dashboard-upgrade: external services panel + translation status widget marked done)
+Last updated: 2026-06-14 (screenshots: automated documentation screenshots captured and committed)
 
 ---
 
@@ -162,7 +162,7 @@ Last updated: 2026-06-12 (dashboard-upgrade: external services panel + translati
 
 ### Media & Demo
 
-- [ ] Automated screenshots via agents for documentation/demos
+- [x] Automated screenshots via agents for documentation/demos — 42 screenshots in `docs/screenshots/` (25 public, 17 admin) at 1440x900 via Playwright MCP. Admin pages use injected Cognito cookies. Sensitive screens (settings, messages) have PII redacted.
 - [ ] Demo video / screen capture automation (Remotion or similar)
 
 ---
