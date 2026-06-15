@@ -1,15 +1,9 @@
 "use client";
 
+import * as Sentry from "@sentry/nextjs";
 import Link from "next/link";
 import { useEffect } from "react";
 
-/**
- * Root-level error boundary. Catches errors thrown above the route-group
- * layouts (`(public)` / `(admin)`) — anything inside those groups is
- * handled by their own `error.tsx` first.
- *
- * TODO: forward `error` to a structured logger (Sentry) once §8.6 lands.
- */
 export default function GlobalError({
   error,
   reset,
@@ -18,7 +12,7 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error("Root error boundary:", error);
+    Sentry.captureException(error);
   }, [error]);
 
   return (

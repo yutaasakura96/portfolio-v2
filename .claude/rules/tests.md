@@ -7,7 +7,7 @@ The project uses **Vitest 4.x** with **@testing-library/react** and **@testing-l
 ## Framework
 
 - Unit / integration: Vitest 4.x with `@vitest/ui`. Configured via `vitest.config.ts` at the repo root.
-- React component tests: Vitest + `@testing-library/react` + `@testing-library/jest-dom`.
+- React component tests: Vitest + `@testing-library/react` + `@testing-library/jest-dom` + `@testing-library/user-event` (for realistic user interactions in component tests).
 - E2E: Playwright in a `tests/e2e/` directory at the repo root, NOT under `src/`.
 
 ## File Layout
@@ -36,8 +36,11 @@ Priority order (items marked ✅ already have tests):
 4. ✅ `src/lib/i18n.ts` `t()` / `tArray()` / `tJson()` / `ui()` / `localizeSkillCategory()` — `src/lib/i18n.test.ts`
 5. ✅ `src/lib/markdown.ts` `extractHeadings()` / `markdownToHtml()` — `src/lib/markdown.test.ts`
 6. ✅ `src/lib/import-export/csv-utils.ts` `flattenForCsv()` / `unflattenFromCsv()` — `src/lib/import-export/csv-utils.test.ts`
-7. ~ Critical API routes: contact ✅ (`src/app/api/contact/route.test.ts`), upload (image processing) ❌, projects POST (slug conflict) ❌.
-8. E2E: admin login flow, create project flow.
+7. ✅ Critical API routes: contact ✅ (`src/app/api/contact/route.test.ts`), upload ✅ (`src/app/api/upload/route.test.ts` — MIME validation, size limits, folder allowlist, all 7 upload paths, DELETE key-prefix validation), unified import ✅ (`src/app/api/admin/import/unified/route.test.ts`), unified export ✅ (`src/app/api/admin/export/unified/route.test.ts`). Projects POST (slug conflict) ❌.
+8. ✅ `src/proxy.ts` JWT guard — `src/proxy.test.ts` (bypass routes, JWT validation, redirect encoding).
+9. ✅ Import-export helpers — `src/lib/import-export/validation-helpers.test.ts` (`stripInternalFields`, `validateRows`, `getExportFilename`, `lookupUniqueKey`) and `src/lib/import-export/unified-import.test.ts` (`IMPORT_ORDER`, `unifiedImportBodySchema`, `validateUnifiedImport`).
+10. ✅ `src/components/public/ContactForm.tsx` — `src/components/public/ContactForm.test.tsx` (field rendering, validation errors, submission, error/429/network states).
+11. E2E: admin login flow, create project flow.
 
 ## What NOT to Test
 
