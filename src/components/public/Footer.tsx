@@ -1,6 +1,7 @@
 import { LocalizedUi } from "@/components/public/LocalizedContent";
 import { getSiteSettings } from "@/lib/data/public-queries";
 import { Github, Linkedin, Mail, Twitter } from "lucide-react";
+import Link from "next/link";
 
 type SocialLinks = {
   github?: string;
@@ -71,13 +72,13 @@ export async function Footer() {
               </a>
             )}
             {email && (
-              <a
-                href={`mailto:${email}`}
+              <Link
+                href="/contact"
                 className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground transition-colors hover:text-foreground"
-                aria-label="Email"
+                aria-label="Contact"
               >
                 <Mail className="h-4 w-4" />
-              </a>
+              </Link>
             )}
           </div>
         </div>

@@ -42,8 +42,11 @@ frontend:
           UPSTASH_REDIS_REST_URL=${UPSTASH_REDIS_REST_URL}
           UPSTASH_REDIS_REST_TOKEN=${UPSTASH_REDIS_REST_TOKEN}
 
-          # Sentry (SENTRY_AUTH_TOKEN is build-time only — injected by Amplify Console, not needed here)
+          # Sentry — SENTRY_AUTH_TOKEN is also read at runtime by the dashboard-external
+          # route (admin dashboard Sentry card), so it must be in .env.production too,
+          # not just available at build time for source-map uploads.
           NEXT_PUBLIC_SENTRY_DSN=${NEXT_PUBLIC_SENTRY_DSN}
+          SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
           SENTRY_ORG_SLUG=${SENTRY_ORG_SLUG}
           SENTRY_PROJECT_SLUG=${SENTRY_PROJECT_SLUG}
 
