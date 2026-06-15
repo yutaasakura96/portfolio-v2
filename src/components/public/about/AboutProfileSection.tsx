@@ -5,6 +5,7 @@ import { t } from "@/lib/i18n";
 import type { AboutPage } from "@/lib/data/types";
 import { Github, Linkedin, Mail } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 type SocialLinks = {
   github?: string;
@@ -68,13 +69,13 @@ export function AboutProfileSection({
         {hasSocial && (
           <div className="mt-5 flex items-center gap-5">
             {email && (
-              <a
-                href={`mailto:${email}`}
-                aria-label="Email"
+              <Link
+                href="/contact"
+                aria-label="Contact"
                 className="pressable text-muted-foreground hover:text-foreground transition-colors duration-200"
               >
                 <Mail className="h-5 w-5" />
-              </a>
+              </Link>
             )}
             {socialLinks?.github && (
               <a
