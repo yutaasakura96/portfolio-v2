@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { prisma } from "@/lib/prismaClient";
+import { prisma } from "@/lib/prisma-client";
 import { requireAuthOrApiKey } from "@/app/api/auth";
 import { withErrorHandler, ApiError, ErrorCodes } from "@/lib/errors";
 import { reorderSchema } from "@/lib/validations/shared";

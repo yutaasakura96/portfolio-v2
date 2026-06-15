@@ -49,7 +49,7 @@ Every route handler must:
 ```ts
 import { requireAuthOrApiKey } from "@/app/api/auth";
 import { ApiError, ErrorCodes, withErrorHandler } from "@/lib/errors";
-import { prisma } from "@/lib/prismaClient";
+import { prisma } from "@/lib/prisma-client";
 import { someSchema } from "@/lib/validations/something";
 import { revalidatePath } from "next/cache";
 import { NextRequest } from "next/server";
@@ -128,7 +128,7 @@ Use `request.nextUrl.searchParams`. Do not write `new URL(request.url).searchPar
 Type Prisma `where` objects with the generated `Prisma.<Model>WhereInput`. Do not use `Record<string, unknown>`.
 
 ```ts
-import { Prisma } from "@/lib/prismaClient";
+import { Prisma } from "@/lib/prisma-client";
 const where: Prisma.ProjectWhereInput = {};
 ```
 
@@ -213,4 +213,4 @@ When adding a new entity, add its config to `entityConfigs` in `entity-configs.t
 - ❌ Don't `try/catch` inside the handler — let `withErrorHandler` catch. Only wrap when you need to convert a specific error to an `ApiError`.
 - ❌ Don't return `NextResponse.json` — use `Response.json`. Both work; the codebase standardizes on the global `Response`.
 - ❌ Don't sanitize HTML on the way out (`rehype-sanitize` does that for markdown). Sanitize untrusted markdown/HTML on the way IN if it's stored — see audit note #7.
-- ❌ Don't re-export `prisma` per route. Import from `@/lib/prismaClient`.
+- ❌ Don't re-export `prisma` per route. Import from `@/lib/prisma-client`.

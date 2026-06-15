@@ -41,7 +41,7 @@ async function MyComponent() {
 // src/app/api/projects/[id]/route.ts
 import { ApiError, ErrorCodes, withErrorHandler } from "@/lib/errors";
 import { markdownToHtml } from "@/lib/markdown";
-import { prisma } from "@/lib/prismaClient";
+import { prisma } from "@/lib/prisma-client";
 import { NextRequest } from "next/server";
 
 export const GET = withErrorHandler(

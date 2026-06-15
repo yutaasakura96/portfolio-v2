@@ -12,7 +12,7 @@ import { BlogPostMarkdownEditor } from "./BlogPostMarkdownEditor";
 import { BlogPostMetaFields } from "./BlogPostMetaFields";
 import { BlogPostTagInput } from "./BlogPostTagInput";
 import type { BlogPostFormValues, BlogPostInitialData } from "./types";
-import { useBlogPostFormMutation } from "./useBlogPostFormMutation";
+import { useBlogPostFormMutation } from "@/hooks/use-blog-post-form-mutation";
 
 interface BlogPostFormProps {
   initialData?: BlogPostInitialData;

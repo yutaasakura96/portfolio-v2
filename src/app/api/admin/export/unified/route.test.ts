@@ -17,7 +17,7 @@ vi.mock("@/lib/rate-limit", () => ({
 
 const findManyMock = vi.fn();
 const findFirstMock = vi.fn();
-vi.mock("@/lib/prismaClient", () => ({
+vi.mock("@/lib/prisma-client", () => ({
   prisma: new Proxy(
     {},
     {

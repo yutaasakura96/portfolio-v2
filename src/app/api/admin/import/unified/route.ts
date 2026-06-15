@@ -3,7 +3,7 @@ import { ApiError, ErrorCodes, withErrorHandler } from "@/lib/errors";
 import { entityConfigs } from "@/lib/import-export";
 import { IMPORT_ORDER, unifiedImportBodySchema } from "@/lib/import-export/unified-import";
 import { lookupUniqueKey } from "@/lib/import-export/validation-helpers";
-import { prisma } from "@/lib/prismaClient";
+import { prisma } from "@/lib/prisma-client";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { revalidatePath } from "next/cache";
 import { NextRequest } from "next/server";

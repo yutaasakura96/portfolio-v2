@@ -1,6 +1,6 @@
 import { requireAuthOrApiKey } from "@/app/api/auth";
 import { ApiError, ErrorCodes, withErrorHandler } from "@/lib/errors";
-import { Prisma, prisma } from "@/lib/prismaClient";
+import { Prisma, prisma } from "@/lib/prisma-client";
 import { calculateReadingTime } from "@/lib/reading-time";
 import { blogPostCreateSchema } from "@/lib/validations/blog";
 import { revalidatePath } from "next/cache";

@@ -33,7 +33,7 @@ async function main(): Promise<void> {
   }
 
   // Dynamic import to avoid loading Prisma at module evaluation time
-  const { prisma } = await import("../src/lib/prismaClient.js");
+  const { prisma } = await import("../src/lib/prisma-client.js");
 
   const rawKey = nanoid(32);
   const keyHash = createHash("sha256").update(rawKey).digest("hex");

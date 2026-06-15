@@ -6,7 +6,7 @@ import {
   stripInternalFields,
   stripInternalFieldsFromArray,
 } from "@/lib/import-export/validation-helpers";
-import { prisma } from "@/lib/prismaClient";
+import { prisma } from "@/lib/prisma-client";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { NextRequest } from "next/server";
 

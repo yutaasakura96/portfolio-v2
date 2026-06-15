@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { prisma } from "@/lib/prismaClient";
+import { prisma } from "@/lib/prisma-client";
 import { formatReadingTime } from "@/lib/reading-time";
 
 export const runtime = "nodejs";

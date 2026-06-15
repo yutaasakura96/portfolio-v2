@@ -1,7 +1,7 @@
 import { requireAuthOrApiKey } from "@/app/api/auth";
 import { ApiError, ErrorCodes, withErrorHandler } from "@/lib/errors";
 import { deleteS3Folder } from "@/lib/aws/s3";
-import { prisma } from "@/lib/prismaClient";
+import { prisma } from "@/lib/prisma-client";
 import { calculateReadingTime } from "@/lib/reading-time";
 import { blogPostUpdateSchema } from "@/lib/validations/blog";
 import { revalidatePath } from "next/cache";

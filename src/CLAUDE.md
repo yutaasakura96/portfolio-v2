@@ -72,7 +72,7 @@ This project uses **Tailwind v4 with `@tailwindcss/postcss`** — there is no `t
 | From                      | Use                                                                                                                                             |
 | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | Server Component (public) | `src/lib/data/public-queries.ts`                                                                                                                |
-| Server Component (admin)  | Generally avoid — admin is client-side. If needed, use Prisma directly via `@/lib/prismaClient`.                                                |
+| Server Component (admin)  | Generally avoid — admin is client-side. If needed, use Prisma directly via `@/lib/prisma-client`.                                               |
 | Client Component          | `apiClient` from [src/lib/api-client.ts](src/lib/api-client.ts) wrapped in TanStack Query (`useQuery` / `useMutation`). Never `fetch` directly. |
 | Server Action             | Not used in this project. Use API routes.                                                                                                       |
 

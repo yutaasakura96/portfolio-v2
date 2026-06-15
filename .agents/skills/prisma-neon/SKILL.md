@@ -21,7 +21,7 @@ Two URLs, both stored in Amplify Console:
 
 | Var            | Used for                                                           | Pooled?                                                                                         |
 | -------------- | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
-| `DATABASE_URL` | App runtime queries (the singleton in `src/lib/prismaClient.ts`)   | Pooled — uses Neon's PgBouncer endpoint                                                         |
+| `DATABASE_URL` | App runtime queries (the singleton in `src/lib/prisma-client.ts`)  | Pooled — uses Neon's PgBouncer endpoint                                                         |
 | `DIRECT_URL`   | `prisma migrate deploy` during build, `prisma migrate dev` locally | Direct — required because migrations need transactions/advisory locks PgBouncer doesn't support |
 
 Locally, your `.env` should have BOTH. If only `DATABASE_URL` is set, `prisma migrate dev` will fail.
@@ -66,7 +66,7 @@ npx prisma studio           # GUI
 # OR psql "$DIRECT_URL" -c "\d project"
 
 # 6. Run smoke queries — at minimum, verify your existing queries still work:
-npx tsx -e 'import { prisma } from "./src/lib/prismaClient"; prisma.project.findMany().then(console.log)'
+npx tsx -e 'import { prisma } from "./src/lib/prisma-client"; prisma.project.findMany().then(console.log)'
 
 # 7. When confident, commit the migration. Production gets it on the next merge to main.
 
@@ -82,7 +82,7 @@ There's no Neon-specific MCP for branch ops — use `neonctl` directly. The **pr
 ### Singleton instance — always
 
 ```ts
-import { prisma } from "@/lib/prismaClient";
+import { prisma } from "@/lib/prisma-client";
 
 const projects = await prisma.project.findMany({ where: { status: "PUBLISHED" } });
 ```
@@ -108,7 +108,7 @@ const [items, total] = await Promise.all([
 ### Typed `where` clauses
 
 ```ts
-import { Prisma } from "@/lib/prismaClient";
+import { Prisma } from "@/lib/prisma-client";
 
 const where: Prisma.ProjectWhereInput = {};
 if (status !== "all") where.status = status;
@@ -153,12 +153,12 @@ Never string-concatenate values into raw SQL.
 - ❌ Combining destructive change (drop column) with code change in one PR — split into two phases (see `prisma/CLAUDE.md` "Destructive change rollout pattern").
 - ❌ Forgetting to update `src/lib/validations/<entity>.ts` after a schema change — the Zod schema and Prisma model drift apart silently.
 - ❌ Forgetting to regenerate the Prisma client (`npm run prisma:generate`) — TypeScript will lie to you using the stale generated types.
-- ❌ Importing types from `generated/prisma/*` directly across the app — they're already re-exported from `@/lib/prismaClient`.
+- ❌ Importing types from `generated/prisma/*` directly across the app — they're already re-exported from `@/lib/prisma-client`.
 
 ## Reference files
 
 - Schema: [prisma/schema.prisma](../../../prisma/schema.prisma)
-- Singleton client: [src/lib/prismaClient.ts](../../../src/lib/prismaClient.ts)
+- Singleton client: [src/lib/prisma-client.ts](../../../src/lib/prisma-client.ts)
 - Prisma config: [prisma.config.ts](../../../prisma.config.ts)
 - Seed: [prisma/seed.ts](../../../prisma/seed.ts)
 - Public queries: [src/lib/data/public-queries.ts](../../../src/lib/data/public-queries.ts)

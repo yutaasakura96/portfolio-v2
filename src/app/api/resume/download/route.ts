@@ -1,5 +1,5 @@
 import { ApiError, ErrorCodes, withErrorHandler } from "@/lib/errors";
-import { prisma } from "@/lib/prismaClient";
+import { prisma } from "@/lib/prisma-client";
 
 export const GET = withErrorHandler(async () => {
   const hero = await prisma.hero.findFirst();

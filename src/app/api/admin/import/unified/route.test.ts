@@ -16,7 +16,7 @@ vi.mock("@/lib/rate-limit", () => ({
 }));
 
 const transactionMock = vi.fn();
-vi.mock("@/lib/prismaClient", () => ({
+vi.mock("@/lib/prisma-client", () => ({
   prisma: {
     $transaction: (...args: unknown[]) => transactionMock(...args),
   },
