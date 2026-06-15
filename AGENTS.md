@@ -21,7 +21,7 @@ Personal portfolio + admin CMS. Public-facing Next.js site backed by an admin da
 
 ## Commands
 
-All scripts are in @package.json. Key commands: `npm run dev`, `npm run build`, `npm run lint`, `npm run type-check`, `npm test`, `npm run prisma:generate`, `npm run prisma:migrate:dev`.
+All scripts are in @package.json. Key commands: `npm run dev`, `npm run build`, `npm run lint`, `npm run type-check`, `npm test`, `npm run prisma:generate`, `npm run prisma:migrate:dev`, `npm run db:reset-dev`.
 
 Tests use **Vitest** with **@testing-library/react**. See [.claude/rules/tests.md](.claude/rules/tests.md) for conventions.
 
@@ -38,7 +38,7 @@ Tests use **Vitest** with **@testing-library/react**. See [.claude/rules/tests.m
 | [src/lib/data/](src/lib/data/)                                                                               | Server-side query layer + canonical types                                                                             |
 | [src/lib/validations/](src/lib/validations/)                                                                 | Zod schemas (one file per entity)                                                                                     |
 | [src/lib/errors.ts](src/lib/errors.ts)                                                                       | `ApiError` + `withErrorHandler`                                                                                       |
-| [src/lib/prismaClient.ts](src/lib/prismaClient.ts)                                                           | Singleton Prisma client (Neon WebSocket adapter)                                                                      |
+| [src/lib/prisma-client.ts](src/lib/prisma-client.ts)                                                         | Singleton Prisma client (Neon WebSocket adapter)                                                                      |
 | [src/lib/locale.ts](src/lib/locale.ts)                                                                       | `Locale` type (`"en" \| "ja"`) + locale helpers                                                                       |
 | [src/lib/i18n.ts](src/lib/i18n.ts)                                                                           | `t()`, `tArray()`, `tJson()`, `ui()`, `UI_STRINGS`, `localizeSkillCategory()`                                         |
 | [src/hooks/use-locale.ts](src/hooks/use-locale.ts)                                                           | `useLocale()` hook — reads/sets locale from `LocaleProvider`                                                          |
@@ -126,7 +126,7 @@ Two architecture diagram skills are installed for generating visual documentatio
 | **excalidraw-diagram**       | `.agents/skills/excalidraw-diagram/`       | `.excalidraw`     | App architecture diagrams, component flow diagrams, system overviews               |
 | **aws-architecture-diagram** | `.agents/skills/aws-architecture-diagram/` | `.drawio` + `.md` | AWS infrastructure diagrams (Amplify, S3, CloudFront, Cognito, Neon, SES topology) |
 
-Generated artifacts: `architecture.excalidraw` (repo root) and `docs/aws-architecture.drawio` + `docs/aws-architecture.md`.
+Generated artifacts live in `docs/diagrams/`: `architecture.excalidraw`, `agentic-workflow.excalidraw`, `aws-architecture.drawio` + `.md` + `.png`.
 
 ## UI Verification
 
@@ -156,7 +156,7 @@ For multi-domain requests (3+ areas), follow the parallel fan-out pattern in Req
 ## Critical Rules (universal — domain-specific rules live in [.claude/rules/](.claude/rules/))
 
 1. **Auth import is `@/app/api/auth`** — `requireAuthOrApiKey(request)` for CMS/API-key routes, `requireAuth` for browser-admin-only routes, `optionalAuth` when behavior differs by login state.
-2. **Use the singleton Prisma client** from `@/lib/prismaClient`. Never instantiate `PrismaClient` directly.
+2. **Use the singleton Prisma client** from `@/lib/prisma-client`. Never instantiate `PrismaClient` directly.
 3. **Types come from [src/lib/data/types.ts](src/lib/data/types.ts).** Do NOT add new files under `src/types/` — that directory is being phased out.
 4. **Cookies are HTTP-only, Secure, SameSite=Lax.** Tokens never touch `localStorage`.
 

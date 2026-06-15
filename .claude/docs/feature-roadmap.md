@@ -130,10 +130,10 @@ Last updated: 2026-06-14 (full codebase audit: HIGH/MEDIUM/LOW findings fixed, A
   EVALUATED & SKIPPED: - [-] `superpowers@claude-plugins-official` — structured TDD/debug methodology. Skipped: overlaps with existing CLAUDE.md workflow, hooks, and 2-tier routing. - [-] `get-shit-done-cc` — meta-prompting + spec-driven dev. Skipped: installs its own CLAUDE.md/hooks, would conflict with existing setup. - [-] `claude-mem` (thedotmack) — persistent memory across sessions. Skipped: HIGH security risk (unauthenticated HTTP API on port 37777), and built-in `.claude/projects/` memory already covers this.
   ALREADY AVAILABLE (built-in): - [x] /review (fast) — built-in skill, no install needed - [x] /ultrareview — built-in cloud review (Pro/Max only, 3 runs/5-20 USD)
 
-- [x] Excalidraw diagram generator — visual architecture diagrams; installed to `.agents/skills/excalidraw-diagram`; generated `architecture.excalidraw` at repo root
+- [x] Excalidraw diagram generator — visual architecture diagrams; installed to `.agents/skills/excalidraw-diagram`; generated `docs/diagrams/architecture.excalidraw`
   - References: npx skills add https://github.com/coleam00/excalidraw-diagram-skill --skill excalidraw-diagram
     - https://medium.com/@unicodeveloper/10-must-have-skills-for-claude-and-any-coding-agent-in-2026-b5451b013051
-- [x] AWS architecture diagram skill — installed to `.agents/skills/aws-architecture-diagram`; generated `docs/aws-architecture.drawio` + `docs/aws-architecture.md`
+- [x] AWS architecture diagram skill — installed to `.agents/skills/aws-architecture-diagram`; generated `docs/diagrams/aws-architecture.drawio` + `docs/diagrams/aws-architecture.md`
   - References: https://github.com/vidanov/aws-architecture-diagram-skill
   - npx skills add vidanov/aws-architecture-diagram-skill
 
@@ -141,7 +141,7 @@ Last updated: 2026-06-14 (full codebase audit: HIGH/MEDIUM/LOW findings fixed, A
 - [x] UI verification tool decision — Playwright MCP chosen as default for agents (headless, reliable, no external deps). Documented in CLAUDE.md § UI Verification and .claude/rules/components.md.
 - [x] Cache revalidation fix — unified import now revalidates detail pages (`/projects/[slug]`, `/blog/[slug]`) via `detailPathPrefix` in entity configs. Blog import also revalidates homepage.
 - [x] full audit agentic workflow findout token optimization needs — cleaned settings.local.json (64 → 24 entries), added frontmatter fields to all 7 agents (`maxTurns`, `memory`, `skills`, `mcpServers`), added `async: true` to post-commit hook, created 3 slash commands (`/check`, `/new-route`, `/pr-ready`)
-- [x] Agentic workflow redesign — 7 agents → 4 (deleted orchestrator, synthesizer, documentation-agent; merged refactor-agent + documentation-agent → maintenance-agent). 2-tier routing (main session direct or single agent spawn). All agents use context-mode `ctx_batch_execute` for doc reads (~98% context savings). maxTurns capped on all 4. Updated `agentic-workflow.excalidraw` diagram.
+- [x] Agentic workflow redesign — 7 agents → 4 (deleted orchestrator, synthesizer, documentation-agent; merged refactor-agent + documentation-agent → maintenance-agent). 2-tier routing (main session direct or single agent spawn). All agents use context-mode `ctx_batch_execute` for doc reads (~98% context savings). maxTurns capped on all 4. Updated `docs/diagrams/agentic-workflow.excalidraw` diagram.
 - [x] Slash commands — `/check` (lint + type-check + test), `/new-route` (API route scaffold), `/pr-ready` (pre-PR quality gate + draft) created in `.claude/commands/`
 - use /excalidraw-diagram skill to to create a diagram of current agentic workflow/orchestration. skill to create a diagram of current agentic workflow/orchestration.
 
@@ -156,7 +156,7 @@ Last updated: 2026-06-14 (full codebase audit: HIGH/MEDIUM/LOW findings fixed, A
 ### Documentation
 
 - [ ] GitHub wiki for project documentation
-- [x] Architecture diagram — `architecture.excalidraw` (app architecture) and `docs/aws-architecture.drawio` (AWS infrastructure) generated using installed diagram skills
+- [x] Architecture diagram — `docs/diagrams/architecture.excalidraw` (app architecture) and `docs/diagrams/aws-architecture.drawio` (AWS infrastructure) generated using installed diagram skills
 - [ ] Comprehensive project documentation or Hero doc — folder structure, features, API reference, tech stack, setup guide
 
 ### Media & Demo

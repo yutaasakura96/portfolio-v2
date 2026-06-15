@@ -4,7 +4,7 @@ const mockFetch = vi.fn();
 
 vi.stubGlobal("fetch", mockFetch);
 
-vi.mock("@/lib/prismaClient", () => ({
+vi.mock("@/lib/prisma-client", () => ({
   prisma: {},
   Prisma: { JsonNull: "DbNull" },
 }));
@@ -46,7 +46,7 @@ describe("translate route - prompt caching", () => {
       body: JSON.stringify({ target: "settings" }),
     });
 
-    const { prisma } = await import("@/lib/prismaClient");
+    const { prisma } = await import("@/lib/prisma-client");
     (prisma as unknown as Record<string, unknown>).siteSettings = {
       findUnique: vi.fn().mockResolvedValue({
         id: "default",

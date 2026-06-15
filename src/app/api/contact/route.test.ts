@@ -25,7 +25,7 @@ vi.mock("@/lib/aws/ses", () => ({
 }));
 
 const contactMessageCreateMock = vi.fn();
-vi.mock("@/lib/prismaClient", () => ({
+vi.mock("@/lib/prisma-client", () => ({
   prisma: {
     contactMessage: {
       create: (...args: unknown[]) => contactMessageCreateMock(...args),

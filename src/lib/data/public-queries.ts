@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prismaClient";
+import { prisma } from "@/lib/prisma-client";
 import type {
   AboutPage,
   AboutPageData,

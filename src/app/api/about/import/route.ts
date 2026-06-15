@@ -1,7 +1,7 @@
 import { requireAuth } from "@/app/api/auth";
 import { ApiError, ErrorCodes, withErrorHandler } from "@/lib/errors";
 import { entityConfigs } from "@/lib/import-export";
-import { prisma } from "@/lib/prismaClient";
+import { prisma } from "@/lib/prisma-client";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { revalidatePath } from "next/cache";
 import { NextRequest } from "next/server";

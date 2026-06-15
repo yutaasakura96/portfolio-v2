@@ -1,6 +1,6 @@
 import { requireAuth } from "@/app/api/auth";
 import { ApiError, ErrorCodes, withErrorHandler } from "@/lib/errors";
-import { prisma } from "@/lib/prismaClient";
+import { prisma } from "@/lib/prisma-client";
 import { NextRequest } from "next/server";
 
 export const DELETE = withErrorHandler(

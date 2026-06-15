@@ -81,7 +81,7 @@ export async function getAboutPageIntro(): Promise<AboutPage | null> {
 ```ts
 import { requireAuth } from "@/app/api/auth";
 import { ApiError, ErrorCodes, withErrorHandler } from "@/lib/errors";
-import { Prisma, ProjectStatus, prisma } from "@/lib/prismaClient";
+import { Prisma, ProjectStatus, prisma } from "@/lib/prisma-client";
 import { projectCreateSchema } from "@/lib/validations/project";
 import { revalidatePath } from "next/cache";
 import { NextRequest } from "next/server";

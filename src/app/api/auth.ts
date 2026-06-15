@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prismaClient";
+import { prisma } from "@/lib/prisma-client";
 import { verifyJwt } from "@/lib/aws/cognito";
 import { ApiError, ErrorCodes } from "@/lib/errors";
 import { cookies } from "next/headers";

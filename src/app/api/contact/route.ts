@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { prisma } from "@/lib/prismaClient";
+import { prisma } from "@/lib/prisma-client";
 import { contactMessageSchema } from "@/lib/validations/contact";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
 import { sendContactNotification } from "@/lib/aws/ses";

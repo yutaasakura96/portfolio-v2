@@ -1,8 +1,8 @@
 import { GoogleAnalytics } from "@/components/public/GoogleAnalytics";
 import { Footer } from "@/components/public/Footer";
 import { Header } from "@/components/public/Header";
-import { prisma } from "@/lib/prismaClient";
-import { Toaster } from "sonner";
+import { prisma } from "@/lib/prisma-client";
+import { Toaster } from "@/components/ui/sonner";
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   let settings: { googleAnalyticsId: string | null } | null = null;

@@ -14,7 +14,7 @@ import { FormProvider, useForm, type Resolver } from "react-hook-form";
 import { ProjectGallerySection } from "./ProjectGallerySection";
 import { ProjectMetaFields } from "./ProjectMetaFields";
 import { ProjectTagInput } from "./ProjectTagInput";
-import { useProjectFormMutation } from "./useProjectFormMutation";
+import { useProjectFormMutation } from "@/hooks/use-project-form-mutation";
 
 interface ProjectFormProps {
   initialData?: Project;

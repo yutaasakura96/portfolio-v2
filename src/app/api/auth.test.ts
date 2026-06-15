@@ -30,7 +30,7 @@ vi.mock("@/lib/aws/cognito", () => ({
 }));
 
 // Mock the Prisma singleton — used by requireApiKey for DB lookups.
-vi.mock("@/lib/prismaClient", () => ({
+vi.mock("@/lib/prisma-client", () => ({
   prisma: prismaMock,
 }));
 

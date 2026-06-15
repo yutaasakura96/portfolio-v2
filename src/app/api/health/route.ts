@@ -1,5 +1,5 @@
 import { withErrorHandler } from "@/lib/errors";
-import { prisma } from "@/lib/prismaClient";
+import { prisma } from "@/lib/prisma-client";
 
 export const GET = withErrorHandler(async () => {
   let database: "connected" | "disconnected" = "disconnected";

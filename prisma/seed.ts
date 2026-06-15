@@ -1,4 +1,4 @@
-import { prisma } from "../src/lib/prismaClient";
+import { prisma } from "../src/lib/prisma-client";
 
 async function main() {
   console.log("Seeding database...");
