@@ -14,7 +14,7 @@ The project uses **Vitest 4.x** with **@testing-library/react** and **@testing-l
 
 - Unit tests live next to the code: `src/lib/foo.ts` → `src/lib/foo.test.ts`.
 - API route tests: `src/app/api/projects/route.test.ts`.
-- Existing test scaffolding directory: `src/lib/__tests__/` — prefer co-located `*.test.ts` for new tests; `__tests__/` is acceptable only when shared fixtures need to live alongside.
+- Tests are co-located: `src/lib/foo.test.ts` next to `src/lib/foo.ts`. Use `__tests__/` directories only when shared fixtures need to live alongside.
 - Playwright tests: `tests/e2e/<feature>.spec.ts`.
 
 ## Conventions
