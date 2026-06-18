@@ -17,20 +17,19 @@ const fraunces = Fraunces({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://asakurayuta.dev"),
   title: {
-    default: "Yuta Asakura | Full-Stack Developer",
+    default: "Yuta Asakura | Cloud-Native Software Engineer · AWS & Azure",
     template: "%s | Yuta Asakura",
   },
   description:
-    "Full-stack developer portfolio showcasing projects built with Next.js, TypeScript, AWS, and modern web technologies.",
+    "Yuta Asakura is a software engineer at Sogo & Seibu in Japan, building cloud-native applications across AWS and Azure. 7x AWS and 3x Azure certified.",
   keywords: [
-    "full-stack developer",
+    "cloud-native",
     "software engineer",
-    "web developer",
-    "Next.js",
-    "TypeScript",
+    "multi-cloud",
     "AWS",
-    "React",
-    "portfolio",
+    "Azure",
+    "software engineer Japan",
+    "Sogo & Seibu",
   ],
   authors: [{ name: "Yuta Asakura" }],
   creator: "Yuta Asakura",
@@ -39,15 +38,15 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: process.env.NEXT_PUBLIC_APP_URL || "https://asakurayuta.dev",
     siteName: "Yuta Asakura | Portfolio",
-    title: "Yuta Asakura | Full-Stack Developer",
+    title: "Yuta Asakura | Cloud-Native Software Engineer · AWS & Azure",
     description:
-      "Full-stack developer portfolio showcasing projects built with Next.js, TypeScript, AWS, and modern web technologies.",
+      "Yuta Asakura is a software engineer at Sogo & Seibu in Japan, building cloud-native applications across AWS and Azure. 7x AWS and 3x Azure certified.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Yuta Asakura | Full-Stack Developer",
+    title: "Yuta Asakura | Cloud-Native Software Engineer · AWS & Azure",
     description:
-      "Full-stack developer portfolio showcasing projects built with Next.js, TypeScript, AWS, and modern web technologies.",
+      "Yuta Asakura is a software engineer at Sogo & Seibu in Japan, building cloud-native applications across AWS and Azure. 7x AWS and 3x Azure certified.",
   },
   robots: {
     index: true,

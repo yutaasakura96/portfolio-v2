@@ -7,9 +7,9 @@ import { getFeaturedProjects, getHero, getRecentPosts } from "@/lib/data/public-
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Home",
+  title: "Cloud-Native Software Engineer · AWS & Azure",
   description:
-    "Yuta Asakura — Full-stack developer building modern web applications with Next.js, TypeScript, and AWS.",
+    "Yuta Asakura is a software engineer at Sogo & Seibu in Japan, building cloud-native applications across AWS and Azure. 7x AWS and 3x Azure certified.",
 };
 
 export const revalidate = 60;
@@ -29,8 +29,26 @@ export default async function HomePage() {
           "@type": "Person",
           name: "Yuta Asakura",
           url: "https://asakurayuta.dev",
-          jobTitle: "Full-Stack Developer",
-          sameAs: ["https://github.com/yutaasakura96", "https://linkedin.com/in/yuta-asakura"],
+          jobTitle: "DX Software Engineer",
+          worksFor: {
+            "@type": "Organization",
+            name: "Sogo & Seibu",
+            url: "https://www.sogo-seibu.co.jp/",
+          },
+          knowsAbout: [
+            "cloud-native",
+            "multi-cloud",
+            "AWS",
+            "Microsoft Azure",
+            "Next.js",
+            "TypeScript",
+            "React",
+          ],
+          sameAs: [
+            "https://github.com/yutaasakura96",
+            "https://linkedin.com/in/yuta-asakura",
+            "https://www.wantedly.com/id/yuta_asakura",
+          ],
         }}
       />
       <JsonLd
@@ -40,7 +58,7 @@ export default async function HomePage() {
           name: "Yuta Asakura | Portfolio",
           url: "https://asakurayuta.dev",
           description:
-            "Full-stack developer portfolio showcasing projects built with Next.js, TypeScript, AWS, and modern web technologies.",
+            "Yuta Asakura is a software engineer at Sogo & Seibu in Japan, building cloud-native applications across AWS and Azure. 7x AWS and 3x Azure certified.",
         }}
       />
       {hero && <HeroSection hero={hero} />}

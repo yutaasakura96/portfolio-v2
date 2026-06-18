@@ -10,7 +10,8 @@ async function main() {
     create: {
       id: "default",
       siteName: "John Doe | Portfolio",
-      siteDescription: "Full-stack developer portfolio showcasing projects and skills",
+      siteDescription:
+        "Software engineer at Sogo & Seibu in Japan, building cloud-native applications across AWS and Azure.",
       email: "hello@example.com",
       socialLinks: {
         github: "https://github.com/johndoe",
@@ -24,8 +25,8 @@ async function main() {
   if (!existingHero) {
     await prisma.hero.create({
       data: {
-        headline: "Full-Stack Developer",
-        subheadline: "Building modern web applications with React, Node.js, and AWS",
+        headline: "Cloud-Native Software Engineer",
+        subheadline: "Multi-cloud development across AWS & Azure",
         bio: "I'm a passionate developer with experience building production-grade web applications. I love solving complex problems and creating intuitive user experiences.",
         resumeUrl: null,
         ctaButtons: [

@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
 
-export const alt = "Yuta Asakura — Full-Stack Developer Portfolio";
+export const alt = "Yuta Asakura — Cloud-Native Software Engineer";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -54,7 +54,7 @@ export default function OgImage() {
           display: "flex",
         }}
       >
-        Full-Stack Developer
+        Cloud-Native Software Engineer
       </div>
 
       {/* Tech stack */}
@@ -67,13 +67,9 @@ export default function OgImage() {
           gap: 12,
         }}
       >
-        <span>Next.js</span>
-        <span>·</span>
-        <span>TypeScript</span>
-        <span>·</span>
         <span>AWS</span>
         <span>·</span>
-        <span>React</span>
+        <span>Azure</span>
       </div>
 
       {/* Domain */}
