@@ -39,7 +39,7 @@ Full codebase audit conducted 2026-06-15 via 8-agent parallel workflow (~623K to
 ```
 portfolio-v2/
 ├── .claude/                    # Claude Code configuration
-│   ├── agents/                 # 4 agent definitions (db, feature-builder, maintenance, code-reviewer)
+│   ├── agents/                 # 3 agent definitions (db, maintenance, code-reviewer)
 │   ├── commands/               # Slash commands (check, new-route, pr-ready)
 │   ├── docs/                   # Internal docs (infrastructure, feature-roadmap, feature-workflow)
 │   ├── hooks/                  # Git hooks (pre-commit-gate, pre-edit-branch-guard, post-edit-format, post-commit-doc-reminder)
@@ -48,7 +48,7 @@ portfolio-v2/
 │   ├── skills/                 # excalidraw-diagram, aws-architecture-diagram
 │   └── settings.json           # Permission + hook configuration
 ├── .codex/                     # Codex backup agents (mirrors .claude/ for OpenAI models)
-│   ├── agents/                 # 4 agents (gpt-5.4 / gpt-5.4-mini)
+│   ├── agents/                 # 3 agents (gpt-5.4 / gpt-5.4-mini)
 │   └── hooks.json
 ├── .github/
 │   └── workflows/
@@ -302,26 +302,21 @@ Upload Route → Sharp (4 variants: thumb 400x300, med 800x600, lg 1600x1200, or
 
 ## Agentic Workflow
 
-Two-tier routing system for AI agent orchestration:
+> **Updated 2026-06-21:** The project adopted **superpowers** as the primary workflow methodology. The two-tier routing model described in the original 2026-06-15 audit was replaced by the superpowers spine, and `feature-builder` was retired. See [CLAUDE.md](../CLAUDE.md) §Development Workflow for the current authoritative description. The summary below reflects the post-adoption structure.
 
-### Tier 1 — Main Session (direct)
+Primary methodology is the **superpowers** plugin (skills only — no agents/commands). Workflow spine: `brainstorming → using-git-worktrees → writing-plans → subagent-driven-development`/`executing-plans → test-driven-development → systematic-debugging → verification-before-completion → requesting-code-review → finishing-a-development-branch`. It dispatches fresh generic subagents per plan task; the project's three executor agents + skills + `.claude/rules/` supply domain context.
 
-Single-file edits, typo fixes, quick lookups, 1-2 domain tasks where context is already loaded. Uses built-in `Explore` subagent (haiku) for search.
+### Direct (no full spine)
 
-### Tier 2 — Agent Spawn
+Single-file edits, typo fixes, quick lookups. Uses built-in `Explore` subagent (haiku) for search.
 
-| Agent             | Default Model | Codex Model           | Max Turns | Purpose                                           |
-| ----------------- | ------------- | --------------------- | --------- | ------------------------------------------------- |
-| db-agent          | sonnet        | gpt-5.4 (high)        | 15        | Schema, migrations, seed, Neon branching          |
-| feature-builder   | sonnet        | gpt-5.4 (high)        | 30        | End-to-end feature (model + migration + API + UI) |
-| maintenance-agent | sonnet        | gpt-5.4 (high)        | 20        | Refactoring or doc sync                           |
-| code-reviewer     | haiku         | gpt-5.4-mini (medium) | 15        | Read-only review + integration checks             |
+### Domain-executor agents (dispatched within the spine)
 
-### Multi-Domain Fan-Out (3+ areas)
-
-1. `db-agent` → schema/migration → verify (git diff, type-check)
-2. `feature-builder` → API + UI (depends on step 1) → verify (type-check, lint)
-3. `code-reviewer` → integration review (parallel with step 2 completion)
+| Agent             | Default Model | Codex Model           | Max Turns | Purpose                                  |
+| ----------------- | ------------- | --------------------- | --------- | ---------------------------------------- |
+| db-agent          | sonnet        | gpt-5.4 (high)        | 15        | Schema, migrations, seed, Neon branching |
+| maintenance-agent | sonnet        | gpt-5.4 (high)        | 20        | Refactoring or doc sync                  |
+| code-reviewer     | haiku         | gpt-5.4-mini (medium) | 15        | Read-only review + integration checks    |
 
 ### MCP Servers
 

@@ -55,48 +55,43 @@ Tests use **Vitest** with **@testing-library/react**. See [.claude/rules/tests.m
 
 Scoped instructions: [src/CLAUDE.md](src/CLAUDE.md), [src/app/api/CLAUDE.md](src/app/api/CLAUDE.md), [prisma/CLAUDE.md](prisma/CLAUDE.md). [AGENTS.md](AGENTS.md) mirrors this guidance for Codex backup sessions.
 
-## Request Routing
+## Development Workflow (Superpowers)
 
-Two-tier model. The main session coordinates directly — no orchestrator agent.
+This project's primary methodology is the **superpowers** plugin (user-level, active in every session via its `SessionStart` bootstrap). Superpowers ships skills only — no agents, no commands — and works by dispatching _fresh generic subagents per task_, building each subagent's context from scratch. For any non-trivial change, follow its spine; the project's agents, skills, and [.claude/rules/](.claude/rules/) supply the domain context those subagents consume.
 
-### Tier 1 — main session handles directly (no agent spawn)
+**Workflow spine** (skills auto-trigger at each step):
 
-| Signal                                         | Action                                  |
-| ---------------------------------------------- | --------------------------------------- |
-| Single-file edit, typo fix, quick lookup       | Edit directly                           |
-| 1-2 domain task where you already have context | Build directly                          |
-| Explore / search / "where is X"                | Use built-in `Explore` subagent (haiku) |
+1. **brainstorming** — before writing any code. Refine the idea, explore alternatives, agree on a design.
+2. **using-git-worktrees** — isolate the work on a branch/worktree. Also satisfies the `pre-edit-branch-guard` hook — never edit on `main`/`develop`.
+3. **writing-plans** — break the work into small, individually verifiable tasks.
+4. **subagent-driven-development** (same session) or **executing-plans** (human checkpoints) — dispatch a fresh subagent per task with two-stage review (spec compliance, then code quality). `dispatching-parallel-agents` for independent domains.
+5. **test-driven-development** — RED → GREEN → REFACTOR, using **Vitest + @testing-library/react** per [.claude/rules/tests.md](.claude/rules/tests.md) (real Neon test DB, never mocked Prisma).
+6. **systematic-debugging** — root-cause before fixing, on any failure or unexpected behavior.
+7. **verification-before-completion** — evidence before claiming done; reinforced by the `pre-commit-gate` hook (build + tests). Run `/check` for the quality gate.
+8. **requesting-code-review** / **receiving-code-review** — review before finishing; dispatch the `code-reviewer` agent as the executor.
+9. **finishing-a-development-branch** — merge/PR decision. Use `/pr-ready` to draft the PR. Commit per §Git Commit Style; **never commit or push without explicit user permission**.
 
-### Tier 2 — single agent spawn
+**Precedence:** user instructions (this file, AGENTS.md, global prefs) > superpowers skills > default behavior. Where a project rule conflicts with a skill, the project rule wins.
 
-| Signal                                                  | Agent                                  |
-| ------------------------------------------------------- | -------------------------------------- |
-| Schema-only change (migration, new model, field change) | **db-agent**                           |
-| Single entity end-to-end (schema through UI)            | **feature-builder**                    |
-| Convention alignment of existing code                   | **maintenance-agent** (mode: refactor) |
-| Documentation update (docs out of sync, roadmap update) | **maintenance-agent** (mode: docs)     |
-| Review or audit                                         | **code-reviewer**                      |
+### Domain-executor agents
 
-### Tier 2 — parallel fan-out (multi-domain, 3+ areas)
+Three project agents in [.claude/agents/](.claude/agents/) (mirrored in [.codex/agents/](.codex/agents/)) are pre-built executor bundles the superpowers subagent loop dispatches where they fit — each carries project knowledge a generic subagent lacks:
 
-For requests touching 3+ domains (schema + API + UI), the main session coordinates directly. Pattern:
+| Agent                 | Dispatch when                                                 | Adds                                         |
+| --------------------- | ------------------------------------------------------------- | -------------------------------------------- |
+| **db-agent**          | Prisma schema / migration / seed / Neon branching             | Safe Neon-branch migration workflow          |
+| **code-reviewer**     | Code review (the `requesting-code-review` step)               | Read-only review citing this project's rules |
+| **maintenance-agent** | Convention refactor (mode: refactor) or doc sync (mode: docs) | No superpowers equivalent — project-specific |
 
-1. Spawn **db-agent** for schema/migration work. Verify: `git diff --stat`, `npm run type-check`.
-2. Spawn **feature-builder** with the migration context. Verify: type-check + lint.
-3. Spawn **code-reviewer** with "include integration review" in the prompt.
-4. Report findings to user.
+For a quick search/lookup use the built-in `Explore` subagent directly. Single-file edits and trivial fixes don't need the full spine — apply judgment.
 
-Steps 1-2 are sequential (feature-builder depends on db-agent). Step 3 can begin immediately after step 2.
-If the user says "orchestrate" or "full pipeline", follow this pattern.
+### Model selection (Claude Code)
 
-### Model selection
-
-Claude Code uses Anthropic model families for its built-in agent routing. Codex custom agents do **not** use this table; they use the explicit OpenAI model IDs pinned in `.codex/agents/*.toml`.
+Codex custom agents do **not** use this table; they use the explicit OpenAI model IDs pinned in `.codex/agents/*.toml`.
 
 | Agent              | Default | Override to opus when                               |
 | ------------------ | ------- | --------------------------------------------------- |
 | db-agent           | sonnet  | Tricky migration (cross-table backfill, custom SQL) |
-| feature-builder    | sonnet  | High-stakes feature, one-pass quality matters       |
 | code-reviewer      | haiku   | Security-sensitive diff (auth, payment, PII)        |
 | maintenance-agent  | sonnet  | Bulk rewrite touching cross-cutting abstractions    |
 | Explore (built-in) | haiku   | Search requires synthesizing many unrelated files   |
@@ -144,15 +139,16 @@ After UI changes, agents must verify visually using **Playwright MCP** (`mcp__pl
 
 ## Plugins
 
-Three plugins extend the Claude Code and Codex backup tooling:
+Four plugins extend the Claude Code and Codex backup tooling:
 
-| Plugin                              | Purpose                                                                                           |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------- |
-| **skill-creator**                   | Create, eval, improve, and benchmark skills. Use to iterate on existing project skills with data. |
-| **context-mode** (mksglu, v1.0.162) | Sandboxes tool output for ~98% context window savings. SQLite session tracking + lifecycle hooks. |
-| **frontend-design**                 | Production-grade UI design with distinctive aesthetics. Listed above under UI Skills.             |
+| Plugin                                            | Purpose                                                                                                                                                                                                                                                                       |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **superpowers** (claude-plugins-official, v6.0.3) | **Primary dev methodology** — auto-triggering skills (brainstorming, writing-plans, using-git-worktrees, subagent-driven-development, TDD, systematic-debugging, verification, code review, finishing-a-branch). See §Development Workflow. Skills only — no agents/commands. |
+| **skill-creator**                                 | Create, eval, improve, and benchmark skills. Use to iterate on existing project skills with data.                                                                                                                                                                             |
+| **context-mode** (mksglu, v1.0.162)               | Sandboxes tool output for ~98% context window savings. SQLite session tracking + lifecycle hooks.                                                                                                                                                                             |
+| **frontend-design**                               | Production-grade UI design with distinctive aesthetics. Listed above under UI Skills.                                                                                                                                                                                         |
 
-For multi-domain requests (3+ areas), follow the parallel fan-out pattern in Request Routing — no orchestrator agent needed.
+The superpowers workflow spine (see §Development Workflow) governs how work is approached; the project's domain-executor agents, skills, and `.claude/rules/` supply the context its dispatched subagents consume.
 
 ## Critical Rules (universal — domain-specific rules live in [.claude/rules/](.claude/rules/))
 
@@ -194,16 +190,15 @@ Domain rules (Zod validation, `withErrorHandler`, ISR/client split, image pipeli
 
 ## Available Agents
 
-Four primary Claude Code agents in [.claude/agents/](.claude/agents/), mirrored for Codex custom agents in [.codex/agents/](.codex/agents/):
+Three domain-executor agents in [.claude/agents/](.claude/agents/), mirrored for Codex custom agents in [.codex/agents/](.codex/agents/). They are dispatched within the superpowers workflow spine (see §Development Workflow) — superpowers itself ships no agents:
 
 | Agent                 | Claude Code model | Codex model                                          | Purpose                                               |
 | --------------------- | ----------------- | ---------------------------------------------------- | ----------------------------------------------------- |
 | **db-agent**          | sonnet            | `gpt-5.4` (`model_reasoning_effort = "high"`)        | Schema, migrations, seed, Neon branching              |
-| **feature-builder**   | sonnet            | `gpt-5.4` (`model_reasoning_effort = "high"`)        | End-to-end feature (model + migration + API + UI)     |
 | **code-reviewer**     | haiku             | `gpt-5.4-mini` (`model_reasoning_effort = "medium"`) | Read-only review + cross-domain integration checks    |
 | **maintenance-agent** | sonnet            | `gpt-5.4` (`model_reasoning_effort = "high"`)        | Refactoring (mode: refactor) or doc sync (mode: docs) |
 
-See Request Routing above for when to spawn each. The Claude-side `sonnet` / `haiku` labels do not apply inside Codex; Codex uses the TOML-pinned OpenAI models above. Built-in subagents (`Explore`/haiku, `Plan`/sonnet) are Claude Code-only.
+See §Development Workflow above for when each is dispatched. The Claude-side `sonnet` / `haiku` labels do not apply inside Codex; Codex uses the TOML-pinned OpenAI models above. Built-in subagents (`Explore`/haiku, `Plan`/sonnet) are Claude Code-only. End-to-end feature building is now the superpowers brainstorm→plan→subagent loop, not a single agent.
 
 ## Hooks
 
@@ -232,6 +227,6 @@ When compacting, always preserve:
 
 - The full list of files modified in the current task
 - The current git branch name and any in-progress PR
-- Which agent workflow step we are on (if multi-agent fan-out is running)
+- Which superpowers workflow step / dispatched subagent task we are on
 - Any user decisions or preferences stated in this session
 - Error messages from failed builds/tests that haven't been resolved yet
