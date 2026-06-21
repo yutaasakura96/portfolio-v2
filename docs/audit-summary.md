@@ -48,7 +48,7 @@ portfolio-v2/
 │   ├── skills/                 # excalidraw-diagram, aws-architecture-diagram
 │   └── settings.json           # Permission + hook configuration
 ├── .codex/                     # Codex backup agents (mirrors .claude/ for OpenAI models)
-│   ├── agents/                 # 4 agents (gpt-5.4 / gpt-5.4-mini)
+│   ├── agents/                 # 3 agents (gpt-5.4 / gpt-5.4-mini)
 │   └── hooks.json
 ├── .github/
 │   └── workflows/
