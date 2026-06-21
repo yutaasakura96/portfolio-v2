@@ -1,8 +1,8 @@
 # Feature Workflow
 
-The standard process for building new features. Paste [session-starter-template.md](./session-starter-template.md) at the start of every feature session.
+The process spine for building new features is the **superpowers** methodology (see [CLAUDE.md](../../CLAUDE.md) §Development Workflow): `brainstorming → using-git-worktrees → writing-plans → subagent-driven-development`/`executing-plans → test-driven-development → systematic-debugging → verification-before-completion → requesting-code-review → finishing-a-development-branch`. These skills auto-trigger; the project-specific reference below is the **execution detail** each step links into.
 
-Code templates for pages, API routes, components, and validation schemas live in [feature-templates.md](./feature-templates.md). Agent orchestration patterns live in [CLAUDE.md](../../CLAUDE.md) Request Routing.
+The superpowers `SessionStart` hook bootstraps the methodology automatically — no session-starter paste is needed. Code templates for pages, API routes, components, and validation schemas live in [feature-templates.md](./feature-templates.md).
 
 ---
 
@@ -33,11 +33,15 @@ Trivial additive schema changes (new optional column on a small table) can skip 
 4. [prisma/CLAUDE.md](../../prisma/CLAUDE.md) — only if the feature touches the database.
 5. The matching rule in [.claude/rules/](../rules/) for any file pattern you'll be editing.
 
-### Available agents
+### Domain-executor agents
 
-See [CLAUDE.md](../../CLAUDE.md) Request Routing for the full agent roster, spawn criteria, and model selection. Spawn an agent when the task matches its description — not for every step.
+See [CLAUDE.md](../../CLAUDE.md) §Development Workflow for the three executor agents (`db-agent`, `code-reviewer`, `maintenance-agent`) and when the superpowers subagent loop dispatches each. (There is no `feature-builder` — end-to-end feature building is the superpowers brainstorm→plan→subagent loop itself.)
 
 ### Skills
+
+**Superpowers process skills** (the methodology layer, auto-triggering): `brainstorming`, `writing-plans`, `using-git-worktrees`, `subagent-driven-development`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `finishing-a-development-branch`. See [CLAUDE.md](../../CLAUDE.md) §Development Workflow.
+
+**Project domain skills** (execution detail the steps call into):
 
 - [`nextjs-app-router`](../skills/nextjs-app-router/) — new route segment, layout, loading state, error boundary, `proxy.ts`.
 - [`tailwind-v4`](../skills/tailwind-v4/) — adding/changing Tailwind classes or theme tokens (no JS config file in v4).
@@ -204,9 +208,9 @@ npm run test:ci                # vitest run --coverage
 
 ## Tracking Progress
 
-### In-session — tasks (automatic)
+### Plan + in-session tasks
 
-Claude's task tools track the current task list and surface it in the UI. Kicks in automatically for tasks with 3+ steps.
+The superpowers `writing-plans` skill produces the task breakdown (small, individually verifiable tasks); `subagent-driven-development` / `executing-plans` work through it. Claude's task tools surface the live list in the UI.
 
 ### Mid-session / hand-off — plan files
 
@@ -238,7 +242,7 @@ Skim docs you'll rely on for staleness. Common drift spots:
 | New gotcha / footgun                    | Root CLAUDE.md §Common Mistakes.                                                                                                |
 | New MCP server installed / removed      | Root CLAUDE.md §MCP Servers, `.claude/docs/infrastructure.md` if AWS-related.                                                   |
 | Library version bump changing API shape | Search `grep -rn '<old-api>' .claude/ CLAUDE.md src/`.                                                                          |
-| New agent or skill added                | Root CLAUDE.md §Available Agents, this doc's "Available agents" + "Skills" tables.                                              |
+| New agent or skill added                | Root CLAUDE.md §Available Agents, this doc's "Domain-executor agents" + "Skills" sections.                                      |
 | New plugin installed / removed          | Root CLAUDE.md §Plugins table + §UI Skills table (if design-related), `.claude/rules/components.md` UI Skills section, roadmap. |
 
 ### What NOT to update
@@ -247,7 +251,9 @@ Skim docs you'll rely on for staleness. Common drift spots:
 
 ---
 
-## Before Creating a PR
+## Finishing — before a PR
+
+This is the superpowers `finishing-a-development-branch` step. `verification-before-completion` requires evidence first — run the quality gate (the `pre-commit-gate` hook also enforces it at commit):
 
 ```bash
 npm run lint        # ESLint + Prettier — must pass
@@ -256,10 +262,10 @@ npm run build       # Includes lint + Next build — must pass
 npm test            # Vitest — must pass (run affected tests at minimum)
 ```
 
-Then:
+`/check` runs lint → type-check → test in one go; `/pr-ready` runs the full gate and drafts the PR (does not create it). Then:
 
-1. Spawn the `code-reviewer` agent over the diff.
-2. Manual checklist:
+1. Run `requesting-code-review` (dispatches the `code-reviewer` agent over the diff).
+2. Project-specific manual checklist:
    - [ ] Every API mutation affecting a public page calls `revalidatePath`.
    - [ ] New env vars wired through [amplify.yml](../../amplify.yml). No `AWS_*` names — use `APP_AWS_*`.
    - [ ] No `pageSize` introduced (use `page` + `limit`).
@@ -273,10 +279,10 @@ Then:
 
 ---
 
-## Agent Orchestration
+## Orchestration
 
-See [CLAUDE.md](../../CLAUDE.md) Request Routing for agent roster, model selection, and the parallel fan-out pattern for multi-domain tasks. Key points:
+Orchestration is the superpowers spine (see [CLAUDE.md](../../CLAUDE.md) §Development Workflow): `subagent-driven-development` dispatches a fresh subagent per plan task; `dispatching-parallel-agents` handles independent domains concurrently. Key points:
 
 - **Built-in subagents**: `Explore` (haiku, read-only search), `Plan` (sonnet, design), `general-purpose` (sonnet, multi-step).
-- **When NOT to spawn**: single-file edits, tasks already in progress, tasks where cold-context briefing costs more than the work.
-- **Verify, don't trust**: an agent's summary describes what it _intended_ to do. Check the actual diff before reporting work as done.
+- **When NOT to run the full spine**: single-file edits, trivial fixes, tasks already in progress, tasks where cold-context briefing costs more than the work — apply judgment.
+- **Verify, don't trust**: a subagent's summary describes what it _intended_ to do. Check the actual diff before reporting work as done.

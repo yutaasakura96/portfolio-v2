@@ -1,6 +1,8 @@
 # Feature Session Starter
 
-Copy the block below into Claude Code at the start of every new feature session.
+> **Mostly superseded (2026-06-21):** The **superpowers** plugin now bootstraps the methodology automatically via its `SessionStart` hook, and its `brainstorming` skill drives planning — you no longer need to paste a starter block to kick off the workflow. This template remains only as an optional way to front-load a feature's requirements and the "read these docs" reminders in one message. See [feature-workflow.md](./feature-workflow.md) and [CLAUDE.md](../../CLAUDE.md) §Development Workflow.
+
+Copy the block below into Claude Code at the start of a new feature session if you want to front-load requirements.
 Replace the bracketed items with your actual feature details.
 
 ---

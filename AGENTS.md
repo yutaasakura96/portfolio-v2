@@ -54,39 +54,37 @@ Tests use **Vitest** with **@testing-library/react**. See [.claude/rules/tests.m
 
 Scoped instructions currently live in [src/CLAUDE.md](src/CLAUDE.md), [src/app/api/CLAUDE.md](src/app/api/CLAUDE.md), and [prisma/CLAUDE.md](prisma/CLAUDE.md).
 
-## Request Routing
+## Development Workflow (Superpowers)
 
-Two-tier model. The main session coordinates directly — no orchestrator agent.
+This project's primary methodology is the **superpowers** plugin — a skills-only library (no agents, no commands) that dispatches _fresh generic subagents per task_, building each subagent's context from scratch. For any non-trivial change, follow its spine; the project's three domain-executor agents, skills, and `.claude/rules/` supply the context those subagents consume.
 
-### Tier 1 — main session handles directly (no agent spawn)
+> **Codex note:** superpowers must be **installed separately** in Codex (via the Codex plugin marketplace, `openai/plugins`) — the Claude Code plugin install does not cover Codex. In Codex its skills load natively. If superpowers is not installed in your Codex environment, follow the spine below manually. See §Codex Operating Protocol.
 
-| Signal                                         | Action                                  |
-| ---------------------------------------------- | --------------------------------------- |
-| Single-file edit, typo fix, quick lookup       | Edit directly                           |
-| 1-2 domain task where you already have context | Build directly                          |
-| Explore / search / "where is X"                | Use built-in `Explore` subagent (haiku) |
+**Workflow spine** (skills auto-trigger at each step under Claude Code; follow manually under Codex):
 
-### Tier 2 — single agent spawn
+1. **brainstorming** — before writing any code. Refine the idea, explore alternatives, agree on a design.
+2. **using-git-worktrees** — isolate the work on a branch/worktree. Also satisfies the `pre-edit-branch-guard` hook — never edit on `main`/`develop`.
+3. **writing-plans** — break the work into small, individually verifiable tasks.
+4. **subagent-driven-development** (same session) or **executing-plans** (human checkpoints) — dispatch a fresh subagent per task with two-stage review (spec compliance, then code quality). `dispatching-parallel-agents` for independent domains.
+5. **test-driven-development** — RED → GREEN → REFACTOR, using **Vitest + @testing-library/react** per [.claude/rules/tests.md](.claude/rules/tests.md) (real Neon test DB, never mocked Prisma).
+6. **systematic-debugging** — root-cause before fixing, on any failure or unexpected behavior.
+7. **verification-before-completion** — evidence before claiming done; reinforced by the commit gate hook (build + tests).
+8. **requesting-code-review** / **receiving-code-review** — review before finishing; dispatch the `code-reviewer` agent as the executor.
+9. **finishing-a-development-branch** — merge/PR decision. Commit per §Git Commit Style; **never commit or push without explicit user permission**.
 
-| Signal                                                  | Agent                                  |
-| ------------------------------------------------------- | -------------------------------------- |
-| Schema-only change (migration, new model, field change) | **db-agent**                           |
-| Single entity end-to-end (schema through UI)            | **feature-builder**                    |
-| Convention alignment of existing code                   | **maintenance-agent** (mode: refactor) |
-| Documentation update (docs out of sync, roadmap update) | **maintenance-agent** (mode: docs)     |
-| Review or audit                                         | **code-reviewer**                      |
+**Precedence:** user instructions (this file, CLAUDE.md, global prefs) > superpowers skills > default behavior. Where a project rule conflicts with a skill, the project rule wins.
 
-### Tier 2 — parallel fan-out (multi-domain, 3+ areas)
+### Domain-executor agents
 
-For requests touching 3+ domains (schema + API + UI), the main session coordinates directly. Pattern:
+Three project agents in [.codex/agents/](.codex/agents/) (mirroring [.claude/agents/](.claude/agents/)) are pre-built executor bundles the superpowers subagent loop dispatches where they fit — each carries project knowledge a generic subagent lacks:
 
-1. Spawn **db-agent** for schema/migration work. Verify: `git diff --stat`, `npm run type-check`.
-2. Spawn **feature-builder** with the migration context. Verify: type-check + lint.
-3. Spawn **code-reviewer** with "include integration review" in the prompt.
-4. Report findings to user.
+| Agent                 | Dispatch when                                                 | Adds                                         |
+| --------------------- | ------------------------------------------------------------- | -------------------------------------------- |
+| **db-agent**          | Prisma schema / migration / seed / Neon branching             | Safe Neon-branch migration workflow          |
+| **code-reviewer**     | Code review (the `requesting-code-review` step)               | Read-only review citing this project's rules |
+| **maintenance-agent** | Convention refactor (mode: refactor) or doc sync (mode: docs) | No superpowers equivalent — project-specific |
 
-Steps 1-2 are sequential (feature-builder depends on db-agent). Step 3 can begin immediately after step 2.
-If the user says "orchestrate" or "full pipeline", follow this pattern.
+End-to-end feature building is now the superpowers brainstorm→plan→subagent loop, not a single agent.
 
 ### Model selection
 
@@ -95,7 +93,6 @@ Claude Code uses Anthropic model families for its built-in agent routing. Codex 
 | Agent              | Default | Override to opus when                               |
 | ------------------ | ------- | --------------------------------------------------- |
 | db-agent           | sonnet  | Tricky migration (cross-table backfill, custom SQL) |
-| feature-builder    | sonnet  | High-stakes feature, one-pass quality matters       |
 | code-reviewer      | haiku   | Security-sensitive diff (auth, payment, PII)        |
 | maintenance-agent  | sonnet  | Bulk rewrite touching cross-cutting abstractions    |
 | Explore (built-in) | haiku   | Search requires synthesizing many unrelated files   |
@@ -143,15 +140,16 @@ After UI changes, agents must verify visually using **Playwright MCP** (`mcp__pl
 
 ## Plugins
 
-Three plugins extend the backup Codex workflow and mirror the Claude Code tooling where possible:
+Four plugins extend the backup Codex workflow and mirror the Claude Code tooling where possible:
 
-| Plugin                                       | Purpose                                                                                           |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| **skill-creator** (Codex-plugins-official)   | Create, eval, improve, and benchmark skills. Use to iterate on existing project skills with data. |
-| **context-mode** (mksglu, v1.0.162)          | Sandboxes tool output for ~98% context window savings. SQLite session tracking + lifecycle hooks. |
-| **frontend-design** (Codex-plugins-official) | Production-grade UI design with distinctive aesthetics. Listed above under UI Skills.             |
+| Plugin                                       | Purpose                                                                                                                                                                                                                     |
+| -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **superpowers** (v6.0.3)                     | **Primary dev methodology** — skills only (no agents/commands). Install separately in Codex via the Codex plugin marketplace (`openai/plugins`). See §Development Workflow for the spine; follow manually if not installed. |
+| **skill-creator** (Codex-plugins-official)   | Create, eval, improve, and benchmark skills. Use to iterate on existing project skills with data.                                                                                                                           |
+| **context-mode** (mksglu, v1.0.162)          | Sandboxes tool output for ~98% context window savings. SQLite session tracking + lifecycle hooks.                                                                                                                           |
+| **frontend-design** (Codex-plugins-official) | Production-grade UI design with distinctive aesthetics. Listed above under UI Skills.                                                                                                                                       |
 
-For multi-domain requests (3+ areas), follow the parallel fan-out pattern in Request Routing — no orchestrator agent needed.
+The superpowers workflow spine (see §Development Workflow) governs how work is approached; the project's domain-executor agents, skills, and `.claude/rules/` supply the context its dispatched subagents consume.
 
 ## Critical Rules (universal — domain-specific rules live in [.claude/rules/](.claude/rules/))
 
@@ -189,16 +187,15 @@ Domain rules (Zod validation, `withErrorHandler`, ISR/client split, image pipeli
 
 ## Available Agents
 
-Four primary Claude Code agents in [.claude/agents/](.claude/agents/), mirrored for Codex custom agents in [.codex/agents/](.codex/agents/):
+Three domain-executor agents in [.claude/agents/](.claude/agents/), mirrored for Codex custom agents in [.codex/agents/](.codex/agents/). They are dispatched within the superpowers workflow spine (see §Development Workflow) — superpowers itself ships no agents:
 
 | Agent                 | Claude Code model | Codex model                                          | Purpose                                               |
 | --------------------- | ----------------- | ---------------------------------------------------- | ----------------------------------------------------- |
 | **db-agent**          | sonnet            | `gpt-5.4` (`model_reasoning_effort = "high"`)        | Schema, migrations, seed, Neon branching              |
-| **feature-builder**   | sonnet            | `gpt-5.4` (`model_reasoning_effort = "high"`)        | End-to-end feature (model + migration + API + UI)     |
 | **code-reviewer**     | haiku             | `gpt-5.4-mini` (`model_reasoning_effort = "medium"`) | Read-only review + cross-domain integration checks    |
 | **maintenance-agent** | sonnet            | `gpt-5.4` (`model_reasoning_effort = "high"`)        | Refactoring (mode: refactor) or doc sync (mode: docs) |
 
-See Request Routing above for when to spawn each. The Claude-side `sonnet` / `haiku` labels do not apply inside Codex; Codex uses the TOML-pinned OpenAI models above. Built-in subagents (`Explore`/haiku, `Plan`/sonnet) are Claude Code-only.
+See §Development Workflow above for when each is dispatched. The Claude-side `sonnet` / `haiku` labels do not apply inside Codex; Codex uses the TOML-pinned OpenAI models above. Built-in subagents (`Explore`/haiku, `Plan`/sonnet) are Claude Code-only. End-to-end feature building is now the superpowers brainstorm→plan→subagent loop, not a single agent.
 
 ## Codex Backup Hooks
 
@@ -230,13 +227,12 @@ Use `cat <file>` to read each before making changes. These files contain critica
 
 ### Agent routing
 
-Codex custom agents are defined in `.codex/agents/*.toml`. Unlike Claude Code, Codex does **not** automatically spawn agents based on the Request Routing table. Agents must be explicitly invoked by the user, and their model choice comes from the TOML file rather than the Claude Code model-selection table above.
+Codex custom agents are defined in `.codex/agents/*.toml`. Unlike Claude Code, Codex does **not** auto-dispatch agents. They are the domain-executor bundles invoked within the superpowers workflow spine (see §Development Workflow); their model choice comes from the TOML file rather than the Claude Code model-selection table above.
 
 **Trigger phrases** that indicate the user wants agent delegation:
 
-- "orchestrate" or "full pipeline" → follow the parallel fan-out pattern (db-agent → feature-builder → code-reviewer)
+- "orchestrate" or "full pipeline" → run the superpowers spine (brainstorm → plan → subagent-driven-development → review), dispatching db-agent / code-reviewer where they fit
 - "delegate to db-agent" or "use db-agent" → spawn db-agent
-- "spawn feature-builder" → spawn feature-builder
 - "review with code-reviewer" → spawn code-reviewer
 - "run maintenance-agent (mode: docs)" or "run maintenance-agent (mode: refactor)" → spawn maintenance-agent
 
@@ -250,17 +246,18 @@ Codex custom agents are defined in `.codex/agents/*.toml`. Unlike Claude Code, C
 
 These Claude Code features have no direct Codex equivalent:
 
-| Claude Code feature                                    | Codex alternative                                                         |
-| ------------------------------------------------------ | ------------------------------------------------------------------------- |
-| `Explore` / `Plan` built-in subagents                  | Use Bash search commands (`grep`, `find`, `git log`) directly             |
-| Slash commands (`/check`, `/new-route`, `/pr-ready`)   | Run equivalent steps manually (see `.claude/commands/*.md` for the steps) |
-| Plugin auto-triggering (shadcn, frontend-design, etc.) | Read the skill instructions manually if needed                            |
-| `${CLAUDE_PROJECT_DIR}` env var                        | Use `$(git rev-parse --show-toplevel)`                                    |
-| Pattern-matched `.claude/rules/*.md` loading           | Read relevant rule files explicitly (see table above)                     |
+| Claude Code feature                                    | Codex alternative                                                                                                                            |
+| ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Explore` / `Plan` built-in subagents                  | Use Bash search commands (`grep`, `find`, `git log`) directly                                                                                |
+| Slash commands (`/check`, `/new-route`, `/pr-ready`)   | Run equivalent steps manually (see `.claude/commands/*.md` for the steps)                                                                    |
+| Plugin auto-triggering (shadcn, frontend-design, etc.) | Read the skill instructions manually if needed                                                                                               |
+| Superpowers `SessionStart` auto-bootstrap              | Install superpowers separately in Codex (`openai/plugins`); skills load natively. If absent, follow the §Development Workflow spine manually |
+| `${CLAUDE_PROJECT_DIR}` env var                        | Use `$(git rev-parse --show-toplevel)`                                                                                                       |
+| Pattern-matched `.claude/rules/*.md` loading           | Read relevant rule files explicitly (see table above)                                                                                        |
 
 ### context-mode dependency
 
-All four agent TOML files reference `ctx_batch_execute` from the context-mode plugin. If context-mode is not installed in your Codex environment, agents should fall back to reading files directly with `cat` via Bash. The instructions still apply — only the reading mechanism changes.
+All three agent TOML files reference `ctx_batch_execute` from the context-mode plugin. If context-mode is not installed in your Codex environment, agents should fall back to reading files directly with `cat` via Bash. The instructions still apply — only the reading mechanism changes.
 
 ### Verification workflow
 
@@ -295,6 +292,6 @@ When compacting, always preserve:
 
 - The full list of files modified in the current task
 - The current git branch name and any in-progress PR
-- Which agent workflow step we are on (if multi-agent fan-out is running)
+- Which superpowers workflow step / dispatched subagent task we are on
 - Any user decisions or preferences stated in this session
 - Error messages from failed builds/tests that haven't been resolved yet
