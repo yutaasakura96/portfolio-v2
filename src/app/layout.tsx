@@ -73,6 +73,10 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <meta
+          name="google-site-verification"
+          content="d9U4eA2jwchUUubMzCG7F1WtKkXkbZF5KWmSjF4M6GU"
+        />
         {process.env.NEXT_PUBLIC_CLOUDFRONT_URL && (
           <>
             <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_CLOUDFRONT_URL} />
