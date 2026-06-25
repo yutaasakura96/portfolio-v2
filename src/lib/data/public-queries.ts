@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma-client";
+import { withDbRetry } from "./db-resilience";
 import type {
   AboutPage,
   AboutPageData,
@@ -36,14 +37,16 @@ export async function getAboutPageIntro(): Promise<AboutPage | null> {
 // HERO
 // ═══════════════════════════════════════════════════════════════════════════
 
-/** Fetch the hero section content (singleton); `null` if no hero data exists. */
+/**
+ * Fetch the hero section content (singleton); `null` if no hero data exists.
+ *
+ * Backs the homepage hero. Retries transient Neon failures and, if they persist,
+ * **rethrows** instead of returning `null` so the ISR render aborts and Next.js
+ * keeps serving the last good cached page rather than caching a hero-less page.
+ * See `getRecentPosts` / `getFeaturedProjects` for the same homepage contract.
+ */
 export async function getHero(): Promise<Hero | null> {
-  try {
-    return await prisma.hero.findFirst();
-  } catch (error) {
-    console.error("Failed to fetch hero data:", error);
-    return null;
-  }
+  return withDbRetry(() => prisma.hero.findFirst(), "getHero");
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -79,30 +82,35 @@ export async function getPublishedProjects(): Promise<PublicProject[]> {
   }
 }
 
-/** Fetch featured published projects for the homepage (default 4). */
+/**
+ * Fetch featured published projects for the homepage (default 4).
+ *
+ * Homepage data source: retries transient Neon failures and rethrows on
+ * persistent failure (see `getHero`) so a DB blip can't be cached as an empty
+ * "no featured projects" homepage.
+ */
 export async function getFeaturedProjects(limit = 4): Promise<FeaturedProject[]> {
-  try {
-    return await prisma.project.findMany({
-      where: { status: "PUBLISHED", featured: true },
-      orderBy: { displayOrder: "asc" },
-      take: limit,
-      select: {
-        id: true,
-        slug: true,
-        title: true,
-        shortDescription: true,
-        techTags: true,
-        thumbnailImage: true,
-        liveUrl: true,
-        repoUrl: true,
-        titleJa: true,
-        shortDescriptionJa: true,
-      },
-    });
-  } catch (error) {
-    console.error("Failed to fetch featured projects:", error);
-    return [];
-  }
+  return withDbRetry(
+    () =>
+      prisma.project.findMany({
+        where: { status: "PUBLISHED", featured: true },
+        orderBy: { displayOrder: "asc" },
+        take: limit,
+        select: {
+          id: true,
+          slug: true,
+          title: true,
+          shortDescription: true,
+          techTags: true,
+          thumbnailImage: true,
+          liveUrl: true,
+          repoUrl: true,
+          titleJa: true,
+          shortDescriptionJa: true,
+        },
+      }),
+    "getFeaturedProjects"
+  );
 }
 
 /** Fetch a single published project by slug (full row including long-text fields); `null` if not found. */
@@ -172,6 +180,20 @@ export async function getProjectWithAdjacent(slug: string): Promise<ProjectWithA
 // BLOG POSTS
 // ═══════════════════════════════════════════════════════════════════════════
 
+/** Public-card field selection for blog-post list queries. */
+const PUBLIC_POST_LIST_SELECT = {
+  id: true,
+  slug: true,
+  title: true,
+  excerpt: true,
+  featuredImage: true,
+  tags: true,
+  readTime: true,
+  publishedAt: true,
+  titleJa: true,
+  excerptJa: true,
+} as const;
+
 /** Fetch published blog posts ordered by `publishedAt` desc; pass `limit` to cap the result. */
 export async function getPublishedPosts(limit?: number): Promise<PublicBlogPost[]> {
   try {
@@ -179,18 +201,7 @@ export async function getPublishedPosts(limit?: number): Promise<PublicBlogPost[
       where: { status: "PUBLISHED" },
       orderBy: { publishedAt: "desc" },
       ...(limit ? { take: limit } : {}),
-      select: {
-        id: true,
-        slug: true,
-        title: true,
-        excerpt: true,
-        featuredImage: true,
-        tags: true,
-        readTime: true,
-        publishedAt: true,
-        titleJa: true,
-        excerptJa: true,
-      },
+      select: PUBLIC_POST_LIST_SELECT,
     });
   } catch (error) {
     console.error("Failed to fetch published posts:", error);
@@ -198,9 +209,25 @@ export async function getPublishedPosts(limit?: number): Promise<PublicBlogPost[
   }
 }
 
-/** Fetch the N most recent published blog posts (default 3) for homepage/sidebar widgets. */
+/**
+ * Fetch the N most recent published blog posts (default 3) for the homepage.
+ *
+ * Homepage data source: unlike `getPublishedPosts` (which degrades to `[]` for
+ * the blog index), this retries transient Neon failures and rethrows on
+ * persistent failure (see `getHero`) so a DB blip can't be cached as an empty
+ * homepage recent-posts section.
+ */
 export async function getRecentPosts(limit = 3): Promise<PublicBlogPost[]> {
-  return getPublishedPosts(limit);
+  return withDbRetry(
+    () =>
+      prisma.blogPost.findMany({
+        where: { status: "PUBLISHED" },
+        orderBy: { publishedAt: "desc" },
+        take: limit,
+        select: PUBLIC_POST_LIST_SELECT,
+      }),
+    "getRecentPosts"
+  );
 }
 
 /** Fetch a single published blog post by slug (full row including markdown body); `null` if not found. */

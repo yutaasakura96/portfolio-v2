@@ -427,11 +427,13 @@ const settings = await getSiteSettings();
 
 ## Error Handling
 
-All functions include error handling and return safe defaults:
+Most functions catch errors and return safe defaults:
 
 - Functions returning arrays return `[]` on error
 - Functions returning objects return `null` on error
 - All errors are logged to console for debugging
+
+**Exception — ISR-critical homepage queries** (`getHero`, `getFeaturedProjects`, `getRecentPosts`): these wrap their Prisma call in `withDbRetry` (`db-resilience.ts`), which retries transient Neon failures, reports persistent failures to Sentry, and **rethrows** instead of returning empty. This is deliberate: a thrown error makes Next.js keep serving the last good ISR page instead of caching a half-empty homepage for the `revalidate` window. See `.claude/rules/data-layer.md`.
 
 ## Notes
 
