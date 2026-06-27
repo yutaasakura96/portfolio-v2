@@ -62,9 +62,9 @@ This project's primary methodology is the **superpowers** plugin — a skills-on
 
 **Workflow spine** (skills auto-trigger at each step under Claude Code; follow manually under Codex):
 
-1. **brainstorming** — before writing any code. Refine the idea, explore alternatives, agree on a design.
-2. **using-git-worktrees** — isolate the work on a branch/worktree. Also satisfies the `pre-edit-branch-guard` hook — never edit on `main`/`develop`.
-3. **writing-plans** — break the work into small, individually verifiable tasks.
+1. **brainstorming** — before writing any code. Refine the idea, explore alternatives, agree on a design. **Verify any library/framework API the design depends on against the `context7` MCP server** (`resolve-library-id` → `query-docs`) before committing to it — do not assume post-cutoff APIs for Next.js 16, Prisma 7, Tailwind v4, etc.
+2. **using-git-worktrees** — isolate the work on a branch/worktree. Also satisfies the `pre-edit-branch-guard` hook — never edit code on `main`/`develop`. The guard **exempts planning/doc artifacts** (`docs/superpowers/plans/**` and `docs/**/*.md`), so brainstorming and writing-plans can save output before the worktree exists; only source/config edits are gated.
+3. **writing-plans** — break the work into small, individually verifiable tasks. When a task uses a library API, **confirm signatures via `context7`** and cite the verified usage in the plan. Plans save to `docs/superpowers/plans/YYYY-MM-DD-<feature>.md` (guard-exempt).
 4. **subagent-driven-development** (same session) or **executing-plans** (human checkpoints) — dispatch a fresh subagent per task with two-stage review (spec compliance, then code quality). `dispatching-parallel-agents` for independent domains.
 5. **test-driven-development** — RED → GREEN → REFACTOR, using **Vitest + @testing-library/react** per [.claude/rules/tests.md](.claude/rules/tests.md) (real Neon test DB, never mocked Prisma).
 6. **systematic-debugging** — root-cause before fixing, on any failure or unexpected behavior.
@@ -85,6 +85,15 @@ Three project agents in [.codex/agents/](.codex/agents/) (mirroring [.claude/age
 | **maintenance-agent** | Convention refactor (mode: refactor) or doc sync (mode: docs) | No superpowers equivalent — project-specific |
 
 End-to-end feature building is now the superpowers brainstorm→plan→subagent loop, not a single agent.
+
+### Equipping dispatched subagents (skills + docs)
+
+Superpowers dispatches **fresh generic subagents** that do **not** auto-discover this project's skills (the `using-superpowers` bootstrap tells a subagent to skip the skill-check rule). The orchestrator must hand them the right context in the dispatch prompt:
+
+1. **Name the relevant project skill(s) in the dispatch prompt.** Map by what the task touches: new route / layout / `proxy.ts` → `nextjs-app-router`; Prisma schema/migration/seed/Neon → `prisma-neon` (or dispatch `db-agent`); Tailwind classes / `@theme` → `tailwind-v4`; shadcn components → `shadcn`; new component/page visual design → `frontend-design`; animations/transitions → `emil-design-eng`; UI a11y / pre-merge gate → `web-design-guidelines`; AWS Amplify/S3/CloudFront/SES/Cognito or env changes → `aws-deploy`.
+2. **Instruct the subagent to verify library APIs against `context7`** (`resolve-library-id` → `query-docs`) for any Next.js 16 / Prisma 7 / Tailwind v4 / other library usage, rather than assuming from training data.
+
+If unsure whether a skill applies, name it anyway — loading an irrelevant skill is cheap.
 
 ### Model selection
 
