@@ -12,10 +12,42 @@ const RETRYABLE_MESSAGE =
 
 const RETRYABLE_NAME = /AbortError|FetchError/i;
 
-export function isRetryableDbError(error: unknown): boolean {
+/**
+ * DOM-style event objects the Neon WebSocket adapter throws on socket failures
+ * (via `ws`): `ErrorEvent` ("[object ErrorEvent]") and `CloseEvent`. These are
+ * not `Error` instances and carry no useful `message`, but are always transient
+ * connection failures — so we treat the event type itself as the retry signal.
+ */
+const RETRYABLE_EVENT_NAME = /ErrorEvent|CloseEvent/;
+
+export function isRetryableDbError(error: unknown, depth = 0): boolean {
+  if (error == null || depth > 3) return false;
   if (typeof error === "string") return RETRYABLE_MESSAGE.test(error);
-  if (!(error instanceof Error)) return false;
-  return RETRYABLE_NAME.test(error.name) || RETRYABLE_MESSAGE.test(error.message);
+  if (typeof error !== "object") return false;
+
+  // WebSocket ErrorEvent/CloseEvent thrown by the Neon adapter — always transient.
+  const ctorName = (error as { constructor?: { name?: string } }).constructor?.name ?? "";
+  const name = (error as { name?: unknown }).name;
+  if (
+    RETRYABLE_EVENT_NAME.test(ctorName) ||
+    (typeof name === "string" && RETRYABLE_NAME.test(name))
+  ) {
+    return true;
+  }
+
+  // Match on a string message field (covers Error and Error-like objects).
+  const message = (error as { message?: unknown }).message;
+  if (typeof message === "string" && RETRYABLE_MESSAGE.test(message)) return true;
+
+  // Unwrap nested causes: `Error.cause`, an ErrorEvent's `.error`, AggregateError errors.
+  const nested = error as { cause?: unknown; error?: unknown; errors?: unknown };
+  if (isRetryableDbError(nested.cause, depth + 1)) return true;
+  if (isRetryableDbError(nested.error, depth + 1)) return true;
+  if (Array.isArray(nested.errors)) {
+    return nested.errors.some((e) => isRetryableDbError(e, depth + 1));
+  }
+
+  return false;
 }
 
 interface WithDbRetryOptions {
@@ -28,6 +60,33 @@ interface WithDbRetryOptions {
 function sleep(ms: number): Promise<void> {
   if (ms <= 0) return Promise.resolve();
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Build a human-readable description for a thrown value. Non-Error throwables
+ * like the Neon adapter's `ErrorEvent` stringify to a useless "[object
+ * ErrorEvent]", so we pull out the constructor name plus any `type`/`code`/
+ * `message` fields to make Sentry reports actionable.
+ */
+function describeError(error: unknown): string {
+  if (error instanceof Error) return error.message || error.name;
+  if (typeof error === "string") return error;
+  if (error && typeof error === "object") {
+    const e = error as {
+      message?: unknown;
+      type?: unknown;
+      code?: unknown;
+      constructor?: { name?: string };
+    };
+    const parts = [
+      e.constructor?.name && e.constructor.name !== "Object" ? e.constructor.name : "",
+      typeof e.type === "string" ? `type=${e.type}` : "",
+      e.code != null ? `code=${e.code}` : "",
+      typeof e.message === "string" && e.message ? e.message : "",
+    ].filter(Boolean);
+    if (parts.length) return parts.join(" ");
+  }
+  return String(error);
 }
 
 /**
@@ -57,6 +116,13 @@ export async function withDbRetry<T>(
     }
   }
 
-  Sentry.captureException(lastError, { tags: { dbQuery: label } });
+  // Report a real Error (so Sentry shows a readable title instead of "[object
+  // ErrorEvent]"), but rethrow the ORIGINAL value so caller/ISR semantics are
+  // unchanged. Error instances are reported as-is to preserve their stack.
+  const reported =
+    lastError instanceof Error
+      ? lastError
+      : new Error(`Neon query "${label}" failed: ${describeError(lastError)}`);
+  Sentry.captureException(reported, { tags: { dbQuery: label } });
   throw lastError;
 }

@@ -43,6 +43,42 @@ describe("isRetryableDbError", () => {
     expect(isRetryableDbError(null)).toBe(false);
     expect(isRetryableDbError(undefined)).toBe(false);
   });
+
+  // The Neon WebSocket adapter (`PrismaNeon` via `ws`) throws DOM-style
+  // ErrorEvent/CloseEvent objects — NOT Error instances — on connection
+  // failures. These stringify to "[object ErrorEvent]" and must be retryable.
+  it("treats a Neon WebSocket ErrorEvent as retryable", () => {
+    class ErrorEvent {
+      readonly type = "error";
+      constructor(
+        readonly message: string,
+        readonly error?: unknown
+      ) {}
+    }
+    expect(isRetryableDbError(new ErrorEvent(""))).toBe(true);
+    expect(isRetryableDbError(new ErrorEvent("", new Error("connect ETIMEDOUT")))).toBe(true);
+  });
+
+  it("treats a WebSocket CloseEvent as retryable", () => {
+    class CloseEvent {
+      readonly type = "close";
+      constructor(
+        readonly code: number,
+        readonly reason: string
+      ) {}
+    }
+    expect(isRetryableDbError(new CloseEvent(1006, "abnormal closure"))).toBe(true);
+  });
+
+  it("unwraps a retryable error nested under `.cause`", () => {
+    const wrapped = new Error("query failed");
+    wrapped.cause = new Error("fetch failed");
+    expect(isRetryableDbError(wrapped)).toBe(true);
+  });
+
+  it("does not retry a plain object with no transient signal", () => {
+    expect(isRetryableDbError({ foo: "bar" })).toBe(false);
+  });
 });
 
 describe("withDbRetry", () => {
@@ -93,5 +129,26 @@ describe("withDbRetry", () => {
     await expect(withDbRetry(fn, "getHero", { retries: 3, baseDelayMs: 0 })).rejects.toBe(error);
     expect(fn).toHaveBeenCalledTimes(1);
     expect(captureException).toHaveBeenCalledTimes(1);
+  });
+
+  it("rethrows the original ErrorEvent but reports a normalized, readable Error to Sentry", async () => {
+    class ErrorEvent {
+      readonly type = "error";
+      constructor(readonly message: string) {}
+    }
+    const event = new ErrorEvent("");
+    const fn = vi.fn().mockRejectedValue(event);
+
+    // Original object is rethrown unchanged (callers/Next.js see the real value).
+    await expect(withDbRetry(fn, "getHero", { retries: 1, baseDelayMs: 0 })).rejects.toBe(event);
+    // ErrorEvent is retryable now → initial attempt + 1 retry.
+    expect(fn).toHaveBeenCalledTimes(2);
+    // Sentry receives a real Error with a useful message (not "[object ErrorEvent]").
+    expect(captureException).toHaveBeenCalledTimes(1);
+    const [reported, context] = captureException.mock.calls[0] as [unknown, { tags?: unknown }];
+    expect(reported).toBeInstanceOf(Error);
+    expect((reported as Error).message).toContain("getHero");
+    expect((reported as Error).message).toContain("ErrorEvent");
+    expect(context).toMatchObject({ tags: { dbQuery: "getHero" } });
   });
 });
