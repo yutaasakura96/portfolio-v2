@@ -51,10 +51,24 @@ export function isRetryableDbError(error: unknown, depth = 0): boolean {
 }
 
 interface WithDbRetryOptions {
-  /** Number of additional attempts after the first one. Default 2 (3 attempts total). */
+  /**
+   * Number of additional attempts after the first one. Default 4 (5 attempts
+   * total). Sized to bridge a Neon free-tier cold-wake: when the compute is
+   * suspended (scale-to-zero after 5 min idle), the first WebSocket handshake
+   * often fails with "non-101 status code" while the compute resumes; the
+   * default backoff schedule (≈250+500+1000+2000 ≈ 3.75s) keeps retrying long
+   * enough for the resume to complete instead of giving up after ~300ms.
+   */
   retries?: number;
-  /** Base backoff in ms; attempt N waits `baseDelayMs * 2^N`. Default 100. */
+  /** Base backoff in ms; attempt N waits `min(baseDelayMs * 2^N, maxDelayMs)`. Default 250. */
   baseDelayMs?: number;
+  /** Upper bound for a single backoff wait, in ms. Default 2000. */
+  maxDelayMs?: number;
+}
+
+/** Exponential backoff for attempt `attempt` (0-indexed), capped at `maxDelayMs`. */
+export function backoffDelay(attempt: number, baseDelayMs: number, maxDelayMs: number): number {
+  return Math.min(baseDelayMs * 2 ** attempt, maxDelayMs);
 }
 
 function sleep(ms: number): Promise<void> {
@@ -103,7 +117,7 @@ export async function withDbRetry<T>(
   label: string,
   options: WithDbRetryOptions = {}
 ): Promise<T> {
-  const { retries = 2, baseDelayMs = 100 } = options;
+  const { retries = 4, baseDelayMs = 250, maxDelayMs = 2000 } = options;
   let lastError: unknown;
 
   for (let attempt = 0; attempt <= retries; attempt++) {
@@ -112,7 +126,7 @@ export async function withDbRetry<T>(
     } catch (error) {
       lastError = error;
       if (attempt === retries || !isRetryableDbError(error)) break;
-      await sleep(baseDelayMs * 2 ** attempt);
+      await sleep(backoffDelay(attempt, baseDelayMs, maxDelayMs));
     }
   }
 
