@@ -1,4 +1,4 @@
-export { flattenForCsv, generateCsv, parseCsvString, unflattenFromCsv } from "./csv-utils";
+export { flattenForCsv, generateCsv, unflattenFromCsv } from "./csv-utils";
 export { entityConfigs } from "./entity-configs";
 export type {
   EntityConfig,

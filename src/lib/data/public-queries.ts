@@ -2,7 +2,6 @@ import { prisma } from "@/lib/prisma-client";
 import { withDbRetry } from "./db-resilience";
 import type {
   AboutPage,
-  AboutPageData,
   AdjacentProjects,
   BlogPost,
   Certification,
@@ -11,12 +10,10 @@ import type {
   FeaturedProject,
   Hero,
   Project,
-  ProjectWithAdjacent,
   PublicBlogPost,
   PublicProject,
   SiteSettings,
   Skill,
-  SkillsByCategory,
 } from "./types";
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -160,22 +157,6 @@ export async function getAdjacentProjects(currentOrder: number): Promise<Adjacen
   }
 }
 
-/** Fetch a published project plus its prev/next neighbours in one call (for project detail pages). */
-export async function getProjectWithAdjacent(slug: string): Promise<ProjectWithAdjacent> {
-  try {
-    const project = await getProjectBySlug(slug);
-    if (!project) {
-      return { project: null, prev: null, next: null };
-    }
-
-    const { prev, next } = await getAdjacentProjects(project.displayOrder);
-    return { project, prev, next };
-  } catch (error) {
-    console.error(`Failed to fetch project with adjacent for slug "${slug}":`, error);
-    return { project: null, prev: null, next: null };
-  }
-}
-
 // ═══════════════════════════════════════════════════════════════════════════
 // BLOG POSTS
 // ═══════════════════════════════════════════════════════════════════════════
@@ -255,50 +236,6 @@ export async function getPublishedPostSlugs(): Promise<Array<{ slug: string }>> 
   }
 }
 
-/** Fetch the sorted, de-duplicated set of tags across all published blog posts. */
-export async function getAllTags(): Promise<string[]> {
-  try {
-    const posts = await prisma.blogPost.findMany({
-      where: { status: "PUBLISHED" },
-      select: { tags: true },
-    });
-
-    const allTags = posts.flatMap((p) => p.tags);
-    return Array.from(new Set(allTags)).sort();
-  } catch (error) {
-    console.error("Failed to fetch tags:", error);
-    return [];
-  }
-}
-
-/** Fetch published blog posts that include the given tag, ordered by `publishedAt` desc. */
-export async function getPostsByTag(tag: string): Promise<PublicBlogPost[]> {
-  try {
-    return await prisma.blogPost.findMany({
-      where: {
-        status: "PUBLISHED",
-        tags: { has: tag },
-      },
-      orderBy: { publishedAt: "desc" },
-      select: {
-        id: true,
-        slug: true,
-        title: true,
-        excerpt: true,
-        featuredImage: true,
-        tags: true,
-        readTime: true,
-        publishedAt: true,
-        titleJa: true,
-        excerptJa: true,
-      },
-    });
-  } catch (error) {
-    console.error(`Failed to fetch posts with tag "${tag}":`, error);
-    return [];
-  }
-}
-
 // ═══════════════════════════════════════════════════════════════════════════
 // ABOUT PAGE CONTENT
 // ═══════════════════════════════════════════════════════════════════════════
@@ -326,26 +263,6 @@ export async function getSkillCategories(): Promise<string[]> {
   } catch (error) {
     console.error("Failed to fetch skill categories:", error);
     return [];
-  }
-}
-
-/** Fetch visible skills grouped into a `{ [category]: Skill[] }` map. */
-export async function getSkillsByCategory(): Promise<SkillsByCategory> {
-  try {
-    const skills = await getSkills();
-    const grouped: Record<string, Skill[]> = {};
-
-    for (const skill of skills) {
-      if (!grouped[skill.category]) {
-        grouped[skill.category] = [];
-      }
-      grouped[skill.category].push(skill);
-    }
-
-    return grouped;
-  } catch (error) {
-    console.error("Failed to fetch skills by category:", error);
-    return {};
   }
 }
 
@@ -385,28 +302,6 @@ export async function getCertifications(): Promise<Certification[]> {
   } catch (error) {
     console.error("Failed to fetch certifications:", error);
     return [];
-  }
-}
-
-/** Fetch all About-page content (skills, experiences, education, certifications) in parallel. */
-export async function getAboutPageData(): Promise<AboutPageData> {
-  try {
-    const [skills, experiences, education, certifications] = await Promise.all([
-      getSkills(),
-      getExperiences(),
-      getEducation(),
-      getCertifications(),
-    ]);
-
-    return { skills, experiences, education, certifications };
-  } catch (error) {
-    console.error("Failed to fetch about page data:", error);
-    return {
-      skills: [],
-      experiences: [],
-      education: [],
-      certifications: [],
-    };
   }
 }
 

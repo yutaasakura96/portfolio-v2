@@ -83,15 +83,17 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
 
 ```tsx
 // app/projects/[slug]/page.tsx
-import { getProjectWithAdjacent } from "@/lib/data";
+import { getProjectBySlug, getAdjacentProjects } from "@/lib/data";
 
 export default async function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const { project, prev, next } = await getProjectWithAdjacent(slug);
+  const project = await getProjectBySlug(slug);
 
   if (!project) {
     notFound();
   }
+
+  const { prev, next } = await getAdjacentProjects(project.displayOrder);
 
   return (
     <>
@@ -196,22 +198,6 @@ Gets previous and next projects for navigation.
 const { prev, next } = await getAdjacentProjects(5);
 ```
 
-#### `getProjectWithAdjacent(slug: string)`
-
-Fetches a project with its adjacent projects in one call.
-
-**Parameters:**
-
-- `slug`: The project slug
-
-**Returns:** `Promise<ProjectWithAdjacent>`
-
-**Example:**
-
-```typescript
-const { project, prev, next } = await getProjectWithAdjacent("my-project");
-```
-
 ---
 
 ### Blog Posts
@@ -279,35 +265,6 @@ export async function generateStaticParams() {
 }
 ```
 
-#### `getAllTags()`
-
-Fetches all unique tags from published posts.
-
-**Returns:** `Promise<string[]>`
-
-**Example:**
-
-```typescript
-const tags = await getAllTags();
-// ['react', 'typescript', 'nextjs']
-```
-
-#### `getPostsByTag(tag: string)`
-
-Fetches published blog posts filtered by tag.
-
-**Parameters:**
-
-- `tag`: The tag to filter by
-
-**Returns:** `Promise<PublicBlogPost[]>`
-
-**Example:**
-
-```typescript
-const reactPosts = await getPostsByTag("react");
-```
-
 ---
 
 ### About Page Content
@@ -334,19 +291,6 @@ Fetches all visible skills, ordered by display order.
 
 ```typescript
 const skills = await getSkills();
-```
-
-#### `getSkillsByCategory()`
-
-Fetches skills grouped by category.
-
-**Returns:** `Promise<SkillsByCategory>`
-
-**Example:**
-
-```typescript
-const skillGroups = await getSkillsByCategory();
-// { 'Frontend': [...], 'Backend': [...], 'DevOps': [...] }
 ```
 
 #### `getSkillCategories()`
@@ -395,18 +339,6 @@ Fetches all visible certifications, ordered by display order.
 
 ```typescript
 const certs = await getCertifications();
-```
-
-#### `getAboutPageData()`
-
-Fetches all about page content in parallel for better performance.
-
-**Returns:** `Promise<AboutPageData>`
-
-**Example:**
-
-```typescript
-const { skills, experiences, education, certifications } = await getAboutPageData();
 ```
 
 ---
@@ -501,15 +433,7 @@ revalidatePath("/projects");
 All types are exported from `./types.ts`:
 
 ```typescript
-import type {
-  PublicProject,
-  FeaturedProject,
-  PublicBlogPost,
-  AdjacentProjects,
-  ProjectWithAdjacent,
-  AboutPageData,
-  SkillsByCategory,
-} from "@/lib/data";
+import type { PublicProject, FeaturedProject, PublicBlogPost, AdjacentProjects } from "@/lib/data";
 ```
 
 ## Best Practices

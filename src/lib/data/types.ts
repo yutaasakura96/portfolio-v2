@@ -94,25 +94,6 @@ export type AdjacentProjects = {
   next: { slug: string; title: string; titleJa: string | null } | null;
 };
 
-export type ProjectWithAdjacent = {
-  project: Project | null;
-  prev: { slug: string; title: string; titleJa: string | null } | null;
-  next: { slug: string; title: string; titleJa: string | null } | null;
-};
-
-// ═══════════════════════════════════════════════════════════════════════════
-// ABOUT PAGE TYPES
-// ═══════════════════════════════════════════════════════════════════════════
-
-export type AboutPageData = {
-  skills: Skill[];
-  experiences: Experience[];
-  education: Education[];
-  certifications: Certification[];
-};
-
-export type SkillsByCategory = Record<string, Skill[]>;
-
 // ═══════════════════════════════════════════════════════════════════════════
 // PAGINATION TYPES
 // ═══════════════════════════════════════════════════════════════════════════
