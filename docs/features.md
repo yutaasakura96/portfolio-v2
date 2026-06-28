@@ -6,8 +6,6 @@ environment setup (see `setup.md`), or technology rationale (see `tech-stack.md`
 
 ---
 
-## Features
-
 ### [Public site](#public-site) {#public-site}
 
 The public site is a Next.js App Router application rendered with Server Components by
@@ -232,3 +230,26 @@ date, and credential ID fields. The admin can review and correct the extracted v
 before saving. If extraction fails, a toast prompts the user to fill the fields manually.
 
 ![Certifications page](screenshots/admin/certifications.png)
+
+---
+
+### Headless administration via MCP {#mcp-administration}
+
+The entire CMS is also administrable programmatically — without opening a browser — through
+the **portfolio MCP server**. An MCP-compatible agent such as Claude Code can create, update,
+delete, and reorder content, and read dashboard stats, purely by calling tools. The 43 tools
+span every content entity: projects, blog posts, skills, experience, education, certifications,
+messages, hero, about, settings, and dashboard. The full tool surface is listed in the
+[API reference → MCP Server](api-reference.md#mcp-server).
+
+Key points:
+
+- **Two targets.** `portfolio` → `http://localhost:3000` (dev Neon branch). `portfolio-prod`
+  → `https://asakurayuta.dev` (production Neon branch). Mutations via `portfolio-prod` change
+  the live site immediately.
+- **Safe-by-default workflow.** Call `list-*` before `update-*` or `delete-*` to confirm IDs;
+  call `get-dashboard-stats` for a content overview. Messages have no delete tool — they can
+  only be read, marked-read, archived, or bulk-updated, so contact form submissions are never
+  accidentally destroyed.
+- **Auth.** API-key Bearer token (the same SHA-256-hashed key used by the REST layer); stdio
+  transport. Run `npm run mcp:setup` to generate the MCP config with the current key.

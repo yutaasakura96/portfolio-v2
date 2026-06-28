@@ -17,14 +17,14 @@
 
 ## Highlights
 
-| Feature                    | Detail                                                                                                                                                                                                       |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **GLSL 3D hero blob**      | Morphing WebGL shader rendered with `@react-three/fiber`; mouse-reactive; gracefully falls back on old mobile browsers via `WebGLErrorBoundary`                                                              |
-| **DB-driven EN / JA i18n** | Full bilingual content (EN + JA) stored as `*Ja` columns in Postgres; locale toggled in the header with `localStorage` persistence; static UI strings translated via Claude Haiku with prompt caching        |
-| **43-tool MCP server**     | A local portfolio MCP server exposes every content entity (projects, blog, skills, experience, education, certifications, messages, hero, settings) as callable tools — readable by any MCP-compatible agent |
-| **AI cert extraction**     | Uploading a certification image calls `/api/admin/certifications/extract`; Claude Haiku's vision capability auto-fills name, issuer, dates, and credential ID                                                |
-| **Dual Neon branches**     | `production` and `dev` Neon branches run completely separate data; migrations are applied per-branch; the dev branch can be reset from production with a single script                                       |
-| **Full admin CMS**         | Auth-guarded at `/admin` via AWS Cognito + HTTP-only JWT cookies; covers every content entity with drag-to-reorder, markdown editor, unified JSON import/export, and translation management                  |
+| Feature                    | Detail                                                                                                                                                                                                                                                    |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **GLSL 3D hero blob**      | Morphing WebGL shader rendered with `@react-three/fiber`; mouse-reactive; gracefully falls back on old mobile browsers via `WebGLErrorBoundary`                                                                                                           |
+| **DB-driven EN / JA i18n** | Full bilingual content (EN + JA) stored as `*Ja` columns in Postgres; locale toggled in the header with `localStorage` persistence; static UI strings translated via Claude Haiku with prompt caching                                                     |
+| **43-tool MCP server**     | Lets an MCP-compatible agent (e.g. Claude Code) fully administer the CMS — create, update, delete, and reorder every content entity and read dashboard stats conversationally — with separate `portfolio` (dev) and `portfolio-prod` (production) targets |
+| **AI cert extraction**     | Uploading a certification image calls `/api/admin/certifications/extract`; Claude Haiku's vision capability auto-fills name, issuer, dates, and credential ID                                                                                             |
+| **Dual Neon branches**     | `production` and `dev` Neon branches run completely separate data; migrations are applied per-branch; the dev branch can be reset from production with a single script                                                                                    |
+| **Full admin CMS**         | Auth-guarded at `/admin` via AWS Cognito + HTTP-only JWT cookies; covers every content entity with drag-to-reorder, markdown editor, unified JSON import/export, and translation management                                                               |
 
 ---
 
