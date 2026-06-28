@@ -214,7 +214,7 @@ Every entity manager includes an `ImportExportToolbar` with:
 
 `/admin/translations` offers a one-click "Update Japanese" workflow. It calls the
 translation API (`GET /api/admin/translate` for a plan, `POST /api/admin/translate` for
-execution) which uses Claude Haiku (`claude-haiku-4-5`) to translate untranslated EN
+execution) which uses Claude Haiku (`claude-haiku-4-5-20251001`) to translate untranslated EN
 content to JA item by item. Prompt caching (`cache_control: { type: "ephemeral" }`) is
 enabled on the system prompt so sequential calls within a five-minute window are served at
 cached input pricing. Progress is shown per entity.
