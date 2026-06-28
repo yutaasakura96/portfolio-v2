@@ -80,12 +80,3 @@ export function unflattenFromCsv(
 export function generateCsv(rows: Record<string, string>[]): string {
   return Papa.unparse(rows);
 }
-
-export function parseCsvString(csvString: string): Record<string, string>[] {
-  const result = Papa.parse<Record<string, string>>(csvString, {
-    header: true,
-    skipEmptyLines: true,
-    transformHeader: (h) => h.trim(),
-  });
-  return result.data;
-}

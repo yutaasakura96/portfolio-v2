@@ -36,20 +36,6 @@ export function formatDate(
 }
 
 /**
- * Format a date as "MMM yyyy" (e.g., "Jan 2023")
- */
-export function formatMonthYear(date: Date | string | null | undefined): string {
-  return formatDate(date, "MMM yyyy");
-}
-
-/**
- * Format a date as "yyyy" (e.g., "2023")
- */
-export function formatYear(date: Date | string | null | undefined): string {
-  return formatDate(date, "yyyy");
-}
-
-/**
  * Format a date range with start and optional end date.
  *
  * @param startDate - Start date
