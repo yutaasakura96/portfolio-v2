@@ -233,8 +233,21 @@ A written description of the topology is in [`docs/diagrams/aws-architecture.md`
 
 ### Application architecture
 
-The application component and data-flow diagram is maintained as an Excalidraw file:
-[`docs/diagrams/architecture.excalidraw`](diagrams/architecture.excalidraw)
+The request, rendering, and data-flow pipeline — Edge → SSR → client hydration, the `proxy.ts`
+JWT guard, the public/admin split, and the dual Neon branches:
 
-An agentic-workflow diagram is also available:
-[`docs/diagrams/agentic-workflow.excalidraw`](diagrams/agentic-workflow.excalidraw)
+![Application architecture diagram](diagrams/architecture.png)
+
+Editable source: [`docs/diagrams/architecture.excalidraw`](diagrams/architecture.excalidraw)
+(open in [excalidraw.com](https://excalidraw.com) or the VS Code Excalidraw extension).
+
+### Agentic development workflow
+
+How changes are built: the superpowers methodology is the spine (brainstorm → plan →
+subagent-driven development → TDD → verification → review → finish), and the project's three
+domain-executor agents (`db-agent`, `maintenance-agent`, `code-reviewer`) are dispatched per task
+within that loop:
+
+![Agentic workflow diagram](diagrams/agentic-workflow.png)
+
+Editable source: [`docs/diagrams/agentic-workflow.excalidraw`](diagrams/agentic-workflow.excalidraw).

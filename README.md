@@ -42,6 +42,14 @@ Full rationale and version table → [docs/tech-stack.md](docs/tech-stack.md)
 
 The public site is served via **AWS Amplify Hosting Gen 1** (SSR) with CloudFront in front of S3-stored assets. **Neon Postgres** is accessed from Lambda via the WebSocket `PrismaNeon` adapter. Auth flows through **AWS Cognito** (Hosted UI → OAuth code exchange → HTTP-only cookies). SES handles transactional email from the contact form.
 
+The application request/rendering pipeline:
+
+![Application architecture diagram](docs/diagrams/architecture.png)
+
+…and the agentic development workflow used to build it (superpowers spine + three domain-executor agents):
+
+![Agentic workflow diagram](docs/diagrams/agentic-workflow.png)
+
 Full architecture reference, directory structure, route groups, and data-layer rules → [docs/architecture.md](docs/architecture.md)
 
 ---
