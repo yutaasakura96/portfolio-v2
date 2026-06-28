@@ -1,72 +1,122 @@
 # Portfolio v2
 
-Personal portfolio + admin CMS. Public-facing Next.js site backed by an admin dashboard, deployed to AWS Amplify with Neon Postgres.
+> Full-stack personal portfolio and headless CMS — Next.js 16 App Router, Prisma + Neon Postgres, AWS Amplify, bilingual EN/JA via Claude Haiku, and a 43-tool MCP server.
 
-Live: [asakurayuta.dev](https://asakurayuta.dev)
+[![CI](https://github.com/yutaasakura96/portfolio-v2/actions/workflows/ci.yml/badge.svg)](https://github.com/yutaasakura96/portfolio-v2/actions/workflows/ci.yml)
+![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
+![Deploy](https://img.shields.io/badge/deploy-AWS%20Amplify-orange?logo=amazonaws)
 
-## Setup
+**Live demo:** [asakurayuta.dev](https://asakurayuta.dev)
 
-1. Install dependencies:
+---
 
-   ```bash
-   npm install
-   ```
+![Portfolio home page](docs/screenshots/public/home.png)
 
-2. Create a `.env` at the repo root. The canonical list of variables (database URL, Cognito, S3/CloudFront, SES, Upstash, Sentry) lives in [.claude/docs/infrastructure.md](.claude/docs/infrastructure.md) under **Environment Variables**. `.env.example` is kept as a reference but has known drift; treat the infrastructure doc as the source of truth.
+---
 
-3. Generate the Prisma client and apply migrations:
+## Highlights
 
-   ```bash
-   npm run prisma:generate
-   npm run prisma:migrate:dev
-   ```
+| Feature                    | Detail                                                                                                                                                                                                       |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **GLSL 3D hero blob**      | Morphing WebGL shader rendered with `@react-three/fiber`; mouse-reactive; gracefully falls back on old mobile browsers via `WebGLErrorBoundary`                                                              |
+| **DB-driven EN / JA i18n** | Full bilingual content (EN + JA) stored as `*Ja` columns in Postgres; locale toggled in the header with `localStorage` persistence; static UI strings translated via Claude Haiku with prompt caching        |
+| **43-tool MCP server**     | A local portfolio MCP server exposes every content entity (projects, blog, skills, experience, education, certifications, messages, hero, settings) as callable tools — readable by any MCP-compatible agent |
+| **AI cert extraction**     | Uploading a certification image calls `/api/admin/certifications/extract`; Claude Haiku's vision capability auto-fills name, issuer, dates, and credential ID                                                |
+| **Dual Neon branches**     | `production` and `dev` Neon branches run completely separate data; migrations are applied per-branch; the dev branch can be reset from production with a single script                                       |
+| **Full admin CMS**         | Auth-guarded at `/admin` via AWS Cognito + HTTP-only JWT cookies; covers every content entity with drag-to-reorder, markdown editor, unified JSON import/export, and translation management                  |
 
-4. Start the dev server:
+---
 
-   ```bash
-   npm run dev
-   ```
+## Tech Stack
 
-   Open [http://localhost:3000](http://localhost:3000).
+Next.js 16 · React 19 · TypeScript 5 (strict) · Prisma 7 + Neon Postgres · TailwindCSS 4 · shadcn / Radix UI · TanStack Query 5 · react-hook-form + Zod 4 · AWS Cognito · AWS Amplify Hosting (SSR) · S3 + CloudFront · SES · `@react-three/fiber` + Three.js · Sharp (WebP) · Sentry · Upstash Redis (rate limiting) · Vitest + Testing Library · Sonner · Geist
 
-## Commands
+Full rationale and version table → [docs/tech-stack.md](docs/tech-stack.md)
 
-| Task                    | Command                         |
-| ----------------------- | ------------------------------- |
-| Dev server              | `npm run dev`                   |
-| Build (incl. lint)      | `npm run build`                 |
-| Lint + format           | `npm run lint`                  |
-| Type check              | `npm run type-check`            |
-| Bundle analyze          | `npm run analyze`               |
-| Prisma generate         | `npm run prisma:generate`       |
-| Prisma migrate (dev)    | `npm run prisma:migrate:dev`    |
-| Prisma migrate (deploy) | `npm run prisma:migrate:deploy` |
-| Prisma studio           | `npm run prisma:studio`         |
-| Seed                    | `npx prisma db seed`            |
-| Test                    | `npm test`                      |
-| Test (CI + coverage)    | `npm run test:ci`               |
+---
 
-## Architecture
+## Architecture at a Glance
 
-See [CLAUDE.md](CLAUDE.md) for the primary Claude Code project guidance. [AGENTS.md](AGENTS.md) mirrors the same conventions for Codex backup sessions. Scoped instructions live in [src/CLAUDE.md](src/CLAUDE.md), [src/app/api/CLAUDE.md](src/app/api/CLAUDE.md), and [prisma/CLAUDE.md](prisma/CLAUDE.md).
+![AWS architecture diagram](docs/diagrams/aws-architecture.png)
 
-## Current Surface
+The public site is served via **AWS Amplify Hosting Gen 1** (SSR) with CloudFront in front of S3-stored assets. **Neon Postgres** is accessed from Lambda via the WebSocket `PrismaNeon` adapter. Auth flows through **AWS Cognito** (Hosted UI → OAuth code exchange → HTTP-only cookies). SES handles transactional email from the contact form.
 
-- Public routes: `/`, `/about`, `/projects`, `/projects/[slug]`, `/blog`, `/blog/[slug]`, `/contact`.
-- Admin routes: `/admin/login` plus CMS sections for dashboard, hero, about, projects, blog, skills, experience, education, certifications, messages, settings, and import/export.
-- API routes cover entity CRUD, reorder, import/export, contact, uploads, auth callback/session refresh/sign-out, dashboard stats, and admin API keys.
-- Content models in Prisma: hero, projects, blog posts, skill categories/skills, experience, education, certifications, contact messages, about page, site settings, and API keys.
+Full architecture reference, directory structure, route groups, and data-layer rules → [docs/architecture.md](docs/architecture.md)
 
-## Deployment
+---
 
-Deployed to **AWS Amplify Hosting Gen 1** (SSR) with **Neon Postgres** as the primary database. The build pipeline is defined in [amplify.yml](amplify.yml):
+## Quick Start
 
-- Materializes Amplify Console env vars into `.env.production` at build time.
-- Runs `prisma generate` and `prisma migrate deploy`.
-- Builds the Next.js app.
+> A full run requires your own AWS account (Amplify, Cognito, S3, CloudFront, SES), a Neon Postgres project, and an Upstash Redis instance. See [docs/setup.md](docs/setup.md) for the complete environment-variable reference.
 
-Security response headers (HSTS, CSP, X-Frame-Options, etc.) are configured in [customHttp.yml](customHttp.yml). Runtime cache headers are set in [next.config.ts](next.config.ts). Full AWS infrastructure details: [.claude/docs/infrastructure.md](.claude/docs/infrastructure.md).
+```bash
+# 1. Clone the repository
+git clone https://github.com/yutaasakura96/portfolio-v2.git
+cd portfolio-v2
 
-## License
+# 2. Install dependencies
+npm install
 
-Private — All rights reserved.
+# 3. Create your local environment file and fill in all required values
+cp .env.example .env
+
+# 4. Generate the Prisma client and apply migrations to your dev Neon branch
+npm run prisma:generate
+npm run prisma:migrate:dev
+
+# 5. Start the development server
+npm run dev
+# → http://localhost:3000
+```
+
+The admin panel is at `/admin`. Sign in via the Cognito Hosted UI.
+
+---
+
+## Documentation
+
+| Doc                                            | Description                                                                                       |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| [docs/setup.md](docs/setup.md)                 | Prerequisites, all environment variables, local setup, database workflow, and available scripts   |
+| [docs/architecture.md](docs/architecture.md)   | Directory structure, route groups, rendering model, data layer, dual-branch DB, and diagram links |
+| [docs/tech-stack.md](docs/tech-stack.md)       | Technology choices with rationale, Amplify build pipeline, and AWS topology                       |
+| [docs/features.md](docs/features.md)           | Public site and admin CMS feature inventory with screenshots                                      |
+| [docs/api-reference.md](docs/api-reference.md) | Every HTTP endpoint, conventions, auth helpers, import/export routes, and MCP server tool surface |
+
+---
+
+## Project Structure
+
+```
+portfolio-v2/
+├── src/
+│   ├── app/
+│   │   ├── (public)/          # Public-facing pages (ISR, Server Components by default)
+│   │   ├── (admin)/admin/     # Auth-guarded CMS shell
+│   │   └── api/               # REST API routes (entity CRUD, auth, upload, translate…)
+│   ├── components/
+│   │   ├── ui/                # shadcn primitives
+│   │   ├── shared/            # Shared across public + admin
+│   │   ├── public/            # Public-only components
+│   │   └── admin/             # Admin-only components
+│   ├── lib/
+│   │   ├── data/              # Server-side query layer + canonical types
+│   │   ├── validations/       # Zod schemas (one file per entity)
+│   │   └── i18n.ts            # t(), tArray(), tJson(), ui(), UI_STRINGS
+│   └── proxy.ts               # JWT middleware guard for /admin routes
+├── prisma/
+│   └── schema.prisma          # Single schema, dual Neon branches
+├── mcp/portfolio-server/      # 43-tool MCP server (stdio transport)
+├── docs/                      # Architecture docs, API reference, diagrams, screenshots
+├── amplify.yml                # Amplify build pipeline
+└── customHttp.yml             # Security response headers (HSTS, CSP, X-Frame-Options…)
+```
+
+---
+
+## License / Contact
+
+Private — all rights reserved.
+
+Author: **Yuta Asakura** — [asakurayuta.dev](https://asakurayuta.dev) · [GitHub](https://github.com/yutaasakura96)
