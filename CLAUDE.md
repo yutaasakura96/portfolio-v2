@@ -25,7 +25,7 @@ All scripts are in @package.json. Key commands: `npm run dev`, `npm run build`, 
 
 Tests use **Vitest** with **@testing-library/react**. See [.claude/rules/tests.md](.claude/rules/tests.md) for conventions.
 
-**Neon CLI** (`npm i -g neon@latest`, requires Node ≥ 20.19; invoked as `neon`). Reads `NEON_API_KEY` from the environment — `set -a; . ./.env; set +a` before use, or pass `--api-key`. Useful: `neon branches list --project-id $NEON_PROJECT_ID`, `neon projects list --org-id <org>` (omitting `--org-id` prompts interactively and hangs in non-TTY contexts). Note the free plan caps compute at **100 CU-hours/month per project**, and the API's `project.compute_time_seconds` is a **lifetime** counter, not per-period — see [.github/workflows/neon-quota-check.yml](.github/workflows/neon-quota-check.yml) for how per-period usage is derived.
+**Neon CLI** (`npm i -g neon@latest`, requires Node ≥ 20.19; invoked as `neon`). Reads `NEON_API_KEY` from the environment — `set -a; . ./.env; set +a` before use, or pass `--api-key`. Useful: `neon branches list --project-id $NEON_PROJECT_ID`, `neon projects list --org-id <org>` (omitting `--org-id` prompts interactively and hangs in non-TTY contexts). Note the free plan caps compute at **100 CU-hours/month per project**. The API's `project.compute_time_seconds` is scoped to the current consumption period and resets at the rollover — but that reset can lag badly (~27h at the Sep 2026 rollover, during which the counter still showed the previous month's total while the console read 0/100). Treat a high reading in the first day of a period as possible lag and cross-check the console. Monitored by [.github/workflows/neon-quota-check.yml](.github/workflows/neon-quota-check.yml).
 
 ## Architecture
 

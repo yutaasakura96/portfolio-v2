@@ -1,21 +1,21 @@
 name: Neon Quota Check
 
 # Early warning for the Neon free-tier compute cap (100 CU-hours per project per
-# month). In August 2026 the project silently exceeded it and was hard-blocked
+# month). In August 2026 the project reached 110.15 CU-hours and was hard-blocked
 # with HTTP 402, taking production down — the first signal was the live site
 # returning 500s. This job turns that into a warning instead.
 #
-# WHY THE DELTA DANCE: the Neon API's `project.compute_time_seconds` is a
-# LIFETIME cumulative counter, not a per-period one. (Verified 2026-09-01: at
-# the Sep period rollover, `data_storage_bytes_hour` and `written_data_bytes`
-# reset to 0 while `compute_time_seconds` kept climbing, and the console read
-# 0/100 while the API read 110.2 CU-h.) The per-period `consumption_history`
-# endpoints return 404 on the free plan, so period usage is not directly
-# readable. Instead we cache the lifetime reading taken at the start of each
-# consumption period and report the difference.
+# `project.compute_time_seconds` is scoped to the current consumption period
+# (`consumption_period_start` → `consumption_period_end`) and resets at the
+# rollover, so it can be read directly.
 #
-# Consequence: the first run in a new period establishes the baseline and cannot
-# report usage. That is expected — it reports "baseline set" and passes.
+# Caveat learned the hard way: at the Sep 2026 rollover the reset was ~27h late,
+# and during that window the counter still showed August's total while the
+# console already displayed 0/100. A stale-looking reading right after a period
+# boundary may be lag, not real usage — cross-check the Neon console before
+# acting on an alert fired in the first day of a period.
+#
+# Runs every Monday and Thursday so a mid-month ramp is caught with time to act.
 
 on:
   workflow_dispatch:
@@ -32,8 +32,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Fetch lifetime compute counter
-        id: neon
+      - name: Check Neon compute usage
         run: |
           set -euo pipefail
 
@@ -51,53 +50,19 @@ jobs:
             exit 1
           fi
 
-          lifetime=$(echo "$body" | jq -r '.project.compute_time_seconds')
+          compute_seconds=$(echo "$body" | jq -r '.project.compute_time_seconds')
+          active_seconds=$(echo "$body" | jq -r '.project.active_time_seconds')
           period_start=$(echo "$body" | jq -r '.project.consumption_period_start')
           period_end=$(echo "$body" | jq -r '.project.consumption_period_end')
 
-          if [ "$lifetime" = "null" ] || [ -z "$lifetime" ]; then
+          if [ "$compute_seconds" = "null" ] || [ -z "$compute_seconds" ]; then
             echo "::error::Could not read compute_time_seconds from the Neon API response"
             echo "$body" | jq .
             exit 1
           fi
 
-          echo "lifetime=$lifetime" >> "$GITHUB_OUTPUT"
-          echo "period_start=$period_start" >> "$GITHUB_OUTPUT"
-          echo "period_end=$period_end" >> "$GITHUB_OUTPUT"
-          # Cache key is per consumption period, so a new period starts a new baseline.
-          echo "cache_key=neon-baseline-${period_start}" >> "$GITHUB_OUTPUT"
-
-      - name: Restore this period's baseline
-        id: baseline
-        uses: actions/cache/restore@v4
-        with:
-          path: neon-baseline.txt
-          key: ${{ steps.neon.outputs.cache_key }}
-
-      - name: Compare against baseline
-        run: |
-          set -euo pipefail
-
-          lifetime="${{ steps.neon.outputs.lifetime }}"
-
-          if [ ! -f neon-baseline.txt ]; then
-            echo "$lifetime" > neon-baseline.txt
-            {
-              echo "### Neon quota check — baseline set"
-              echo ""
-              echo "First run for period \`${{ steps.neon.outputs.period_start }}\`."
-              echo "Recorded lifetime compute counter: \`$lifetime\`s."
-              echo "Usage will be reported from the next run onward."
-            } >> "$GITHUB_STEP_SUMMARY"
-            echo "Baseline established for this period; nothing to compare yet."
-            exit 0
-          fi
-
-          baseline=$(cat neon-baseline.txt)
-          used_seconds=$(( lifetime - baseline ))
-          [ "$used_seconds" -lt 0 ] && used_seconds=0
-
-          cu_hours=$(awk -v s="$used_seconds" 'BEGIN { printf "%.2f", s / 3600 }')
+          cu_hours=$(awk -v s="$compute_seconds" 'BEGIN { printf "%.2f", s / 3600 }')
+          awake_hours=$(awk -v s="$active_seconds" 'BEGIN { printf "%.1f", s / 3600 }')
           threshold=$(awk -v q="$QUOTA_CU_HOURS" -v r="$WARN_RATIO" 'BEGIN { printf "%.2f", q * r }')
           percent=$(awk -v c="$cu_hours" -v q="$QUOTA_CU_HOURS" 'BEGIN { printf "%.1f", (c / q) * 100 }')
 
@@ -106,14 +71,15 @@ jobs:
             echo ""
             echo "| Metric | Value |"
             echo "| --- | --- |"
-            echo "| Period | \`${{ steps.neon.outputs.period_start }}\` → \`${{ steps.neon.outputs.period_end }}\` |"
-            echo "| Used this period | **$cu_hours** CU-hours |"
+            echo "| Period | \`$period_start\` → \`$period_end\` |"
+            echo "| Compute used | **$cu_hours** CU-hours |"
             echo "| Cap (free plan) | $QUOTA_CU_HOURS CU-hours |"
             echo "| Consumed | ${percent}% |"
+            echo "| Compute awake | $awake_hours hours |"
             echo "| Warn threshold | $threshold CU-hours |"
           } >> "$GITHUB_STEP_SUMMARY"
 
-          echo "Neon compute usage this period: $cu_hours / $QUOTA_CU_HOURS CU-hours (${percent}%)"
+          echo "Neon compute usage: $cu_hours / $QUOTA_CU_HOURS CU-hours (${percent}%), awake ${awake_hours}h"
 
           if awk -v c="$cu_hours" -v q="$QUOTA_CU_HOURS" 'BEGIN { exit !(c >= q) }'; then
             echo "::error::Neon compute quota EXCEEDED: $cu_hours / $QUOTA_CU_HOURS CU-hours (${percent}%). The database is blocked (HTTP 402) and production will return 500s."
@@ -121,15 +87,8 @@ jobs:
           fi
 
           if awk -v c="$cu_hours" -v t="$threshold" 'BEGIN { exit !(c >= t) }'; then
-            echo "::error::Neon compute usage at ${percent}% of the free-tier cap ($cu_hours / $QUOTA_CU_HOURS CU-hours). Investigate what is keeping the compute awake before it hard-blocks."
+            echo "::error::Neon compute usage at ${percent}% of the free-tier cap ($cu_hours / $QUOTA_CU_HOURS CU-hours, awake ${awake_hours}h). Investigate what is keeping the compute awake before it hard-blocks."
             exit 1
           fi
 
           echo "Usage is within budget."
-
-      - name: Save this period's baseline
-        if: steps.baseline.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
-        with:
-          path: neon-baseline.txt
-          key: ${{ steps.neon.outputs.cache_key }}
