@@ -170,7 +170,11 @@ After any mutation that affects a public page, call `revalidatePath` for every a
 - **`/api/skills` and `/api/skill-categories`** — skills support `visible` filtering plus grouped responses; skill categories are a separate reorderable resource.
 - **`/api/upload`** — authenticated multipart upload endpoint for projects, blog, profile, logos, certifications, resume PDFs, and education documents. Images are processed by `src/lib/image-processor.ts`; files are stored in S3 and returned as CloudFront URLs.
 - **`/api/resume/download`** — public resume download endpoint.
-- **`GET /api/health`** — public health check endpoint. No auth, no rate limiting. Pings DB with `prisma.$queryRaw\`SELECT 1\``. Returns `{ data: { status: "ok"|"degraded", timestamp, database: "connected"|"disconnected" } }`with HTTP 200 (ok) or 503 (degraded). Wrapped in`withErrorHandler`.
+- **`GET /api/health`** — public health check endpoint. No auth, no rate limiting. Wrapped in `withErrorHandler`. **The DB probe is opt-in.**
+  - `GET /api/health` (default) — liveness only, **no database access**. Returns `{ data: { status: "ok", timestamp, database: "skipped" } }`, HTTP 200.
+  - `GET /api/health?deep=1` — runs `prisma.$queryRaw\`SELECT 1\``. Returns `{ data: { status: "ok"|"degraded", timestamp, database: "connected"|"disconnected" } }`, HTTP 200 (ok) or 503 (degraded).
+
+  Why the default is shallow: all `/api/*` routes are `no-store`, so an unconditional `SELECT 1` here means every caller — an uptime monitor, or the admin dashboard's own site-health card — wakes the Neon compute. Neon only scales to zero after 5 idle minutes, so a frequent shallow ping alone kept it awake and contributed to the Aug 2026 quota exhaustion. `fetchSiteHealth()` in `dashboard-external/route.ts` calls `?deep=1` explicitly, and deliberately hits the public URL so the card reports genuine end-to-end reachability.
 
 ## Import/Export Routes
 
