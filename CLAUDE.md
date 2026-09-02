@@ -25,6 +25,8 @@ All scripts are in @package.json. Key commands: `npm run dev`, `npm run build`, 
 
 Tests use **Vitest** with **@testing-library/react**. See [.claude/rules/tests.md](.claude/rules/tests.md) for conventions.
 
+**Neon CLI** (`npm i -g neon@latest`, requires Node ≥ 20.19; invoked as `neon`). Reads `NEON_API_KEY` from the environment — `set -a; . ./.env; set +a` before use, or pass `--api-key`. Useful: `neon branches list --project-id $NEON_PROJECT_ID`, `neon projects list --org-id <org>` (omitting `--org-id` prompts interactively and hangs in non-TTY contexts). Note the free plan caps compute at **100 CU-hours/month per project**, and the API's `project.compute_time_seconds` is a **lifetime** counter, not per-period — see [.github/workflows/neon-quota-check.yml](.github/workflows/neon-quota-check.yml) for how per-period usage is derived.
+
 ## Architecture
 
 | Path                                                                                                         | Purpose                                                                                                                                                              |
@@ -207,6 +209,7 @@ Domain rules (Zod validation, `withErrorHandler`, ISR/client split, image pipeli
 - **github** — GitHub API for PR/issue management, code search.
 - **portfolio** (`mcp__portfolio__*`) — 43-tool MCP server for portfolio content management (projects, experience, education, skills, certifications, blog, messages, site content, dashboard). Stdio transport, API-key auth via Bearer token. Call `get-dashboard-stats` for overview; use `list-*` before `update-*`/`delete-*`. Messages are read/archive only (no delete). Setup: `npm run mcp:setup`. See [mcp/portfolio-server/README.md](mcp/portfolio-server/README.md). **Targets `localhost:3000` (dev Neon branch) only.**
 - **portfolio-prod** (`mcp__portfolio-prod__*`) — Same 43 tools as `portfolio`, but targeting **production** at `https://asakurayuta.dev` (production Neon branch). Use when the user explicitly asks to read or modify production content. Same API key, same source code — only `PORTFOLIO_BASE_URL` differs. **Mutations via these tools directly affect the live site.**
+- **neon** (`mcp__neon__*`) — Hosted Neon MCP server (`https://mcp.neon.tech/mcp`, Streamable HTTP). Branch/project management, usage metrics, and SQL against the Neon project. Auth is per-user OAuth — authorize via `/mcp` in an interactive session; **no API key is stored in `.mcp.json`** (that file is committed). ⚠️ This server can create and delete branches and run SQL against the **production** branch — confirm the target branch before any mutation. The deprecated local `@neondatabase/mcp-server-neon` package is not used. See also the **Neon CLI** under §Commands.
 - **sentry** (`mcp__sentry__*`) — Query Sentry errors, issues, and performance data from Claude Code and Codex backup sessions. Added via `claude mcp add --transport http sentry https://mcp.sentry.dev/mcp`; Codex backup config also lists it in [.codex/config.toml](.codex/config.toml).
 
 ## Available Agents
