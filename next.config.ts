@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import path from "node:path";
 import bundleAnalyzer from "@next/bundle-analyzer";
 import { withSentryConfig } from "@sentry/nextjs";
 
@@ -11,6 +12,20 @@ const nextConfig: NextConfig = {
   // exists in a parent directory (e.g. /Documents/GitHub/package-lock.json).
   turbopack: {
     root: __dirname,
+  },
+  // Shared ISR cache backed by Upstash Redis. Amplify runs this app across
+  // multiple Lambda instances, and Next's default per-instance filesystem cache
+  // means `revalidatePath()` only invalidates the instance that handled the
+  // mutation. See the header comment in cache-handler.js for the full rationale.
+  //
+  // The file is plain CommonJS at the repo root because Next `import()`s it from
+  // disk at runtime — it is NOT part of the bundle graph, so it needs no entry in
+  // `serverExternalPackages`. `outputFileTracingIncludes` is belt-and-braces to
+  // guarantee it lands in the Amplify compute bundle.
+  cacheHandler: path.join(__dirname, "cache-handler.js"),
+  cacheMaxMemorySize: 0, // the handler does its own bounded in-process caching
+  outputFileTracingIncludes: {
+    "/**/*": ["./cache-handler.js"],
   },
   // Required for sharp to work in Next.js 15+ serverless/Amplify environments
   serverExternalPackages: ["sharp", "@neondatabase/serverless", "@prisma/adapter-neon"],

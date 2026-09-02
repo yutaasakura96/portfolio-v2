@@ -19,6 +19,16 @@ const eslintConfig = defineConfig([
     "coverage/**",
     "generated/**",
   ]),
+  {
+    // The ISR cache handler must be plain CommonJS: Next `import()`s it from
+    // disk at runtime, outside the bundler, so ESM syntax and `@/*` aliases are
+    // unavailable there. Scoped to this one file rather than disabling the rule
+    // project-wide. See cache-handler.js.
+    files: ["cache-handler.js"],
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;
