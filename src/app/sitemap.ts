@@ -1,7 +1,20 @@
 import type { MetadataRoute } from "next";
-import { prisma } from "@/lib/prisma-client";
+import {
+  getPublishedPostSitemapEntries,
+  getPublishedProjectSitemapEntries,
+} from "@/lib/data/public-queries";
 
-export const dynamic = "force-dynamic";
+/**
+ * Cache the sitemap for 24h.
+ *
+ * This used to be `force-dynamic`, which meant every crawler hit ran two live
+ * Prisma queries. `robots.ts` advertises this route to every bot, so that was an
+ * unbounded, bot-driven wake source for the Neon compute (which only scales to
+ * zero after 5 idle minutes). A sitemap does not need to be real-time; if
+ * near-instant freshness is ever required, call `revalidatePath("/sitemap.xml")`
+ * from the publish path instead of reverting to `force-dynamic`.
+ */
+export const revalidate = 86400;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://asakurayuta.dev";
@@ -39,38 +52,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  let projectPages: MetadataRoute.Sitemap = [];
-  let postPages: MetadataRoute.Sitemap = [];
+  const [projects, posts] = await Promise.all([
+    getPublishedProjectSitemapEntries(),
+    getPublishedPostSitemapEntries(),
+  ]);
 
-  try {
-    const projects = await prisma.project.findMany({
-      where: { status: "PUBLISHED" },
-      select: { slug: true, updatedAt: true },
-    });
-    projectPages = projects.map((project) => ({
-      url: `${baseUrl}/projects/${project.slug}`,
-      lastModified: project.updatedAt,
-      changeFrequency: "monthly" as const,
-      priority: 0.7,
-    }));
-  } catch (error) {
-    console.error("Failed to fetch projects for sitemap:", error);
-  }
+  const projectPages: MetadataRoute.Sitemap = projects.map((project) => ({
+    url: `${baseUrl}/projects/${project.slug}`,
+    lastModified: project.updatedAt,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
 
-  try {
-    const posts = await prisma.blogPost.findMany({
-      where: { status: "PUBLISHED" },
-      select: { slug: true, updatedAt: true },
-    });
-    postPages = posts.map((post) => ({
-      url: `${baseUrl}/blog/${post.slug}`,
-      lastModified: post.updatedAt,
-      changeFrequency: "monthly" as const,
-      priority: 0.7,
-    }));
-  } catch (error) {
-    console.error("Failed to fetch blog posts for sitemap:", error);
-  }
+  const postPages: MetadataRoute.Sitemap = posts.map((post) => ({
+    url: `${baseUrl}/blog/${post.slug}`,
+    lastModified: post.updatedAt,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
 
   return [...staticPages, ...projectPages, ...postPages];
 }

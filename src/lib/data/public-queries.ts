@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { prisma } from "@/lib/prisma-client";
 import { withDbRetry } from "./db-resilience";
 import type {
@@ -20,14 +21,17 @@ import type {
 // ABOUT PAGE INTRO
 // ═══════════════════════════════════════════════════════════════════════════
 
-/** Fetch the About page intro content (singleton); `null` if no record (page falls back to hardcoded copy). */
+/**
+ * Fetch the About page intro content (singleton); `null` if no record (page falls back to hardcoded copy).
+ *
+ * Backs the primary About-page section, so it retries and rethrows on persistent
+ * failure rather than degrading to `null` — see `getHero` for the contract.
+ */
 export async function getAboutPageIntro(): Promise<AboutPage | null> {
-  try {
-    return await prisma.aboutPage.findUnique({ where: { id: "default" } });
-  } catch (error) {
-    console.error("Failed to fetch about page intro:", error);
-    return null;
-  }
+  return withDbRetry(
+    () => prisma.aboutPage.findUnique({ where: { id: "default" } }),
+    "getAboutPageIntro"
+  );
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -50,33 +54,38 @@ export async function getHero(): Promise<Hero | null> {
 // PROJECTS
 // ═══════════════════════════════════════════════════════════════════════════
 
-/** Fetch all published projects ordered by `displayOrder`, narrowed to public-card fields. */
+/**
+ * Fetch all published projects ordered by `displayOrder`, narrowed to public-card fields.
+ *
+ * Backs the entire `/projects` index, so it retries and rethrows on persistent
+ * failure rather than degrading to `[]` — otherwise a DB blip gets cached as an
+ * empty projects page for the whole revalidate window. See `getHero`.
+ */
 export async function getPublishedProjects(): Promise<PublicProject[]> {
-  try {
-    return await prisma.project.findMany({
-      where: { status: "PUBLISHED" },
-      orderBy: { displayOrder: "asc" },
-      select: {
-        id: true,
-        slug: true,
-        title: true,
-        shortDescription: true,
-        techTags: true,
-        thumbnailImage: true,
-        featured: true,
-        displayOrder: true,
-        startDate: true,
-        endDate: true,
-        liveUrl: true,
-        repoUrl: true,
-        titleJa: true,
-        shortDescriptionJa: true,
-      },
-    });
-  } catch (error) {
-    console.error("Failed to fetch published projects:", error);
-    return [];
-  }
+  return withDbRetry(
+    () =>
+      prisma.project.findMany({
+        where: { status: "PUBLISHED" },
+        orderBy: { displayOrder: "asc" },
+        select: {
+          id: true,
+          slug: true,
+          title: true,
+          shortDescription: true,
+          techTags: true,
+          thumbnailImage: true,
+          featured: true,
+          displayOrder: true,
+          startDate: true,
+          endDate: true,
+          liveUrl: true,
+          repoUrl: true,
+          titleJa: true,
+          shortDescriptionJa: true,
+        },
+      }),
+    "getPublishedProjects"
+  );
 }
 
 /**
@@ -110,17 +119,20 @@ export async function getFeaturedProjects(limit = 4): Promise<FeaturedProject[]>
   );
 }
 
-/** Fetch a single published project by slug (full row including long-text fields); `null` if not found. */
-export async function getProjectBySlug(slug: string): Promise<Project | null> {
-  try {
-    return await prisma.project.findFirst({
-      where: { slug, status: "PUBLISHED" },
-    });
-  } catch (error) {
-    console.error(`Failed to fetch project with slug "${slug}":`, error);
-    return null;
-  }
-}
+/**
+ * Fetch a single published project by slug (full row including long-text fields); `null` if not found.
+ *
+ * `cache()` memoizes per request — the detail page calls this in both
+ * `generateMetadata` and the page body. `withDbRetry` rethrows on persistent
+ * failure so a DB blip aborts the ISR render and Next keeps serving the last
+ * good page instead of caching a 404 (a genuine miss still resolves to `null`).
+ */
+export const getProjectBySlug = cache(async (slug: string): Promise<Project | null> => {
+  return withDbRetry(
+    () => prisma.project.findFirst({ where: { slug, status: "PUBLISHED" } }),
+    "getProjectBySlug"
+  );
+});
 
 /** Fetch all published project slugs (for `generateStaticParams`). */
 export async function getPublishedProjectSlugs(): Promise<Array<{ slug: string }>> {
@@ -131,6 +143,21 @@ export async function getPublishedProjectSlugs(): Promise<Array<{ slug: string }
     });
   } catch (error) {
     console.error("Failed to fetch project slugs:", error);
+    return [];
+  }
+}
+
+/** Fetch published project slugs plus `updatedAt` for `sitemap.ts`. */
+export async function getPublishedProjectSitemapEntries(): Promise<
+  Array<{ slug: string; updatedAt: Date }>
+> {
+  try {
+    return await prisma.project.findMany({
+      where: { status: "PUBLISHED" },
+      select: { slug: true, updatedAt: true },
+    });
+  } catch (error) {
+    console.error("Failed to fetch project sitemap entries:", error);
     return [];
   }
 }
@@ -211,17 +238,20 @@ export async function getRecentPosts(limit = 3): Promise<PublicBlogPost[]> {
   );
 }
 
-/** Fetch a single published blog post by slug (full row including markdown body); `null` if not found. */
-export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
-  try {
-    return await prisma.blogPost.findFirst({
-      where: { slug, status: "PUBLISHED" },
-    });
-  } catch (error) {
-    console.error(`Failed to fetch post with slug "${slug}":`, error);
-    return null;
-  }
-}
+/**
+ * Fetch a single published blog post by slug (full row including markdown body); `null` if not found.
+ *
+ * `cache()` memoizes per request — the detail page calls this in both
+ * `generateMetadata` and the page body. `withDbRetry` rethrows on persistent
+ * failure so a DB blip aborts the ISR render and Next keeps serving the last
+ * good page instead of caching a 404 (a genuine miss still resolves to `null`).
+ */
+export const getPostBySlug = cache(async (slug: string): Promise<BlogPost | null> => {
+  return withDbRetry(
+    () => prisma.blogPost.findFirst({ where: { slug, status: "PUBLISHED" } }),
+    "getPostBySlug"
+  );
+});
 
 /** Fetch all published blog post slugs (for `generateStaticParams`). */
 export async function getPublishedPostSlugs(): Promise<Array<{ slug: string }>> {
@@ -236,21 +266,31 @@ export async function getPublishedPostSlugs(): Promise<Array<{ slug: string }>> 
   }
 }
 
+/** Fetch published blog post slugs plus `updatedAt` for `sitemap.ts`. */
+export async function getPublishedPostSitemapEntries(): Promise<
+  Array<{ slug: string; updatedAt: Date }>
+> {
+  try {
+    return await prisma.blogPost.findMany({
+      where: { status: "PUBLISHED" },
+      select: { slug: true, updatedAt: true },
+    });
+  } catch (error) {
+    console.error("Failed to fetch post sitemap entries:", error);
+    return [];
+  }
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // ABOUT PAGE CONTENT
 // ═══════════════════════════════════════════════════════════════════════════
 
-/** Fetch all visible skills ordered by `displayOrder`. */
+/** Fetch all visible skills ordered by `displayOrder`. Backs an About-page section — see `getHero`. */
 export async function getSkills(): Promise<Skill[]> {
-  try {
-    return await prisma.skill.findMany({
-      where: { visible: true },
-      orderBy: { displayOrder: "asc" },
-    });
-  } catch (error) {
-    console.error("Failed to fetch skills:", error);
-    return [];
-  }
+  return withDbRetry(
+    () => prisma.skill.findMany({ where: { visible: true }, orderBy: { displayOrder: "asc" } }),
+    "getSkills"
+  );
 }
 
 /** Fetch skill-category names ordered by their `displayOrder`. */
@@ -266,55 +306,48 @@ export async function getSkillCategories(): Promise<string[]> {
   }
 }
 
-/** Fetch all visible work experiences ordered by `displayOrder`. */
+/** Fetch all visible work experiences ordered by `displayOrder`. Backs an About-page section — see `getHero`. */
 export async function getExperiences(): Promise<Experience[]> {
-  try {
-    return await prisma.experience.findMany({
-      where: { visible: true },
-      orderBy: { displayOrder: "asc" },
-    });
-  } catch (error) {
-    console.error("Failed to fetch experiences:", error);
-    return [];
-  }
+  return withDbRetry(
+    () =>
+      prisma.experience.findMany({ where: { visible: true }, orderBy: { displayOrder: "asc" } }),
+    "getExperiences"
+  );
 }
 
-/** Fetch all visible education entries ordered by `displayOrder`. */
+/** Fetch all visible education entries ordered by `displayOrder`. Backs an About-page section — see `getHero`. */
 export async function getEducation(): Promise<Education[]> {
-  try {
-    return await prisma.education.findMany({
-      where: { visible: true },
-      orderBy: { displayOrder: "asc" },
-    });
-  } catch (error) {
-    console.error("Failed to fetch education:", error);
-    return [];
-  }
+  return withDbRetry(
+    () => prisma.education.findMany({ where: { visible: true }, orderBy: { displayOrder: "asc" } }),
+    "getEducation"
+  );
 }
 
-/** Fetch all visible certifications ordered by `displayOrder`. */
+/** Fetch all visible certifications ordered by `displayOrder`. Backs an About-page section — see `getHero`. */
 export async function getCertifications(): Promise<Certification[]> {
-  try {
-    return await prisma.certification.findMany({
-      where: { visible: true },
-      orderBy: { displayOrder: "asc" },
-    });
-  } catch (error) {
-    console.error("Failed to fetch certifications:", error);
-    return [];
-  }
+  return withDbRetry(
+    () =>
+      prisma.certification.findMany({ where: { visible: true }, orderBy: { displayOrder: "asc" } }),
+    "getCertifications"
+  );
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SITE SETTINGS
 // ═══════════════════════════════════════════════════════════════════════════
 
-/** Fetch site settings (singleton); `null` if no settings row exists. */
-export async function getSiteSettings(): Promise<SiteSettings | null> {
+/**
+ * Fetch site settings (singleton); `null` if no settings row exists.
+ *
+ * Wrapped in React `cache()` for per-request memoization: both the public
+ * layout (for the GA id) and `Footer` need this, so without it every public
+ * render cost two identical queries.
+ */
+export const getSiteSettings = cache(async (): Promise<SiteSettings | null> => {
   try {
     return await prisma.siteSettings.findFirst();
   } catch (error) {
     console.error("Failed to fetch site settings:", error);
     return null;
   }
-}
+});
