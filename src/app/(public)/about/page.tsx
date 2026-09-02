@@ -21,8 +21,7 @@ export const metadata: Metadata = {
     "Learn about Yuta Asakura's background, skills, experience, and education in full-stack web development.",
 };
 
-// Revalidate daily (86400 seconds = 24 hours)
-export const revalidate = 60;
+export const revalidate = 3600;
 
 type SocialLinks = {
   github?: string;

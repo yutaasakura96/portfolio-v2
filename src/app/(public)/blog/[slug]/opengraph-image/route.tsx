@@ -4,15 +4,32 @@ import { formatReadingTime } from "@/lib/reading-time";
 
 export const runtime = "nodejs";
 
+/**
+ * Cache generated OG cards for 24h.
+ *
+ * Without this the route is uncached, so every social scraper and crawler fetch
+ * ran a live Prisma query and woke the Neon compute (which only scales to zero
+ * after 5 idle minutes). Social platforms cache OG images for days regardless,
+ * so a 24h window costs effectively nothing in freshness.
+ */
+export const revalidate = 86400;
+
 const size = { width: 1200, height: 630 };
 
 export async function GET(_request: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
-  const post = await prisma.blogPost.findUnique({
-    where: { slug, status: "PUBLISHED" },
-    select: { title: true, excerpt: true, tags: true, readTime: true },
-  });
+  // Fall back to the generic card on a DB failure rather than throwing — an OG
+  // image is decorative, and a DB blip should not surface as a broken preview.
+  let post = null;
+  try {
+    post = await prisma.blogPost.findUnique({
+      where: { slug, status: "PUBLISHED" },
+      select: { title: true, excerpt: true, tags: true, readTime: true },
+    });
+  } catch (error) {
+    console.error(`Failed to fetch post "${slug}" for OG image:`, error);
+  }
 
   if (!post) {
     return new ImageResponse(

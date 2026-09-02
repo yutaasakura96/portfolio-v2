@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     "Yuta Asakura is a software engineer at Sogo & Seibu in Japan, building cloud-native applications across AWS and Azure. 7x AWS and 3x Azure certified.",
 };
 
-export const revalidate = 60;
+export const revalidate = 3600;
 
 export default async function HomePage() {
   const [hero, featuredProjects, recentPosts] = await Promise.all([

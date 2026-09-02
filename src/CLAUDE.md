@@ -23,7 +23,7 @@ Applies to everything under `src/` (components, hooks, app routes, libs).
 
 | Area                           | Default                   | Notes                                                                                                                                                                                     |
 | ------------------------------ | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/app/(public)/**/page.tsx` | Server (with ISR)         | `export const revalidate = 60`. Fetch via `src/lib/data/public-queries.ts`. Never call Prisma directly.                                                                                   |
+| `src/app/(public)/**/page.tsx` | Server (with ISR)         | `export const revalidate = 3600`. Fetch via `src/lib/data/public-queries.ts`. Never call Prisma directly. Do NOT lower this — see §ISR revalidation below.                                |
 | `src/app/(admin)/**/page.tsx`  | Client (`"use client"`)   | Fetches via `api-client.ts` + TanStack Query. Exception: the dashboard page is currently a server component — do not add new server-rendered admin pages without converting that one too. |
 | `src/components/public/**`     | Server unless interactive | Lightboxes, carousels, forms → client. Static cards → server.                                                                                                                             |
 | `src/components/admin/**`      | Client                    | Admin UI is form-heavy and stateful.                                                                                                                                                      |
@@ -66,6 +66,18 @@ This project uses **Tailwind v4 with `@tailwindcss/postcss`** — there is no `t
 - **URL state:** `useSearchParams` / `nextUrl.searchParams`. Don't reinvent.
 - **Client state:** `useState` / `useReducer` for local. **Do not introduce Zustand** — it was removed from the project; do not add it.
 - **Toasts:** `sonner` — `toast.success(...)`, `toast.error(...)`. Don't build custom toast components. `<Toaster position="bottom-right" />` is mounted in both the public layout (`src/app/(public)/layout.tsx`) and the admin layout, so Sonner toasts work on all public pages as well as admin pages.
+
+## ISR revalidation — do not lower `revalidate`
+
+Public pages use `export const revalidate = 3600`. This number is load-bearing for cost, not just freshness.
+
+Neon's free tier caps compute at 100 CU-hours/month, and its scale-to-zero timeout is **5 minutes and fixed on the free plan**. Any `revalidate` shorter than that window means a steady trickle of traffic keeps re-triggering regeneration before the compute can ever suspend, so the database stays awake continuously. In Aug 2026 that exhausted the quota and Neon hard-blocked the project with HTTP 402 — every DB-backed route returned 500 until the block lifted.
+
+`revalidate = 60` was introduced (commit `af87301`, Jun 2026) to work around a real bug: Amplify runs the app across multiple Lambda instances, and Next's default per-instance filesystem cache means `revalidatePath()` only invalidates the instance that handled the mutation. The short timer was the only thing bounding staleness elsewhere.
+
+That workaround is no longer needed. [cache-handler.js](../cache-handler.js) is a shared Redis-backed ISR cache (wired via `cacheHandler` in `next.config.ts`) that propagates invalidation across instances, verified with a two-instance A/B plus a negative control. Content edits now publish immediately via the `revalidatePath` calls already present in every content mutation route, so the timer is only a backstop.
+
+**If you need fresher content, add `revalidatePath` to the mutation path — do not shorten `revalidate`.**
 
 ## Data Fetching
 
@@ -120,7 +132,7 @@ Add entries to both `en` and `ja` keys in the `UI_STRINGS` map in `src/lib/i18n.
 
 ### ISR compatibility
 
-Public pages are Server Components with ISR (`revalidate = 60`). They pass **both** EN and JA data down to `LocalizedText` / `LocalizedHtml` / `LocalizedUi` client components (`src/components/public/LocalizedContent.tsx`), which pick the correct value based on the client-side locale. The server never needs to know the user's locale — all switching is client-side.
+Public pages are Server Components with ISR (`revalidate = 3600`). They pass **both** EN and JA data down to `LocalizedText` / `LocalizedHtml` / `LocalizedUi` client components (`src/components/public/LocalizedContent.tsx`), which pick the correct value based on the client-side locale. The server never needs to know the user's locale — all switching is client-side.
 
 ### What stays English
 

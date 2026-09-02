@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     "Technical blog posts by Yuta Asakura on web development, AWS, TypeScript, and software engineering.",
 };
 
-export const revalidate = 60;
+export const revalidate = 3600;
 
 export default async function BlogPage() {
   const posts = await getPublishedPosts();

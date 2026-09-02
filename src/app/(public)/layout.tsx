@@ -1,19 +1,13 @@
 import { GoogleAnalytics } from "@/components/public/GoogleAnalytics";
 import { Footer } from "@/components/public/Footer";
 import { Header } from "@/components/public/Header";
-import { prisma } from "@/lib/prisma-client";
+import { getSiteSettings } from "@/lib/data/public-queries";
 import { Toaster } from "@/components/ui/sonner";
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
-  let settings: { googleAnalyticsId: string | null } | null = null;
-  try {
-    settings = await prisma.siteSettings.findUnique({
-      where: { id: "default" },
-      select: { googleAnalyticsId: true },
-    });
-  } catch (error) {
-    console.error("Failed to fetch site settings:", error);
-  }
+  // Goes through the data layer (not raw Prisma) so it shares React `cache()`
+  // with `Footer`, which needs the same row — one query per render, not two.
+  const settings = await getSiteSettings();
 
   return (
     <>

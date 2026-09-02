@@ -143,7 +143,11 @@ async function fetchAmplifyStats(): Promise<AmplifyStats | null> {
 async function fetchSiteHealth(): Promise<SiteHealthStats | null> {
   try {
     const start = Date.now();
-    const res = await fetch("https://asakurayuta.dev/api/health", {
+    // `deep=1` opts into the DB probe. The public URL (rather than a local call)
+    // is intentional: this card reports whether the *deployed site* is reachable
+    // end-to-end, which a same-process call would not prove. This runs only on
+    // an admin dashboard load, not on a timer.
+    const res = await fetch("https://asakurayuta.dev/api/health?deep=1", {
       signal: AbortSignal.timeout(10000),
     });
     const responseTime = Date.now() - start;

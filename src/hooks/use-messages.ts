@@ -108,6 +108,18 @@ export function useBulkUpdateMessages() {
   });
 }
 
+/**
+ * Unread-message count for the sidebar badge.
+ *
+ * Deliberately has **no `refetchInterval`**. This hook is mounted in
+ * `AdminSidebar`, which lives in the admin shell layout — so it runs on every
+ * admin page, not just the messages page. `GET /api/messages` costs three
+ * Prisma queries even at `limit=1`, so a 60s poll kept the Neon compute awake
+ * indefinitely whenever an admin tab was left open (Neon only scales to zero
+ * after 5 idle minutes). The badge now refreshes on window focus and on mount
+ * via the TanStack Query defaults in `QueryProvider`, which is accurate enough
+ * for a single-admin CMS. Do not reintroduce a short interval here.
+ */
 export function useUnreadCount() {
   const unreadFilters: MessageFilters = { archived: "false", read: "false", limit: 1 };
   return useQuery({
@@ -116,7 +128,6 @@ export function useUnreadCount() {
       apiClient
         .getMessages<Message, MessagesMeta>(filtersToParams(unreadFilters))
         .then((res) => res.meta.unreadCount),
-    refetchInterval: 60_000,
     staleTime: 30_000,
   });
 }
