@@ -34,6 +34,17 @@ const nextConfig: NextConfig = {
       dynamic: 0,
       static: 30,
     },
+    // Turbopack's build cache is on by default in Next 16 and writes ~280MB into
+    // `.next/cache`. Amplify's artifact config is `baseDirectory: .next` with
+    // `files: **/*`, so that cache gets deployed to Lambda alongside the app,
+    // pushing the bundle past Amplify's ~209MB limit (see the size guard in
+    // .github/workflows/ci.yml). Deleting it post-build is not an option either:
+    // Amplify copies artifacts before the postBuild phase runs.
+    //
+    // Disabling it keeps `.next` at ~86MB. We lose incremental build caching,
+    // but Amplify was restoring and re-uploading that 280MB on every build
+    // anyway, so there is little to no wall-clock cost.
+    turbopackFileSystemCacheForBuild: false,
   },
   async headers() {
     const securityHeaders = [
