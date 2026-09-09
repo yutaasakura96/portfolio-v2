@@ -70,6 +70,12 @@ frontend:
         - rm -rf docs/screenshots .agents mcp .codex .claude/docs .claude/hooks .claude/agents
         - npm run build
         - find .next -name '*.js.map' -delete
+        # Belt-and-braces: the cache tarball saved by earlier builds still holds a
+        # ~50MB .next/cache from when the Turbopack build cache was enabled, and it
+        # would otherwise be restored (and deployed) once more before the new,
+        # cache-free tarball replaces it. Must run in `build`, not `postBuild` —
+        # Amplify copies artifacts before postBuild executes.
+        - rm -rf .next/cache
     postBuild:
       commands:
         - echo "Build output size (bytes):"
@@ -81,4 +87,10 @@ frontend:
   cache:
     paths:
       - node_modules/**/*
-      - .next/cache/**/*
+      # NOTE: .next/cache is deliberately NOT cached. `artifacts` above deploys
+      # all of `.next` (baseDirectory + "**/*"), so anything restored into
+      # .next/cache is also shipped to the SSR Lambda and counts against
+      # Amplify's ~209MB limit. Next 16 enables the Turbopack build cache by
+      # default (~280MB), which is why `turbopackFileSystemCacheForBuild` is off
+      # in next.config.ts — caching this path would re-introduce the weight that
+      # setting removes.
