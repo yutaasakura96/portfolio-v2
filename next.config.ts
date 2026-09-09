@@ -106,8 +106,14 @@ const nextConfig: NextConfig = {
         hostname: "placehold.co",
       },
       {
+        // Pinned to this distribution on purpose. `*.cloudfront.net` would allow
+        // ANY CloudFront distribution — it is a shared public AWS domain, so
+        // anyone can create one — letting an attacker feed arbitrary images to
+        // /_next/image for server-side decoding by sharp/libvips. That was the
+        // reachability path behind the AVIF RCE (GHSA-2xp9-vwfh-vxw4). Keep this
+        // in sync with CLOUDFRONT_DOMAIN in .env / Amplify Console env vars.
         protocol: "https",
-        hostname: "*.cloudfront.net",
+        hostname: "d11brb6l7qspvw.cloudfront.net",
       },
       {
         protocol: "https",
