@@ -55,13 +55,17 @@ for (const [phase, body] of Object.entries(phases ?? {})) {
       command && typeof command === "object"
         ? 'a ": " (colon-space) or leading "{" in an unquoted scalar makes YAML read it as a mapping — wrap the whole command in single quotes'
         : "wrap the command in quotes";
-    problems.push(`${where} parsed as ${command === null ? "null" : typeof command}, not a string.\n    ${hint}\n    parsed value: ${JSON.stringify(command).slice(0, 160)}`);
+    problems.push(
+      `${where} parsed as ${command === null ? "null" : typeof command}, not a string.\n    ${hint}\n    parsed value: ${JSON.stringify(command).slice(0, 160)}`
+    );
   });
 }
 
 // The artifacts block decides what actually ships to the Lambda.
 if (doc?.frontend?.artifacts?.baseDirectory !== ".next") {
-  problems.push(`frontend.artifacts.baseDirectory should be ".next", got ${JSON.stringify(doc?.frontend?.artifacts?.baseDirectory)}`);
+  problems.push(
+    `frontend.artifacts.baseDirectory should be ".next", got ${JSON.stringify(doc?.frontend?.artifacts?.baseDirectory)}`
+  );
 }
 
 if (problems.length > 0) {
@@ -70,4 +74,6 @@ if (problems.length > 0) {
   process.exit(1);
 }
 
-console.log(`✓ ${FILE} valid — ${commandCount} commands across ${Object.keys(phases).length} phases, all strings`);
+console.log(
+  `✓ ${FILE} valid — ${commandCount} commands across ${Object.keys(phases).length} phases, all strings`
+);
