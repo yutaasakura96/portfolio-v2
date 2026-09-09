@@ -80,6 +80,22 @@ frontend:
       commands:
         - echo "Build output size (bytes):"
         - du -sb .next | cut -f1
+        # Diagnostic breakdown. Amplify reports ~137MB here while CI reports ~81MB
+        # on the same commit, and the cause is not yet known — it is NOT the
+        # Turbopack cache (removing it recovered only ~1MB) and not prerender
+        # volume (both generate 124/124 pages). These four views should identify
+        # it. Safe to delete once the gap is understood.
+        # Every line ends in `|| true`: a du/find/head pipeline can exit non-zero
+        # (no match, SIGPIPE from head) and Amplify aborts the build on non-zero.
+        # A diagnostic must never break the deploy.
+        - echo "--- .next top level ---" || true
+        - du -sh .next/* 2>/dev/null | sort -rh | head -15 || true
+        - echo "--- .next/server ---" || true
+        - du -sh .next/server/* 2>/dev/null | sort -rh | head -15 || true
+        - echo "--- files over 5MB ---" || true
+        - find .next -type f -size +5M -exec du -h {} + 2>/dev/null | sort -rh | head -20 || true
+        - echo "--- .map files surviving the '*.js.map' delete, by extension ---" || true
+        - find .next -type f -name '*.map' 2>/dev/null | sed 's/.*\.\([^.]*\.map\)$/\1/' | sort | uniq -c | sort -rn | head || true
   artifacts:
     baseDirectory: .next
     files:
