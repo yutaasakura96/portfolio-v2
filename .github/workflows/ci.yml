@@ -34,6 +34,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Runs before the slow steps: a malformed buildspec is a broken deploy, and
+      # Amplify only reports it at deploy time with a generic "commands are
+      # malformed" error, after the build has already been merged to main.
+      - name: Validate Amplify buildspec
+        run: npm run validate:buildspec
+
       - name: Lint
         run: npm run lint
 
