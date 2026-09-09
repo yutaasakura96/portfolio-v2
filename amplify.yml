@@ -82,7 +82,11 @@ frontend:
         # Fail the build rather than deploy an image pipeline that cannot start.
         # If the glibc binary is ever absent from the bundle, the previous
         # deployment stays live — far better than shipping a broken optimizer.
-        - test -d .next/standalone/node_modules/@img/sharp-linux-x64 || { echo "ERROR: glibc sharp missing from standalone bundle"; exit 1; }
+        # Single-quoted on purpose. Unquoted, the "ERROR: " inside contains a
+        # colon-space, which YAML reads as a key separator in a plain scalar —
+        # that made the whole buildspec unparseable and Amplify rejected the
+        # build outright (job 100). Keep any command containing ": " quoted.
+        - 'test -d .next/standalone/node_modules/@img/sharp-linux-x64 || { echo "ERROR - glibc sharp missing from standalone bundle"; exit 1; }'
         - find .next -name '*.js.map' -delete
         # Belt-and-braces: the cache tarball saved by earlier builds still holds a
         # ~50MB .next/cache from when the Turbopack build cache was enabled, and it
