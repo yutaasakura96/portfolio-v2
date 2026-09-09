@@ -18,13 +18,7 @@ const TRANSLATION_TARGETS = [
 
 type TranslationTarget = (typeof TRANSLATION_TARGETS)[number];
 type TranslationCountKey =
-  | "hero"
-  | "about"
-  | "settings"
-  | "projects"
-  | "blog"
-  | "experience"
-  | "education";
+  "hero" | "about" | "settings" | "projects" | "blog" | "experience" | "education";
 type TranslationCounts = Record<TranslationCountKey, number>;
 
 const translationRequestSchema = z.object({

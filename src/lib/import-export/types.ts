@@ -3,9 +3,7 @@ import type { z } from "zod";
 export type ImportMode = "create" | "upsert";
 
 export type UniqueKey =
-  | { type: "single"; field: string }
-  | { type: "compound"; fields: string[] }
-  | null;
+  { type: "single"; field: string } | { type: "compound"; fields: string[] } | null;
 
 export type EntityConfig = {
   label: string;

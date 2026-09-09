@@ -19,13 +19,7 @@ type TranslateResult = {
 
 type TranslationTarget = keyof TranslateResult;
 type TranslationApiTarget =
-  | "hero"
-  | "about"
-  | "settings"
-  | "project"
-  | "blogPost"
-  | "experience"
-  | "education";
+  "hero" | "about" | "settings" | "project" | "blogPost" | "experience" | "education";
 type TranslationPlan = {
   projectIds: string[];
   blogPostIds: string[];
