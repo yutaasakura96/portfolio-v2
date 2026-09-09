@@ -40,6 +40,13 @@ jobs:
       - name: Validate Amplify buildspec
         run: npm run validate:buildspec
 
+      # Must run BEFORE the lint step: `npm run lint` ends in `prettier --write .`,
+      # which rewrites drifted files in the ephemeral checkout and exits 0. Running
+      # the check afterwards would always pass and prove nothing. Prettier 3 reads
+      # .gitignore by default, so generated/ (from prisma generate) is skipped.
+      - name: Check formatting
+        run: npx prettier --check .
+
       - name: Lint
         run: npm run lint
 
