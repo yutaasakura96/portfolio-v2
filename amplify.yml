@@ -68,7 +68,21 @@ frontend:
       commands:
         - npx prisma migrate deploy || echo "Migration skipped - database not reachable"
         - rm -rf docs/screenshots .agents mcp .codex .claude/docs .claude/hooks .claude/agents
+        # sharp ships prebuilt libvips for BOTH glibc (linux-x64) and musl
+        # (linuxmusl-x64) — ~19MB each. Amplify's Lambda is Amazon Linux, which is
+        # glibc, so sharp resolves @img/sharp-linux-x64 and never loads the musl
+        # build. It was still being traced into .next/standalone and shipped.
+        # Must run BEFORE `npm run build`: the standalone bundle is produced by
+        # next's file tracer during the build, copying from node_modules.
+        # Verified on a linux/amd64 glibc container: sharp loads only
+        # @img/sharp-linux-x64, and a full standalone build with musl removed
+        # produces a working sharp (libvips 8.18.6) from inside the bundle.
+        - rm -rf node_modules/@img/*musl*
         - npm run build
+        # Fail the build rather than deploy an image pipeline that cannot start.
+        # If the glibc binary is ever absent from the bundle, the previous
+        # deployment stays live — far better than shipping a broken optimizer.
+        - test -d .next/standalone/node_modules/@img/sharp-linux-x64 || { echo "ERROR: glibc sharp missing from standalone bundle"; exit 1; }
         - find .next -name '*.js.map' -delete
         # Belt-and-braces: the cache tarball saved by earlier builds still holds a
         # ~50MB .next/cache from when the Turbopack build cache was enabled, and it
