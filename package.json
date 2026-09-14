@@ -35,7 +35,7 @@
     "@hookform/resolvers": "^5.2.2",
     "@neondatabase/serverless": "^1.0.2",
     "@prisma/adapter-neon": "^7.4.1",
-    "@prisma/client": "^7.4.1",
+    "@prisma/client": "^7.10.0",
     "@react-three/fiber": "^9.6.1",
     "@sentry/nextjs": "^10.56.0",
     "@tailwindcss/typography": "^0.5.20",
