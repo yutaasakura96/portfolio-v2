@@ -138,14 +138,17 @@ Four design-quality skills are installed and should be used during UI work:
 
 ## Diagram Skills
 
-Two architecture diagram skills are installed for generating visual documentation:
+One architecture diagram skill is installed for generating visual documentation:
 
 | Skill                        | Location                                   | Output format     | When to use                                                                        |
 | ---------------------------- | ------------------------------------------ | ----------------- | ---------------------------------------------------------------------------------- |
-| **excalidraw-diagram**       | `.agents/skills/excalidraw-diagram/`       | `.excalidraw`     | App architecture diagrams, component flow diagrams, system overviews               |
 | **aws-architecture-diagram** | `.agents/skills/aws-architecture-diagram/` | `.drawio` + `.md` | AWS infrastructure diagrams (Amplify, S3, CloudFront, Cognito, Neon, SES topology) |
 
 Generated artifacts live in `docs/diagrams/`: `architecture.excalidraw`, `agentic-workflow.excalidraw`, `aws-architecture.drawio` + `.md` + `.png`.
+
+`excalidraw-diagram` was removed on 2026-09-20; diagram work now routes through the user-scope
+`drawio` plugin. The two `.excalidraw` files above still open at excalidraw.com but are no longer
+regenerated in this repo.
 
 ## UI Verification
 
