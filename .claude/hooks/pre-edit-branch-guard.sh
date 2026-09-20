@@ -2,8 +2,8 @@
 # PreToolUse hook: block Edit/Write on protected branches (main, develop).
 # Forces a feature branch to be created before any *source* changes.
 #
-# Planning/doc artifacts are exempt: the superpowers writing-plans skill saves
-# to docs/superpowers/plans/ before a worktree exists, and doc-sync work edits
+# Planning/doc artifacts are exempt: plans are written to docs/plans/ before a
+# branch exists, and doc-sync work edits
 # docs/**/*.md — neither is source code, so neither should be gated. Code under
 # src/, prisma/, configs, etc. is still blocked on protected branches.
 
@@ -31,11 +31,11 @@ esac
 # Exempt planning + documentation artifacts even on protected branches.
 # (In bash `case`, `*` spans `/`, so these match at any nesting depth.)
 case "$rel_path" in
-  docs/superpowers/plans/*) exit 0 ;;  # superpowers plan files (any extension)
+  docs/plans/*) exit 0 ;;  # plan files (any extension)
   docs/*.md) exit 0 ;;                  # any markdown under docs/, nested or not
 esac
 
 echo "You're on '$branch'. Create a feature branch before editing code:"
 echo "  git checkout -b feature/<short-name>"
-echo "(Planning files under docs/superpowers/plans/ and docs/**/*.md are exempt.)"
+echo "(Planning files under docs/plans/ and docs/**/*.md are exempt.)"
 exit 2

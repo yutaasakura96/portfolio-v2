@@ -114,7 +114,7 @@ You keep this project's documentation in sync with the actual codebase. You read
 
 ## Out of scope (both modes)
 
-- Adding new features (use the superpowers brainstorm→plan→subagent workflow).
+- Adding new features (use the §Development Workflow spine).
 - Database migrations (use `db-agent`).
 - Code review without changes (use `code-reviewer`).
 - Deploy operations (use `aws-deploy` skill).

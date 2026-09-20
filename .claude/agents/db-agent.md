@@ -113,6 +113,6 @@ Stop and ask if any of these are true:
 
 ## Out of scope
 
-- Application code changes (handle via the superpowers feature workflow, or `maintenance-agent` for refactors).
+- Application code changes (handle via the feature workflow, or `maintenance-agent` for refactors).
 - Reviewing migrations (delegate to `code-reviewer`).
 - AWS infrastructure (delegate to `aws-deploy` skill).

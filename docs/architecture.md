@@ -243,11 +243,10 @@ Editable source: [`docs/diagrams/architecture.excalidraw`](diagrams/architecture
 
 ### Agentic development workflow
 
-How changes are built: the superpowers methodology is the spine (brainstorm → plan →
-subagent-driven development → TDD → verification → review → finish), and the project's three
-domain-executor agents (`db-agent`, `maintenance-agent`, `code-reviewer`) are dispatched per task
-within that loop:
+How changes are built: the repo's own workflow spine (design → plan → task-by-task execution →
+TDD → verification → review → finish), with the project's three domain-executor agents
+(`db-agent`, `maintenance-agent`, `code-reviewer`) dispatched per task within it:
 
-![Agentic workflow diagram](diagrams/agentic-workflow.png)
+![Agentic workflow diagram](diagrams/agentic-workflow.drawio.svg)
 
-Editable source: [`docs/diagrams/agentic-workflow.excalidraw`](diagrams/agentic-workflow.excalidraw).
+The SVG embeds its own draw.io source — open it in draw.io to edit.

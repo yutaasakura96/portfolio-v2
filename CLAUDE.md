@@ -57,39 +57,39 @@ Tests use **Vitest** with **@testing-library/react**. See [.claude/rules/tests.m
 
 Scoped instructions: [src/CLAUDE.md](src/CLAUDE.md), [src/app/api/CLAUDE.md](src/app/api/CLAUDE.md), [prisma/CLAUDE.md](prisma/CLAUDE.md). [AGENTS.md](AGENTS.md) mirrors this guidance for Codex backup sessions.
 
-## Development Workflow (Superpowers)
+## Development Workflow
 
-This project's primary methodology is the **superpowers** plugin (user-level, active in every session via its `SessionStart` bootstrap). Superpowers ships skills only — no agents, no commands — and works by dispatching _fresh generic subagents per task_, building each subagent's context from scratch. For any non-trivial change, follow its spine; the project's agents, skills, and [.claude/rules/](.claude/rules/) supply the domain context those subagents consume.
+No plugin pack is enabled in this repo — `enabledPlugins` is empty. The methodology is the repo's own agents, skills, [.claude/rules/](.claude/rules/), hooks and commands; together they are the whole process layer. For any non-trivial change, follow the spine below.
 
-**Workflow spine** (skills auto-trigger at each step):
+**Workflow spine** — follow it for any non-trivial change:
 
-1. **brainstorming** — before writing any code. Refine the idea, explore alternatives, agree on a design. **Verify any library/framework API the design depends on against the `context7` MCP server** (`resolve-library-id` → `query-docs`) before committing to it — do not assume post-cutoff APIs for Next.js 16, Prisma 7, Tailwind v4, etc.
-2. **using-git-worktrees** — isolate the work on a branch/worktree. Also satisfies the `pre-edit-branch-guard` hook — never edit code on `main`/`develop`. The guard now **exempts planning/doc artifacts** (`docs/superpowers/plans/**` and `docs/**/*.md`), so brainstorming and writing-plans can save their output before the worktree exists; only source/config edits are gated.
-3. **writing-plans** — break the work into small, individually verifiable tasks. When a task uses a library API, **confirm signatures via `context7`** and cite the verified usage in the plan so the dispatched subagent inherits it. Plans save to `docs/superpowers/plans/YYYY-MM-DD-<feature>.md` (guard-exempt).
-4. **subagent-driven-development** (same session) or **executing-plans** (human checkpoints) — dispatch a fresh subagent per task with two-stage review (spec compliance, then code quality). `dispatching-parallel-agents` for independent domains.
-5. **test-driven-development** — RED → GREEN → REFACTOR, using **Vitest + @testing-library/react** per [.claude/rules/tests.md](.claude/rules/tests.md) (real Neon test DB, never mocked Prisma).
-6. **systematic-debugging** — root-cause before fixing, on any failure or unexpected behavior.
-7. **verification-before-completion** — evidence before claiming done; reinforced by the `pre-commit-gate` hook (build + tests). Run `/check` for the quality gate.
-8. **requesting-code-review** / **receiving-code-review** — review before finishing; dispatch the `code-reviewer` agent as the executor.
-9. **finishing-a-development-branch** — merge/PR decision. Use `/pr-ready` to draft the PR. Commit per §Git Commit Style; **never commit or push without explicit user permission**.
+1. **Agree the design before writing code.** Refine the idea, explore alternatives, settle on an approach. **Verify any library/framework API the design depends on against the `context7` MCP server** (`resolve-library-id` → `query-docs`) before committing to it — do not assume post-cutoff APIs for Next.js 16, Prisma 7, Tailwind v4, etc.
+2. **Branch first.** Never edit source or config on `main`/`develop` — the `pre-edit-branch-guard` hook enforces it. The guard **exempts planning/doc artifacts** (`docs/plans/**` and `docs/**/*.md`), so design notes and plans can be saved before the branch exists; only source/config edits are gated.
+3. **Write the plan down.** Break the work into small, individually verifiable tasks. When a task uses a library API, **confirm signatures via `context7`** and cite the verified usage in the plan so a dispatched subagent inherits it. Plans save to `docs/plans/YYYY-MM-DD-<feature>.md` (guard-exempt).
+4. **Execute task by task.** Dispatch a fresh subagent per task where it helps, with two-stage review (spec compliance, then code quality); independent domains can run in parallel. Dispatch the domain-executor agents below where they fit.
+5. **Test-driven.** RED → GREEN → REFACTOR, using **Vitest + @testing-library/react** per [.claude/rules/tests.md](.claude/rules/tests.md) (real Neon test DB, never mocked Prisma).
+6. **Root-cause before fixing,** on any failure or unexpected behavior.
+7. **Evidence before claiming done** — reinforced by the `pre-commit-gate` hook (build + tests). Run `/check` for the quality gate.
+8. **Review before finishing** — dispatch the `code-reviewer` agent as the executor.
+9. **Finish deliberately** — merge/PR decision. Use `/pr-ready` to draft the PR. Commit per §Git Commit Style; **never commit or push without explicit user permission**.
 
-**Precedence:** user instructions (this file, AGENTS.md, global prefs) > superpowers skills > default behavior. Where a project rule conflicts with a skill, the project rule wins.
+**Precedence:** user instructions (this file, AGENTS.md, global prefs) > project rules and skills > default behavior. Where a project rule conflicts with a skill, the project rule wins.
 
 ### Domain-executor agents
 
-Three project agents in [.claude/agents/](.claude/agents/) (mirrored in [.codex/agents/](.codex/agents/)) are pre-built executor bundles the superpowers subagent loop dispatches where they fit — each carries project knowledge a generic subagent lacks:
+Three project agents in [.claude/agents/](.claude/agents/) (mirrored in [.codex/agents/](.codex/agents/)) are pre-built executor bundles to dispatch where they fit — each carries project knowledge a fresh subagent lacks:
 
 | Agent                 | Dispatch when                                                 | Adds                                         |
 | --------------------- | ------------------------------------------------------------- | -------------------------------------------- |
 | **db-agent**          | Prisma schema / migration / seed / Neon branching             | Safe Neon-branch migration workflow          |
-| **code-reviewer**     | Code review (the `requesting-code-review` step)               | Read-only review citing this project's rules |
-| **maintenance-agent** | Convention refactor (mode: refactor) or doc sync (mode: docs) | No superpowers equivalent — project-specific |
+| **code-reviewer**     | Review before finishing (spine step 8)                        | Read-only review citing this project's rules |
+| **maintenance-agent** | Convention refactor (mode: refactor) or doc sync (mode: docs) | Project-specific; no generic equivalent      |
 
 For a quick search/lookup use the built-in `Explore` subagent directly. Single-file edits and trivial fixes don't need the full spine — apply judgment.
 
 ### Equipping dispatched subagents (skills + docs)
 
-Superpowers dispatches **fresh generic subagents**, and the `using-superpowers` bootstrap explicitly tells a subagent to **skip** the "always check for a skill" rule (`<SUBAGENT-STOP>`). A dispatched subagent therefore does **not** auto-discover this project's skills — the orchestrator must hand them the right context in the dispatch prompt. When dispatching (subagent-driven-development, executing-plans, dispatching-parallel-agents):
+A dispatched subagent starts from a fresh context and does **not** auto-discover this project's skills — the orchestrator must hand it the right context in the dispatch prompt. When dispatching a subagent:
 
 1. **Name the relevant project skill(s) in the dispatch prompt** so the subagent invokes them. Map by what the task touches:
 
@@ -144,7 +144,7 @@ One architecture diagram skill is installed for generating visual documentation:
 | ---------------------------- | ------------------------------------------ | ----------------- | ---------------------------------------------------------------------------------- |
 | **aws-architecture-diagram** | `.agents/skills/aws-architecture-diagram/` | `.drawio` + `.md` | AWS infrastructure diagrams (Amplify, S3, CloudFront, Cognito, Neon, SES topology) |
 
-Generated artifacts live in `docs/diagrams/`: `architecture.excalidraw`, `agentic-workflow.excalidraw`, `aws-architecture.drawio` + `.md` + `.png`, `auth-flow.drawio.svg` (admin auth path; renders on GitHub, reopens editable in draw.io), and `isr-neon-retry.archify.json` (archify source for the ISR/Neon retry path).
+Generated artifacts live in `docs/diagrams/`: `architecture.excalidraw`, `aws-architecture.drawio` + `.md` + `.png`, `agentic-workflow.drawio.svg` (the workflow spine) and `auth-flow.drawio.svg` (admin auth path) — both render on GitHub and reopen editable in draw.io — and `isr-neon-retry.archify.json` (archify source for the ISR/Neon retry path).
 
 `excalidraw-diagram` was removed on 2026-09-20; diagram work now routes through the user-scope
 `drawio` plugin. The two `.excalidraw` files above still open at excalidraw.com but are no longer
@@ -169,12 +169,11 @@ Four plugins extend the Claude Code and Codex backup tooling:
 
 | Plugin                                            | Purpose                                                                                                                                                                                                                                                                       |
 | ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **superpowers** (claude-plugins-official, v6.0.3) | **Primary dev methodology** — auto-triggering skills (brainstorming, writing-plans, using-git-worktrees, subagent-driven-development, TDD, systematic-debugging, verification, code review, finishing-a-branch). See §Development Workflow. Skills only — no agents/commands. |
 | **skill-creator**                                 | Create, eval, improve, and benchmark skills. Use to iterate on existing project skills with data.                                                                                                                                                                             |
 | **context-mode** (mksglu, v1.0.162)               | Sandboxes tool output for ~98% context window savings. SQLite session tracking + lifecycle hooks.                                                                                                                                                                             |
 | **frontend-design**                               | Production-grade UI design with distinctive aesthetics. Listed above under UI Skills.                                                                                                                                                                                         |
 
-The superpowers workflow spine (see §Development Workflow) governs how work is approached; the project's domain-executor agents, skills, and `.claude/rules/` supply the context its dispatched subagents consume.
+The workflow spine (see §Development Workflow) governs how work is approached; the project's domain-executor agents, skills, and `.claude/rules/` supply the context a dispatched subagent consumes.
 
 ## Critical Rules (universal — domain-specific rules live in [.claude/rules/](.claude/rules/))
 
@@ -217,7 +216,7 @@ Domain rules (Zod validation, `withErrorHandler`, ISR/client split, image pipeli
 
 ## Available Agents
 
-Three domain-executor agents in [.claude/agents/](.claude/agents/), mirrored for Codex custom agents in [.codex/agents/](.codex/agents/). They are dispatched within the superpowers workflow spine (see §Development Workflow) — superpowers itself ships no agents:
+Three domain-executor agents in [.claude/agents/](.claude/agents/), mirrored for Codex custom agents in [.codex/agents/](.codex/agents/). They are dispatched within the workflow spine (see §Development Workflow):
 
 | Agent                 | Claude Code model | Codex model                                          | Purpose                                               |
 | --------------------- | ----------------- | ---------------------------------------------------- | ----------------------------------------------------- |
@@ -225,7 +224,7 @@ Three domain-executor agents in [.claude/agents/](.claude/agents/), mirrored for
 | **code-reviewer**     | haiku             | `gpt-5.4-mini` (`model_reasoning_effort = "medium"`) | Read-only review + cross-domain integration checks    |
 | **maintenance-agent** | sonnet            | `gpt-5.4` (`model_reasoning_effort = "high"`)        | Refactoring (mode: refactor) or doc sync (mode: docs) |
 
-See §Development Workflow above for when each is dispatched. The Claude-side `sonnet` / `haiku` labels do not apply inside Codex; Codex uses the TOML-pinned OpenAI models above. Built-in subagents (`Explore`/haiku, `Plan`/sonnet) are Claude Code-only. End-to-end feature building is now the superpowers brainstorm→plan→subagent loop, not a single agent.
+See §Development Workflow above for when each is dispatched. The Claude-side `sonnet` / `haiku` labels do not apply inside Codex; Codex uses the TOML-pinned OpenAI models above. Built-in subagents (`Explore`/haiku, `Plan`/sonnet) are Claude Code-only. End-to-end feature building is the §Development Workflow spine, not a single agent.
 
 ## Hooks
 
@@ -254,6 +253,6 @@ When compacting, always preserve:
 
 - The full list of files modified in the current task
 - The current git branch name and any in-progress PR
-- Which superpowers workflow step / dispatched subagent task we are on
+- Which workflow-spine step / dispatched subagent task we are on
 - Any user decisions or preferences stated in this session
 - Error messages from failed builds/tests that haven't been resolved yet

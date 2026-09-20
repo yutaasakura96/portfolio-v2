@@ -56,7 +56,7 @@ portfolio-v2/
 │       ├── codeql.yml          # Static security analysis (weekly + PRs to main)
 │       └── neon-reset-dev.yml  # Weekly dev branch restore from production
 ├── docs/
-│   ├── diagrams/               # architecture.excalidraw, aws-architecture.drawio, agentic-workflow.excalidraw
+│   ├── diagrams/               # architecture.excalidraw, aws-architecture.drawio, agentic-workflow.drawio.svg, auth-flow.drawio.svg  # .excalidraw
 │   └── screenshots/            # Playwright-captured PNGs (25 public + 17 admin pages)
 ├── mcp/
 │   └── portfolio-server/       # 43-tool MCP server (stdio transport, dev + prod instances)
@@ -304,7 +304,9 @@ Upload Route → Sharp (4 variants: thumb 400x300, med 800x600, lg 1600x1200, or
 
 > **Updated 2026-06-21:** The project adopted **superpowers** as the primary workflow methodology. The two-tier routing model described in the original 2026-06-15 audit was replaced by the superpowers spine, and `feature-builder` was retired. See [CLAUDE.md](../CLAUDE.md) §Development Workflow for the current authoritative description. The summary below reflects the post-adoption structure.
 
-Primary methodology is the **superpowers** plugin (skills only — no agents/commands). Workflow spine: `brainstorming → using-git-worktrees → writing-plans → subagent-driven-development`/`executing-plans → test-driven-development → systematic-debugging → verification-before-completion → requesting-code-review → finishing-a-development-branch`. It dispatches fresh generic subagents per plan task; the project's three executor agents + skills + `.claude/rules/` supply domain context.
+> **Updated 2026-09-20:** superpowers was removed — it was never actually enabled in this repo (`enabledPlugins` was empty throughout), which the feature roadmap recorded correctly as "evaluated & skipped" while this section and CLAUDE.md described it as adopted.
+
+Primary methodology is the repo's own spine, documented in [CLAUDE.md](../CLAUDE.md) §Development Workflow: design → branch → plan → task-by-task execution → TDD → root-cause debugging → verification → review → finish. The three domain-executor agents (`db-agent`, `code-reviewer`, `maintenance-agent`) are dispatched within it.
 
 ### Direct (no full spine)
 
@@ -340,7 +342,7 @@ Single-file edits, typo fixes, quick lookups. Uses built-in `Explore` subagent (
 | ------------------- | ----------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | System Architecture | .excalidraw | `docs/diagrams/architecture.excalidraw`     | 8-section, 144-element diagram covering request flow, auth, i18n, image pipeline, external services, CI/CD, import/export, HeroBlob |
 | AWS Infrastructure  | .drawio     | `docs/diagrams/aws-architecture.drawio`     | AWS Cloud topology (CloudFront, WAF, Amplify, Cognito, S3, SES) + external services (Neon, Upstash, Sentry, Anthropic, GA)          |
-| Agentic Workflow    | .excalidraw | `docs/diagrams/agentic-workflow.excalidraw` | Two-tier agent routing (Tier 1 direct, Tier 2 single/multi-domain), 4 agents, context-mode integration                              |
+| Agentic Workflow    | .drawio.svg | `docs/diagrams/agentic-workflow.drawio.svg` | The workflow spine (Tier 1 direct, Tier 2 single/multi-domain), 4 agents, context-mode integration                              |
 
 ---
 

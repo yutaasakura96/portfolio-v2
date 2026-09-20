@@ -1,8 +1,8 @@
 # Feature Workflow
 
-The process spine for building new features is the **superpowers** methodology (see [CLAUDE.md](../../CLAUDE.md) §Development Workflow): `brainstorming → using-git-worktrees → writing-plans → subagent-driven-development`/`executing-plans → test-driven-development → systematic-debugging → verification-before-completion → requesting-code-review → finishing-a-development-branch`. These skills auto-trigger; the project-specific reference below is the **execution detail** each step links into.
+The process spine for building new features is the repo's own (see [CLAUDE.md](../../CLAUDE.md) §Development Workflow): `design → branch → plan → subagent-driven-development`/`executing-plans → test-driven-development → systematic-debugging → verification-before-completion → requesting-code-review → finishing-a-development-branch`. These skills auto-trigger; the project-specific reference below is the **execution detail** each step links into.
 
-The superpowers `SessionStart` hook bootstraps the methodology automatically — no session-starter paste is needed. Code templates for pages, API routes, components, and validation schemas live in [feature-templates.md](./feature-templates.md).
+Nothing bootstraps the methodology automatically — see [session-starter-template.md](./session-starter-template.md) to front-load requirements. Code templates for pages, API routes, components, and validation schemas live in [feature-templates.md](./feature-templates.md).
 
 ---
 
@@ -35,11 +35,11 @@ Trivial additive schema changes (new optional column on a small table) can skip 
 
 ### Domain-executor agents
 
-See [CLAUDE.md](../../CLAUDE.md) §Development Workflow for the three executor agents (`db-agent`, `code-reviewer`, `maintenance-agent`) and when the superpowers subagent loop dispatches each. (There is no `feature-builder` — end-to-end feature building is the superpowers brainstorm→plan→subagent loop itself.)
+See [CLAUDE.md](../../CLAUDE.md) §Development Workflow for the three executor agents (`db-agent`, `code-reviewer`, `maintenance-agent`) and when to dispatch each. (There is no `feature-builder` — end-to-end feature building is the spine itself.)
 
 ### Skills
 
-**Superpowers process skills** (the methodology layer, auto-triggering): `brainstorming`, `writing-plans`, `using-git-worktrees`, `subagent-driven-development`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `finishing-a-development-branch`. See [CLAUDE.md](../../CLAUDE.md) §Development Workflow.
+**Process layer** (the spine in [CLAUDE.md](../../CLAUDE.md) §Development Workflow, followed by hand): design, branch, plan, execute task-by-task, TDD, systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `finishing-a-development-branch`. See [CLAUDE.md](../../CLAUDE.md) §Development Workflow.
 
 **Project domain skills** (execution detail the steps call into):
 
@@ -209,7 +209,7 @@ npm run test:ci                # vitest run --coverage
 
 ### Plan + in-session tasks
 
-The superpowers `writing-plans` skill produces the task breakdown (small, individually verifiable tasks); `subagent-driven-development` / `executing-plans` work through it. Claude's task tools surface the live list in the UI.
+Spine step 3 produces the task breakdown (small, individually verifiable tasks); step 4 works through it. Claude's task tools surface the live list in the UI.
 
 ### Mid-session / hand-off — plan files
 
@@ -252,7 +252,7 @@ Skim docs you'll rely on for staleness. Common drift spots:
 
 ## Finishing — before a PR
 
-This is the superpowers `finishing-a-development-branch` step. `verification-before-completion` requires evidence first — run the quality gate (the `pre-commit-gate` hook also enforces it at commit):
+This is spine step 9. Step 7 requires evidence first — run the quality gate (the `pre-commit-gate` hook also enforces it at commit):
 
 ```bash
 npm run lint        # ESLint + Prettier — must pass
@@ -280,7 +280,7 @@ npm test            # Vitest — must pass (run affected tests at minimum)
 
 ## Orchestration
 
-Orchestration is the superpowers spine (see [CLAUDE.md](../../CLAUDE.md) §Development Workflow): `subagent-driven-development` dispatches a fresh subagent per plan task; `dispatching-parallel-agents` handles independent domains concurrently. Key points:
+Orchestration is the spine (see [CLAUDE.md](../../CLAUDE.md) §Development Workflow): step 4 dispatches a fresh subagent per plan task; independent domains can run in parallel. Legacy note: `dispatching-parallel-agents` handles independent domains concurrently. Key points:
 
 - **Built-in subagents**: `Explore` (haiku, read-only search), `Plan` (sonnet, design), `general-purpose` (sonnet, multi-step).
 - **When NOT to run the full spine**: single-file edits, trivial fixes, tasks already in progress, tasks where cold-context briefing costs more than the work — apply judgment.

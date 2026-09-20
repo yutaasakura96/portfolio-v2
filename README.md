@@ -46,9 +46,9 @@ The application request/rendering pipeline:
 
 ![Application architecture diagram](docs/diagrams/architecture.png)
 
-…and the agentic development workflow used to build it (superpowers spine + three domain-executor agents):
+…and the agentic development workflow used to build it (the workflow spine + three domain-executor agents):
 
-![Agentic workflow diagram](docs/diagrams/agentic-workflow.png)
+![Agentic workflow diagram](docs/diagrams/agentic-workflow.drawio.svg)
 
 Full architecture reference, directory structure, route groups, and data-layer rules → [docs/architecture.md](docs/architecture.md)
 

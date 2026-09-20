@@ -44,7 +44,7 @@ next-env.d.ts
 # prisma
 /generated*
 
-# git worktrees (superpowers / EnterWorktree isolated workspaces)
+# git worktrees (EnterWorktree isolated workspaces)
 .claude/worktrees/
 
 # playwright MCP runtime artifacts
