@@ -144,7 +144,7 @@ One architecture diagram skill is installed for generating visual documentation:
 | ---------------------------- | ------------------------------------------ | ----------------- | ---------------------------------------------------------------------------------- |
 | **aws-architecture-diagram** | `.agents/skills/aws-architecture-diagram/` | `.drawio` + `.md` | AWS infrastructure diagrams (Amplify, S3, CloudFront, Cognito, Neon, SES topology) |
 
-Generated artifacts live in `docs/diagrams/`: `architecture.excalidraw`, `agentic-workflow.excalidraw`, `aws-architecture.drawio` + `.md` + `.png`.
+Generated artifacts live in `docs/diagrams/`: `architecture.excalidraw`, `agentic-workflow.excalidraw`, `aws-architecture.drawio` + `.md` + `.png`, `auth-flow.drawio.svg` (admin auth path; renders on GitHub, reopens editable in draw.io), and `isr-neon-retry.archify.json` (archify source for the ISR/Neon retry path).
 
 `excalidraw-diagram` was removed on 2026-09-20; diagram work now routes through the user-scope
 `drawio` plugin. The two `.excalidraw` files above still open at excalidraw.com but are no longer

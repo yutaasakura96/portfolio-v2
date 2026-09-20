@@ -1,0 +1,309 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Homepage ISR render against a suspended Neon compute",
+    "output": "portfolio-isr-neon.html",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1380,
+      560
+    ],
+    "repository": {
+      "url": "https://github.com/yutaasakura96/portfolio-v2",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "90f9f8de327eff30abbf88840dc6dc55f0c6629a"
+    },
+    "views": [
+      {
+        "id": "retry-path",
+        "label": "Path into Neon",
+        "focus": [
+          "isr",
+          "queries",
+          "retry",
+          "prisma",
+          "neon"
+        ],
+        "note": "The homepage render reaches Neon through a bounded retry sized to bridge a cold wake."
+      },
+      {
+        "id": "failure-exit",
+        "label": "After five attempts",
+        "focus": [
+          "retry",
+          "sentry",
+          "cache"
+        ],
+        "note": "Report to Sentry, rethrow, and let Next.js keep serving the last good page."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "visitor",
+      "type": "external",
+      "label": "Visitor",
+      "sublabel": "browser / crawler",
+      "pos": [
+        40,
+        90
+      ],
+      "size": [
+        120,
+        64
+      ]
+    },
+    {
+      "id": "isr",
+      "type": "frontend",
+      "label": "HomePage",
+      "sublabel": "Next.js ISR render",
+      "tag": "revalidate = 3600",
+      "pos": [
+        300,
+        90
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sources": [
+        {
+          "path": "src/app/(public)/page.tsx",
+          "line": 15,
+          "end_line": 22,
+          "label": "revalidate + Promise.all"
+        }
+      ]
+    },
+    {
+      "id": "queries",
+      "type": "backend",
+      "label": "public-queries",
+      "sublabel": "3 ISR queries",
+      "pos": [
+        600,
+        90
+      ],
+      "size": [
+        190,
+        64
+      ],
+      "sources": [
+        {
+          "path": "src/lib/data/public-queries.ts",
+          "line": 49,
+          "end_line": 51,
+          "label": "getHero"
+        },
+        {
+          "path": "src/lib/data/public-queries.ts",
+          "line": 98,
+          "end_line": 100,
+          "label": "getFeaturedProjects"
+        },
+        {
+          "path": "src/lib/data/public-queries.ts",
+          "line": 228,
+          "end_line": 230,
+          "label": "getRecentPosts"
+        }
+      ]
+    },
+    {
+      "id": "cache",
+      "type": "cloud",
+      "label": "Last good page",
+      "sublabel": "previous ISR output",
+      "pos": [
+        300,
+        270
+      ],
+      "size": [
+        160,
+        64
+      ]
+    },
+    {
+      "id": "retry",
+      "type": "backend",
+      "label": "withDbRetry",
+      "sublabel": "5 attempts, backoff",
+      "tag": "≈3.75s total",
+      "pos": [
+        600,
+        270
+      ],
+      "size": [
+        190,
+        64
+      ],
+      "sources": [
+        {
+          "path": "src/lib/data/db-resilience.ts",
+          "line": 115,
+          "end_line": 142,
+          "label": "withDbRetry"
+        },
+        {
+          "path": "src/lib/data/db-resilience.ts",
+          "line": 23,
+          "end_line": 50,
+          "label": "isRetryableDbError"
+        },
+        {
+          "path": "src/lib/data/db-resilience.ts",
+          "line": 70,
+          "end_line": 72,
+          "label": "backoffDelay"
+        }
+      ]
+    },
+    {
+      "id": "prisma",
+      "type": "backend",
+      "label": "Prisma",
+      "sublabel": "PrismaNeon adapter",
+      "pos": [
+        890,
+        270
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sources": [
+        {
+          "path": "src/lib/prisma-client.ts",
+          "line": 17,
+          "end_line": 27,
+          "label": "adapter + pool listeners"
+        },
+        {
+          "path": "src/lib/prisma-client.ts",
+          "line": 31,
+          "end_line": 31,
+          "label": "client singleton"
+        }
+      ]
+    },
+    {
+      "id": "neon",
+      "type": "database",
+      "label": "Neon Postgres",
+      "sublabel": "compute suspended",
+      "pos": [
+        1150,
+        270
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "sentry",
+      "type": "external",
+      "label": "Sentry",
+      "sublabel": "captureException",
+      "tag": "tag: dbQuery",
+      "pos": [
+        600,
+        450
+      ],
+      "size": [
+        190,
+        64
+      ],
+      "sources": [
+        {
+          "path": "src/lib/data/db-resilience.ts",
+          "line": 136,
+          "end_line": 141,
+          "label": "report then rethrow"
+        }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Neon serverless · scale-to-zero",
+      "wraps": [
+        "neon"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "visit",
+      "from": "visitor",
+      "to": "isr",
+      "label": "HTTPS",
+      "variant": "emphasis"
+    },
+    {
+      "id": "fetch-three",
+      "from": "isr",
+      "to": "queries",
+      "label": "Promise.all ×3"
+    },
+    {
+      "id": "wrapped",
+      "from": "queries",
+      "to": "retry",
+      "label": "every query wrapped",
+      "labelDy": 78
+    },
+    {
+      "id": "attempt",
+      "from": "retry",
+      "to": "prisma",
+      "label": "attempt 1-5"
+    },
+    {
+      "id": "handshake",
+      "from": "prisma",
+      "to": "neon",
+      "label": "WebSocket"
+    },
+    {
+      "id": "exhausted",
+      "from": "retry",
+      "to": "sentry",
+      "label": "attempts exhausted",
+      "variant": "dashed",
+      "labelDy": 78
+    },
+    {
+      "id": "abort",
+      "from": "isr",
+      "to": "cache",
+      "label": "rethrow aborts render",
+      "variant": "dashed",
+      "labelDy": 78
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Why five attempts and this backoff",
+      "items": [
+        "Neon free tier scales to zero after ~5 min idle; the first handshake fails while the compute resumes.",
+        "Backoff min(250·2^n, 2000) sums to ≈3.75s, long enough to outlast a cold wake.",
+        "Constraint violations are not matched, so genuine application errors still fail fast."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Why it rethrows instead of returning null",
+      "items": [
+        "Returning null or [] would let Next.js cache a hero-less homepage for the whole 3600s window.",
+        "Rethrowing aborts the ISR regeneration, so the previous good page keeps serving.",
+        "getHero, getFeaturedProjects and getRecentPosts all share this contract."
+      ]
+    }
+  ]
+}
