@@ -5,10 +5,7 @@
     "title": "Homepage ISR render against a suspended Neon compute",
     "output": "portfolio-isr-neon.html",
     "quality_profile": "showcase",
-    "viewBox": [
-      1380,
-      560
-    ],
+    "viewBox": [1380, 560],
     "repository": {
       "url": "https://github.com/yutaasakura96/portfolio-v2",
       "provider": "github",
@@ -19,23 +16,13 @@
       {
         "id": "retry-path",
         "label": "Path into Neon",
-        "focus": [
-          "isr",
-          "queries",
-          "retry",
-          "prisma",
-          "neon"
-        ],
+        "focus": ["isr", "queries", "retry", "prisma", "neon"],
         "note": "The homepage render reaches Neon through a bounded retry sized to bridge a cold wake."
       },
       {
         "id": "failure-exit",
         "label": "After five attempts",
-        "focus": [
-          "retry",
-          "sentry",
-          "cache"
-        ],
+        "focus": ["retry", "sentry", "cache"],
         "note": "Report to Sentry, rethrow, and let Next.js keep serving the last good page."
       }
     ]
@@ -46,14 +33,8 @@
       "type": "external",
       "label": "Visitor",
       "sublabel": "browser / crawler",
-      "pos": [
-        40,
-        90
-      ],
-      "size": [
-        120,
-        64
-      ]
+      "pos": [40, 90],
+      "size": [120, 64]
     },
     {
       "id": "isr",
@@ -61,14 +42,8 @@
       "label": "HomePage",
       "sublabel": "Next.js ISR render",
       "tag": "revalidate = 3600",
-      "pos": [
-        300,
-        90
-      ],
-      "size": [
-        160,
-        64
-      ],
+      "pos": [300, 90],
+      "size": [160, 64],
       "sources": [
         {
           "path": "src/app/(public)/page.tsx",
@@ -83,14 +58,8 @@
       "type": "backend",
       "label": "public-queries",
       "sublabel": "3 ISR queries",
-      "pos": [
-        600,
-        90
-      ],
-      "size": [
-        190,
-        64
-      ],
+      "pos": [600, 90],
+      "size": [190, 64],
       "sources": [
         {
           "path": "src/lib/data/public-queries.ts",
@@ -117,14 +86,8 @@
       "type": "cloud",
       "label": "Last good page",
       "sublabel": "previous ISR output",
-      "pos": [
-        300,
-        270
-      ],
-      "size": [
-        160,
-        64
-      ]
+      "pos": [300, 270],
+      "size": [160, 64]
     },
     {
       "id": "retry",
@@ -132,14 +95,8 @@
       "label": "withDbRetry",
       "sublabel": "5 attempts, backoff",
       "tag": "≈3.75s total",
-      "pos": [
-        600,
-        270
-      ],
-      "size": [
-        190,
-        64
-      ],
+      "pos": [600, 270],
+      "size": [190, 64],
       "sources": [
         {
           "path": "src/lib/data/db-resilience.ts",
@@ -166,14 +123,8 @@
       "type": "backend",
       "label": "Prisma",
       "sublabel": "PrismaNeon adapter",
-      "pos": [
-        890,
-        270
-      ],
-      "size": [
-        160,
-        64
-      ],
+      "pos": [890, 270],
+      "size": [160, 64],
       "sources": [
         {
           "path": "src/lib/prisma-client.ts",
@@ -194,14 +145,8 @@
       "type": "database",
       "label": "Neon Postgres",
       "sublabel": "compute suspended",
-      "pos": [
-        1150,
-        270
-      ],
-      "size": [
-        150,
-        64
-      ]
+      "pos": [1150, 270],
+      "size": [150, 64]
     },
     {
       "id": "sentry",
@@ -209,14 +154,8 @@
       "label": "Sentry",
       "sublabel": "captureException",
       "tag": "tag: dbQuery",
-      "pos": [
-        600,
-        450
-      ],
-      "size": [
-        190,
-        64
-      ],
+      "pos": [600, 450],
+      "size": [190, 64],
       "sources": [
         {
           "path": "src/lib/data/db-resilience.ts",
@@ -231,9 +170,7 @@
     {
       "kind": "region",
       "label": "Neon serverless · scale-to-zero",
-      "wraps": [
-        "neon"
-      ]
+      "wraps": ["neon"]
     }
   ],
   "connections": [

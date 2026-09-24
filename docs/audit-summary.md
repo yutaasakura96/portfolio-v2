@@ -342,7 +342,7 @@ Single-file edits, typo fixes, quick lookups. Uses built-in `Explore` subagent (
 | ------------------- | ----------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | System Architecture | .excalidraw | `docs/diagrams/architecture.excalidraw`     | 8-section, 144-element diagram covering request flow, auth, i18n, image pipeline, external services, CI/CD, import/export, HeroBlob |
 | AWS Infrastructure  | .drawio     | `docs/diagrams/aws-architecture.drawio`     | AWS Cloud topology (CloudFront, WAF, Amplify, Cognito, S3, SES) + external services (Neon, Upstash, Sentry, Anthropic, GA)          |
-| Agentic Workflow    | .drawio.svg | `docs/diagrams/agentic-workflow.drawio.svg` | The workflow spine (Tier 1 direct, Tier 2 single/multi-domain), 4 agents, context-mode integration                              |
+| Agentic Workflow    | .drawio.svg | `docs/diagrams/agentic-workflow.drawio.svg` | The workflow spine (Tier 1 direct, Tier 2 single/multi-domain), 4 agents, context-mode integration                                  |
 
 ---
 
