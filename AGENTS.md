@@ -2,10 +2,12 @@
 
 Personal portfolio + admin CMS. Public-facing Next.js site backed by an admin dashboard, deployed to AWS Amplify with Neon Postgres.
 
+> This is the canonical instruction file for every coding agent (Codex, Claude Code and others). [CLAUDE.md](CLAUDE.md) imports it and adds only Claude Code-specific notes. Edit shared guidance here, not there.
+
 ## Tech Stack
 
 - **Framework:** Next.js (App Router, `proxy.ts` middleware), React, TypeScript (strict) — see @package.json for exact versions
-- **Database:** Prisma + Neon Postgres via `@prisma/adapter-neon` + `@neondatabase/serverless`. **Two Neon branches with separate data:** `production` (`ep-wandering-butterfly`) used by Amplify/production, and `dev` (`ep-royal-resonance`) used by `localhost:3000`. Content changes made via localhost or the MCP server only affect the dev database, not production.
+- **Database:** Prisma + Neon Postgres via `@prisma/adapter-neon` (`PrismaNeon` WebSocket adapter) + `@neondatabase/serverless`. Both packages are in `serverExternalPackages` to avoid Lambda bundling issues. **Two Neon branches with separate data:** `production` (`ep-wandering-butterfly`) used by Amplify/production, and `dev` (`ep-royal-resonance`) used by `localhost:3000`. The `.env` `DATABASE_URL` points at the dev branch — production credentials live in Amplify Console env vars. Content changes made via localhost or the MCP server only affect the dev database, not production.
 - **Styling:** TailwindCSS 4 + `@tailwindcss/postcss`, shadcn (Radix UI primitives), CVA + clsx + `tailwind-merge`
 - **Forms:** react-hook-form + `@hookform/resolvers` + Zod 4
 - **Server state:** TanStack React Query 5 (no Zustand — do not add)
@@ -13,9 +15,9 @@ Personal portfolio + admin CMS. Public-facing Next.js site backed by an admin da
 - **AWS runtime:** Amplify Hosting Gen 1 (SSR), S3 (images), CloudFront (assets CDN), SES (email), `@aws-sdk/client-amplify` (dashboard build-status polling, dynamically imported)
 - **Images:** Sharp → WebP, served via CloudFront
 - **3D / WebGL:** `@react-three/fiber` + `@react-three/drei` + `three` — `HeroBlob.tsx` renders a morphing GLSL shader blob in the hero section with mouse interaction. `three` is pinned to `^0.182.0` (not `^0.184.x`) because r183 deprecated `THREE.Clock` but r3f v9.6.1 still uses it internally — upgrade only when r3f ships a Timer-based update. `HeroBlob` wraps the `Canvas` in a `WebGLErrorBoundary` class component to silently catch WebGL initialization failures on old browsers (Mobile Safari 13 / iOS 13) instead of crashing the page.
-- **Markdown:** remark + rehype (`remark-gfm`, `rehype-sanitize`, `rehype-slug`, `rehype-highlight`)
+- **Markdown:** remark + rehype (`remark-gfm`, `rehype-sanitize`, `rehype-slug`, `rehype-highlight`). `src/lib/markdown.ts` also exports `extractHeadings(markdown)` → `TocItem[]` (uses `github-slugger` to match `rehype-slug` IDs). Blog post pages render a `TableOfContents` client component (sticky desktop sidebar + collapsible mobile) when 2+ headings exist.
 - **Import/Export:** papaparse (CSV), unified JSON export/import (`/api/admin/export/unified`, `/api/admin/import/unified`) for full-site backup/restore
-- **i18n:** DB-driven bilingual support (EN + JA). `src/lib/locale.ts` defines `Locale = "en" | "ja"`. `src/lib/i18n.ts` exports `t()`, `tArray()`, `tJson()`, `ui()` (via `UI_STRINGS`), and `localizeSkillCategory()`. `LocaleProvider` (`src/components/providers/LocaleProvider.tsx`) persists locale to `localStorage`. `LanguageToggle` in `src/components/shared/LanguageToggle.tsx`. Translation API at `GET/POST /api/admin/translate` uses Claude Haiku with a plan-based, item-by-item workflow to stay under Amplify SSR timeouts. Admin UI at `/admin/translations`. Only 2 locales — do not add more without discussion.
+- **i18n:** DB-driven bilingual support (EN + JA). `src/lib/locale.ts` defines `Locale = "en" | "ja"`. `src/lib/i18n.ts` exports `t()` (string fields), `tArray()` (string arrays), `tJson()` (JSON fields), `ui()` (static UI strings via `UI_STRINGS` map), and `localizeSkillCategory()`. `LocaleProvider` (`src/components/providers/LocaleProvider.tsx`) is a React Context with `localStorage` persistence (mirrors next-themes pattern). `useLocale` hook in `src/hooks/use-locale.ts`. `LanguageToggle` in `src/components/shared/LanguageToggle.tsx` (EN/JA toggle in the public Header). `LocalizedContent` components (`LocalizedText`, `LocalizedHtml`, `LocalizedUi`) in `src/components/public/LocalizedContent.tsx` for use inside Server Component pages. Translation API at `GET/POST /api/admin/translate` uses Claude Haiku (`claude-haiku-4-5-20251001`) with a plan-based, item-by-item workflow to translate content without hitting Amplify SSR timeouts. Prompt caching (`cache_control: {type: "ephemeral"}`) is enabled on the system prompt so sequential translation calls within a 5-minute window get cached input pricing. Admin UI at `/admin/translations`. Only 2 locales — do not add more without discussion. Skills and Certifications content stays English (technical terms); section headings are translated.
 - **Toasts:** Sonner. **Icons:** lucide-react. **Fonts:** Geist.
 - **Error tracking:** `@sentry/nextjs` `^10.56.0` — three config files (`sentry.client.config.ts`, `sentry.server.config.ts`, `sentry.edge.config.ts`) + `instrumentation.ts` (Next.js hook; exports `onRequestError = Sentry.captureRequestError`). `next.config.ts` is wrapped with `withSentryConfig`. DSN read from `NEXT_PUBLIC_SENTRY_DSN`; source-map uploads use `SENTRY_AUTH_TOKEN` (build-time only). The deprecated `disableLogger: true` option is replaced by `webpack: { treeshake: { removeDebugLogging: true } }` in `withSentryConfig`.
 
@@ -25,38 +27,41 @@ All scripts are in @package.json. Key commands: `npm run dev`, `npm run build`, 
 
 Tests use **Vitest** with **@testing-library/react**. See [.claude/rules/tests.md](.claude/rules/tests.md) for conventions.
 
+**Neon CLI** (`npm i -g neon@latest`, requires Node ≥ 20.19; invoked as `neon`). Reads `NEON_API_KEY` from the environment — `set -a; . ./.env; set +a` before use, or pass `--api-key`. Useful: `neon branches list --project-id $NEON_PROJECT_ID`, `neon projects list --org-id <org>` (omitting `--org-id` prompts interactively and hangs in non-TTY contexts). Note the free plan caps compute at **100 CU-hours/month per project**. The API's `project.compute_time_seconds` is scoped to the current consumption period and resets at the rollover — but that reset can lag badly (~27h at the Sep 2026 rollover, during which the counter still showed the previous month's total while the console read 0/100). Treat a high reading in the first day of a period as possible lag and cross-check the console. Monitored by [.github/workflows/neon-quota-check.yml](.github/workflows/neon-quota-check.yml).
+
 ## Architecture
 
-| Path                                                                                                         | Purpose                                                                                                               |
-| ------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
-| [src/app/(public)/](<src/app/(public)/>)                                                                     | Public site (ISR, Server Components by default)                                                                       |
-| [src/app/(admin)/admin/](<src/app/(admin)/admin/>)                                                           | Admin CMS — login + auth-guarded shell                                                                                |
-| [src/app/api/auth.ts](src/app/api/auth.ts)                                                                   | `requireAuth`, `requireAuthOrApiKey`, `optionalAuth` (NOT `src/lib/auth`)                                             |
-| [src/proxy.ts](src/proxy.ts)                                                                                 | Next.js 16 middleware replacement — JWT guard for admin routes                                                        |
-| [src/components/shared/](src/components/shared/)                                                             | Components shared across public + admin (e.g. `ThemeToggle`)                                                          |
-| [src/components/ui/](src/components/ui/)                                                                     | shadcn primitives (use `npx shadcn add`, don't hand-edit)                                                             |
-| [src/lib/data/](src/lib/data/)                                                                               | Server-side query layer + canonical types                                                                             |
-| [src/lib/validations/](src/lib/validations/)                                                                 | Zod schemas (one file per entity)                                                                                     |
-| [src/lib/errors.ts](src/lib/errors.ts)                                                                       | `ApiError` + `withErrorHandler`                                                                                       |
-| [src/lib/prisma-client.ts](src/lib/prisma-client.ts)                                                         | Singleton Prisma client (Neon WebSocket adapter)                                                                      |
-| [src/lib/locale.ts](src/lib/locale.ts)                                                                       | `Locale` type (`"en" \| "ja"`) + locale helpers                                                                       |
-| [src/lib/i18n.ts](src/lib/i18n.ts)                                                                           | `t()`, `tArray()`, `tJson()`, `ui()`, `UI_STRINGS`, `localizeSkillCategory()`                                         |
-| [src/hooks/use-locale.ts](src/hooks/use-locale.ts)                                                           | `useLocale()` hook — reads/sets locale from `LocaleProvider`                                                          |
-| [src/components/providers/LocaleProvider.tsx](src/components/providers/LocaleProvider.tsx)                   | Locale React Context with `localStorage` persistence                                                                  |
-| [src/components/shared/LanguageToggle.tsx](src/components/shared/LanguageToggle.tsx)                         | EN/JA toggle button (rendered in public `Header`)                                                                     |
-| [src/components/public/LocalizedContent.tsx](src/components/public/LocalizedContent.tsx)                     | `LocalizedText`, `LocalizedHtml`, `LocalizedUi` client components                                                     |
-| [src/app/api/admin/translate/route.ts](src/app/api/admin/translate/route.ts)                                 | GET plan + POST target — translates content to Japanese via Claude Haiku (prompt caching enabled)                     |
-| [src/app/(admin)/admin/(shell)/translations/](<src/app/(admin)/admin/(shell)/translations/>)                 | Admin translations page ("Update Japanese" button + progress)                                                         |
-| [src/app/api/admin/dashboard-external/route.ts](src/app/api/admin/dashboard-external/route.ts)               | Parallel-fetches Sentry issues, Amplify build status, site health, GA config; degrades gracefully on missing env vars |
-| [src/components/admin/dashboard/ExternalServices.tsx](src/components/admin/dashboard/ExternalServices.tsx)   | 4 service cards (Sentry, Amplify, Site Health, GA) on the admin dashboard                                             |
-| [src/components/admin/dashboard/TranslationStatus.tsx](src/components/admin/dashboard/TranslationStatus.tsx) | Per-entity JA translation coverage widget on the admin dashboard                                                      |
-| [src/hooks/use-dashboard-external.ts](src/hooks/use-dashboard-external.ts)                                   | TanStack Query hook for external services data (`/api/admin/dashboard-external`)                                      |
+| Path                                                                                                         | Purpose                                                                                                                                                              |
+| ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [src/app/(public)/](<src/app/(public)/>)                                                                     | Public site (ISR, Server Components by default)                                                                                                                      |
+| [src/app/(admin)/admin/](<src/app/(admin)/admin/>)                                                           | Admin CMS — login + auth-guarded shell                                                                                                                               |
+| [src/app/api/auth.ts](src/app/api/auth.ts)                                                                   | `requireAuth`, `requireAuthOrApiKey`, `optionalAuth` (NOT `src/lib/auth`)                                                                                            |
+| [src/proxy.ts](src/proxy.ts)                                                                                 | Next.js 16 middleware replacement — JWT guard for admin routes                                                                                                       |
+| [src/components/shared/](src/components/shared/)                                                             | Components shared across public + admin (e.g. `ThemeToggle`)                                                                                                         |
+| [src/components/ui/](src/components/ui/)                                                                     | shadcn primitives (use `npx shadcn add`, don't hand-edit)                                                                                                            |
+| [src/lib/data/](src/lib/data/)                                                                               | Server-side query layer + canonical types                                                                                                                            |
+| [src/lib/validations/](src/lib/validations/)                                                                 | Zod schemas (one file per entity)                                                                                                                                    |
+| [src/lib/errors.ts](src/lib/errors.ts)                                                                       | `ApiError` + `withErrorHandler`                                                                                                                                      |
+| [src/lib/prisma-client.ts](src/lib/prisma-client.ts)                                                         | Singleton Prisma client (Neon WebSocket adapter)                                                                                                                     |
+| [src/lib/locale.ts](src/lib/locale.ts)                                                                       | `Locale` type (`"en" \| "ja"`) + locale helpers                                                                                                                      |
+| [src/lib/i18n.ts](src/lib/i18n.ts)                                                                           | `t()`, `tArray()`, `tJson()`, `ui()`, `UI_STRINGS`, `localizeSkillCategory()`                                                                                        |
+| [src/hooks/use-locale.ts](src/hooks/use-locale.ts)                                                           | `useLocale()` hook — reads/sets locale from `LocaleProvider`                                                                                                         |
+| [src/components/providers/LocaleProvider.tsx](src/components/providers/LocaleProvider.tsx)                   | Locale React Context with `localStorage` persistence                                                                                                                 |
+| [src/components/shared/LanguageToggle.tsx](src/components/shared/LanguageToggle.tsx)                         | EN/JA toggle button (rendered in public `Header`)                                                                                                                    |
+| [src/components/public/LocalizedContent.tsx](src/components/public/LocalizedContent.tsx)                     | `LocalizedText`, `LocalizedHtml`, `LocalizedUi` client components                                                                                                    |
+| [src/app/api/admin/translate/route.ts](src/app/api/admin/translate/route.ts)                                 | GET plan + POST target — translates content to Japanese via Claude Haiku (prompt caching enabled)                                                                    |
+| [src/app/(admin)/admin/(shell)/translations/](<src/app/(admin)/admin/(shell)/translations/>)                 | Admin translations page ("Update Japanese" button + progress)                                                                                                        |
+| [src/app/api/admin/dashboard-external/route.ts](src/app/api/admin/dashboard-external/route.ts)               | Parallel-fetches Sentry issues, Amplify build status, site health, GA config; degrades gracefully on missing env vars                                                |
+| [src/components/admin/dashboard/ExternalServices.tsx](src/components/admin/dashboard/ExternalServices.tsx)   | 4 service cards (Sentry, Amplify, Site Health, GA) on the admin dashboard                                                                                            |
+| [src/components/admin/dashboard/TranslationStatus.tsx](src/components/admin/dashboard/TranslationStatus.tsx) | Per-entity JA translation coverage widget on the admin dashboard                                                                                                     |
+| [src/hooks/use-dashboard-external.ts](src/hooks/use-dashboard-external.ts)                                   | TanStack Query hook for external services data (`/api/admin/dashboard-external`)                                                                                     |
+| [docs/screenshots/](docs/screenshots/)                                                                       | Static PNG screenshots — `public/` (25 pages) and `admin/` (17 pages) at 1440x900 via Playwright MCP; admin uses injected Cognito cookies; sensitive fields redacted |
 
 Scoped instructions currently live in [src/CLAUDE.md](src/CLAUDE.md), [src/app/api/CLAUDE.md](src/app/api/CLAUDE.md), and [prisma/CLAUDE.md](prisma/CLAUDE.md).
 
 ## Development Workflow
 
-No plugin pack is enabled in this repo — `enabledPlugins` is empty. The methodology is the repo's own agents, skills, rules, hooks and commands; together they are the whole process layer. For any non-trivial change, follow the spine below.
+No plugin pack is enabled in this repo — `enabledPlugins` is empty. The methodology is the repo's own agents, skills, [.claude/rules/](.claude/rules/), hooks and commands; together they are the whole process layer. For any non-trivial change, follow the spine below.
 
 > **Codex note:** nothing needs installing separately. The repo's skills, agents and rules are plain files that load natively in both harnesses. See §Codex Operating Protocol.
 
@@ -72,11 +77,11 @@ No plugin pack is enabled in this repo — `enabledPlugins` is empty. The method
 8. **Review before finishing** — dispatch the `code-reviewer` agent as the executor.
 9. **Finish deliberately** — merge/PR decision. Commit per §Git Commit Style; **never commit or push without explicit user permission**.
 
-**Precedence:** user instructions (this file, CLAUDE.md, global prefs) > project rules and skills > default behavior. Where a project rule conflicts with a skill, the project rule wins.
+**Precedence:** user instructions (AGENTS.md, CLAUDE.md, global prefs) > project rules and skills > default behavior. Where a project rule conflicts with a skill, the project rule wins.
 
 ### Domain-executor agents
 
-Three project agents in [.codex/agents/](.codex/agents/) (mirroring [.claude/agents/](.claude/agents/)) are pre-built executor bundles to dispatch where they fit — each carries project knowledge a fresh subagent lacks:
+Three project agents in [.claude/agents/](.claude/agents/) (mirrored in [.codex/agents/](.codex/agents/)) are pre-built executor bundles to dispatch where they fit — each carries project knowledge a fresh subagent lacks:
 
 | Agent                 | Dispatch when                                                 | Adds                                         |
 | --------------------- | ------------------------------------------------------------- | -------------------------------------------- |
@@ -84,27 +89,28 @@ Three project agents in [.codex/agents/](.codex/agents/) (mirroring [.claude/age
 | **code-reviewer**     | Review before finishing (spine step 8)                        | Read-only review citing this project's rules |
 | **maintenance-agent** | Convention refactor (mode: refactor) or doc sync (mode: docs) | Project-specific; no generic equivalent      |
 
-End-to-end feature building is the spine above, not a single agent.
+End-to-end feature building is the spine above, not a single agent. Single-file edits and trivial fixes don't need the full spine — apply judgment.
 
 ### Equipping dispatched subagents (skills + docs)
 
-A dispatched subagent starts from a fresh context and does **not** auto-discover this project's skills. The orchestrator must hand it the right context in the dispatch prompt:
+A dispatched subagent starts from a fresh context and does **not** auto-discover this project's skills — the orchestrator must hand it the right context in the dispatch prompt. When dispatching a subagent:
 
-1. **Name the relevant project skill(s) in the dispatch prompt.** Map by what the task touches: new route / layout / `proxy.ts` → `nextjs-app-router`; Prisma schema/migration/seed/Neon → `prisma-neon` (or dispatch `db-agent`); Tailwind classes / `@theme` → `tailwind-v4`; shadcn components → `shadcn`; new component/page visual design → `frontend-design`; animations/transitions → `emil-design-eng`; UI a11y / pre-merge gate → `web-design-guidelines`; AWS Amplify/S3/CloudFront/SES/Cognito or env changes → `aws-deploy`.
+1. **Name the relevant project skill(s) in the dispatch prompt** so the subagent invokes them. Map by what the task touches:
+
+   | Task touches                                            | Tell the subagent to use               |
+   | ------------------------------------------------------- | -------------------------------------- |
+   | A new route, layout, loading/error boundary, `proxy.ts` | `nextjs-app-router`                    |
+   | Prisma schema, migration, seed, Neon branching          | `prisma-neon` (or dispatch `db-agent`) |
+   | Tailwind classes, theme tokens, `@theme` in globals     | `tailwind-v4`                          |
+   | Adding/composing shadcn components                      | `shadcn`                               |
+   | New component or page visual design                     | `frontend-design`                      |
+   | Animations, transitions, micro-interactions             | `emil-design-eng`                      |
+   | UI review / a11y / pre-merge UI gate                    | `web-design-guidelines`                |
+   | AWS Amplify/S3/CloudFront/SES/Cognito or env changes    | `aws-deploy`                           |
+
 2. **Instruct the subagent to verify library APIs against `context7`** (`resolve-library-id` → `query-docs`) for any Next.js 16 / Prisma 7 / Tailwind v4 / other library usage, rather than assuming from training data.
 
-If unsure whether a skill applies, name it anyway — loading an irrelevant skill is cheap.
-
-### Model selection
-
-Claude Code uses Anthropic model families for its built-in agent routing. Codex custom agents do **not** use this table; they use the explicit OpenAI model IDs pinned in `.codex/agents/*.toml`.
-
-| Agent              | Default | Override to opus when                               |
-| ------------------ | ------- | --------------------------------------------------- |
-| db-agent           | sonnet  | Tricky migration (cross-table backfill, custom SQL) |
-| code-reviewer      | haiku   | Security-sensitive diff (auth, payment, PII)        |
-| maintenance-agent  | sonnet  | Bulk rewrite touching cross-cutting abstractions    |
-| Explore (built-in) | haiku   | Search requires synthesizing many unrelated files   |
+If unsure whether a skill applies, name it anyway — a subagent that loads a skill and finds it irrelevant simply moves on.
 
 ## UI Skills
 
@@ -152,13 +158,13 @@ After UI changes, agents must verify visually using **Playwright MCP** (`mcp__pl
 
 ## Plugins
 
-Four plugins extend the backup Codex workflow and mirror the Claude Code tooling where possible:
+Four plugins extend the Claude Code and Codex backup tooling:
 
-| Plugin                                       | Purpose                                                                                                                                                                                                                     |
-| -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **skill-creator** (Codex-plugins-official)   | Create, eval, improve, and benchmark skills. Use to iterate on existing project skills with data.                                                                                                                           |
-| **context-mode** (mksglu, v1.0.162)          | Sandboxes tool output for ~98% context window savings. SQLite session tracking + lifecycle hooks.                                                                                                                           |
-| **frontend-design** (Codex-plugins-official) | Production-grade UI design with distinctive aesthetics. Listed above under UI Skills.                                                                                                                                       |
+| Plugin                                                       | Purpose                                                                                           |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| **skill-creator** (Codex source: `Codex-plugins-official`)   | Create, eval, improve, and benchmark skills. Use to iterate on existing project skills with data. |
+| **context-mode** (mksglu, v1.0.162)                          | Sandboxes tool output for ~98% context window savings. SQLite session tracking + lifecycle hooks. |
+| **frontend-design** (Codex source: `Codex-plugins-official`) | Production-grade UI design with distinctive aesthetics. Listed above under UI Skills.             |
 
 The workflow spine (see §Development Workflow) governs how work is approached; the project's domain-executor agents, skills, and `.claude/rules/` supply the context a dispatched subagent consumes.
 
@@ -169,7 +175,7 @@ The workflow spine (see §Development Workflow) governs how work is approached; 
 3. **Types come from [src/lib/data/types.ts](src/lib/data/types.ts).** Do NOT add new files under `src/types/` — that directory is being phased out.
 4. **Cookies are HTTP-only, Secure, SameSite=Lax.** Tokens never touch `localStorage`.
 
-Domain rules (Zod validation, `withErrorHandler`, ISR/client split, image pipeline, forms, data layer) are enforced by the rule files in [.claude/rules/](.claude/rules/). Read the matching rule file before editing those areas.
+Domain rules (Zod validation, `withErrorHandler`, ISR/client split, image pipeline, forms, data layer) are enforced by the pattern-matched rule files in [.claude/rules/](.claude/rules/). Claude Code loads them automatically when you touch matching files; under any other agent, read the matching rule file before editing those areas (see §Codex Operating Protocol).
 
 ## Common Mistakes (this project specifically)
 
@@ -182,6 +188,10 @@ Domain rules (Zod validation, `withErrorHandler`, ISR/client split, image pipeli
 - ❌ Using `disableLogger: true` in `withSentryConfig` options — this option is deprecated. Use `webpack: { treeshake: { removeDebugLogging: true } }` instead.
 - ❌ Passing r3f shader uniforms via `useMemo`, `useRef`, or `useState` — React Compiler ESLint rules flag all three patterns on hook return values used as WebGL uniforms. Declare the uniforms object as a **module-level constant** outside the component (e.g. `const blobUniforms = { ... }` at the top of the file). This is safe because uniform values are mutated in-place by the GLSL pipeline, not replaced.
 - ❌ Typing icon props as `icon: React.ElementType` in React 19 — `ElementType` was narrowed in React 19 types such that passing `className` resolves to `never`. Use `icon: React.ComponentType<{ className?: string }>` instead (see `AdminSidebar.tsx`).
+- ❌ Removing `@neondatabase/serverless` or `@prisma/adapter-neon` from `serverExternalPackages` in `next.config.ts` — bundling these into the Lambda causes fetch polyfill conflicts and intermittent "fetch failed" errors.
+- ❌ Switching from `PrismaNeon` (WebSocket) to `PrismaNeonHttp` (HTTP) adapter — the HTTP adapter caused persistent `NeonDbError: fetch failed` and `AbortError` on Lambda cold starts. The WebSocket adapter (`PrismaNeon`) is proven stable in production.
+- ❌ Adding new static UI text directly in components — put it in the `UI_STRINGS` object in `src/lib/i18n.ts` under both `en` and `ja` keys, then access via `ui(locale, "key")`. Hard-coded English strings bypass translation entirely.
+- ❌ Calling `t()` / `tArray()` / `tJson()` on a field that has no `*Ja` column — add the column to the Prisma schema first (follow the `*Ja` nullable column convention) and select it in `public-queries.ts` before wiring the translation helper.
 - ❌ Assuming `portfolio` (dev) MCP tools affect production — the `portfolio` server hits `localhost:3000` (dev Neon branch). For production changes, use the `portfolio-prod` MCP tools instead (`mcp__portfolio-prod__*`), which target `https://asakurayuta.dev`. Always confirm which environment the user intends.
 
 ## MCP Servers
@@ -208,13 +218,40 @@ Three domain-executor agents in [.claude/agents/](.claude/agents/), mirrored for
 
 See §Development Workflow above for when each is dispatched. The Claude-side `sonnet` / `haiku` labels do not apply inside Codex; Codex uses the TOML-pinned OpenAI models above. Built-in subagents (`Explore`/haiku, `Plan`/sonnet) are Claude Code-only. End-to-end feature building is the §Development Workflow spine, not a single agent.
 
-## Codex Backup Hooks
+## Hooks
 
-Codex backup hooks are configured in [.codex/hooks.json](.codex/hooks.json) with scripts in [.codex/hooks/](.codex/hooks/). Claude Code remains the primary workflow and uses [.claude/settings.json](.claude/settings.json) with scripts in [.claude/hooks/](.claude/hooks/). Key gates: branch guard blocks edits on `main`/`develop`, full build + tests gate commits, Prettier auto-formats after edits.
+Claude Code remains the primary workflow: its hooks are configured in [.claude/settings.json](.claude/settings.json) with scripts in [.claude/hooks/](.claude/hooks/). Codex backup hooks are mirrored in [.codex/hooks.json](.codex/hooks.json) with scripts in [.codex/hooks/](.codex/hooks/). Key gates: branch guard blocks edits on `main`/`develop`, full build + tests gate commits, and Prettier auto-formats after edits.
+
+## Git Commit Style
+
+- **Subject line only.** Use `git commit -m "<subject>"` — no body, no extended description. The diff already shows what changed; the subject says why at a glance.
+- **No heredoc messages.** Don't write `git commit -m "$(cat <<'EOF' ... EOF)"`. Single-line `-m` only.
+- **No `Co-Authored-By` trailer.** Don't append `Co-Authored-By: Claude ...`, `Co-Authored-By: Codex ...`, or any other agent attribution. The git author already records who ran the commit.
+- Subject format: `<type>: <short imperative>` matching existing log style (`docs:`, `test:`, `setup:`, `fix:`, `feat:`).
+
+## Environment Setup
+
+Local dev needs a `.env` (not `.env.example` — it has drift; see [.claude/docs/infrastructure.md](.claude/docs/infrastructure.md) §Environment Variables). Production env lives in Amplify Console and is materialized into `.env.production` at build time by [amplify.yml](amplify.yml).
+
+Dashboard external services require four additional env vars (optional — the route degrades gracefully when absent):
+
+- `SENTRY_ORG_SLUG`, `SENTRY_PROJECT_SLUG` — Sentry issues panel on the admin dashboard
+- `AMPLIFY_APP_ID` — Amplify build-status card on the admin dashboard
+- `GA_PROPERTY_ID` — Google Analytics link card on the admin dashboard
+
+## Compaction
+
+When compacting, always preserve:
+
+- The full list of files modified in the current task
+- The current git branch name and any in-progress PR
+- Which workflow-spine step / dispatched subagent task we are on
+- Any user decisions or preferences stated in this session
+- Error messages from failed builds/tests that haven't been resolved yet
 
 ## Codex Operating Protocol
 
-This section applies **only when running under OpenAI Codex**. Claude Code ignores it.
+This section applies **only when running under OpenAI Codex** (or another non-Claude agent). Claude Code sessions skip it; their additions live in [CLAUDE.md](CLAUDE.md).
 
 ### Project trust
 
@@ -238,7 +275,7 @@ Use `cat <file>` to read each before making changes. These files contain critica
 
 ### Agent routing
 
-Codex custom agents are defined in `.codex/agents/*.toml`. Unlike Claude Code, Codex does **not** auto-dispatch agents. They are the domain-executor bundles invoked within the workflow spine (see §Development Workflow); their model choice comes from the TOML file rather than the Claude Code model-selection table above.
+Codex custom agents are defined in `.codex/agents/*.toml`. Unlike Claude Code, Codex does **not** auto-dispatch agents. They are the domain-executor bundles invoked within the workflow spine (see §Development Workflow); their model choice comes from the TOML file rather than the Claude Code model-selection table in [CLAUDE.md](CLAUDE.md).
 
 **Trigger phrases** that indicate the user wants agent delegation:
 
@@ -257,14 +294,15 @@ Codex custom agents are defined in `.codex/agents/*.toml`. Unlike Claude Code, C
 
 These Claude Code features have no direct Codex equivalent:
 
-| Claude Code feature                                    | Codex alternative                                                                                                                            |
-| ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Explore` / `Plan` built-in subagents                  | Use Bash search commands (`grep`, `find`, `git log`) directly                                                                                |
-| Slash commands (`/check`, `/new-route`, `/pr-ready`)   | Run equivalent steps manually (see `.claude/commands/*.md` for the steps)                                                                    |
-| Plugin auto-triggering (shadcn, frontend-design, etc.) | Read the skill instructions manually if needed                                                                                               |
+| Claude Code feature                                    | Codex alternative                                                                       |
+| ------------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| `Explore` / `Plan` built-in subagents                  | Use Bash search commands (`grep`, `find`, `git log`) directly                           |
+| Slash commands (`/check`, `/new-route`, `/pr-ready`)   | Run equivalent steps manually (see `.claude/commands/*.md` for the steps)               |
+| Plugin auto-triggering (shadcn, frontend-design, etc.) | Read the skill instructions manually if needed                                          |
 | Claude Code slash commands (`/check`, `/pr-ready`)     | Run the underlying scripts directly; the §Development Workflow spine is harness-neutral |
-| `${CLAUDE_PROJECT_DIR}` env var                        | Use `$(git rev-parse --show-toplevel)`                                                                                                       |
-| Pattern-matched `.claude/rules/*.md` loading           | Read relevant rule files explicitly (see table above)                                                                                        |
+| `${CLAUDE_PROJECT_DIR}` env var                        | Use `$(git rev-parse --show-toplevel)`                                                  |
+| Pattern-matched `.claude/rules/*.md` loading           | Read relevant rule files explicitly (see table above)                                   |
+| `neon` hosted MCP server (`.mcp.json` only)            | Not in `.codex/config.toml`; use the **Neon CLI** under §Commands                       |
 
 ### context-mode dependency
 
@@ -279,30 +317,3 @@ After any code change, verify the same way Claude Code does:
 3. **Tests:** `npm test` (if touching tested code)
 4. **UI changes:** Use Playwright MCP (`browser_navigate` → `browser_snapshot` → `browser_take_screenshot` → `browser_console_messages`) against `http://localhost:3000`
 5. **Build:** `npm run build` before final PR
-
-## Git Commit Style
-
-- **Subject line only.** Use `git commit -m "<subject>"` — no body, no extended description. The diff already shows what changed; the subject says why at a glance.
-- **No heredoc messages.** Don't write `git commit -m "$(cat <<'EOF' ... EOF)"`. Single-line `-m` only.
-- **No `Co-Authored-By` trailer.** Don't append `Co-Authored-By: Codex ...` or any other Codex attribution. The git author already records who ran the commit.
-- Subject format: `<type>: <short imperative>` matching existing log style (`docs:`, `test:`, `setup:`, `fix:`, `feat:`).
-
-## Environment Setup
-
-Local dev needs a `.env` (not `.env.example` — it has drift; see [.claude/docs/infrastructure.md](.claude/docs/infrastructure.md) §Environment Variables). Production env lives in Amplify Console and is materialized into `.env.production` at build time by [amplify.yml](amplify.yml).
-
-Dashboard external services require four additional env vars (optional — the route degrades gracefully when absent):
-
-- `SENTRY_ORG_SLUG`, `SENTRY_PROJECT_SLUG` — Sentry issues panel on the admin dashboard
-- `AMPLIFY_APP_ID` — Amplify build-status card on the admin dashboard
-- `GA_PROPERTY_ID` — Google Analytics link card on the admin dashboard
-
-## Compaction
-
-When compacting, always preserve:
-
-- The full list of files modified in the current task
-- The current git branch name and any in-progress PR
-- Which workflow-spine step / dispatched subagent task we are on
-- Any user decisions or preferences stated in this session
-- Error messages from failed builds/tests that haven't been resolved yet
